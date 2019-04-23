@@ -34,7 +34,7 @@ function generateServiceTable( $services ) {
 						</tbody>
 						<tfoot>
 							<tr>						
-								<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
+								<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> '. __("Refresh Services") .' </a> </th>
 							</tr>
 						</tfoot>
 					</table>
@@ -79,7 +79,7 @@ function generatePickupPointTable( $pickupPoints ) {
 						</tbody>
 						<tfoot>
 							<tr>						
-								<th colspan="7" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
+								<th colspan="7" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> '. __("Refresh pickup points") .' </a> </th>
 							</tr>
 						</tfoot>
 					</table>
