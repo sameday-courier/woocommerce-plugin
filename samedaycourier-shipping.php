@@ -28,6 +28,7 @@ require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') );
 require_once ( plugin_basename('sql/sameday_create_db.php') );
 require_once ( plugin_basename('sql/sameday_drop_db.php') );
+require_once ( plugin_basename('sql/sameday_query_db.php') );
 
 function samedaycourier_shipping_method() {
 
@@ -201,28 +202,34 @@ function register_submenu_sameday_courier() {
 }
 
 function samedaycourier_services() {
-	$pickupPoints = array();
-	$table = generateTable( $pickupPoints );
+	$services = getServices();
+	$table = generateServiceTable( $services );
 
 	echo $table;
-
 }
 
 function samedaycourier_pickup_points() {
-	$services = array();
-	$table = generateTable( $services );
+	$pickupPoints = array();
+	$table = generatePickupPointTable( $pickupPoints );
 
 	echo $table;
 }
 
-function generateTable( $data ) {
+function refreshServices() {
+	print 'Refresh Services';
+}
+
+function generatePickupPointTable( $pickupPoints ) {
+
 	$table = '<div class="wrap"><table class="wp-list-table widefat fixed striped posts">
 					<thead>
 						<tr>
-							<th scope="col"> Serv 1</th>
-							<th scope="col"> Flash 2</th>
-							<th scope="col"> Flash 3</th>
-							<th scope="col"> Flash 4</th>
+							<th scope="col"> __("Sameday ID") </th>
+							<th scope="col"> __("Sameday name") </th>
+							<th scope="col"> __("Name") </th>
+							<th scope="col"> __("Price") </th>
+							<th scope="col"> __("Price free") </th>
+							<th scope="col"> __("Price status") </th>
 						</tr>
 					</thead>
 					<tbody>
@@ -231,24 +238,55 @@ function generateTable( $data ) {
 							<td> Text 1 </td>
 							<td> Text 1 </td>
 							<td> Text 1 </td>
-						</tr>
-						<tr>
-							<td> Text 2 </td>
-							<td> Text 2 </td>
-							<td> Text 2 </td>
-							<td> Text 2 </td>
-						</tr>
-						<tr>
-							<td> Text 3 </td>
-							<td> Text 3 </td>
-							<td> Text 3 </td>
-							<td> Text 3 </td>
+							<td> Text 1 </td>
+							<td> Text 1 </td>
 						</tr>
 					</tbody>
 					<tfoot>
 					<tr>
 						<th colspan="2" style="text-align: left;"> <strong style="color: #91292b;"> Sameday Courier pickup points </strong> </th>
-						<th colspan="2" style="text-align: right;"> <a href=""> Refresh pickup points </a> </th>
+						<th colspan="2" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
+					</tr>
+				</tfoot>
+				</table></div>';
+
+	return $table;
+}
+
+function generateServiceTable( $services ) {
+	$serviceRows = '';
+	foreach ($services as $service) {
+		$serviceRows .= '<tr>
+							<td> '.$service->sameday_id.' </td>
+							<td> '.$service->sameday_name.' </td>
+							<td> '.$service->name.' </td>
+							<td> '.$service->price.' </td>
+							<td> '.$service->price_free.' </td>
+							<td> '.$service->status.' </td>
+						</tr>';
+	}
+
+	if (empty($services)) {
+		$serviceRows = '<tr><td colspan="6" style="text-align: center;">'. __('No data found') .'</td></tr>';
+	}
+
+	$table = '<div class="wrap"><table class="wp-list-table widefat fixed striped posts">
+					<thead>
+						<tr>
+							<th scope="col"> '.__("Sameday ID").'</th>
+							<th scope="col"> '.__("Sameday name").'</th>
+							<th scope="col"> '.__("Name").'</th>
+							<th scope="col"> '.__("Price").'</th>
+							<th scope="col"> '.__("Price free").'</th>
+							<th scope="col"> '.__("Status").'</th>
+						</tr>
+					</thead>
+					<tbody>
+						'.$serviceRows.'
+					</tbody>
+					<tfoot>
+					<tr>						
+						<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
 					</tr>
 				</tfoot>
 				</table></div>';
