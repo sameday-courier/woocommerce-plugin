@@ -24,6 +24,7 @@ if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 	exit;
 }
 
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') );
 require_once ( plugin_basename('sql/sameday_create_db.php') );
 require_once ( plugin_basename('sql/sameday_drop_db.php') );

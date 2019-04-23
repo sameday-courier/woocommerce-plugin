@@ -4,15 +4,13 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
 function samedaycourier_create_db() {
 
 	global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();
 	$awbTable =  $wpdb->prefix . 'sameday_awb';
-	$pickup_point = $wpdb->prefix . 'sameday_pickup_points';
-	$service = $wpdb->prefix . 'sameday_services';
+	$pickup_point = $wpdb->prefix . 'sameday_pickup_point';
+	$service = $wpdb->prefix . 'sameday_service';
 	$packageTable = $wpdb->prefix . 'sameday_package';
 
 	$createAwbTable = "CREATE TABLE IF NOT EXISTS $awbTable (
