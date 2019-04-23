@@ -270,26 +270,28 @@ function generateServiceTable( $services ) {
 		$serviceRows = '<tr><td colspan="6" style="text-align: center;">'. __('No data found') .'</td></tr>';
 	}
 
-	$table = '<div class="wrap"><table class="wp-list-table widefat fixed striped posts">
-					<thead>
-						<tr>
-							<th scope="col"> '.__("Sameday ID").'</th>
-							<th scope="col"> '.__("Sameday name").'</th>
-							<th scope="col"> '.__("Name").'</th>
-							<th scope="col"> '.__("Price").'</th>
-							<th scope="col"> '.__("Price free").'</th>
-							<th scope="col"> '.__("Status").'</th>
-						</tr>
-					</thead>
-					<tbody>
-						'.$serviceRows.'
-					</tbody>
-					<tfoot>
-					<tr>						
-						<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
-					</tr>
-				</tfoot>
-				</table></div>';
+	$table = '<div class="wrap">
+					<table class="wp-list-table widefat fixed striped posts">
+						<thead>
+							<tr>
+								<th scope="col"> '.__("Sameday ID").'</th>
+								<th scope="col"> '.__("Sameday name").'</th>
+								<th scope="col"> '.__("Name").'</th>
+								<th scope="col"> '.__("Price").'</th>
+								<th scope="col"> '.__("Price free").'</th>
+								<th scope="col"> '.__("Status").'</th>
+							</tr>
+						</thead>
+						<tbody>
+							'.$serviceRows.'
+						</tbody>
+						<tfoot>
+							<tr>						
+								<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>';
 
 	return $table;
 }
