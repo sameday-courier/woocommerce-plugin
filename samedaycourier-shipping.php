@@ -29,6 +29,7 @@ require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') )
 require_once ( plugin_basename('sql/sameday_create_db.php') );
 require_once ( plugin_basename('sql/sameday_drop_db.php') );
 require_once ( plugin_basename('sql/sameday_query_db.php') );
+require_once ( plugin_basename('functions/functions.php') );
 
 function samedaycourier_shipping_method() {
 
@@ -209,91 +210,10 @@ function samedaycourier_services() {
 }
 
 function samedaycourier_pickup_points() {
-	$pickupPoints = array();
+	$pickupPoints = getPickupPoints();
 	$table = generatePickupPointTable( $pickupPoints );
 
 	echo $table;
-}
-
-function refreshServices() {
-	print 'Refresh Services';
-}
-
-function generatePickupPointTable( $pickupPoints ) {
-
-	$table = '<div class="wrap"><table class="wp-list-table widefat fixed striped posts">
-					<thead>
-						<tr>
-							<th scope="col"> __("Sameday ID") </th>
-							<th scope="col"> __("Sameday name") </th>
-							<th scope="col"> __("Name") </th>
-							<th scope="col"> __("Price") </th>
-							<th scope="col"> __("Price free") </th>
-							<th scope="col"> __("Price status") </th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td> Text 1 </td>
-							<td> Text 1 </td>
-							<td> Text 1 </td>
-							<td> Text 1 </td>
-							<td> Text 1 </td>
-							<td> Text 1 </td>
-						</tr>
-					</tbody>
-					<tfoot>
-					<tr>
-						<th colspan="2" style="text-align: left;"> <strong style="color: #91292b;"> Sameday Courier pickup points </strong> </th>
-						<th colspan="2" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
-					</tr>
-				</tfoot>
-				</table></div>';
-
-	return $table;
-}
-
-function generateServiceTable( $services ) {
-	$serviceRows = '';
-	foreach ($services as $service) {
-		$serviceRows .= '<tr>
-							<td> '.$service->sameday_id.' </td>
-							<td> '.$service->sameday_name.' </td>
-							<td> '.$service->name.' </td>
-							<td> '.$service->price.' </td>
-							<td> '.$service->price_free.' </td>
-							<td> '.$service->status.' </td>
-						</tr>';
-	}
-
-	if (empty($services)) {
-		$serviceRows = '<tr><td colspan="6" style="text-align: center;">'. __('No data found') .'</td></tr>';
-	}
-
-	$table = '<div class="wrap">
-					<table class="wp-list-table widefat fixed striped posts">
-						<thead>
-							<tr>
-								<th scope="col"> '.__("Sameday ID").'</th>
-								<th scope="col"> '.__("Sameday name").'</th>
-								<th scope="col"> '.__("Name").'</th>
-								<th scope="col"> '.__("Price").'</th>
-								<th scope="col"> '.__("Price free").'</th>
-								<th scope="col"> '.__("Status").'</th>
-							</tr>
-						</thead>
-						<tbody>
-							'.$serviceRows.'
-						</tbody>
-						<tfoot>
-							<tr>						
-								<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> Refresh pickup points </a> </th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>';
-
-	return $table;
 }
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
