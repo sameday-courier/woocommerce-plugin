@@ -26,6 +26,7 @@ if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 
 require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') );
 require_once ( plugin_basename('sql/sameday_create_db.php') );
+require_once ( plugin_basename('sql/sameday_drop_db.php') );
 
 function samedaycourier_shipping_method() {
 
@@ -256,7 +257,7 @@ function generateTable( $data ) {
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 
-register_uninstall_hook( '', '');
+register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
 
 
 
