@@ -51,6 +51,8 @@ function samedaycourier_shipping_method() {
 			$this->configValidation = false;
 
 			$this->init();
+
+
 		}
 
 		public function calculate_shipping( $package = array() )
@@ -75,7 +77,6 @@ function samedaycourier_shipping_method() {
 			// foreach ( $availableServices as $service ) { $this->add_rate( $rate_1 ); }
 
 			$this->add_rate( $rate_1 );
-
 			$this->add_rate( $rate_2 );
 		}
 
@@ -183,8 +184,6 @@ function samedaycourier_shipping_method() {
 	return false;
 }
 
-
-
 add_action( 'woocommerce_shipping_init', 'samedaycourier_shipping_method' );
 
 function add_samedaycourier_shipping_method( $methods ) {
@@ -203,6 +202,7 @@ function register_submenu_sameday_courier() {
 }
 
 function samedaycourier_services() {
+	refreshServices();
 	$services = getServices();
 	$table = generateServiceTable( $services );
 
@@ -216,8 +216,13 @@ function samedaycourier_pickup_points() {
 	echo $table;
 }
 
-register_activation_hook( __FILE__, 'samedaycourier_create_db' );
+function refreshServices() {
+	print 'Test';
+}
 
+add_action( 'admin_post_refresh_services', refreshServices() );
+
+register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
 
 

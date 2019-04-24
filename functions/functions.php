@@ -17,6 +17,11 @@ function generateServiceTable( $services ) {
 		$serviceRows = '<tr><td colspan="6" style="text-align: center;">'. __('No data found') .'</td></tr>';
 	}
 
+	$form  = '<form action='.admin_url('admin-post.php').' method="post">
+				  <input type="hidden" name="action" value="refresh_services_list">
+				  <input type="submit" value="Refresh Services">
+				</form>';
+
 	$table = '<div class="wrap">
 					<table class="wp-list-table widefat fixed striped posts">
 						<thead>
@@ -34,7 +39,9 @@ function generateServiceTable( $services ) {
 						</tbody>
 						<tfoot>
 							<tr>						
-								<th colspan="6" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> '. __("Refresh Services") .' </a> </th>
+								<th colspan="6" style="text-align: right;">
+								 	'.$form.'
+								 </th>
 							</tr>
 						</tfoot>
 					</table>
@@ -79,7 +86,7 @@ function generatePickupPointTable( $pickupPoints ) {
 						</tbody>
 						<tfoot>
 							<tr>						
-								<th colspan="7" style="text-align: right;"> <a href="http://plugins56.com/woocommerce-3.4/wp-admin/plugins.php?page=samedaycourier-services/refreshServices"> '. __("Refresh pickup points") .' </a> </th>
+								<th colspan="7" style="text-align: right;"> <a href=""> '. __("Refresh pickup points") .' </a> </th>
 							</tr>
 						</tfoot>
 					</table>
