@@ -32,6 +32,8 @@ require_once (plugin_basename('sql/sameday_drop_db.php'));
 require_once (plugin_basename('sql/sameday_query_db.php'));
 require_once (plugin_basename('classes/samedaycourier-services.php'));
 require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
+require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
+require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
 
 
 function samedaycourier_shipping_method() {
@@ -162,6 +164,7 @@ function samedaycourier_shipping_method() {
 	}
 }
 
+// Shipping Method init.
 add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 
 function add_samedaycourier_shipping_method( $methods ) {
@@ -172,9 +175,11 @@ function add_samedaycourier_shipping_method( $methods ) {
 
 add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method');
 
+// Plugin settings.
 add_action('plugins_loaded', function () {
 	SamedayCourierServiceInstance::get_instance();
-} );
+	SamedayCourierPickupPointInstance::get_instance();
+});
 
 function refreshServices() {
 	$samedayOption = get_option('woocommerce_samedaycourier_settings');
