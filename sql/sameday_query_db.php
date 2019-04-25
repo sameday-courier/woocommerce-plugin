@@ -115,3 +115,10 @@ function updatePickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $picku
 
 	$wpdb->update($table, $data, $where);
 }
+
+function deletePickupPoint($id) {
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_pickup_point';
+	$wpdb->delete($table, array('id' => $id));
+}
