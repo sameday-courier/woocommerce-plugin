@@ -29,7 +29,6 @@ require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') )
 require_once ( plugin_basename('classes/samedaycourier-api.php') );
 require_once ( plugin_basename('sql/sameday_create_db.php') );
 require_once ( plugin_basename('sql/sameday_drop_db.php') );
-require_once ( plugin_basename('sql/sameday_query_db.php') );
 require_once ( plugin_basename('classes/samedaycourier-services.php') );
 require_once ( plugin_basename('classes/samedaycourier-service-instance.php') );
 
