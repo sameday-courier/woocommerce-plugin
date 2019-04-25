@@ -20,17 +20,18 @@ if (! defined( 'ABSPATH' ) ) {
 /**
  * Check if WooCommerce plugin is enabled
  */
-if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), '') ) {
+if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), '')) {
 	exit;
 }
 
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-require_once ( plugin_basename('lib/sameday-courier/src/Sameday/autoload.php') );
-require_once ( plugin_basename('classes/samedaycourier-api.php') );
-require_once ( plugin_basename('sql/sameday_create_db.php') );
-require_once ( plugin_basename('sql/sameday_drop_db.php') );
-require_once ( plugin_basename('classes/samedaycourier-services.php') );
-require_once ( plugin_basename('classes/samedaycourier-service-instance.php') );
+require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
+require_once (plugin_basename('lib/sameday-courier/src/Sameday/autoload.php'));
+require_once (plugin_basename('classes/samedaycourier-api.php'));
+require_once (plugin_basename('sql/sameday_create_db.php'));
+require_once (plugin_basename('sql/sameday_drop_db.php'));
+require_once (plugin_basename('sql/sameday_query_db.php'));
+require_once (plugin_basename('classes/samedaycourier-services.php'));
+require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
 
 
 function samedaycourier_shipping_method() {
@@ -161,7 +162,7 @@ function samedaycourier_shipping_method() {
 	}
 }
 
-add_action( 'woocommerce_shipping_init', 'samedaycourier_shipping_method' );
+add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 
 function add_samedaycourier_shipping_method( $methods ) {
 	$methods['samedaycourier'] = 'SamedayCourier_Shipping_Method';
@@ -169,14 +170,71 @@ function add_samedaycourier_shipping_method( $methods ) {
 	return $methods;
 }
 
-add_filter( 'woocommerce_shipping_methods', 'add_samedaycourier_shipping_method' );
+add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method');
 
-add_action( 'plugins_loaded', function () {
+add_action('plugins_loaded', function () {
 	SamedayCourierServiceInstance::get_instance();
 } );
 
 function refreshServices() {
-	print 'Begin refresh services';
+	$samedayOption = get_option('woocommerce_samedaycourier_settings');
+	if ( !isset($samedayOption) && empty($samedayOption) ) {
+		wp_redirect(admin_url() . '/admin.php?page=sameday_services');
+	}
+
+	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
+
+	$sameday = new Sameday\Sameday(Api::initClient(
+		$samedayOption['user'],
+		$samedayOption['password'],
+		$is_testing
+	));
+
+	$remoteServices = [];
+	$page = 1;
+
+	do {
+		$request = new \Sameday\Requests\SamedayGetServicesRequest();
+		$request->setPage($page++);
+
+		try {
+			$services = $sameday->getServices($request);
+		} catch (\Sameday\Exceptions\SamedayAuthenticationException $e) {
+			wp_redirect(admin_url() . '/admin.php?page=sameday_services');
+		}
+
+		foreach ($services->getServices() as $serviceObject) {
+			$service = getServiceSameday($serviceObject->getId(), $is_testing);
+			if (! $service) {
+				// Service not found, add it.
+				addService($serviceObject, $is_testing);
+			}
+
+			// Save as current sameday service.
+			$remoteServices[] = $serviceObject->getId();
+		}
+
+	} while ($page <= $services->getPages());
+
+	// Build array of local services.
+	$localServices = array_map(
+		function ($service) {
+			return array(
+				'id' => $service->id,
+				'sameday_id' => $service->sameday_id
+			);
+		},
+		getServices($is_testing)
+	);
+
+	// Delete local services that aren't present in remote services anymore.
+	foreach ($localServices as $localService) {
+		if (!in_array($localService['sameday_id'], $remoteServices)) {
+			deleteService($localService['id']);
+		}
+	}
+
+	wp_redirect(admin_url() . '/admin.php?page=sameday_services');
 }
 
 add_action('admin_post_refresh_services', 'refreshServices' );
