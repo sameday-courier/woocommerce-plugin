@@ -77,9 +77,30 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 */
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
+			case 'contactPersons':
+				return $this->parseContactPersons(unserialize($item[ $column_name ]));
+					break;
+			case 'default_pickup_point':
+				return $item[ $column_name ] == true ? '<strong> Yes </strong>' : 'No';
+					break;
 			default:
 				return $item[ $column_name ];
 		}
+	}
+
+	/**
+	 * @param $contactPersons
+	 *
+	 * @return string
+	 */
+	private function  parseContactPersons($contactPersons)
+	{
+		$persons = array();
+		foreach ($contactPersons as $contact_person) {
+			$persons[] = "<strong> {$contact_person->getName()} </strong><br/> " . " ( {$contact_person->getPhone()} ) ";
+		}
+
+		return implode(',', $persons);
 	}
 
 	/**
@@ -89,12 +110,12 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 */
 	function get_columns() {
 		$columns = [
-			'sameday_id'    => __( 'Sameday ID', 'samedaycourier' ),
+			'sameday_id' => __( 'Sameday ID', 'samedaycourier' ),
 			'sameday_alias' => __( 'Name', 'samedaycourier' ),
-			'city'    => __( 'County', 'samedaycourier' ),
-			'address'    => __( 'Address', 'samedaycourier' ),
-			'contactPersons'    => __( 'Contact Persons', 'samedaycourier' ),
-			'default_pickup_point'    => __( 'Is default ', 'samedaycourier' ),
+			'city' => __( 'County', 'samedaycourier' ),
+			'address' => __( 'Address', 'samedaycourier' ),
+			'contactPersons' => __( 'Contact Persons', 'samedaycourier' ),
+			'default_pickup_point' => __( 'Is default ', 'samedaycourier' ),
 		];
 
 		return $columns;
@@ -108,7 +129,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	public function get_sortable_columns()
 	{
 		$sortable_columns = array(
-			'sameday_id' => array( 'sameday_id', true )
+			'sameday_id' => array('sameday_id', true)
 		);
 
 		return $sortable_columns;
