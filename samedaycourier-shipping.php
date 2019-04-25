@@ -32,6 +32,8 @@ require_once (plugin_basename('sql/sameday_drop_db.php'));
 require_once (plugin_basename('sql/sameday_query_db.php'));
 require_once (plugin_basename('classes/samedaycourier-services.php'));
 require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
+require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
+require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
 
 
 function samedaycourier_shipping_method() {
@@ -162,6 +164,7 @@ function samedaycourier_shipping_method() {
 	}
 }
 
+// Shipping Method init.
 add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 
 function add_samedaycourier_shipping_method( $methods ) {
@@ -172,9 +175,11 @@ function add_samedaycourier_shipping_method( $methods ) {
 
 add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method');
 
+// Plugin settings.
 add_action('plugins_loaded', function () {
 	SamedayCourierServiceInstance::get_instance();
-} );
+	SamedayCourierPickupPointInstance::get_instance();
+});
 
 function refreshServices() {
 	$samedayOption = get_option('woocommerce_samedaycourier_settings');
@@ -184,7 +189,7 @@ function refreshServices() {
 
 	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
 
-	$sameday = new Sameday\Sameday(Api::initClient(
+	$sameday = new \Sameday\Sameday(Api::initClient(
 		$samedayOption['user'],
 		$samedayOption['password'],
 		$is_testing
@@ -237,7 +242,68 @@ function refreshServices() {
 	wp_redirect(admin_url() . '/admin.php?page=sameday_services');
 }
 
+function refreshPickupPoints() {
+	$samedayOption = get_option('woocommerce_samedaycourier_settings');
+	if ( !isset($samedayOption) && empty($samedayOption) ) {
+		wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+	}
+
+	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
+
+	$sameday = new \Sameday\Sameday(Api::initClient(
+		$samedayOption['user'],
+		$samedayOption['password'],
+		$is_testing
+	));
+
+	$remotePickupPoints = [];
+	$page = 1;
+	do {
+		$request = new Sameday\Requests\SamedayGetPickupPointsRequest();
+		$request->setPage($page++);
+		try {
+			$pickUpPoints = $sameday->getPickupPoints($request);
+		} catch (\Sameday\Exceptions\SamedayAuthenticationException $e) {
+			wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+		}
+
+		foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
+			$pickupPoint = getPickupPointSameday($pickupPointObject->getId(), $is_testing);
+			if (!$pickupPoint) {
+				// Pickup point not found, add it.
+				addPickupPoint($pickupPointObject, $is_testing);
+			} else {
+				updatePickupPoint($pickupPointObject, $is_testing);
+			}
+
+			// Save as current pickup points.
+			$remotePickupPoints[] = $pickupPointObject->getId();
+		}
+	} while ($page <= $pickUpPoints->getPages());
+
+	// Build array of local pickup points.
+	$localPickupPoints = array_map(
+		function ($pickupPoint) {
+			return array(
+				'id' => $pickupPoint->id,
+				'sameday_id' => $pickupPoint->sameday_id
+			);
+		},
+		getPickupPoints($is_testing)
+	);
+
+	// Delete local pickup points that aren't present in remote pickup points anymore.
+	foreach ($localPickupPoints as $localPickupPoint) {
+		if (!in_array($localPickupPoint['sameday_id'], $remotePickupPoints)) {
+			deletePickupPoint($localPickupPoint['id']);
+		}
+	}
+
+	wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+}
+
 add_action('admin_post_refresh_services', 'refreshServices' );
+add_action('admin_post_refresh_pickup_points', 'refreshPickupPoints');
 
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
