@@ -160,6 +160,17 @@ function samedaycourier_shipping_method() {
 					}
 				}
 			}
+
+			public function admin_options()
+			{
+				$serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
+				$pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
+				$buttons = '<a href="'.$serviceUrl.'" class="button-primary"> Services </a> <a href="'.$pickupPointUrl.'" class="button-primary"> Pickup-point </a>';
+
+				$adminOptins = parent::admin_options();
+
+				echo $adminOptins . $buttons;
+			}
 		}
 	}
 }
@@ -184,7 +195,7 @@ add_action('plugins_loaded', function () {
 function refreshServices() {
 	$samedayOption = get_option('woocommerce_samedaycourier_settings');
 	if ( !isset($samedayOption) && empty($samedayOption) ) {
-		wp_redirect(admin_url() . '/admin.php?page=sameday_services');
+		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 	}
 
 	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
@@ -205,7 +216,7 @@ function refreshServices() {
 		try {
 			$services = $sameday->getServices($request);
 		} catch (\Sameday\Exceptions\SamedayAuthenticationException $e) {
-			wp_redirect(admin_url() . '/admin.php?page=sameday_services');
+			wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 		}
 
 		foreach ($services->getServices() as $serviceObject) {
@@ -239,7 +250,7 @@ function refreshServices() {
 		}
 	}
 
-	wp_redirect(admin_url() . '/admin.php?page=sameday_services');
+	wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 }
 
 function refreshPickupPoints() {
@@ -299,7 +310,7 @@ function refreshPickupPoints() {
 		}
 	}
 
-	wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+	wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 }
 
 add_action('admin_post_refresh_services', 'refreshServices' );

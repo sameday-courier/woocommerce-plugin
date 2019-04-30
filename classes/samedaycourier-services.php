@@ -98,7 +98,7 @@ class SamedayCourierService extends WP_List_Table
 
 	function column_edit($item) {
 		$actions = array(
-			'edit' => sprintf('<a href="?page=%s&action=%s&id=%s">Edit</a>',$_REQUEST['page'],'edit',$item['id']),
+			'edit' => sprintf('<a href="?post_type=page&page=%s&action=%s&id=%s">Edit</a>',$_REQUEST['page'],'edit', $item['id']),
 		);
 
 		$args = '<span class="dashicons dashicons-edit"></span>';

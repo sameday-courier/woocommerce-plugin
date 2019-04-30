@@ -22,13 +22,12 @@ class SamedayCourierPickupPointInstance
 
 	public function plugin_menu()
 	{
-		$hook = add_menu_page(
+		$hook = add_pages_page(
 			'SamedayCourier PickupPoint Table',
 			'Sameday Pickup-points',
 			'manage_options',
 			'sameday_pickup_points',
-			[ $this, 'plugin_settings_page' ],
-			'dashicons-admin-site'
+			[ $this, 'plugin_settings_page' ]
 		);
 
 		add_action("load-$hook", [ $this, 'screen_option' ]);

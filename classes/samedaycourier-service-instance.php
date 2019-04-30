@@ -22,13 +22,12 @@ class SamedayCourierServiceInstance
 
 	public function plugin_menu()
 	{
-		$hook = add_menu_page(
+		$hook = add_pages_page(
 			'SamedayCourier Service Table',
 			'Sameday Services',
 			'manage_options',
 			'sameday_services',
-			[ $this, 'plugin_settings_page' ],
-			'dashicons-admin-tools'
+			[ $this, 'plugin_settings_page' ]
 		);
 
 		add_action( "load-$hook", [ $this, 'screen_option' ] );
@@ -61,6 +60,7 @@ class SamedayCourierServiceInstance
                         </div>
                         <?php } else { ?>
                         <div> Form Edit </div>
+                        <?php } {?>
                     </div>
                 </div>
             </div>
