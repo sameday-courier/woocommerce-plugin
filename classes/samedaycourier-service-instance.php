@@ -22,7 +22,7 @@ class SamedayCourierServiceInstance
 
 	public function plugin_menu()
 	{
-		$hook = add_menu_page(
+		$hook = add_pages_page(
 			'SamedayCourier Service Table',
 			'Sameday Services',
 			'manage_options',
