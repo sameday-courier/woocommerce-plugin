@@ -40,7 +40,6 @@ class SamedayCourierPickupPointInstance
 	public function plugin_settings_page() {
 		?>
 		<div class="wrap">
-
 			<div id="poststuff">
 				<div id="post-body" class="metabox-holder columns-3">
 					<div id="post-body-content">

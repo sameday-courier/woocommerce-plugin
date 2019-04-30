@@ -96,6 +96,16 @@ class SamedayCourierService extends WP_List_Table
 		}
 	}
 
+	function column_edit($item) {
+		$actions = array(
+			'edit' => sprintf('<a href="?page=%s&action=%s&id=%s">Edit</a>',$_REQUEST['page'],'edit',$item['id']),
+		);
+
+		$args = '<span class="dashicons dashicons-edit"></span>';
+
+		return sprintf('%1$s %2$s', $args, $this->row_actions($actions));
+	}
+
 	/**
 	 *  Associative array of columns
 	 *
@@ -109,6 +119,7 @@ class SamedayCourierService extends WP_List_Table
 			'price'    => __( 'Price', 'samedaycourier' ),
 			'price_free'    => __( 'Price free', 'samedaycourier' ),
 			'status'    => __( 'Status', 'samedaycourier' ),
+			'edit' => __('Edit', 'samedaycourier')
 		];
 
 		return $columns;

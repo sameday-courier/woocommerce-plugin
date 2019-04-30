@@ -39,30 +39,33 @@ class SamedayCourierServiceInstance
 	 */
 	public function plugin_settings_page() {
 		?>
-		<div class="wrap">
+        <div class="wrap">
 
-			<div id="poststuff">
-				<div id="post-body" class="metabox-holder columns-3">
-					<div id="post-body-content">
-						<div class="meta-box-sortables ui-sortable">
-							<div>
-								<form action="<?php echo admin_url('admin-post.php') ?>" method="post">
-									<input type="hidden" name="action" value="refresh_services">
-									<input type="submit" class="button-primary" value="Refresh Services">
-								</form>
-							</div>
-							<form method="post">
+            <div id="poststuff">
+                <div id="post-body" class="metabox-holder columns-3">
+                    <div id="post-body-content">
+                        <?php if($_GET['action'] !== 'edit') { ?>
+                        <div class="meta-box-sortables ui-sortable">
+                            <div>
+                                <form action="<?php echo admin_url('admin-post.php') ?>" method="post">
+                                    <input type="hidden" name="action" value="refresh_services">
+                                    <input type="submit" class="button-primary" value="Refresh Services">
+                                </form>
+                            </div>
+                            <form method="post">
 								<?php
-								$this->services_obj->prepare_items();
-								$this->services_obj->display();
+                                    $this->services_obj->prepare_items();
+                                    $this->services_obj->display();
 								?>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
+                            </form>
+                        </div>
+                        <?php } else { ?>
+                        <div> Form Edit </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<?php }
 	}
 
 	/**

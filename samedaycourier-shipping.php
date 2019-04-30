@@ -155,10 +155,10 @@ function samedaycourier_shipping_method() {
 
 					if ( $sameday->login() ) {
 						return parent::process_admin_options();
+					} else {
+						WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
 					}
 				}
-
-				return false;
 			}
 		}
 	}
