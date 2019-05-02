@@ -42,6 +42,13 @@ function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing
 	$wpdb->insert($table, $data, $format);
 }
 
+function updateService($service) {
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_service';
+	$wpdb->update($table, $service, array('id' => $service['id']));
+}
+
 function deleteService($id) {
 	global $wpdb;
 

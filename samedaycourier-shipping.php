@@ -193,13 +193,15 @@ add_action('plugins_loaded', function () {
 });
 
 add_action('admin_post_refresh_services', function () {
-		return HelperClass::refreshServices();
-	}
-);
+	return HelperClass::refreshServices();
+});
 add_action('admin_post_refresh_pickup_points', function () {
-		return HelperClass::refreshPickupPoints();
-	}
-);
+	return HelperClass::refreshPickupPoints();
+});
+
+add_action('admin_post_edit_service', function() {
+	return HelperClass::editService();
+});
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');

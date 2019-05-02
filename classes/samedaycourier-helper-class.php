@@ -128,4 +128,59 @@ class HelperClass
 
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 	}
+
+	public static function editService()
+	{
+		if (! $_POST['action'] === 'edit_service') {
+			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+		}
+
+		$post_fields = array(
+			'id' => array(
+				'required' => true,
+				'value' => $_POST['samedaycourier-service-id']
+			),
+			'name' => array(
+				'required' => true,
+				'value' =>  $_POST['samedaycourier-service-name']
+			),
+			'price' => array(
+				'required' => true,
+				'value' => $_POST['samedaycourier-price']
+			),
+			'price_free' => array(
+				'required' => false,
+				'value' => $_POST['samedaycourier-free-delivery-price'] ?: null
+			),
+			'status' => array(
+				'required' => false,
+				'value' => $_POST['samedaycourier-status']
+			)
+		);
+
+		$errors = array();
+		foreach ($post_fields as $field => $field_value) {
+			if ($field_value['required'] && !strlen($field_value['value'])) {
+				$errors[] = "The {$field} must not be empty";
+			}
+		}
+
+		if (!empty($errors)) {
+			WC_Admin_Settings::add_error(implode("<br/>", $errors));
+			WC_Admin_Settings::show_messages();
+			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+		}
+
+		$service = array(
+			'id' => (int) $post_fields['id']['value'],
+			'name' => $post_fields['name']['value'],
+			'price' => $post_fields['price']['value'],
+			'price_free' => $post_fields['price_free']['value'],
+			'status' => $post_fields['status']['value']
+		);
+
+		updateService($service);
+
+		wp_redirect(admin_url() . "edit.php?post_type=page&page=sameday_services");
+	}
 }

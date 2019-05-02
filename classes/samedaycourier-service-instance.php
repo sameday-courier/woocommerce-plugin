@@ -107,9 +107,11 @@ class SamedayCourierServiceInstance
         return
 
         '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
-        <form name="samedaycourier-service-edit" method="POST" onsubmit="" action="">
+        <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
+            <input type="hidden" name="action" value="edit_service">
             <table class="form-table">
                 <tbody>
+                    <input type="hidden" name="samedaycourier-service-id" value="'.$id.'">
                     <tr valign="top">
                         <th scope="row" class="titledesc"> 
                             <label for="samedaycourier-service-name"> <span style="color: #ff2222"> * </span> Service Name  </label>
@@ -128,7 +130,7 @@ class SamedayCourierServiceInstance
                     </tr>
                     <tr valign="top">
                         <th scope="row"> 
-                            <label for="samedaycourier-free-delivery-price"> <span style="color: #ff2222"> * </span> Free delivery price  </label>
+                            <label for="samedaycourier-free-delivery-price"> Free delivery price  </label>
                         </th> 
                         <td class="forminp forminp-text">
                             <input type="number" name="samedaycourier-free-delivery-price" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
