@@ -59,7 +59,7 @@ class SamedayCourierServiceInstance
                             </form>
                         </div>
                         <?php } else { ?>
-                        <div> Form Edit </div>
+                        <div> <?php echo $this->createServiceForm( $_GET['id'] ); ?> </div>
                         <?php } {?>
                     </div>
                 </div>
@@ -67,6 +67,91 @@ class SamedayCourierServiceInstance
         </div>
 		<?php }
 	}
+
+	private function getStatuses()
+	{
+		return array(
+			array(
+				'value' => 0,
+				'text' => __('Disabled')
+			),
+			array(
+				'value' => 1,
+				'text' => __('Always')
+			),
+			array(
+				'value' => 2,
+				'text' => __('Interval')
+			)
+		);
+	}
+
+	/**
+	 * @param $id
+	 */
+	private function createServiceForm($id)
+    {
+        $service = getService($id);
+
+        if (! $service) {
+	        WC_Admin_Settings::add_error('No service available !');
+	        WC_Admin_Settings::show_messages(); exit;
+        }
+
+	    $statuses = '';
+        foreach ($this->getStatuses() as $status) {
+            $checked = $service->status == $status['value'] ? 'selected' : '';
+	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
+        }
+
+        return
+
+        '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
+        <form name="samedaycourier-service-edit" method="POST" onsubmit="" action="">
+            <table class="form-table">
+                <tbody>
+                    <tr valign="top">
+                        <th scope="row" class="titledesc"> 
+                            <label for="samedaycourier-service-name"> <span style="color: #ff2222"> * </span> Service Name  </label>
+                        </th> 
+                        <td class="forminp forminp-text">
+                            <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" id="samedaycourier-service-name" value="'.$service->name.'">
+                         </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"> 
+                            <label for="samedaycourier-price"> <span style="color: #ff2222"> * </span> Price  </label>
+                        </th> 
+                        <td class="forminp forminp-text">
+                            <input type="number" name="samedaycourier-price" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.$service->price.'"> 
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"> 
+                            <label for="samedaycourier-free-delivery-price"> <span style="color: #ff2222"> * </span> Free delivery price  </label>
+                        </th> 
+                        <td class="forminp forminp-text">
+                            <input type="number" name="samedaycourier-free-delivery-price" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
+                        </td>
+                    </tr>
+                   <tr valign="top">
+                        <th scope="row"> 
+                            <label for="samedaycourier-status"> <span style="color: #ff2222"> * </span> Status </label>
+                        </th> 
+                        <td class="forminp forminp-text">
+                            <select name="samedaycourier-status" style="width: 297px; height: 36px;" id="samedaycourier-status">
+                                '.$statuses.'
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><button class="button-primary" type="submit" value="Submit" > Edit Service </button> </th>
+                    </tr>
+                 </tbody>
+            </table>
+        </form>
+        ';
+    }
 
 	/**
 	 * Screen options

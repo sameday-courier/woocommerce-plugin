@@ -31,7 +31,7 @@ class HelperClass
 			try {
 				$services = $sameday->getServices($request);
 			} catch (\Sameday\Exceptions\SamedayAuthenticationException $e) {
-				wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+				wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 			}
 
 			foreach ($services->getServices() as $serviceObject) {
