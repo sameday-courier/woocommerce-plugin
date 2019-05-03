@@ -165,22 +165,18 @@ class HelperClass
 			}
 		}
 
-		if (!empty($errors)) {
-			WC_Admin_Settings::add_error(implode("<br/>", $errors));
-			WC_Admin_Settings::show_messages();
-			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+		if (empty($errors)) {
+			$service = array(
+				'id' => (int) $post_fields['id']['value'],
+				'name' => $post_fields['name']['value'],
+				'price' => $post_fields['price']['value'],
+				'price_free' => $post_fields['price_free']['value'],
+				'status' => $post_fields['status']['value']
+			);
+
+			updateService($service);
 		}
 
-		$service = array(
-			'id' => (int) $post_fields['id']['value'],
-			'name' => $post_fields['name']['value'],
-			'price' => $post_fields['price']['value'],
-			'price_free' => $post_fields['price_free']['value'],
-			'status' => $post_fields['status']['value']
-		);
-
-		updateService($service);
-
-		wp_redirect(admin_url() . "edit.php?post_type=page&page=sameday_services");
+		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
 	}
 }
