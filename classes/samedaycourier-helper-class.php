@@ -6,6 +6,11 @@ if (! defined( 'ABSPATH' ) ) {
 
 class HelperClass
 {
+	/**
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public static function refreshServices()
 	{
 		$samedayOption = get_option('woocommerce_samedaycourier_settings');
@@ -31,7 +36,7 @@ class HelperClass
 			try {
 				$services = $sameday->getServices($request);
 			} catch (\Sameday\Exceptions\SamedayAuthenticationException $e) {
-				wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+				wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 			}
 
 			foreach ($services->getServices() as $serviceObject) {
@@ -68,6 +73,11 @@ class HelperClass
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 	}
 
+	/**
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public static function refreshPickupPoints()
 	{
 		$samedayOption = get_option('woocommerce_samedaycourier_settings');
@@ -127,5 +137,129 @@ class HelperClass
 		}
 
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getDays()
+	{
+		return array(
+			array(
+				'text' => __('Monday'),
+			),
+			array(
+				'text' => __('Tuesday')
+			),
+			array(
+				'text' => __('Wednesday')
+			),
+			array(
+				'text' => __('Thursday')
+			),
+			array(
+				'text' => __('Friday')
+			),
+			array(
+				'text' => __('Saturday')
+			),
+			array(
+				'text' => __('Sunday'),
+			),
+		);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function editService()
+	{
+		if (! $_POST['action'] === 'edit_service') {
+			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+		}
+
+		$post_fields = array(
+			'id' => array(
+				'required' => true,
+				'value' => $_POST['samedaycourier-service-id']
+			),
+			'name' => array(
+				'required' => true,
+				'value' =>  $_POST['samedaycourier-service-name']
+			),
+			'price' => array(
+				'required' => true,
+				'value' => $_POST['samedaycourier-price']
+			),
+			'price_free' => array(
+				'required' => false,
+				'value' => $_POST['samedaycourier-free-delivery-price'] ?: null
+			),
+			'status' => array(
+				'required' => false,
+				'value' => $_POST['samedaycourier-status']
+			),
+			'working_days' => array(
+				'required' => false,
+				'value' => $_POST['samedaycourier-working_days']
+			)
+		);
+
+		$errors = array();
+
+		foreach ($post_fields as $field => $field_value) {
+			if ($field_value['required'] && !strlen($field_value['value'])) {
+				$errors[] = __("The {$field} must not be empty");
+			}
+		}
+
+		if ($post_fields['status']['value'] === '2') {
+			$days = self::getDays();
+
+			$workingDays = $post_fields['working_days']['value'];
+
+			$enabledDays = array();
+			foreach ($days as $day) {
+				if (isset($workingDays["order_date_{$day['text']}_enabled"])) {
+					$enabledDays[] = $workingDays["order_date_{$day['text']}_enabled"];
+				}
+			}
+
+			foreach ($enabledDays as $day) {
+				if ((int) $workingDays["order_date_{$day}_h_from"] > (int) $workingDays["order_date_{$day}_h_until"]) {
+					$errors[] = __("Until hour must be greater than from hour");
+				}
+
+				if ( ((int) $workingDays["order_date_{$day}_h_from"] > 23) || ((int) $workingDays["order_date_{$day}_h_until"] > 23)) {
+					$errors[] = __("Hours must be less than 23");
+				}
+
+				if ( ((int) $workingDays["order_date_{$day}_m_from"] > 59) || ((int) $workingDays["order_date_{$day}_m_until"] > 59)) {
+					$errors[] = __("Minutes must be less than 59");
+				}
+
+				if ( ((int) $workingDays["order_date_{$day}_s_from"] > 59) || ((int) $workingDays["order_date_{$day}_s_until"] > 59)) {
+					$errors[] = __("Seconds be less than 59");
+				}
+			}
+		}
+		// End of Validation check.
+
+		if (empty($errors)) {
+			$service = array(
+				'id' => (int) $post_fields['id']['value'],
+				'name' => $post_fields['name']['value'],
+				'price' => $post_fields['price']['value'],
+				'price_free' => $post_fields['price_free']['value'],
+				'status' => $post_fields['status']['value'],
+				'working_days' => serialize($post_fields['working_days']['value'])
+			);
+
+			updateService($service);
+
+			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+		}
+
+		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
 	}
 }

@@ -36,9 +36,7 @@ require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
 
-
 function samedaycourier_shipping_method() {
-
 	if (! class_exists('SamedayCourier_Shipping_Method')) {
 		class SamedayCourier_Shipping_Method extends WC_Shipping_Method
 		{
@@ -194,13 +192,15 @@ add_action('plugins_loaded', function () {
 });
 
 add_action('admin_post_refresh_services', function () {
-		return HelperClass::refreshServices();
-	}
-);
+	return HelperClass::refreshServices();
+});
 add_action('admin_post_refresh_pickup_points', function () {
-		return HelperClass::refreshPickupPoints();
-	}
-);
+	return HelperClass::refreshPickupPoints();
+});
+
+add_action('admin_post_edit_service', function() {
+	return HelperClass::editService();
+});
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
