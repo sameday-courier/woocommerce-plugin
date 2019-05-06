@@ -37,7 +37,6 @@ require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
 
 function samedaycourier_shipping_method() {
-
 	if (! class_exists('SamedayCourier_Shipping_Method')) {
 		class SamedayCourier_Shipping_Method extends WC_Shipping_Method
 		{

@@ -104,12 +104,44 @@ class SamedayCourierServiceInstance
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 
+        $working_days = '';
+        $days = array(
+	        array(
+		        'value' => 0,
+		        'text' => __('Sunday'),
+	        ),
+	        array(
+		        'value' => 1,
+		        'text' => __('Monday'),
+	        ),
+	        array(
+		        'value' => 2,
+		        'text' => __('Tuesday')
+	        ),
+	        array(
+		        'value' => 3,
+		        'text' => __('Wednesday')
+	        ),
+	        array(
+		        'value' => 4,
+		        'text' => __('Thursday')
+	        ),
+	        array(
+		        'value' => 5,
+		        'text' => __('Friday')
+	        ),
+	        array(
+		        'value' => 6,
+		        'text' => __('Saturday')
+	        )
+        );
+
         return
 
         '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
             <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="edit_service">
-                <table class="form-table">
+                <table class="form-table editServiceForm">
                     <tbody>
                         <input type="hidden" name="samedaycourier-service-id" value="'.$id.'">
                         <tr valign="top">
@@ -146,12 +178,39 @@ class SamedayCourierServiceInstance
                                 </select>
                             </td>
                         </tr>
+                        <tr valign="top" class="working_days" style="display: none">
+                            <th scope="row"> 
+                                <label for="samedaycourier-working-days"> '.__('Monday').' </label>
+                            </th> 
+                            <td class="forminp forminp-text">                                
+                                <input type="number" style="width: 90px; height: 36px;" class="hour" placeholder="h" name="working_days[order_date_$day_h_from]" min="0" max="23" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> :
+                                <input type="number" style="width: 90px; height: 36px;" class="minutes" placeholder="m" name="working_days[order_date_$day_m_from]" min="0" max="59" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> :
+                                <input type="number" style="width: 90px; height: 36px;" class="seconds" placeholder="s" name="working_days[order_date_$day_s_from]" min="0" max="59" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> <span><b> From </b></span>
+                                <br/>
+                                <input type="number" style="width: 90px; height: 36px;" class="hour" placeholder="h" name="working_days[order_date_$day_h_until]" min="0" max="23" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> :
+                                <input type="number" style="width: 90px; height: 36px;" class="minutes" placeholder="m" name="working_days[order_date_$day_m_until]" min="0" max="59" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> :
+                                <input type="number" style="width: 90px; height: 36px;" class="seconds" placeholder="s" name="working_days[order_date_$day_s_until]" min="0" max="59" step="1" value="" pattern="([01]?[0-9]{1}|2[0-3]{1})"> <span><b> Until </b></span>
+                            </td>
+                        </tr>
                         <tr>
                             <th><button class="button-primary" type="submit" value="Submit" > Edit Service </button> </th>
                         </tr>
                      </tbody>
                 </table>
             </form>
+            <script>
+                jQuery(document).ready(function($) {
+                    $(document).on("change", "#samedaycourier-status", function() { 
+                        $("table.editServiceForm tr").filter(".working_days").hide();
+                        if (parseInt($("#samedaycourier-status").val()) == 2) {                            
+                            $("table.editServiceForm tr").filter(".working_days").show();
+                        }                                         
+                    });
+                    
+                    $("#samedaycourier-status").trigger("change");
+                });
+                
+            </script>
         ';
     }
 

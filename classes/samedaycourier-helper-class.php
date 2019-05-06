@@ -6,6 +6,11 @@ if (! defined( 'ABSPATH' ) ) {
 
 class HelperClass
 {
+	/**
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public static function refreshServices()
 	{
 		$samedayOption = get_option('woocommerce_samedaycourier_settings');
@@ -68,6 +73,11 @@ class HelperClass
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 	}
 
+	/**
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public static function refreshPickupPoints()
 	{
 		$samedayOption = get_option('woocommerce_samedaycourier_settings');
@@ -129,6 +139,9 @@ class HelperClass
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 	}
 
+	/**
+	 * @return bool
+	 */
 	public static function editService()
 	{
 		if (! $_POST['action'] === 'edit_service') {
