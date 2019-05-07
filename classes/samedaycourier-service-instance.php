@@ -105,11 +105,11 @@ class SamedayCourierServiceInstance
         }
 
         $days = \HelperClass::getDays();
+        sort($days);
 
 	    $intervals = '';
 	    foreach ($days as $day) {
 	        $working_days = unserialize($service->working_days);
-//	        var_dump($working_days); exit;
 
 		    $hFrom = $working_days["order_date_{$day['text']}_h_from"];
 		    $mFrom = $working_days["order_date_{$day['text']}_m_from"];
