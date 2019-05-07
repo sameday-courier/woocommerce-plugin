@@ -79,11 +79,15 @@ function samedaycourier_shipping_method() {
 						}
 
 						if ($useEstimatedCost) {
-							$price = $this->getEstimatedCost();
+							$estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
+
+							if (isset($estimatedCost)) {
+								$price = $estimatedCost;
+							}
 						}
 
 						$rate = array(
-							'id' => $service->sameday_id,
+							'id' => $this->id . "_" . $service->sameday_id,
 							'label' => $service->name,
 							'cost' => $price
 						);
@@ -94,11 +98,60 @@ function samedaycourier_shipping_method() {
 			}
 
 			/**
-			 * @return float
+			 * @param $address
+			 * @param $serviceId
+			 *
+			 * @return float|null
 			 */
-			private function getEstimatedCost()
+			private function getEstimatedCost($address, $serviceId)
 			{
-				return round(20, 2);
+				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
+				$pickupPointId = getDefaultPickupPointId($is_testing);
+				$weight = WC()->cart->get_cart_contents_weight();
+				$state = html_entity_decode(WC()->countries->get_states()[$address['country']][$address['state']]);
+
+				$estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
+					$pickupPointId,
+					null,
+					new Sameday\Objects\Types\PackageType(
+						Sameday\Objects\Types\PackageType::PARCEL
+					),
+					[new \Sameday\Objects\ParcelDimensionsObject($weight)],
+					$serviceId,
+					new Sameday\Objects\Types\AwbPaymentType(
+						Sameday\Objects\Types\AwbPaymentType::CLIENT
+					),
+					new Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
+						ucwords(strtolower($address['city'])) !== 'Bucuresti' ? $address['city'] : 'Sector 1',
+						$state,
+						ltrim($address['address']) . " " . $address['address_2'],
+						null,
+						null,
+						null,
+						null
+					),
+					0,
+					WC()->cart->subtotal,
+					null,
+					array()
+				);
+
+				$sameday =  new Sameday\Sameday(
+					Api::initClient(
+						$this->settings['user'],
+						$this->settings['password'],
+						$is_testing
+					)
+				);
+
+				try {
+					$estimation = $sameday->postAwbEstimation($estimateCostRequest);
+					$cost = $estimation->getCost();
+
+					return $cost;
+				} catch (\Sameday\Exceptions\SamedayBadRequestException $exception) {
+					return null;
+				}
 			}
 
 			private function getAvailableServices()
