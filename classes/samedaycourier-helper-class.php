@@ -146,6 +146,9 @@ class HelperClass
 	{
 		return array(
 			array(
+				'text' => __('Sunday'),
+			),
+			array(
 				'text' => __('Monday'),
 			),
 			array(
@@ -162,10 +165,7 @@ class HelperClass
 			),
 			array(
 				'text' => __('Saturday')
-			),
-			array(
-				'text' => __('Sunday'),
-			),
+			)
 		);
 	}
 

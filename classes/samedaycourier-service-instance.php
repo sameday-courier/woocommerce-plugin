@@ -108,17 +108,18 @@ class SamedayCourierServiceInstance
 
 	    $intervals = '';
 	    foreach ($days as $day) {
-	        $workign_days = unserialize($service->working_days);
+	        $working_days = unserialize($service->working_days);
+//	        var_dump($working_days); exit;
 
-		    $hFrom = $workign_days["order_date_{$day['text']}_h_from"];
-		    $mFrom = $workign_days["order_date_{$day['text']}_m_from"];
-		    $sFrom = $workign_days["order_date_{$day['text']}_s_from"];
+		    $hFrom = $working_days["order_date_{$day['text']}_h_from"];
+		    $mFrom = $working_days["order_date_{$day['text']}_m_from"];
+		    $sFrom = $working_days["order_date_{$day['text']}_s_from"];
 
-		    $hUntil = $workign_days["order_date_{$day['text']}_h_until"];
-		    $mUntil = $workign_days["order_date_{$day['text']}_m_until"];
-		    $sUntil = $workign_days["order_date_{$day['text']}_s_until"];
+		    $hUntil = $working_days["order_date_{$day['text']}_h_until"];
+		    $mUntil = $working_days["order_date_{$day['text']}_m_until"];
+		    $sUntil = $working_days["order_date_{$day['text']}_s_until"];
 
-		    $checked = isset($workign_days["order_date_{$day['text']}_enabled"]) ? "checked" : "";
+		    $checked = isset($working_days["order_date_{$day['text']}_enabled"]) ? "checked" : "";
 
 		    $intervals .= '
 	            <tr valign="top" class="working_days" style="display: none">
@@ -215,10 +216,8 @@ class SamedayCourierServiceInstance
                             $(this).closest("tr").children()[1].children[6].value = "59"  
                             $(this).closest("tr").children()[1].children[7].value = "59"                      
                         } 
-                    });                    
-                    
-                });
-                
+                    });                        
+                });                
             </script>
         ';
     }

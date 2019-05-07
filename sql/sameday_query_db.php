@@ -1,5 +1,14 @@
 <?php
 
+function getAvailableServices($is_testing) {
+	global $wpdb;
+
+	$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND status>0";
+	$result = $wpdb->get_results($query);
+
+	return $result;
+}
+
 function getServices($is_testing) {
 	global $wpdb;
 

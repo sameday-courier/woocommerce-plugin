@@ -58,29 +58,60 @@ function samedaycourier_shipping_method() {
 				$this->init();
 			}
 
+			/**
+			 * @param array $package
+			 */
 			public function calculate_shipping( $package = array() )
 			{
-				$rate_1 = array(
-					'id' => $this->id . '_1',
-					'label' => $this->title . 1,
-					'cost' => 19
-				);
-
-				$rate_2 = array(
-					'id' => $this->id . '_2',
-					'label' => $this->title . 2,
-					'cost' => 30
-				);
-
 				if ($this->settings['enabled'] === 'no') {
 					return;
 				}
 
-				// $availableServices = $this->getAvailableSerives();
-				// foreach ( $availableServices as $service ) { $this->add_rate( $rate_1 ); }
+				$availableServices = $this->getAvailableServices();
+				if (!empty($availableServices)) {
+					foreach ( $availableServices as $service ) {
+						$rate = array(
+							'id' => $service->sameday_id,
+							'label' => $service->name,
+							'cost' => $service->price
+						);
 
-				$this->add_rate( $rate_1 );
-				$this->add_rate( $rate_2 );
+						$this->add_rate( $rate );
+					}
+				}
+			}
+
+			private function getAvailableServices()
+			{
+				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
+				$services = getAvailableServices($is_testing);
+
+				$availableServices = array();
+				foreach ($services as $service) {
+					switch ($service->status) {
+						case 1:
+							$availableServices[] = $service;
+							break;
+
+						case 2:
+							$working_days = unserialize($service->working_days);
+
+							$today = \HelperClass::getDays()[date('w')]['text'];
+							$date_from = mktime($working_days["order_date_{$today}_h_from"], $working_days["order_date_{$today}_m_from"], $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
+							$date_to = mktime($working_days["order_date_{$today}_h_until"], $working_days["order_date_{$today}_m_until"], $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
+							$time = time();
+
+							if (!isset($working_days["order_date_{$today}_enabled"]) || $time < $date_from || $time > $date_to) {
+								// Not working on this day, or out of available time period.
+								break;
+							}
+
+							$availableServices[] = $service;
+							break;
+					}
+				}
+
+				return $availableServices;
 			}
 
 			private function init()
