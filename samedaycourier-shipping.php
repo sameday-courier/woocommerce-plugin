@@ -67,18 +67,38 @@ function samedaycourier_shipping_method() {
 					return;
 				}
 
+				$useEstimatedCost = $this->settings['estimated_cost'] === 'yes' ? 1 : 0;
+
 				$availableServices = $this->getAvailableServices();
 				if (!empty($availableServices)) {
 					foreach ( $availableServices as $service ) {
+						$price = $service->price;
+
+						if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
+							$price = 0;
+						}
+
+						if ($useEstimatedCost) {
+							$price = $this->getEstimatedCost();
+						}
+
 						$rate = array(
 							'id' => $service->sameday_id,
 							'label' => $service->name,
-							'cost' => $service->price
+							'cost' => $price
 						);
 
 						$this->add_rate( $rate );
 					}
 				}
+			}
+
+			/**
+			 * @return float
+			 */
+			private function getEstimatedCost()
+			{
+				return round(20, 2);
 			}
 
 			private function getAvailableServices()
