@@ -1,5 +1,18 @@
 <?php
 
+function getDefaultPickupPointId($is_testing) {
+	global $wpdb;
+
+	$query = "SELECT sameday_id FROM " . $wpdb->prefix . 'sameday_pickup_point' . " WHERE default_pickup_point = 1 AND is_testing = {$is_testing}";
+	$result = $wpdb->get_row($query);
+
+	if (empty($result)) {
+		return null;
+	}
+
+	return $result->sameday_id;
+}
+
 function getAvailableServices($is_testing) {
 	global $wpdb;
 
