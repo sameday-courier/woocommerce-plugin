@@ -306,6 +306,23 @@ add_action('admin_post_edit_service', function() {
 	return HelperClass::editService();
 });
 
+add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
+	$url = admin_url() . "post.php?post={$order->get_id()}&action=edit&action=addAwb";
+	echo '<div class="address">
+			<p class="form-field form-field-wide wc-customer-user">
+				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add awb') . ' </a>
+			</p>
+			<p class="form-field form-field-wide wc-customer-user">
+				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add new parcel') . ' </a>
+				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Awb History') . ' </a>
+				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Show as Pdf') . ' </a>
+			</p>
+			<p class="form-field form-field-wide wc-customer-user">
+				<a href="' . $url . '" class="button button-samll">'.  __('Remove Awb') . ' </a>
+			</p>
+          </div>';
+});
+
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
 
