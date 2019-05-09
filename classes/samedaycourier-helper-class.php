@@ -301,8 +301,13 @@ class HelperClass
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
 	}
 
-	public static function postAwb()
+	public static function postAwb($data)
 	{
-		//
+		var_dump($data);
+	}
+
+	public static function deleteAwb($awb)
+	{
+
 	}
 }
