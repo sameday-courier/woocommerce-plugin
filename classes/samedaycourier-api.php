@@ -17,7 +17,7 @@ class Api
 	 * @return \Sameday\SamedayClient
 	 * @throws \Sameday\Exceptions\SamedaySDKException
 	 */
-	static function initClient( $username, $password, $is_testing )
+	static function initClient($username, $password, $is_testing)
 	{
 		return new \Sameday\SamedayClient(
 			$username,
