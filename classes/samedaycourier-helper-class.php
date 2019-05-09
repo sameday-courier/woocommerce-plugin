@@ -142,6 +142,37 @@ class HelperClass
 	/**
 	 * @return array
 	 */
+	public static function getPackageTypeOptions()
+	{
+		return array(
+			array(
+				'name' => __("Parcel"),
+				'value' => \Sameday\Objects\Types\PackageType::PARCEL
+			),
+			array(
+				'name' => __("Envelope"),
+				'value' => \Sameday\Objects\Types\PackageType::ENVELOPE
+			),
+			array(
+				'name' => __("Large package"),
+				'value' => \Sameday\Objects\Types\PackageType::LARGE
+			)
+		);
+	}
+
+	public static function getAwbPaymentTypeOptions()
+	{
+		return array(
+			array(
+				'name' => __("Client"),
+				'value' => \Sameday\Objects\Types\AwbPaymentType::CLIENT
+			)
+		);
+	}
+
+	/**
+	 * @return array
+	 */
 	public static function getDays()
 	{
 		return array(
@@ -268,5 +299,10 @@ class HelperClass
 		}
 
 		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+	}
+
+	public static function postAwb()
+	{
+		//
 	}
 }

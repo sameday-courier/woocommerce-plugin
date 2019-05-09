@@ -141,7 +141,6 @@ class SamedayCourierServiceInstance
         }
 
         return
-
         '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
             <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="edit_service">
