@@ -307,24 +307,27 @@ add_action('admin_post_edit_service', function() {
 });
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
-	$url = admin_url() . "post.php?post={$order->get_id()}&action=edit&action=addAwb";
-	echo '<div class="address">
+	add_thickbox();
+	if ($_GET['action'] === 'edit') {
+		echo '<div id="sameday-shipping-content-add-awb" style="display:none;">
+			
+		</div>
+		<div class="address">
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add awb') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Add awb') . ' </a>
 			</p>
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add new parcel') . ' </a>
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Awb History') . ' </a>
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Show as Pdf') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
 			</p>
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button button-samll">'.  __('Remove Awb') . ' </a>
+				<a href="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </a>
 			</p>
-          </div>';
+		</div>
+		';
+	}
 });
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
-
-
-
