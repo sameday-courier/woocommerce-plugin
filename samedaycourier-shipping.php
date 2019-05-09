@@ -306,6 +306,23 @@ add_action('admin_post_edit_service', function() {
 	return HelperClass::editService();
 });
 
+add_action('admin_post_add_awb', function (){
+	$postFields = $_POST;
+	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
+	$data = array_merge($postFields, $orderDetails->get_data());
+
+	return HelperClass::postAwb($data);
+});
+
+add_action('admin_post_remove-awb', function (){
+	var_dump($_POST);
+});
+
+add_action('admin_head', function () {
+	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
+          <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
+});
+
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
 	add_thickbox();
 	if ($_GET['action'] === 'edit') {
@@ -319,13 +336,14 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-show-pdf" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
 			</p>
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </a>
+				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->id . '">
+			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>
 		</div>';
 
 		$total_weight = 0;
 		foreach ($order->get_items() as $k => $v) {
-			$_product = wc_get_product( $v['product_id']);
+			$_product = wc_get_product($v['product_id']);
 			$qty = $v['quantity'];
 			$weight = $_product->get_weight();
 			$total_weight += round($weight * $qty, 2);
@@ -352,20 +370,17 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			$awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
 		}
 
-//		<form class="addAwbForm" method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
-//		<input type="hidden" name="action" value="add_awb">
-
 		$awbModal = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
 			        	<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
 				        <table>
-		                    <tbody>
-		                        <input type="hidden" name="samedaycourier-service-id" value="'. $order->id. '">
+		                    <tbody>		                    	
+		                        <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->id. '">
 		                         <tr valign="middle">
 		                            <th scope="row" class="titledesc"> 
 		                                <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
 		                             </td>
 		                        </tr>
 		                        <tr valign="middle">
@@ -373,7 +388,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-insurance-value"> ' . __("Insured value") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-insurance-value" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
 		                             </td>
 		                        </tr>
 		                        <tr valign="middle">
@@ -381,7 +396,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-weight"> ' . __("Package Weight") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-weight" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-weight" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '">
 		                             </td>
 		                        </tr>
 		                        <tr valign="middle">
@@ -389,7 +404,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-length"> ' . __("Package Length") . '</label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-length" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-length" value="">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-length" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-length" value="">
 		                             </td>
 		                        </tr>
 		                        <tr valign="middle">
@@ -397,7 +412,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-height"> ' . __("Package Height") . ' </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-height" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-height" value="">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-height" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-height" value="">
 		                             </td>
 		                        </tr>
 		                        <tr valign="middle">
@@ -405,7 +420,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-width"> ' . __("Package Width") . ' </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <input type="number" name="samedaycourier-package-width" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-width" value="">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-width" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-width" value="">
 		                             </td>
 		                        </tr>		                                    
 		                        <tr valign="middle">
@@ -413,7 +428,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-pickup-point"> ' . __("Pickup-point") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <select name="samedaycourier-package-observation" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
+		                                <select form="addAwbForm" name="samedaycourier-package-observation" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
 		                                    ' . $pickupPointOptions . '
 										</select>
 		                             </td>
@@ -423,7 +438,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-type"> ' . __("Package type") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <select name="samedaycourier-package-type" style="width: 180px; height: 30px;" id="samedaycourier-package-type">
+		                                <select form="addAwbForm" name="samedaycourier-package-type" style="width: 180px; height: 30px;" id="samedaycourier-package-type">
 		                                    ' . $packageTypeOptions . '
 										</select>
 		                             </td>
@@ -433,7 +448,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-pickup-point"> ' . __("Awb payment") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <select name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point">
+		                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point">
 		                                    ' . $awbPaymentTypeOptions . '
 										</select>
 		                             </td>
@@ -443,11 +458,11 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-observation"> ' . __("Observation") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <textarea name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
+		                                <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
 		                             </td>
 		                        </tr>			                
 		                        <tr>
-		                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm" > ' . __("Generate Awb") . ' </button> </th>
+		                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb") . ' </button> </th>
 		                        </tr>
 		                    </tbody>
 	                    </table>		
