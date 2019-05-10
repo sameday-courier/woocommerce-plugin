@@ -392,10 +392,23 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>';
 
-		$buttons = '
-			<div class="address">
-				' . $_generateAwb  . $_showAwb . $_removeAwb . '
-			</div>';
+		$shipping_method_sameday = HelperClass::getShippingMethodSameday($order->id);
+
+		if (empty($shipping_method_sameday)) {
+			$buttons = '
+				<div class="address">
+					' . $_generateAwb  .'
+				</div>';
+		} else {
+			$buttons = '
+				<div class="address">
+					' . $_showAwb . $_removeAwb  .'
+				</div>';
+		}
+
+		if (is_null($shipping_method_sameday)) {
+			$buttons = "";
+		}
 
 		$total_weight = 0;
 		foreach ($order->get_items() as $k => $v) {

@@ -84,4 +84,32 @@ class HelperClass
 	{
 		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode]);
 	}
+
+	/**
+	 * @return array|null
+	 */
+	public static function getShippingMethodSameday($orderId)
+	{
+		$data = array();
+
+		$shippingLines = wc_get_order($orderId)->get_data()['shipping_lines'];
+
+		$serviceMethod = null;
+		foreach ($shippingLines as $array) {
+			$index = array_search($array, $shippingLines);
+			$serviceMethod = $shippingLines[$index]->get_data()['method_id'];
+		}
+
+		if ($serviceMethod !== 'samedaycourier') {
+			return null;
+		}
+
+		$awb = getAwbForOrderId($orderId);
+
+		if (!empty($awb)) {
+			$data['awb_number'] = $awb->awb_number;
+		}
+
+		return $data;
+	}
 }
