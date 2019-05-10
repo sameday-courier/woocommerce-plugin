@@ -322,7 +322,11 @@ add_action('admin_post_add_awb', function (){
 });
 
 add_action('admin_post_remove-awb', function (){
-	var_dump($_POST);
+	$awb = getAwbForOrderId($_POST['order-id']);
+	if (!empty($awb)) {
+		$samedayClass = new Sameday();
+		return $samedayClass->removeAwb($awb);
+	}
 });
 
 add_action('admin_head', function () {
@@ -339,6 +343,24 @@ add_action('admin_head', function () {
 			echo '
 				<div class="notice notice-success is-dismissible">
 					<p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
+	if (isset($_GET["remove-awb"])) {
+		if ($_GET["remove-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Something did not work properly and the awb could not be removed successfully !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+
+		if ($_GET["remove-awb"] === "success") {
+			echo '
+				<div class="notice notice-success is-dismissible">
+					<p> <strong>' . __("Awb was successfully removed !") . '</strong> </p>
 				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
 			';
 		}

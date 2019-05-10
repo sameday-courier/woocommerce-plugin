@@ -321,4 +321,28 @@ class Sameday
 
 		return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
 	}
+
+	public function removeAwb($awb)
+	{
+		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
+
+		$sameday = new \Sameday\Sameday(Api::initClient(
+			$this->samedayOptions['user'],
+			$this->samedayOptions['password'],
+			$is_testing
+		));
+
+		try {
+			$sameday->deleteAwb(new Sameday\Requests\SamedayDeleteAwbRequest($awb->awb_number));
+			deleteAwb($awb->id);
+		} catch (\Exception $e) {
+			$errors = $e->getMessage();
+		}
+
+		if (isset($errors)) {
+			return wp_redirect(add_query_arg('remove-awb', 'error', "post.php?post={$awb->order_id}&action=edit"));
+		}
+
+		return wp_redirect(add_query_arg('remove-awb', 'success', "post.php?post={$awb->order_id}&action=edit"));
+	}
 }
