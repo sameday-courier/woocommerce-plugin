@@ -241,15 +241,11 @@ class Sameday
 			wp_redirect(admin_url() . "post.php?post={$params['samedaycourier-order-id']}&action=edit");
 		}
 
-		$order = wc_get_order($params['samedaycourier-order-id']);
-
 		$serviceId = null;
 		foreach ($params['shipping_lines'] as $array) {
 			$index = array_search($array, $params['shipping_lines']);
 			$serviceId = $params['shipping_lines'][$index]->get_meta_data()[0]->get_data()['value'];
 		}
-
-		$serviceId = null;
 
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
@@ -278,12 +274,12 @@ class Sameday
 		}
 
 		$request = new \Sameday\Requests\SamedayPostAwbRequest(
-			$params['pickup_point'],
+			$params['samedaycourier-package-pickup-point'],
 			null,
-			new \Sameday\Objects\Types\PackageType($params['package_type']),
+			new \Sameday\Objects\Types\PackageType($params['samedaycourier-package-type']),
 			$parcelDimensions,
 			$serviceId,
-			new \Sameday\Objects\Types\AwbPaymentType($params['awb_payment']),
+			new \Sameday\Objects\Types\AwbPaymentType($params['samedaycourier-package-awb-payment']),
 			new \Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
 				$params['shipping']['city'],
 				\HelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']),
@@ -310,30 +306,19 @@ class Sameday
 			$errors = $e->getErrors();
 		}
 
-		if (isset($awb)) {
-
-		} elseif (isset($errors)) {
-			$all_errors = $this->parseErrors($errors);
+		if (isset($errors)) {
 			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
-			//var_dump($errors);
 		}
 
-		wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
-	}
+		$awbDetails = array(
+			'order_id' => $params['samedaycourier-order-id'],
+			'awb_number' => $awb->getAwbNumber(),
+			'parcels' => serialize($awb->getParcels()),
+			'awb_cost' => $awb->getCost()
+		);
 
-	/**
-	 * @param $errors
-	 * @return string
-	 */
-	private function parseErrors($errors)
-	{
-		$all_errors = '';
-		foreach ($errors as $error) {
-			foreach ($error['errors'] as $message) {
-				$all_errors .= implode('.', $error['key']) . ':' . $message . '<br/>';
-			}
-		}
+		saveAwb($awbDetails);
 
-		return $all_errors;
+		return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
 	}
 }

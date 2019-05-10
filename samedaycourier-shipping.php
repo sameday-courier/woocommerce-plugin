@@ -453,7 +453,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                                <label for="samedaycourier-package-pickup-point"> ' . __("Pickup-point") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <select form="addAwbForm" name="samedaycourier-package-observation" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
+		                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
 		                                    ' . $pickupPointOptions . '
 										</select>
 		                             </td>
@@ -470,10 +470,10 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		                        </tr>
 		                        <tr valign="middle">
 		                            <th scope="row" class="titledesc"> 
-		                                <label for="samedaycourier-package-pickup-point"> ' . __("Awb payment") . ' <span style="color: #ff2222"> * </span>  </label>
+		                                <label for="samedaycourier-package-awb-payment"> ' . __("Awb payment") . ' <span style="color: #ff2222"> * </span>  </label>
 		                            </th> 
 		                            <td class="forminp forminp-text">
-		                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point">
+		                                <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 180px; height: 30px;" id="samedaycourier-package-awb-payment">
 		                                    ' . $awbPaymentTypeOptions . '
 										</select>
 		                             </td>
