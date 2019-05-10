@@ -144,7 +144,7 @@ class Sameday
 	/**
 	 * @return bool
 	 */
-	public static function editService()
+	public function editService()
 	{
 		if (! $_POST['action'] === 'edit_service') {
 			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
@@ -241,7 +241,13 @@ class Sameday
 			wp_redirect(admin_url() . "post.php?post={$params['samedaycourier-order-id']}&action=edit");
 		}
 
-		var_dump($params); exit;
+		$order = wc_get_order($params['samedaycourier-order-id']);
+
+		$serviceId = null;
+		foreach ($params['shipping_lines'] as $array) {
+			$index = array_search($array, $params['shipping_lines']);
+			$serviceId = $params['shipping_lines'][$index]->get_meta_data()[0]->get_data()['value'];
+		}
 
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
@@ -251,22 +257,18 @@ class Sameday
 			$is_testing
 		));
 
-		$params['service_id'] = explode('_', $params['shipping_method'], '3');
-		$params['service_id'] = $params['service_id'][2];
-
-
 		$parcelDimensions[] = new \Sameday\Objects\ParcelDimensionsObject(
-			$params['package_weight'],
-			$params['package_length'],
-			$params['package_height'],
-			$params['package_width']
+			$params['samedaycourier-package-weight'],
+			$params['samedaycourier-package-length'],
+			$params['samedaycourier-package-height'],
+			$params['samedaycourier-package-width']
 		);
 
 		$companyObject = null;
 		if (strlen($params['company'])) {
 			$companyObject = new \Sameday\Objects\PostAwb\Request\CompanyEntityObject(
-				$params['company'],
-				isset($params['vat_id']) ? $params['vat_id'] : '',
+				$params['shipping']['company'],
+				'',
 				'',
 				'',
 				''
@@ -278,25 +280,27 @@ class Sameday
 			null,
 			new \Sameday\Objects\Types\PackageType($params['package_type']),
 			$parcelDimensions,
-			$params['service_id'],
+			$serviceId,
 			new \Sameday\Objects\Types\AwbPaymentType($params['awb_payment']),
 			new \Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
-				$params['city'],
-				$params['region'],
-				trim($params['street']),
-				$params['customer_firstname'] . ' ' . $params['customer_lastname'],
-				$params['telephone'],
-				$params['email'],
+				$params['shipping']['city'],
+				\HelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']),
+				ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'],
+				ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
+				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
+				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
 				$companyObject
 			),
-			$params['insured_value'],
-			$params['ramburs'],
+			$params['samedaycourier-package-insurance-value'],
+			$params['samedaycourier-package-repayment'],
 			new \Sameday\Objects\Types\CodCollectorType(\Sameday\Objects\Types\CodCollectorType::CLIENT),
 			null,
 			array(),
 			null,
 			null,
-			$params['observation']
+			$params['samedaycourier-package-observation']
 		);
+
+		var_dump($request);
 	}
 }

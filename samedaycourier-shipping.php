@@ -88,9 +88,12 @@ function samedaycourier_shipping_method() {
 						}
 
 						$rate = array(
-							'id' => $this->id . "_" . $service->sameday_id,
+							'id' => $this->id . $service->sameday_id,
 							'label' => $service->name,
-							'cost' => $price
+							'cost' => $price,
+							'meta_data' => array(
+								'service_id' => $service->sameday_id
+							)
 						);
 
 						$this->add_rate( $rate );
@@ -307,7 +310,7 @@ add_action('admin_post_refresh_pickup_points', function () {
 
 add_action('admin_post_edit_service', function() {
 	$samedayClass = new Sameday();
-	return $samedayClass->refreshPickupPoints();
+	return $samedayClass->editService();
 });
 
 add_action('admin_post_add_awb', function (){
