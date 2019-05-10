@@ -326,6 +326,24 @@ add_action('admin_post_remove-awb', function (){
 });
 
 add_action('admin_head', function () {
+	if (isset($_GET["add-awb"])){
+		if ($_GET["add-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Something did not work properly and the awb could not be generated successfully !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+
+		if ($_GET["add-awb"] === "success") {
+			echo '
+				<div class="notice notice-success is-dismissible">
+					<p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
 	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });

@@ -249,6 +249,8 @@ class Sameday
 			$serviceId = $params['shipping_lines'][$index]->get_meta_data()[0]->get_data()['value'];
 		}
 
+		$serviceId = null;
+
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
 		$sameday = new \Sameday\Sameday(Api::initClient(
@@ -288,7 +290,7 @@ class Sameday
 				ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'],
 				ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
 				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
-				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
+				isset($params['billing']['phone']) ? $params['billing']['email'] : "",
 				$companyObject
 			),
 			$params['samedaycourier-package-insurance-value'],
@@ -301,6 +303,37 @@ class Sameday
 			$params['samedaycourier-package-observation']
 		);
 
-		var_dump($request);
+		try {
+			// No errors, post AWB.
+			$awb = $sameday->postAwb($request);
+		} catch (\Sameday\Exceptions\SamedayBadRequestException $e) {
+			$errors = $e->getErrors();
+		}
+
+		if (isset($awb)) {
+
+		} elseif (isset($errors)) {
+			$all_errors = $this->parseErrors($errors);
+			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+			//var_dump($errors);
+		}
+
+		wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+	}
+
+	/**
+	 * @param $errors
+	 * @return string
+	 */
+	private function parseErrors($errors)
+	{
+		$all_errors = '';
+		foreach ($errors as $error) {
+			foreach ($error['errors'] as $message) {
+				$all_errors .= implode('.', $error['key']) . ':' . $message . '<br/>';
+			}
+		}
+
+		return $all_errors;
 	}
 }
