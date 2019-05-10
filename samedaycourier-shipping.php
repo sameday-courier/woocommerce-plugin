@@ -373,20 +373,29 @@ add_action('admin_head', function () {
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
 	add_thickbox();
 	if ($_GET['action'] === 'edit') {
-		$buttons = '<div class="address">
+
+		$_generateAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
-			</p>
+			</p>';
+
+		$_showAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
 				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
 				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-show-pdf" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
-			</p>
+			</p>';
+
+		$_removeAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->id . '">
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
-			</p>
-		</div>';
+			</p>';
+
+		$buttons = '
+			<div class="address">
+				' . $_generateAwb  . $_showAwb . $_removeAwb . '
+			</div>';
 
 		$total_weight = 0;
 		foreach ($order->get_items() as $k => $v) {
