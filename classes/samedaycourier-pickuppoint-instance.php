@@ -22,7 +22,8 @@ class SamedayCourierPickupPointInstance
 
 	public function plugin_menu()
 	{
-		$hook = add_pages_page(
+		$hook = add_submenu_page(
+			'',
 			'SamedayCourier PickupPoint Table',
 			'Sameday Pickup-points',
 			'manage_options',

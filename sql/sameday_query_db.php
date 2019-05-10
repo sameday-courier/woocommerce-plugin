@@ -151,3 +151,29 @@ function deletePickupPoint($id) {
 	$table = $wpdb->prefix . 'sameday_pickup_point';
 	$wpdb->delete($table, array('id' => $id));
 }
+
+function getAwbForOrderId($orderId) {
+	global $wpdb;
+
+	$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_awb' . " WHERE order_id={$orderId}";
+	$result = $wpdb->get_row($query);
+
+	return $result;
+}
+
+function saveAwb($awb) {
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_awb';
+
+	$format = array('%d','%s','%s','%d');
+
+	$wpdb->insert($table, $awb, $format);
+}
+
+function deleteAwb($id) {
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_awb';
+	$wpdb->delete($table, array('id' => $id));
+}

@@ -22,13 +22,14 @@ class SamedayCourierServiceInstance
 
 	public function plugin_menu()
 	{
-		$hook = add_pages_page(
-			'SamedayCourier Service Table',
-			'Sameday Services',
-			'manage_options',
-			'sameday_services',
-			[ $this, 'plugin_settings_page' ]
-		);
+		$hook = add_submenu_page(
+            '',
+            'SamedayCourier Service Table',
+            'Sameday Services',
+            'manage_options',
+            'sameday_services',
+		    [ $this, 'plugin_settings_page' ]
+        );
 
 		add_action( "load-$hook", [ $this, 'screen_option' ] );
 	}
@@ -140,7 +141,6 @@ class SamedayCourierServiceInstance
         }
 
         return
-
         '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
             <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="edit_service">

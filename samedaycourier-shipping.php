@@ -28,6 +28,7 @@ require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
 require_once (plugin_basename('lib/sameday-courier/src/Sameday/autoload.php'));
 require_once (plugin_basename('classes/samedaycourier-api.php'));
 require_once (plugin_basename('classes/samedaycourier-helper-class.php'));
+require_once (plugin_basename('classes/samedaycourier-sameday-class.php'));
 require_once (plugin_basename('sql/sameday_create_db.php'));
 require_once (plugin_basename('sql/sameday_drop_db.php'));
 require_once (plugin_basename('sql/sameday_query_db.php'));
@@ -87,9 +88,12 @@ function samedaycourier_shipping_method() {
 						}
 
 						$rate = array(
-							'id' => $this->id . "_" . $service->sameday_id,
+							'id' => $this->id . $service->sameday_id,
 							'label' => $service->name,
-							'cost' => $price
+							'cost' => $price,
+							'meta_data' => array(
+								'service_id' => $service->sameday_id
+							)
 						);
 
 						$this->add_rate( $rate );
@@ -108,7 +112,7 @@ function samedaycourier_shipping_method() {
 				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
 				$pickupPointId = getDefaultPickupPointId($is_testing);
 				$weight = WC()->cart->get_cart_contents_weight();
-				$state = html_entity_decode(WC()->countries->get_states()[$address['country']][$address['state']]);
+				$state = \HelperClass::convertStateCodeToName($address['country'], $address['state']);
 
 				$estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
 					$pickupPointId,
@@ -296,35 +300,225 @@ add_action('plugins_loaded', function () {
 });
 
 add_action('admin_post_refresh_services', function () {
-	return HelperClass::refreshServices();
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshServices();
 });
 add_action('admin_post_refresh_pickup_points', function () {
-	return HelperClass::refreshPickupPoints();
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshPickupPoints();
 });
 
 add_action('admin_post_edit_service', function() {
-	return HelperClass::editService();
+	$samedayClass = new Sameday();
+	return $samedayClass->editService();
+});
+
+add_action('admin_post_add_awb', function (){
+	$postFields = $_POST;
+	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
+	$data = array_merge($postFields, $orderDetails->get_data());
+	$samedayClass = new Sameday();
+	return $samedayClass->postAwb($data);
+});
+
+add_action('admin_post_remove-awb', function (){
+	$awb = getAwbForOrderId($_POST['order-id']);
+	if (!empty($awb)) {
+		$samedayClass = new Sameday();
+		return $samedayClass->removeAwb($awb);
+	}
+});
+
+add_action('admin_head', function () {
+	if (isset($_GET["add-awb"])){
+		if ($_GET["add-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Something did not work properly and the awb could not be generated successfully !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+
+		if ($_GET["add-awb"] === "success") {
+			echo '
+				<div class="notice notice-success is-dismissible">
+					<p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
+	if (isset($_GET["remove-awb"])) {
+		if ($_GET["remove-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Something did not work properly and the awb could not be removed successfully !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+
+		if ($_GET["remove-awb"] === "success") {
+			echo '
+				<div class="notice notice-success is-dismissible">
+					<p> <strong>' . __("Awb was successfully removed !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
+	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
+          <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
-	$url = admin_url() . "post.php?post={$order->get_id()}&action=edit&action=addAwb";
-	echo '<div class="address">
+	add_thickbox();
+	if ($_GET['action'] === 'edit') {
+		$buttons = '<div class="address">
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add awb') . ' </a>
+				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
 			</p>
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Add new parcel') . ' </a>
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Awb History') . ' </a>
-				<a href="' . $url . '" class="button-primary button-samll"> ' . __('Show as Pdf') . ' </a>
+				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-show-pdf" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
 			</p>
 			<p class="form-field form-field-wide wc-customer-user">
-				<a href="' . $url . '" class="button button-samll">'.  __('Remove Awb') . ' </a>
+				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->id . '">
+			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>
-          </div>';
+		</div>';
+
+		$total_weight = 0;
+		foreach ($order->get_items() as $k => $v) {
+			$_product = wc_get_product($v['product_id']);
+			$qty = $v['quantity'];
+			$weight = $_product->get_weight();
+			$total_weight += round($weight * $qty, 2);
+		}
+
+		$pickupPointOptions = '';
+		$samedayOption = get_option('woocommerce_samedaycourier_settings');
+		$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
+		$pickupPoints = getPickupPoints($is_testing);
+		foreach ($pickupPoints as $pickupPoint) {
+			$checked = $pickupPoint->default_pickup_point === '1' ? "checked" : "";
+			$pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
+		}
+
+		$packageTypeOptions = '';
+		$packagesType = HelperClass::getPackageTypeOptions();
+		foreach ($packagesType as $packageType) {
+			$packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
+		}
+
+		$awbPaymentTypeOptions = '';
+		$awbPaymentsType = HelperClass::getAwbPaymentTypeOptions();
+		foreach ($awbPaymentsType as $awbPaymentType) {
+			$awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
+		}
+
+		$awbModal = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
+			        	<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
+				        <table>
+		                    <tbody>		                    	
+		                        <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->id. '">
+		                         <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-insurance-value"> ' . __("Insured value") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-weight"> ' . __("Package Weight") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-weight" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '">
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-length"> ' . __("Package Length") . '</label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-length" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-length" value="">
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-height"> ' . __("Package Height") . ' </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-height" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-height" value="">
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-width"> ' . __("Package Width") . ' </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <input type="number" form="addAwbForm" name="samedaycourier-package-width" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-width" value="">
+		                             </td>
+		                        </tr>		                                    
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-pickup-point"> ' . __("Pickup-point") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
+		                                    ' . $pickupPointOptions . '
+										</select>
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-type"> ' . __("Package type") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <select form="addAwbForm" name="samedaycourier-package-type" style="width: 180px; height: 30px;" id="samedaycourier-package-type">
+		                                    ' . $packageTypeOptions . '
+										</select>
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-awb-payment"> ' . __("Awb payment") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 180px; height: 30px;" id="samedaycourier-package-awb-payment">
+		                                    ' . $awbPaymentTypeOptions . '
+										</select>
+		                             </td>
+		                        </tr>
+		                        <tr valign="middle">
+		                            <th scope="row" class="titledesc"> 
+		                                <label for="samedaycourier-package-observation"> ' . __("Observation") . ' <span style="color: #ff2222"> * </span>  </label>
+		                            </th> 
+		                            <td class="forminp forminp-text">
+		                                <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
+		                             </td>
+		                        </tr>			                
+		                        <tr>
+		                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb") . ' </button> </th>
+		                        </tr>
+		                    </tbody>
+	                    </table>		
+					</div>
+					';
+
+		echo $buttons . $awbModal;
+	}
 });
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
-
-
-
