@@ -28,6 +28,7 @@ require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
 require_once (plugin_basename('lib/sameday-courier/src/Sameday/autoload.php'));
 require_once (plugin_basename('classes/samedaycourier-api.php'));
 require_once (plugin_basename('classes/samedaycourier-helper-class.php'));
+require_once (plugin_basename('classes/samedaycourier-sameday-class.php'));
 require_once (plugin_basename('sql/sameday_create_db.php'));
 require_once (plugin_basename('sql/sameday_drop_db.php'));
 require_once (plugin_basename('sql/sameday_query_db.php'));
@@ -108,7 +109,7 @@ function samedaycourier_shipping_method() {
 				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
 				$pickupPointId = getDefaultPickupPointId($is_testing);
 				$weight = WC()->cart->get_cart_contents_weight();
-				$state = html_entity_decode(WC()->countries->get_states()[$address['country']][$address['state']]);
+				$state = \HelperClass::convertStateCodeToName($address['country'], $address['state']);
 
 				$estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
 					$pickupPointId,
@@ -296,22 +297,25 @@ add_action('plugins_loaded', function () {
 });
 
 add_action('admin_post_refresh_services', function () {
-	return HelperClass::refreshServices();
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshServices();
 });
 add_action('admin_post_refresh_pickup_points', function () {
-	return HelperClass::refreshPickupPoints();
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshPickupPoints();
 });
 
 add_action('admin_post_edit_service', function() {
-	return HelperClass::editService();
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshPickupPoints();
 });
 
 add_action('admin_post_add_awb', function (){
 	$postFields = $_POST;
 	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
 	$data = array_merge($postFields, $orderDetails->get_data());
-
-	return HelperClass::postAwb($data);
+	$samedayClass = new Sameday();
+	return $samedayClass->postAwb($data);
 });
 
 add_action('admin_post_remove-awb', function (){
