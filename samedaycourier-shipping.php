@@ -401,7 +401,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		$_showAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
-				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+				<a href="#TB_inline?&width=800&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
 				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->id . '">
 			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
 			</p>';
@@ -558,7 +558,11 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 					</div>
 					';
 
-		echo $buttons . $awbModal;
+		$historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
+ 							<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History") . '</strong> </h3>	 
+                         </div>';
+
+		echo $buttons . $awbModal . $historyModal;
 	}
 });
 
