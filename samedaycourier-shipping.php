@@ -329,6 +329,14 @@ add_action('admin_post_remove-awb', function (){
 	}
 });
 
+add_action('admin_post_show-awb-pdf', function (){
+	$orderId = $_POST['order-id'];
+	if (isset($orderId)) {
+		$samedayClass = new Sameday();
+		return $samedayClass->showAwbAsPdf($orderId);
+	}
+});
+
 add_action('admin_head', function () {
 	if (isset($_GET["add-awb"])){
 		if ($_GET["add-awb"] === "error") {
@@ -366,7 +374,18 @@ add_action('admin_head', function () {
 		}
 	}
 
+	if (isset($_GET["show-awb"])) {
+		if ($_GET["show-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Awb invalid !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
 	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
+		  <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
@@ -383,7 +402,8 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
 				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
-				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-show-pdf" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
+				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->id . '">
+			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
 			</p>';
 
 		$_removeAwb = '
@@ -406,7 +426,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 				</div>';
 		}
 
-		if (is_null($shipping_method_sameday)) {
+		if ($shipping_method_sameday === null) {
 			$buttons = "";
 		}
 

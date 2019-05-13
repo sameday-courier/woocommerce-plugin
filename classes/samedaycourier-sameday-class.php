@@ -345,4 +345,42 @@ class Sameday
 
 		return wp_redirect(add_query_arg('remove-awb', 'success', "post.php?post={$awb->order_id}&action=edit"));
 	}
+
+	public function showAwbAsPdf($orderId)
+	{
+		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
+
+		$sameday = new \Sameday\Sameday(Api::initClient(
+			$this->samedayOptions['user'],
+			$this->samedayOptions['password'],
+			$is_testing
+		));
+
+		$awb = getAwbForOrderId($orderId);
+
+		try {
+			$content = $sameday->getAwbPdf(
+				new Sameday\Requests\SamedayGetAwbPdfRequest(
+					$awb->awb_number,
+					new Sameday\Objects\Types\AwbPdfType(Sameday\Objects\Types\AwbPdfType::A4)
+				)
+			);
+
+			$pdf = $content->getPdf();
+		} catch (Exception $e) {
+			$errors = $e->getMessage();
+		}
+
+		if (isset($errors)) {
+			return wp_redirect(add_query_arg('show-awb', 'error', "post.php?post={$awb->order_id}&action=edit"));
+		}
+
+		header('Content-type: application/pdf');
+		header("Cache-Control: no-cache");
+		header("Pragma: no-cache");
+
+		echo $pdf;
+
+		exit;
+	}
 }
