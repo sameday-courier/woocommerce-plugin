@@ -329,6 +329,14 @@ add_action('admin_post_remove-awb', function (){
 	}
 });
 
+add_action('admin_post_show-awb-pdf', function (){
+	$orderId = $_POST['order-id'];
+	if (isset($orderId)) {
+		$samedayClass = new Sameday();
+		return $samedayClass->showAwbAsPdf($orderId);
+	}
+});
+
 add_action('admin_head', function () {
 	if (isset($_GET["add-awb"])){
 		if ($_GET["add-awb"] === "error") {
@@ -366,27 +374,61 @@ add_action('admin_head', function () {
 		}
 	}
 
+	if (isset($_GET["show-awb"])) {
+		if ($_GET["show-awb"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Awb invalid !") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
 	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
+		  <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
 	add_thickbox();
 	if ($_GET['action'] === 'edit') {
-		$buttons = '<div class="address">
+
+		$_generateAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
-			</p>
+			</p>';
+
+		$_showAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
 				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
-				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-show-pdf" class="button-primary button-samll thickbox"> ' . __('Show as pdf') . ' </a>
-			</p>
+				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->id . '">
+			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
+			</p>';
+
+		$_removeAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->id . '">
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
-			</p>
-		</div>';
+			</p>';
+
+		$shipping_method_sameday = HelperClass::getShippingMethodSameday($order->id);
+
+		if (empty($shipping_method_sameday)) {
+			$buttons = '
+				<div class="address">
+					' . $_generateAwb  .'
+				</div>';
+		} else {
+			$buttons = '
+				<div class="address">
+					' . $_showAwb . $_removeAwb  .'
+				</div>';
+		}
+
+		if ($shipping_method_sameday === null) {
+			$buttons = "";
+		}
 
 		$total_weight = 0;
 		foreach ($order->get_items() as $k => $v) {
