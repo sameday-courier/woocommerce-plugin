@@ -400,17 +400,17 @@ class Sameday
 
 		$parcels = unserialize(getAwbForOrderId($orderId)->parcels);
 
-//		foreach ($parcels as $parcel) {
-//			$parcelStatus = $sameday->getParcelStatusHistory( new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
-//			refreshPackageHistory(
-//				$orderId,
-//				$parcel->getAwbNumber(),
-//				$parcelStatus->getSummary(),
-//				$parcelStatus->getHistory(),
-//				$parcelStatus->getExpeditionStatus()
-//			);
-//		}
-//
+		foreach ($parcels as $parcel) {
+			$parcelStatus = $sameday->getParcelStatusHistory(new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
+			refreshPackageHistory(
+				$orderId,
+				$parcel->getAwbNumber(),
+				$parcelStatus->getSummary(),
+				$parcelStatus->getHistory(),
+				$parcelStatus->getExpeditionStatus()
+			);
+		}
+
 		$packages = getPackagesForOrderId($orderId);
 
 		return createAwbHistoryTable($packages);
