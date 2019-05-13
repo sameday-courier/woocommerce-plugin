@@ -35,7 +35,7 @@ class SamedayCourierServiceInstance
 		    [ $this, 'plugin_settings_page' ]
         );
 
-		add_action( "load-$hook", [ $this, 'screen_option' ] );
+		add_action("load-$hook", [ $this, 'screen_option' ]);
 	}
 
 	/**
