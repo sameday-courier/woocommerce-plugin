@@ -1,5 +1,9 @@
 <?php
 
+if (! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Sameday
  */
@@ -382,5 +386,33 @@ class Sameday
 		echo $pdf;
 
 		exit;
+	}
+
+	public function showAwbHistory($orderId)
+	{
+		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
+
+		$sameday = new \Sameday\Sameday(Api::initClient(
+			$this->samedayOptions['user'],
+			$this->samedayOptions['password'],
+			$is_testing
+		));
+
+		$parcels = unserialize(getAwbForOrderId($orderId)->parcels);
+
+//		foreach ($parcels as $parcel) {
+//			$parcelStatus = $sameday->getParcelStatusHistory( new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
+//			refreshPackageHistory(
+//				$orderId,
+//				$parcel->getAwbNumber(),
+//				$parcelStatus->getSummary(),
+//				$parcelStatus->getHistory(),
+//				$parcelStatus->getExpeditionStatus()
+//			);
+//		}
+//
+		$packages = getPackagesForOrderId($orderId);
+
+		return createAwbHistoryTable($packages);
 	}
 }

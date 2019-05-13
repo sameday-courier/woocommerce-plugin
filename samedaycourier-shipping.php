@@ -36,6 +36,7 @@ require_once (plugin_basename('classes/samedaycourier-services.php'));
 require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
+require_once (plugin_basename('views/awb-history-table.php'));
 
 function samedaycourier_shipping_method() {
 	if (! class_exists('SamedayCourier_Shipping_Method')) {
@@ -401,7 +402,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		$_showAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
-				<a href="#TB_inline?&width=600&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+				<a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
 				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->id . '">
 			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
 			</p>';
@@ -558,7 +559,14 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 					</div>
 					';
 
-		echo $buttons . $awbModal;
+		$sameday = new Sameday();
+		$awbHistoryTable = $sameday->showAwbHistory($order->id);
+
+		$historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
+ 							' . $awbHistoryTable . ' 
+                         </div>';
+
+		echo $buttons . $awbModal . $historyModal;
 	}
 });
 

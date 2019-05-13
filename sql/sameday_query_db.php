@@ -177,3 +177,37 @@ function deleteAwb($id) {
 	$table = $wpdb->prefix . 'sameday_awb';
 	$wpdb->delete($table, array('id' => $id));
 }
+
+function refreshPackageHistory(
+		$orderId,
+		$awbParcel,
+		\Sameday\Objects\ParcelStatusHistory\SummaryObject $summary,
+		array $history,
+		\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
+	) {
+
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_package';
+
+	$package = array(
+		'order_id' => $orderId,
+		'awb_parcel' => $awbParcel,
+		'summary' => serialize($summary),
+		'history' => serialize($history),
+		'expedition_status' => serialize($expedition)
+	);
+
+	$format = array('%d','%s','%s','%s','%s');
+
+	$wpdb->insert($table, $package, $format);
+}
+
+function getPackagesForOrderId($orderId) {
+	global $wpdb;
+
+	$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_package' . " WHERE order_id={$orderId}";
+	$result = $wpdb->get_results($query);
+
+	return $result;
+}
