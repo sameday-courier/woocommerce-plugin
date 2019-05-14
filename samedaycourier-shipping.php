@@ -394,6 +394,24 @@ add_action('admin_head', function () {
 		}
 	}
 
+	if (isset($_GET["add-new-parcel"])) {
+		if ($_GET["add-new-parcel"] === "error") {
+			echo '
+				<div class="notice notice-error is-dismissible">
+					<p> <strong>' . __("Something did not work properly and the system could not be able to generate new parcel for this awb!") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+
+		if ($_GET["add-new-parcel"] === "success") {
+			echo '
+				<div class="notice notice-success is-dismissible">
+					<p> <strong>' . __("New parcel has been added to this awb!") . '</strong> </p>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+			';
+		}
+	}
+
 	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
 		  <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
 		  <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add-new-parcel"></form>
