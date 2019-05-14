@@ -82,7 +82,7 @@ class Sameday
 			}
 		}
 
-		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 	}
 
 	public function refreshPickupPoints()
@@ -142,7 +142,7 @@ class Sameday
 			}
 		}
 
-		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 	}
 
 	/**
@@ -236,7 +236,7 @@ class Sameday
 			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 		}
 
-		wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
 	}
 
 	public function postAwb($params)
