@@ -319,6 +319,10 @@ add_action('admin_post_edit_service', function() {
 add_action('admin_post_add_awb', function (){
 	$postFields = $_POST;
 	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
+	if (empty($orderDetails)) {
+		return wp_redirect(admin_url() . '/index.php');
+	}
+
 	$data = array_merge($postFields, $orderDetails->get_data());
 	$samedayClass = new Sameday();
 	return $samedayClass->postAwb($data);
@@ -326,26 +330,32 @@ add_action('admin_post_add_awb', function (){
 
 add_action('admin_post_remove-awb', function (){
 	$awb = getAwbForOrderId($_POST['order-id']);
-	if (!empty($awb)) {
-		$samedayClass = new Sameday();
-		return $samedayClass->removeAwb($awb);
+	if (empty($awb)) {
+		return wp_redirect(admin_url() . '/index.php');
 	}
+
+	$samedayClass = new Sameday();
+	return $samedayClass->removeAwb($awb);
 });
 
 add_action('admin_post_show-awb-pdf', function (){
 	$orderId = $_POST['order-id'];
 	if (isset($orderId)) {
-		$samedayClass = new Sameday();
-		return $samedayClass->showAwbAsPdf($orderId);
+		return wp_redirect(admin_url() . '/index.php');
 	}
+
+	$samedayClass = new Sameday();
+	return $samedayClass->showAwbAsPdf($orderId);
 });
 
 add_action('admin_post_add-new-parcel', function() {
 	$postFields = $_POST;
-	if (!empty($postFields)) {
-		$samedayClass = new Sameday();
-		return $samedayClass->addNewParcel($postFields);
+	if (empty($postFields)) {
+		return wp_redirect(admin_url() . '/index.php');
 	}
+
+	$samedayClass = new Sameday();
+	return $samedayClass->addNewParcel($postFields);
 });
 
 add_action('admin_head', function () {
