@@ -86,6 +86,21 @@ class HelperClass
 	}
 
 	/**
+	 * @param $inputs
+	 *
+	 * @return array
+	 */
+	public static function sanitizeInputs($inputs)
+	{
+		$sanitizedInputs = array();
+		foreach ($inputs as $key => $val) {
+			$sanitizedInputs[$key] = strip_tags($val);
+		}
+
+		return $sanitizedInputs;
+	}
+
+	/**
 	 * @return array|null
 	 */
 	public static function getShippingMethodSameday($orderId)

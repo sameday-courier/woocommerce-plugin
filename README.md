@@ -46,4 +46,5 @@ For further information, contact us at software@sameday.ro !
     to your account. Go to Service and press "Refresh Service". The same for pick-up points importing.
     In the checkout page of your store, your clients are able to see and choose one of the Sameday service.
     If a customer chooses the order to be shipped with Sameday, you will be able to see this in the order list and will be displayed a button "Generate awb".
+    After awb is generated you can show it as pdf format. You can show the history of the awb, add a new parcel or simply remove the awb.
  </p>
