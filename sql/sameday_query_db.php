@@ -53,7 +53,7 @@ function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing
 	global $wpdb;
 
 	$table = $wpdb->prefix . 'sameday_service';
-	
+
 	$data = array(
 		'sameday_id' => $service->getId(),
 		'sameday_name' => $service->getName(),
