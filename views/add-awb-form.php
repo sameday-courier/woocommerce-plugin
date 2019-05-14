@@ -12,6 +12,7 @@ function addAwbForm($order) {
 		$weight = $_product->get_weight();
 		$total_weight += round($weight * $qty, 2);
 	}
+	$total_weight = $total_weight ?: 1;
 
 	$pickupPointOptions = '';
 	$samedayOption = get_option('woocommerce_samedaycourier_settings');
