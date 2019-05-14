@@ -37,6 +37,7 @@ require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
 require_once (plugin_basename('views/awb-history-table.php'));
+require_once (plugin_basename('views/add-new-parcel-form.php'));
 
 function samedaycourier_shipping_method() {
 	if (! class_exists('SamedayCourier_Shipping_Method')) {
@@ -338,6 +339,14 @@ add_action('admin_post_show-awb-pdf', function (){
 	}
 });
 
+add_action('admin_post_add-new-parcel', function() {
+	$postFields = $_POST;
+	if (!empty($postFields)) {
+		$samedayClass = new Sameday();
+		return $samedayClass->addNewParcel($postFields);
+	}
+});
+
 add_action('admin_head', function () {
 	if (isset($_GET["add-awb"])){
 		if ($_GET["add-awb"] === "error") {
@@ -387,6 +396,7 @@ add_action('admin_head', function () {
 
 	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
 		  <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
+		  <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add-new-parcel"></form>
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
@@ -562,11 +572,17 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		$sameday = new Sameday();
 		$awbHistoryTable = $sameday->showAwbHistory($order->id);
 
+		$addNewParcelForm = addNewParcelForm($order->id);
+
+		$newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
+ 							' . $addNewParcelForm . ' 
+                           </div>';
+
 		$historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
  							' . $awbHistoryTable . ' 
                          </div>';
 
-		echo $buttons . $awbModal . $historyModal;
+		echo $buttons . $awbModal . $newParcelModal . $historyModal;
 	}
 });
 

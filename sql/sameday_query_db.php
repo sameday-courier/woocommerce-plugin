@@ -53,6 +53,7 @@ function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing
 	global $wpdb;
 
 	$table = $wpdb->prefix . 'sameday_service';
+	
 	$data = array(
 		'sameday_id' => $service->getId(),
 		'sameday_name' => $service->getName(),
@@ -109,6 +110,7 @@ function addPickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPo
 	global $wpdb;
 
 	$table = $wpdb->prefix . 'sameday_pickup_point';
+
 	$data = array(
 		'sameday_id' => $pickupPointObject->getId(),
 		'sameday_alias' => $pickupPointObject->getAlias(),
@@ -129,6 +131,7 @@ function updatePickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $picku
 	global $wpdb;
 
 	$table = $wpdb->prefix . 'sameday_pickup_point';
+
 	$data = array(
 		'sameday_alias' => $pickupPointObject->getAlias(),
 		'city' => $pickupPointObject->getCity()->getName(),
@@ -210,4 +213,17 @@ function getPackagesForOrderId($orderId) {
 	$result = $wpdb->get_results($query);
 
 	return $result;
+}
+
+function updateParcels($orderId, $parcels) {
+
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_awb';
+
+	$updateColumns = array(
+		'parcels' => $parcels
+	);
+
+	$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 }
