@@ -1,5 +1,9 @@
 <?php
 
+if (! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function addNewParcelForm($orderId) {
 	$form = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Add new parcel") . '</strong> </h3>';
 
@@ -11,7 +15,7 @@ function addNewParcelForm($orderId) {
 	                            <label for="samedaycourier-parcel-weight"> ' . __("Parcel weight") . '<span style="color: #ff2222"> * </span>  </label>
 	                        </th> 
 	                        <td class="forminp forminp-text">
-	                            <input type="number" form="addNewParcelForm" name="samedaycourier-parcel-weight" style="width: 180px; height: 30px;" min="0" id="samedaycourier-parcel-weight" min="1" value="1">
+	                            <input type="number" form="addNewParcelForm" name="samedaycourier-parcel-weight" style="width: 180px; height: 30px;" min="1" id="samedaycourier-parcel-weight" value="1">
 	                         </td>
                          </tr>
                          <tr valign="middle">
