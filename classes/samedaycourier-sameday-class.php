@@ -388,6 +388,17 @@ class Sameday
 		exit;
 	}
 
+	/**
+	 * @param $orderId
+	 *
+	 * @return string|void
+	 * @throws \Sameday\Exceptions\SamedayAuthenticationException
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedayNotFoundException
+	 * @throws \Sameday\Exceptions\SamedayOtherException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public function showAwbHistory($orderId)
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
@@ -399,6 +410,10 @@ class Sameday
 		));
 
 		$parcels = unserialize(getAwbForOrderId($orderId)->parcels);
+
+		if (empty($parcels)) {
+			return;
+		}
 
 		foreach ($parcels as $parcel) {
 			$parcelStatus = $sameday->getParcelStatusHistory(new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
@@ -414,5 +429,67 @@ class Sameday
 		$packages = getPackagesForOrderId($orderId);
 
 		return createAwbHistoryTable($packages);
+	}
+
+	public function addNewParcel($params)
+	{
+		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
+
+		$sameday = new \Sameday\Sameday(Api::initClient(
+			$this->samedayOptions['user'],
+			$this->samedayOptions['password'],
+			$is_testing
+		));
+
+		$awb = getAwbForOrderId($params['samedaycourier-order-id']);
+
+		$position = $this->getPosition($awb->parcels);
+
+		$request = new \Sameday\Requests\SamedayPostParcelRequest(
+			$awb->awb_number,
+			new Sameday\Objects\ParcelDimensionsObject(
+				round($params['samedaycourier-parcel-weight'], 2),
+				round($params['samedaycourier-parcel-length'], 2),
+				round($params['samedaycourier-parcel-height'],2),
+				round($params['samedaycourier-parcel-width'], 2)
+			),
+			$position,
+			$params['samedaycourier-parcel-observation'],
+			null,
+			$params['samedaycourier-parcel-is-last']
+		);
+
+		try {
+			$parcel = $sameday->postParcel($request);
+		} catch (\Sameday\Exceptions\SamedayBadRequestException $e) {
+			$errors = $e->getErrors();
+		}
+
+		if (isset($errors)) {
+			return wp_redirect(add_query_arg('add-new-parcel', 'error', "post.php?post={$awb->order_id}&action=edit"));
+		}
+
+		$parcels = array_merge(unserialize($awb->parcels), array(new \Sameday\Objects\PostAwb\ParcelObject(
+					$position,
+					$parcel->getParcelAwbNumber()
+				)
+			)
+		);
+
+		updateParcels($awb->order_id, serialize($parcels));
+
+		return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post={$awb->order_id}&action=edit"));
+	}
+
+	/**
+	 * @param $parcels
+	 *
+	 * @return int
+	 */
+	private function getPosition($parcels)
+	{
+		$nrOfParcels = count(unserialize($parcels));
+
+		return $nrOfParcels + 1;
 	}
 }

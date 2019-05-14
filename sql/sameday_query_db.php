@@ -211,3 +211,11 @@ function getPackagesForOrderId($orderId) {
 
 	return $result;
 }
+
+function updateParcels($orderId, $parcels) {
+
+	global $wpdb;
+
+	$table = $wpdb->prefix . 'sameday_service';
+	$wpdb->insert($table, $parcels, array('order_id' => $orderId));
+}
