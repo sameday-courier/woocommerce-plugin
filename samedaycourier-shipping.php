@@ -340,7 +340,7 @@ add_action('admin_post_remove-awb', function (){
 
 add_action('admin_post_show-awb-pdf', function (){
 	$orderId = $_POST['order-id'];
-	if (isset($orderId)) {
+	if (!isset($orderId)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
 
