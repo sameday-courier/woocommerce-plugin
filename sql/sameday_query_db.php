@@ -216,6 +216,11 @@ function updateParcels($orderId, $parcels) {
 
 	global $wpdb;
 
-	$table = $wpdb->prefix . 'sameday_service';
-	$wpdb->insert($table, $parcels, array('order_id' => $orderId));
+	$table = $wpdb->prefix . 'sameday_awb';
+
+	$updateColumns = array(
+		'parcels' => $parcels
+	);
+
+	$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 }
