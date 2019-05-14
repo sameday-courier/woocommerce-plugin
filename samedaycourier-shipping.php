@@ -317,7 +317,7 @@ add_action('admin_post_edit_service', function() {
 });
 
 add_action('admin_post_add_awb', function (){
-	$postFields = $_POST;
+	$postFields = HelperClass::sanitizeInputs($_POST);
 	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
 	if (empty($orderDetails)) {
 		return wp_redirect(admin_url() . '/index.php');
@@ -329,7 +329,7 @@ add_action('admin_post_add_awb', function (){
 });
 
 add_action('admin_post_remove-awb', function (){
-	$awb = getAwbForOrderId($_POST['order-id']);
+	$awb = getAwbForOrderId(sanitize_key($_POST['order-id']));
 	if (empty($awb)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
@@ -339,7 +339,7 @@ add_action('admin_post_remove-awb', function (){
 });
 
 add_action('admin_post_show-awb-pdf', function (){
-	$orderId = $_POST['order-id'];
+	$orderId = sanitize_key($_POST['order-id']);
 	if (!isset($orderId)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
@@ -349,7 +349,7 @@ add_action('admin_post_show-awb-pdf', function (){
 });
 
 add_action('admin_post_add-new-parcel', function() {
-	$postFields = $_POST;
+	$postFields = HelperClass::sanitizeInputs($_POST);
 	if (empty($postFields)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
