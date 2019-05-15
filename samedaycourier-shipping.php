@@ -2,13 +2,13 @@
 
 /**
  * Plugin Name: SamedayCourier Shipping
- * Plugin URI: http://sameday.ro
+ * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
  * Version: 1.0.1
  * Author: SamedayCourier
- * Author URI: http://sameday.ro
+ * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
- * License URI: http://sameday.ro
+ * License URI: https://sameday.ro
  * Domain Path: /ro
  * Text Domain: sameday
  */
