@@ -177,8 +177,8 @@ function samedaycourier_shipping_method() {
 							$working_days = unserialize($service->working_days);
 
 							$today = \HelperClass::getDays()[date('w')]['text'];
-							$date_from = mktime($working_days["order_date_{$today}_h_from"], $working_days["order_date_{$today}_m_from"], $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
-							$date_to = mktime($working_days["order_date_{$today}_h_until"], $working_days["order_date_{$today}_m_until"], $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
+							$date_from = mktime((int) $working_days["order_date_{$today}_h_from"], (int) $working_days["order_date_{$today}_m_from"], (int) $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
+							$date_to = mktime((int) $working_days["order_date_{$today}_h_until"], (int) $working_days["order_date_{$today}_m_until"], (int) $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
 							$time = time();
 
 							if (!isset($working_days["order_date_{$today}_enabled"]) || $time < $date_from || $time > $date_to) {
