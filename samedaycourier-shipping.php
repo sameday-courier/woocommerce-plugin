@@ -225,6 +225,16 @@ function samedaycourier_shipping_method() {
 						'default' => __( '', 'samedaycourier' )
 					),
 
+					'default_label_format' => array(
+						'title'   => __( 'Default label format', 'samedaycourier' ) . ' *',
+						'default' => 'A4',
+						'type'    => 'select',
+						'options' => [
+							'A4' => __( Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier' ),
+							'A6' => __( Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier' ),
+						],
+					),
+
 					'is_testing' => array(
 						'title' => __( 'Is testing', 'samedaycourier' ),
 						'type' => 'checkbox',
@@ -237,7 +247,7 @@ function samedaycourier_shipping_method() {
 						'type' => 'checkbox',
 						'description' => __( 'This will show shipping cost calculated by Sameday Api for each service and show it on checkout page', 'samedaycourier' ),
 						'default' => 'no'
-					),
+					)
 				);
 
 				// Show on checkout:
