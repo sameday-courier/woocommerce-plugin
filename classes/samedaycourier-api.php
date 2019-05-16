@@ -7,7 +7,7 @@ if (! defined( 'ABSPATH' ) ) {
 /**
  * Class Api
  */
-class Api
+class SamedayCourierApi
 {
 	/**
 	 * @param null $username

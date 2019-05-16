@@ -96,7 +96,7 @@ class SamedayCourierServiceInstance
 	 */
 	private function createServiceForm($id)
     {
-        $service = getService($id);
+        $service = SamedayCourierQueryDb::getService($id);
 
         if (! $service) {
 	        WC_Admin_Settings::add_error('No service available !');
@@ -109,7 +109,7 @@ class SamedayCourierServiceInstance
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 
-        $days = \HelperClass::getDays();
+        $days = \SamedayCourierHelperClass::getDays();
         sort($days);
 
 	    $intervals = '';

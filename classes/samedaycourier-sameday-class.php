@@ -32,7 +32,7 @@ class Sameday
 
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
@@ -52,10 +52,10 @@ class Sameday
 			}
 
 			foreach ($services->getServices() as $serviceObject) {
-				$service = getServiceSameday($serviceObject->getId(), $is_testing);
+				$service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), $is_testing);
 				if (! $service) {
 					// Service not found, add it.
-					addService($serviceObject, $is_testing);
+					SamedayCourierQueryDb::addService($serviceObject, $is_testing);
 				}
 
 				// Save as current sameday service.
@@ -72,13 +72,13 @@ class Sameday
 					'sameday_id' => $service->sameday_id
 				);
 			},
-			getServices($is_testing)
+			SamedayCourierQueryDb::getServices($is_testing)
 		);
 
 		// Delete local services that aren't present in remote services anymore.
 		foreach ($localServices as $localService) {
 			if (!in_array($localService['sameday_id'], $remoteServices)) {
-				deleteService($localService['id']);
+				SamedayCourierQueryDb::deleteService($localService['id']);
 			}
 		}
 
@@ -93,7 +93,7 @@ class Sameday
 
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
@@ -111,12 +111,12 @@ class Sameday
 			}
 
 			foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
-				$pickupPoint = getPickupPointSameday($pickupPointObject->getId(), $is_testing);
+				$pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), $is_testing);
 				if (!$pickupPoint) {
 					// Pickup point not found, add it.
-					addPickupPoint($pickupPointObject, $is_testing);
+					SamedayCourierQueryDb::addPickupPoint($pickupPointObject, $is_testing);
 				} else {
-					updatePickupPoint($pickupPointObject, $is_testing);
+					SamedayCourierQueryDb::updatePickupPoint($pickupPointObject, $is_testing);
 				}
 
 				// Save as current pickup points.
@@ -132,13 +132,13 @@ class Sameday
 					'sameday_id' => $pickupPoint->sameday_id
 				);
 			},
-			getPickupPoints($is_testing)
+			SamedayCourierQueryDb::getPickupPoints($is_testing)
 		);
 
 		// Delete local pickup points that aren't present in remote pickup points anymore.
 		foreach ($localPickupPoints as $localPickupPoint) {
 			if (!in_array($localPickupPoint['sameday_id'], $remotePickupPoints)) {
-				deletePickupPoint($localPickupPoint['id']);
+				SamedayCourierQueryDb::deletePickupPoint($localPickupPoint['id']);
 			}
 		}
 
@@ -190,7 +190,7 @@ class Sameday
 		}
 
 		if ($post_fields['status']['value'] === '2') {
-			$days = \HelperClass::getDays();
+			$days = \SamedayCourierHelperClass::getDays();
 
 			$workingDays = $post_fields['working_days']['value'];
 
@@ -231,7 +231,7 @@ class Sameday
 				'working_days' => serialize($post_fields['working_days']['value'])
 			);
 
-			updateService($service);
+			SamedayCourierQueryDb::updateService($service);
 
 			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 		}
@@ -253,7 +253,7 @@ class Sameday
 
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
@@ -286,7 +286,7 @@ class Sameday
 			new \Sameday\Objects\Types\AwbPaymentType($params['samedaycourier-package-awb-payment']),
 			new \Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
 				$params['shipping']['city'],
-				\HelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']),
+				\SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']),
 				ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'],
 				ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
 				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
@@ -321,7 +321,7 @@ class Sameday
 			'awb_cost' => $awb->getCost()
 		);
 
-		saveAwb($awbDetails);
+		SamedayCourierQueryDb::saveAwb($awbDetails);
 
 		return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
 	}
@@ -330,7 +330,7 @@ class Sameday
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
@@ -338,7 +338,7 @@ class Sameday
 
 		try {
 			$sameday->deleteAwb(new Sameday\Requests\SamedayDeleteAwbRequest($awb->awb_number));
-			deleteAwb($awb->id);
+			SamedayCourierQueryDb::deleteAwb($awb->id);
 		} catch (\Exception $e) {
 			$errors = $e->getMessage();
 		}
@@ -354,13 +354,13 @@ class Sameday
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
 		));
 
-		$awb = getAwbForOrderId($orderId);
+		$awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
 
 		try {
 			$content = $sameday->getAwbPdf(
@@ -403,13 +403,13 @@ class Sameday
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
 			$is_testing
 		));
 
-		$parcels = unserialize(getAwbForOrderId($orderId)->parcels);
+		$parcels = unserialize(SamedayCourierQueryDb::getAwbForOrderId($orderId)->parcels);
 
 		if (empty($parcels)) {
 			return;
@@ -417,7 +417,7 @@ class Sameday
 
 		foreach ($parcels as $parcel) {
 			$parcelStatus = $sameday->getParcelStatusHistory(new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
-			refreshPackageHistory(
+			SamedayCourierQueryDb::refreshPackageHistory(
 				$orderId,
 				$parcel->getAwbNumber(),
 				$parcelStatus->getSummary(),
@@ -426,22 +426,23 @@ class Sameday
 			);
 		}
 
-		$packages = getPackagesForOrderId($orderId);
+		$packages = SamedayCourierQueryDb::getPackagesForOrderId($orderId);
 
-		return createAwbHistoryTable($packages);
+		return samedaycourierCreateAwbHistoryTable($packages);
 	}
 
 	public function addNewParcel($params)
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
-		$sameday = new \Sameday\Sameday(Api::initClient(
-			$this->samedayOptions['user'],
-			$this->samedayOptions['password'],
-			$is_testing
-		));
+		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+				$this->samedayOptions['user'],
+				$this->samedayOptions['password'],
+				$is_testing
+			)
+		);
 
-		$awb = getAwbForOrderId($params['samedaycourier-order-id']);
+		$awb = SamedayCourierQueryDb::getAwbForOrderId($params['samedaycourier-order-id']);
 
 		$position = $this->getPosition($awb->parcels);
 
@@ -476,7 +477,7 @@ class Sameday
 			)
 		);
 
-		updateParcels($awb->order_id, serialize($parcels));
+		SamedayCourierQueryDb::updateParcels($awb->order_id, serialize($parcels));
 
 		return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post={$awb->order_id}&action=edit"));
 	}

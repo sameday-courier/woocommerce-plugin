@@ -64,4 +64,4 @@ New features will be added soon.
 
 == Screenshots ==
 
-1. You found some screenshots in /assets/screenshots folder 
+1. You found some screenshots in /assets/screenshots folder

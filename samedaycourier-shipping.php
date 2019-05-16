@@ -113,9 +113,9 @@ function samedaycourier_shipping_method() {
 			private function getEstimatedCost($address, $serviceId)
 			{
 				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
-				$pickupPointId = getDefaultPickupPointId($is_testing);
+				$pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($is_testing);
 				$weight = WC()->cart->get_cart_contents_weight() ?: 1;
-				$state = \HelperClass::convertStateCodeToName($address['country'], $address['state']);
+				$state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
 
 				$estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
 					$pickupPointId,
@@ -144,7 +144,7 @@ function samedaycourier_shipping_method() {
 				);
 
 				$sameday =  new Sameday\Sameday(
-					Api::initClient(
+					SamedayCourierApi::initClient(
 						$this->settings['user'],
 						$this->settings['password'],
 						$is_testing
@@ -164,7 +164,7 @@ function samedaycourier_shipping_method() {
 			private function getAvailableServices()
 			{
 				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
-				$services = getAvailableServices($is_testing);
+				$services = SamedayCourierQueryDb::getAvailableServices($is_testing);
 
 				$availableServices = array();
 				foreach ($services as $service) {
@@ -176,7 +176,7 @@ function samedaycourier_shipping_method() {
 						case 2:
 							$working_days = unserialize($service->working_days);
 
-							$today = \HelperClass::getDays()[date('w')]['text'];
+							$today = \SamedayCourierHelperClass::getDays()[date('w')]['text'];
 							$date_from = mktime((int) $working_days["order_date_{$today}_h_from"], (int) $working_days["order_date_{$today}_m_from"], (int) $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
 							$date_to = mktime((int) $working_days["order_date_{$today}_h_until"], (int) $working_days["order_date_{$today}_m_until"], (int) $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
 							$time = time();
@@ -253,7 +253,7 @@ function samedaycourier_shipping_method() {
 			{
 				$post_data = $this->get_post_data();
 
-				$sameday = Api::initClient(
+				$sameday = SamedayCourierApi::initClient(
 					$post_data['woocommerce_samedaycourier_user'],
 					$post_data['woocommerce_samedaycourier_password'],
 					$post_data['woocommerce_samedaycourier_is_testing']
@@ -317,7 +317,7 @@ add_action('admin_post_edit_service', function() {
 });
 
 add_action('admin_post_add_awb', function (){
-	$postFields = HelperClass::sanitizeInputs($_POST);
+	$postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
 	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
 	if (empty($orderDetails)) {
 		return wp_redirect(admin_url() . '/index.php');
@@ -329,7 +329,7 @@ add_action('admin_post_add_awb', function (){
 });
 
 add_action('admin_post_remove-awb', function (){
-	$awb = getAwbForOrderId(sanitize_key($_POST['order-id']));
+	$awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($_POST['order-id']));
 	if (empty($awb)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
@@ -349,7 +349,7 @@ add_action('admin_post_show-awb-pdf', function (){
 });
 
 add_action('admin_post_add-new-parcel', function() {
-	$postFields = HelperClass::sanitizeInputs($_POST);
+	$postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
 	if (empty($postFields)) {
 		return wp_redirect(admin_url() . '/index.php');
 	}
@@ -452,7 +452,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>';
 
-		$shipping_method_sameday = HelperClass::getShippingMethodSameday($order->id);
+		$shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->id);
 
 		if (empty($shipping_method_sameday)) {
 			$buttons = '
@@ -470,12 +470,12 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			$buttons = "";
 		}
 
-		$awbModal = addAwbForm($order);
+		$awbModal = samedaycourierAddAwbForm($order);
 
 		$sameday = new Sameday();
 		$awbHistoryTable = $sameday->showAwbHistory($order->id);
 
-		$addNewParcelForm = addNewParcelForm($order->id);
+		$addNewParcelForm = samedaycourierAddNewParcelForm($order->id);
 
 		$newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
  							' . $addNewParcelForm . ' 
