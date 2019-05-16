@@ -354,6 +354,8 @@ class Sameday
 	{
 		$is_testing = $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
 
+		$defaultLabelFormat = $this->samedayOptions['default_label_format'];
+
 		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
 			$this->samedayOptions['password'],
@@ -366,7 +368,7 @@ class Sameday
 			$content = $sameday->getAwbPdf(
 				new Sameday\Requests\SamedayGetAwbPdfRequest(
 					$awb->awb_number,
-					new Sameday\Objects\Types\AwbPdfType(Sameday\Objects\Types\AwbPdfType::A4)
+					new Sameday\Objects\Types\AwbPdfType($defaultLabelFormat)
 				)
 			);
 
