@@ -4,7 +4,7 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function addAwbForm($order) {
+function samedaycourierAddAwbForm($order) {
 	$total_weight = 0;
 	foreach ($order->get_items() as $k => $v) {
 		$_product = wc_get_product($v['product_id']);
@@ -17,20 +17,20 @@ function addAwbForm($order) {
 	$pickupPointOptions = '';
 	$samedayOption = get_option('woocommerce_samedaycourier_settings');
 	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
-	$pickupPoints = getPickupPoints($is_testing);
+	$pickupPoints = SamedayCourierQueryDb::getPickupPoints($is_testing);
 	foreach ($pickupPoints as $pickupPoint) {
 		$checked = $pickupPoint->default_pickup_point === '1' ? "checked" : "";
 		$pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
 	}
 
 	$packageTypeOptions = '';
-	$packagesType = HelperClass::getPackageTypeOptions();
+	$packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
 	foreach ($packagesType as $packageType) {
 		$packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
 	}
 
 	$awbPaymentTypeOptions = '';
-	$awbPaymentsType = HelperClass::getAwbPaymentTypeOptions();
+	$awbPaymentsType = SamedayCourierHelperClass::getAwbPaymentTypeOptions();
 	foreach ($awbPaymentsType as $awbPaymentType) {
 		$awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
 	}

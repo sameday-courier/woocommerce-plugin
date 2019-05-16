@@ -4,7 +4,7 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function createAwbHistoryTable($packages) {
+function samedaycourierCreateAwbHistoryTable($packages) {
 	$return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History") . '</strong> </h3>';
 
 	$style = '<style>

@@ -4,7 +4,7 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class HelperClass
+class SamedayCourierHelperClass
 {
 	/**
 	 * @return array
@@ -119,7 +119,7 @@ class HelperClass
 			return null;
 		}
 
-		$awb = getAwbForOrderId($orderId);
+		$awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
 
 		if (!empty($awb)) {
 			$data['awb_number'] = $awb->awb_number;

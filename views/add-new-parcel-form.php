@@ -4,7 +4,7 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function addNewParcelForm($orderId) {
+function samedaycourierAddNewParcelForm($orderId) {
 	$form = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Add new parcel") . '</strong> </h3>';
 
 	$form .= '<table>
