@@ -120,6 +120,24 @@ class SamedayCourierQueryDb
 	}
 
 	/**
+	 * @param \Sameday\Objects\Service\ServiceObject $serviceObject
+	 *
+	 * @param int $id
+	 */
+	static function updateServiceCode(\Sameday\Objects\Service\ServiceObject $serviceObject, $id)
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'sameday_service';
+
+		$service = array(
+			'sameday_code' => $serviceObject->getCode()
+		);
+
+		$wpdb->update($table, $service, array('id' => $id));
+	}
+
+	/**
 	 * @param int $id
 	 */
 	static function deleteService($id)

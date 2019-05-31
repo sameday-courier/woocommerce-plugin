@@ -59,6 +59,8 @@ class Sameday
 				if (! $service) {
 					// Service not found, add it.
 					SamedayCourierQueryDb::addService($serviceObject, $this->isTesting());
+				} else {
+					SamedayCourierQueryDb::updateServiceCode($serviceObject, $service->id);
 				}
 
 				// Save as current sameday service.
@@ -75,6 +77,7 @@ class Sameday
 					'sameday_id' => $service->sameday_id
 				);
 			},
+
 			SamedayCourierQueryDb::getServices($this->isTesting())
 		);
 
