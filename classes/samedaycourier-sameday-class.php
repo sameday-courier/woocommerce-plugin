@@ -194,11 +194,11 @@ class Sameday
 		);
 
 		// Delete local lockers that aren't present in remote lockers anymore.
-//		foreach ($localLockers as $localLocker) {
-//			if (!in_array($localLocker['locker_id'], $remoteLockers)) {
-//				SamedayCourierQueryDb::deleteLocker($localLocker['id']);
-//			}
-//		}
+		foreach ($localLockers as $localLocker) {
+			if (!in_array($localLocker['locker_id'], $remoteLockers)) {
+				SamedayCourierQueryDb::deleteLocker($localLocker['id']);
+			}
+		}
 
 		// @to do  $this->updateLastSyncTimestamp();
 

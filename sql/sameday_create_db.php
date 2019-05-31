@@ -5,9 +5,10 @@ if (! defined( 'ABSPATH' ) ) {
 }
 
 function samedaycourier_create_db() {
-
 	global $wpdb;
+
 	$charset_collate = $wpdb->get_charset_collate();
+
 	$awbTable =  $wpdb->prefix . 'sameday_awb';
 	$pickup_point = $wpdb->prefix . 'sameday_pickup_point';
 	$service = $wpdb->prefix . 'sameday_service';
@@ -81,8 +82,36 @@ function samedaycourier_create_db() {
 		$createAwbTable, $createPickUpPointTable, $createServiceTable, $createPackageTable, $createLockerTable
 	);
 
+	$tablesToAlter = array();
+
+	$servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
+
+//	if (! isset($servicesRows->sameday_code)) {
+//		$alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) AFTER `sameday_id` NOT NULL ;";
+//
+//		$tablesToAlter[] = $alterServiceTable;
+//	}
+
 	foreach ($tablesToCreate as $table) {
 		dbDelta( $table );
 	}
+
+//	if (! empty($tablesToAlter)) {
+//		foreach ($tablesToAlter as $table) {
+//			dbDelta( $table );
+//		}
+//	}
 }
+
+//public function ensureSamedayServiceCodeColumn()
+//{
+//	$query = 'SELECT * FROM ' . DB_PREFIX . "sameday_service LIMIT 1";
+//	$row = $this->db->query($query)->row;
+//
+//	if (array_key_exists('sameday_code', $row)) {
+//		return;
+//	}
+//
+//	$this->db->query('alter table '. DB_PREFIX .'sameday_service add sameday_code VARCHAR(255) default \'\' not null');
+//}
 
