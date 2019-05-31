@@ -203,9 +203,20 @@ class Sameday
 			}
 		}
 
-		// @to do  $this->updateLastSyncTimestamp();
+		$this->updateLastSyncTimestamp();
 
 		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_lockers');
+	}
+
+	/**
+	 * @return void
+	 */
+	private function updateLastSyncTimestamp()
+	{
+		$time = time();
+
+		$this->samedayOptions['sameday_sync_lockers_ts'] = $time;
+		update_option('woocommerce_samedaycourier_settings', $this->samedayOptions);
 	}
 
 	/**
