@@ -8,33 +8,33 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
-class SamedayCourierPickupPoints extends WP_List_Table
+class SamedayCourierLockers extends WP_List_Table
 {
 	/** Class constructor */
 	public function __construct() {
 
 		parent::__construct( [
-			'singular' => __( 'Pickup-point', 'samedaycourier' ),
-			'plural'   => __( 'Pickup-points', 'samedaycourier' ),
+			'singular' => __( 'Locker', 'samedaycourier' ),
+			'plural'   => __( 'Lockers', 'samedaycourier' ),
 			'ajax'     => false
 		] );
 	}
 
 	/**
-	 * Retrieve pickup_points data from the database
+	 * Retrieve lockers data from the database
 	 *
 	 * @param int $per_page
 	 * @param int $page_number
 	 *
 	 * @return mixed
 	 */
-	public static function get_pickup_points( $per_page = 5, $page_number = 1 ) {
+	public static function get_lockers( $per_page = 5, $page_number = 1 ) {
 
 		global $wpdb;
 
 		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
-		$sql = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing=".$is_testing;
+		$sql = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
 
 		if ( ! empty( $_REQUEST['orderby'] ) ) {
 			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
@@ -60,15 +60,15 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing=".$is_testing;
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
 
 		return $wpdb->get_var( $sql );
 	}
 
 
-	/** Text displayed when no pickup-points data is available */
+	/** Text displayed when no lockers data is available */
 	public function no_items() {
-		_e( 'No pickup-points avaliable.', 'samedaycourier' );
+		_e( 'No lockers avaliable.', 'samedaycourier' );
 	}
 
 	/**
@@ -81,31 +81,11 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 */
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
-			case 'contactPersons':
-				return $this->parseContactPersons(unserialize($item[ $column_name ]));
-					break;
-			case 'default_pickup_point':
-				return $item[ $column_name ] == true ? '<strong> Yes </strong>' : 'No';
-					break;
 			default:
 				return $item[ $column_name ];
 		}
 	}
 
-	/**
-	 * @param $contactPersons
-	 *
-	 * @return string
-	 */
-	private function  parseContactPersons($contactPersons)
-	{
-		$persons = array();
-		foreach ($contactPersons as $contact_person) {
-			$persons[] = "<strong> {$contact_person->getName()} </strong><br/> " . " ( {$contact_person->getPhone()} ) ";
-		}
-
-		return implode(',', $persons);
-	}
 
 	/**
 	 *  Associative array of columns
@@ -114,13 +94,14 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 */
 	function get_columns() {
 		$columns = [
-			'sameday_id' => __( 'Sameday ID', 'samedaycourier' ),
-			'sameday_alias' => __( 'Name', 'samedaycourier' ),
+			'locker_id' => __( 'Locker ID', 'samedaycourier' ),
+			'name' => __( 'Name', 'samedaycourier' ),
 			'city' => __( 'City', 'samedaycourier' ),
 			'county' => __( 'County', 'samedaycourier' ),
 			'address' => __( 'Address', 'samedaycourier' ),
-			'contactPersons' => __( 'Contact Persons', 'samedaycourier' ),
-			'default_pickup_point' => __( 'Is default ', 'samedaycourier' ),
+			'lat' => __( 'Latitude', 'samedaycourier' ),
+			'lng' => __( 'Longitude', 'samedaycourier' ),
+			'postal_code' => __( 'Postal code', 'samedaycourier' )
 		];
 
 		return $columns;
@@ -133,11 +114,12 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 */
 	public function get_sortable_columns()
 	{
-		$sortable_columns = array(
-			'sameday_id' => array('sameday_id', true)
+		return array(
+			'locker_id' => array(
+				'locker_id',
+				true
+			)
 		);
-
-		return $sortable_columns;
 	}
 
 	/**
@@ -148,7 +130,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'pickup-points_per_page', 5 );
+		$per_page     = $this->get_items_per_page( 'lockers_per_page', 5 );
 		$current_page = $this->get_pagenum();
 		$total_items  = self::record_count();
 
@@ -157,7 +139,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 			'per_page'    => $per_page //WE have to determine how many items to show on a page
 		] );
 
-		$this->items = self::get_pickup_points( $per_page, $current_page );
+		$this->items = self::get_lockers( $per_page, $current_page );
 	}
 }
 

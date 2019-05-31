@@ -6,7 +6,13 @@ if (! defined( 'ABSPATH' ) ) {
 
 class SamedayCourierQueryDb
 {
-	static function getDefaultPickupPointId($is_testing) {
+	/**
+	 * @param $is_testing
+	 *
+	 * @return int|null
+	 */
+	static function getDefaultPickupPointId($is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT sameday_id FROM " . $wpdb->prefix . 'sameday_pickup_point' . " WHERE default_pickup_point = 1 AND is_testing = {$is_testing}";
@@ -19,7 +25,13 @@ class SamedayCourierQueryDb
 		return $result->sameday_id;
 	}
 
-	static function getAvailableServices($is_testing) {
+	/**
+	 * @param $is_testing
+	 *
+	 * @return array|object|null
+	 */
+	static function getAvailableServices($is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND status>0";
@@ -28,7 +40,13 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getServices($is_testing) {
+	/**
+	 * @param $is_testing
+	 *
+	 * @return array|object|null
+	 */
+	static function getServices($is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing}";
@@ -37,7 +55,13 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getService($id) {
+	/**
+	 * @param $id
+	 *
+	 * @return array|object|void|null
+	 */
+	static function getService($id)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE id={$id}";
@@ -46,7 +70,14 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getServiceSameday($samedayId, $is_testing) {
+	/**
+	 * @param $samedayId
+	 * @param $is_testing
+	 *
+	 * @return array|object|void|null
+	 */
+	static function getServiceSameday($samedayId, $is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE sameday_id={$samedayId}  AND is_testing = {$is_testing}";
@@ -55,7 +86,13 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing) {
+	/**
+	 * @param \Sameday\Objects\Service\ServiceObject $service
+	 *
+	 * @param int $is_testing
+	 */
+	static function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_service';
@@ -71,21 +108,35 @@ class SamedayCourierQueryDb
 		$wpdb->insert($table, $data, $format);
 	}
 
-	static function updateService($service) {
+	/**
+	 * @param array $service
+	 */
+	static function updateService($service)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_service';
 		$wpdb->update($table, $service, array('id' => $service['id']));
 	}
 
-	static function deleteService($id) {
+	/**
+	 * @param int $id
+	 */
+	static function deleteService($id)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_service';
 		$wpdb->delete($table, array('id' => $id));
 	}
 
-	static function getPickupPoints($is_testing) {
+	/**
+	 * @param $is_testing
+	 *
+	 * @return array|object|null
+	 */
+	static function getPickupPoints($is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_pickup_point' . " WHERE is_testing = {$is_testing}";
@@ -94,7 +145,13 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getPickupPoint($id) {
+	/**
+	 * @param $id
+	 *
+	 * @return array|object|void|null
+	 */
+	static function getPickupPoint($id)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_pickup_point' . " WHERE id = {$id}";
@@ -103,7 +160,14 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getPickupPointSameday($samedayId, $is_testing) {
+	/**
+	 * @param $samedayId
+	 * @param $is_testing
+	 *
+	 * @return array|object|void|null
+	 */
+	static function getPickupPointSameday($samedayId, $is_testing)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_pickup_point' . " WHERE sameday_id={$samedayId}  AND is_testing = {$is_testing}";
@@ -112,7 +176,22 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function addPickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $is_testing) {
+	static function getLockers($is_testing)
+	{
+		global $wpdb;
+
+		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_locker' . " WHERE is_testing = {$is_testing}";
+		$result = $wpdb->get_results($query);
+
+		return $result;
+	}
+
+	/**
+	 * @param \Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject
+	 * @param $is_testing
+	 */
+	static function addPickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $is_testing)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_pickup_point';
@@ -133,7 +212,13 @@ class SamedayCourierQueryDb
 		$wpdb->insert($table, $data, $format);
 	}
 
-	static function updatePickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $is_testing) {
+	/**
+	 * @param \Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject
+	 *
+	 * @param int $id
+	 */
+	static function updatePickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $id)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_pickup_point';
@@ -148,19 +233,112 @@ class SamedayCourierQueryDb
 		);
 
 		$where = array(
-			'sameday_id' => $pickupPointObject->getId()
+			'id' => $id
 		);
 
 		$wpdb->update($table, $data, $where);
 	}
 
-	static function deletePickupPoint($id) {
+	/**
+	 * @param int $id
+	 */
+	static function deletePickupPoint($id)
+	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_pickup_point';
 		$wpdb->delete($table, array('id' => $id));
 	}
 
+	/**
+	 * @param int $samedayId
+	 *
+	 * @param int $testing
+	 */
+	static function getLockerSameday($samedayId, $is_testing)
+	{
+		global $wpdb;
+
+		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_locker' . " WHERE locker_id={$samedayId}  AND is_testing = {$is_testing}";
+		$result = $wpdb->get_row($query);
+
+		return $result;
+	}
+
+	/**
+	 * @param \Sameday\Objects\Locker\LockerObject $lockerObject
+	 * @param bool $is_testing
+	 */
+	static function addLocker(\Sameday\Objects\Locker\LockerObject $lockerObject, $is_testing)
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'sameday_locker';
+
+		$data = array(
+			'locker_id' => $lockerObject->getId(),
+			'name' => $lockerObject->getName(),
+			'city' => $lockerObject->getCity(),
+			'county' => $lockerObject->getCounty(),
+			'address' => $lockerObject->getAddress(),
+			'lat' => $lockerObject->getLat(),
+			'lng' => $lockerObject->getLong(),
+			'postal_code' => $lockerObject->getPostalCode(),
+			'boxes' => serialize($lockerObject->getBoxes()),
+			'is_testing' => $is_testing
+		);
+
+		$format = array('%d','%s','%s','%s','%s','%s','%s','%s','%s','%d');
+
+		$wpdb->insert($table, $data, $format);
+	}
+
+	/**
+	 * @param \Sameday\Objects\Locker\LockerObject $lockerObject
+	 *
+	 * @param int $id
+	 */
+	static function updateLocker(\Sameday\Objects\Locker\LockerObject $lockerObject, $id)
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'sameday_locker';
+
+		$data = array(
+			'locker_id' => $lockerObject->getId(),
+			'name' => $lockerObject->getName(),
+			'city' => $lockerObject->getCity(),
+			'county' => $lockerObject->getCounty(),
+			'address' => $lockerObject->getAddress(),
+			'lat' => $lockerObject->getLat(),
+			'lng' => $lockerObject->getLong(),
+			'postal_code' => $lockerObject->getPostalCode(),
+			'boxes' => serialize($lockerObject->getBoxes())
+		);
+
+		$where = array(
+			'id' => $id
+		);
+
+		$wpdb->update($table, $data, $where);
+	}
+
+	/**
+	 * @param int $id
+	 */
+	static function deleteLocker($id)
+	{
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'sameday_locker';
+		$wpdb->delete($table, array('id' => $id));
+	}
+
+	/**
+	 * @param $orderId
+	 *
+	 * @return array|object|void|null
+	 */
 	static function getAwbForOrderId($orderId) {
 		global $wpdb;
 
@@ -170,6 +348,9 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
+	/**
+	 * @param array $awb
+	 */
 	static function saveAwb($awb) {
 		global $wpdb;
 
@@ -180,6 +361,9 @@ class SamedayCourierQueryDb
 		$wpdb->insert($table, $awb, $format);
 	}
 
+	/**
+	 * @param int $id
+	 */
 	static function deleteAwb($id) {
 		global $wpdb;
 
@@ -187,13 +371,21 @@ class SamedayCourierQueryDb
 		$wpdb->delete($table, array('id' => $id));
 	}
 
+	/**
+	 * @param $orderId
+	 * @param $awbParcel
+	 * @param \Sameday\Objects\ParcelStatusHistory\SummaryObject $summary
+	 * @param array $history
+	 * @param \Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
+	 */
 	static function refreshPackageHistory(
-		$orderId,
-		$awbParcel,
-		\Sameday\Objects\ParcelStatusHistory\SummaryObject $summary,
-		array $history,
-		\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
-	) {
+			$orderId,
+			$awbParcel,
+			\Sameday\Objects\ParcelStatusHistory\SummaryObject $summary,
+			array $history,
+			\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
+		)
+	{
 
 		global $wpdb;
 
@@ -212,7 +404,13 @@ class SamedayCourierQueryDb
 		$wpdb->insert($table, $package, $format);
 	}
 
-	static function getPackagesForOrderId($orderId) {
+	/**
+	 * @param $orderId
+	 *
+	 * @return array|object|null
+	 */
+	static function getPackagesForOrderId($orderId)
+	{
 		global $wpdb;
 
 		$query = "SELECT * FROM " . $wpdb->prefix . 'sameday_package' . " WHERE order_id={$orderId}";
@@ -221,7 +419,13 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function updateParcels($orderId, $parcels) {
+	/**
+	 * @param int $orderId
+	 *
+	 * @param array $parcels
+	 */
+	static function updateParcels($orderId, $parcels)
+	{
 
 		global $wpdb;
 

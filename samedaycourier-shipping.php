@@ -36,6 +36,8 @@ require_once (plugin_basename('classes/samedaycourier-services.php'));
 require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
 require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
+require_once (plugin_basename('classes/samedaycourier-lockers.php'));
+require_once (plugin_basename('classes/samedaycourier-locker-instance.php'));
 require_once (plugin_basename('views/add-awb-form.php'));
 require_once (plugin_basename('views/awb-history-table.php'));
 require_once (plugin_basename('views/add-new-parcel-form.php'));
@@ -91,7 +93,7 @@ function samedaycourier_shipping_method() {
 						}
 
 						$rate = array(
-							'id' => $this->id . $service->sameday_id,
+							'id' => $this->id . ":" . $service->sameday_id,
 							'label' => $service->name,
 							'cost' => $price,
 							'meta_data' => array(
@@ -285,7 +287,8 @@ function samedaycourier_shipping_method() {
 			{
 				$serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
 				$pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
-				$buttons = '<a href="'.$serviceUrl.'" class="button-primary"> Services </a> <a href="'.$pickupPointUrl.'" class="button-primary"> Pickup-point </a>';
+				$lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
+				$buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
 				$adminOptins = parent::admin_options();
 
@@ -310,15 +313,22 @@ add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method')
 add_action('plugins_loaded', function () {
 	SamedayCourierServiceInstance::get_instance();
 	SamedayCourierPickupPointInstance::get_instance();
+	SamedayCourierLockerInstance::get_instance();
 });
 
 add_action('admin_post_refresh_services', function () {
 	$samedayClass = new Sameday();
 	return $samedayClass->refreshServices();
 });
+
 add_action('admin_post_refresh_pickup_points', function () {
 	$samedayClass = new Sameday();
 	return $samedayClass->refreshPickupPoints();
+});
+
+add_action('admin_post_refresh_lockers', function () {
+	$samedayClass = new Sameday();
+	return $samedayClass->refreshLockers();
 });
 
 add_action('admin_post_edit_service', function() {
@@ -366,6 +376,54 @@ add_action('admin_post_add-new-parcel', function() {
 
 	$samedayClass = new Sameday();
 	return $samedayClass->addNewParcel($postFields);
+});
+
+if( !function_exists( 'locker_create_fragmet' ) ) {
+	function locker_create_fragmet($fragments)
+	{
+		ob_start();
+
+		$fragments['.locker'] = '<div class="woocommerce-shipping-lockers"> Show lockers List </div>';
+
+		ob_get_clean();
+
+		return $fragments;
+	}
+}
+
+// add Filter when init cart checkout ::
+add_filter( 'woocommerce_update_order_review_fragments', 'locker_create_fragmet', 999 , 1 );
+
+
+add_action('wp_footer', function() {
+	$flash = '"<p> Lockers </p>"';
+	echo
+	'
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+		  	var data = {
+		  	    action: "ajax_locker_modify",
+		  	    data: {
+		  	        service_id: 7
+		  	    }
+		  	}
+		  	
+		  	$(document).on("click", ".woocommerce-shipping-methods", function(){
+		  	    if (undefined !== event.target.value) {
+		  	        service_id = event.target.value.split(":")[1];
+		  	        if (service_id === 16) {
+		  	            showLockers();
+		  	            console.log("TESTAREA!");
+		  	        }
+		  	    }
+		  	});
+		  	
+		  	function showLockers() {
+		  	  	return '.$flash.';
+		  	}
+		});
+	</script>
+	';
 });
 
 add_action('admin_head', function () {
