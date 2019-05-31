@@ -86,32 +86,20 @@ function samedaycourier_create_db() {
 
 	$servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
 
-//	if (! isset($servicesRows->sameday_code)) {
-//		$alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) AFTER `sameday_id` NOT NULL ;";
-//
-//		$tablesToAlter[] = $alterServiceTable;
-//	}
+	if (! isset($servicesRows->sameday_code)) {
+		$alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '' ;";
 
-	foreach ($tablesToCreate as $table) {
-		dbDelta( $table );
+		$tablesToAlter[] = $alterServiceTable;
 	}
 
-//	if (! empty($tablesToAlter)) {
-//		foreach ($tablesToAlter as $table) {
-//			dbDelta( $table );
-//		}
-//	}
-}
+	foreach ($tablesToCreate as $sql) {
+		$wpdb->query($sql);
+	}
 
-//public function ensureSamedayServiceCodeColumn()
-//{
-//	$query = 'SELECT * FROM ' . DB_PREFIX . "sameday_service LIMIT 1";
-//	$row = $this->db->query($query)->row;
-//
-//	if (array_key_exists('sameday_code', $row)) {
-//		return;
-//	}
-//
-//	$this->db->query('alter table '. DB_PREFIX .'sameday_service add sameday_code VARCHAR(255) default \'\' not null');
-//}
+	if (! empty($tablesToAlter)) {
+		foreach ($tablesToAlter as $sql) {
+			$wpdb->query($sql);
+		}
+	}
+}
 
