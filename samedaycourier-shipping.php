@@ -86,6 +86,10 @@ function samedaycourier_shipping_method() {
 							continue;
 						}
 
+						if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > 1) {
+						    continue;
+                        }
+
 						$price = $service->price;
 
 						if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
