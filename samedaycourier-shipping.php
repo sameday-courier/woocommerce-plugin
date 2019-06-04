@@ -422,10 +422,8 @@ add_action('admin_post_add-new-parcel', function() {
 
 // LOCKER :
 function wps_locker_row_layout() {
-	$current_user = wp_get_current_user();
-	$user_id = $current_user->ID;
-
-	$chosen_shipping = wps_get_chosen_shipping_method();
+	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+	$chosen_shipping = $chosen_methods[0];
 	$serviceCode = explode(":", $chosen_shipping, 3);
 	$serviceCode = $serviceCode[2] ?: null;
 
