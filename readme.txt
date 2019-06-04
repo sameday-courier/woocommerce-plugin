@@ -26,6 +26,7 @@ Features:
 *   Config Sameday Courier shipping method
 *   Import Sameday Courier pickup-points
 *   Import Sameday Courier services
+*   Import Sameday Courier lockers
 *   Show AWB as PDF format
 *   Add new parcel in AWB
 *   Show AWB status and summary
