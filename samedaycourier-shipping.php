@@ -78,6 +78,14 @@ function samedaycourier_shipping_method() {
 				$availableServices = $this->getAvailableServices();
 				if (!empty($availableServices)) {
 					foreach ( $availableServices as $service ) {
+						if ($service->sameday_code === "LS") {
+							continue;
+						}
+
+						if ($service->sameday_code === "2H" && SamedayCourierHelperClass::convertStateCodeToName($package['destination']['country'], $package['destination']['state']) !== "București") {
+							continue;
+						}
+
 						$price = $service->price;
 
 						if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
@@ -93,17 +101,48 @@ function samedaycourier_shipping_method() {
 						}
 
 						$rate = array(
-							'id' => $this->id . ":" . $service->sameday_id,
+							'id' => $this->id . ":" . $service->sameday_id . ":" . $service->sameday_code,
 							'label' => $service->name,
 							'cost' => $price,
 							'meta_data' => array(
-								'service_id' => $service->sameday_id
+								'service_id' => $service->sameday_id,
+								'service_code' => $service->sameday_code
 							)
 						);
+
+						if ($service->sameday_code === "LN") {
+							$this->syncLockers();
+							$rate['lockers'] = SamedayCourierQueryDb::getLockers($this->isTesting());
+						}
 
 						$this->add_rate( $rate );
 					}
 				}
+			}
+
+			/**
+			 * @return bool
+			 */
+			private function syncLockers()
+			{
+				$time = time();
+
+				$ltSync = $this->settings['sameday_sync_lockers_ts'];
+
+				if ($time > ($ltSync + 3600)) {
+					$samedayClass = new Sameday();
+					return $samedayClass->refreshLockers();
+				}
+
+				return true;
+			}
+
+			/**
+			 * @return int
+			 */
+			private function isTesting()
+			{
+				return $this->settings['is_testing'] === 'yes' ? 1 : 0;
 			}
 
 			/**
@@ -114,8 +153,7 @@ function samedaycourier_shipping_method() {
 			 */
 			private function getEstimatedCost($address, $serviceId)
 			{
-				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
-				$pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($is_testing);
+				$pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
 				$weight = WC()->cart->get_cart_contents_weight() ?: 1;
 				$state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
 
@@ -149,7 +187,7 @@ function samedaycourier_shipping_method() {
 					SamedayCourierApi::initClient(
 						$this->settings['user'],
 						$this->settings['password'],
-						$is_testing
+						$this->isTesting()
 					)
 				);
 
@@ -165,8 +203,7 @@ function samedaycourier_shipping_method() {
 
 			private function getAvailableServices()
 			{
-				$is_testing = $this->settings['is_testing'] === 'yes' ? 1 : 0;
-				$services = SamedayCourierQueryDb::getAvailableServices($is_testing);
+				$services = SamedayCourierQueryDb::getAvailableServices($this->isTesting());
 
 				$availableServices = array();
 				foreach ($services as $service) {
@@ -378,53 +415,77 @@ add_action('admin_post_add-new-parcel', function() {
 	return $samedayClass->addNewParcel($postFields);
 });
 
-if( !function_exists( 'locker_create_fragmet' ) ) {
-	function locker_create_fragmet($fragments)
-	{
-		ob_start();
 
-		$fragments['.locker'] = '<div class="woocommerce-shipping-lockers"> Show lockers List </div>';
+// LOCKER :
+function wps_locker_row_layout() {
+	$current_user = wp_get_current_user();
+	$user_id = $current_user->ID;
 
-		ob_get_clean();
+	$chosen_shipping = wps_get_chosen_shipping_method();
+	$serviceCode = explode(":", $chosen_shipping, 3);
+	$serviceCode = $serviceCode[2] ?: null;
 
-		return $fragments;
+	$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
+
+	$lockers = SamedayCourierQueryDb::getLockers($is_testing);
+	$lockerOptions = '';
+	foreach ($lockers as $locker) {
+		$lockerOptions .= '<option value="' . $locker->locker_id . '">' . $locker->name . '</option>';
+	}
+
+	if ( is_checkout() && $serviceCode === "LN") {
+	?>
+		<tr class="shipping-pickup-store">
+			<th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
+			<td>
+				<select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
+					<option value=""> <strong> <?= __('Select a locker', 'wc-pickup-store') ?> </strong> </option>
+					<?php echo $lockerOptions; ?>
+				</select>
+			</td>
+		</tr>
+	<?php }
+}
+add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
+
+function add_locker_id_to_order_data( $order_id ) {
+	if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
+		$locker_id = $_POST['locker_id'];
+		update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
 	}
 }
+add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
 
-// add Filter when init cart checkout ::
-add_filter( 'woocommerce_update_order_review_fragments', 'locker_create_fragmet', 999 , 1 );
-
-
-add_action('wp_footer', function() {
-	$flash = '"<p> Lockers </p>"';
-	echo
-	'
-	<script type="text/javascript">
-		jQuery(document).ready(function($) {
-		  	var data = {
-		  	    action: "ajax_locker_modify",
-		  	    data: {
-		  	        service_id: 7
-		  	    }
-		  	}
-		  	
-		  	$(document).on("click", ".woocommerce-shipping-methods", function(){
-		  	    if (undefined !== event.target.value) {
-		  	        service_id = event.target.value.split(":")[1];
-		  	        if (service_id === 16) {
-		  	            showLockers();
-		  	            console.log("TESTAREA!");
-		  	        }
-		  	    }
-		  	});
-		  	
-		  	function showLockers() {
-		  	  	return '.$flash.';
-		  	}
-		});
-	</script>
-	';
-});
+/**
+ ** Order detail styles
+ **/
+function wps_locker_style() {
+	?>
+	<style type="text/css">
+		.shipping-pickup-store td .title {
+			float: left;
+			line-height: 30px;
+		}
+		.shipping-pickup-store td span.text {
+			float: right;
+		}
+		.shipping-pickup-store td span.description {
+			clear: both;
+		}
+		.shipping-pickup-store td > span:not([class*="select"]) {
+			display: block;
+			font-size: 11px;
+			font-weight: normal;
+			line-height: 1.3;
+			margin-bottom: 0;
+			padding: 6px 0;
+			text-align: justify;
+		}
+	</style>
+	<?php
+}
+add_action('wp_head', 'wps_locker_style');
+// Locker !
 
 add_action('admin_head', function () {
 	if (isset($_GET["add-awb"])){
@@ -497,7 +558,7 @@ add_action('admin_head', function () {
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
-add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ){
+add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ) {
 	add_thickbox();
 	if ($_GET['action'] === 'edit') {
 

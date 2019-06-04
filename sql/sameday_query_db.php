@@ -404,7 +404,6 @@ class SamedayCourierQueryDb
 			\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
 		)
 	{
-
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_package';
@@ -444,7 +443,6 @@ class SamedayCourierQueryDb
 	 */
 	static function updateParcels($orderId, $parcels)
 	{
-
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_awb';
