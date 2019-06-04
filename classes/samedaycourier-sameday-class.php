@@ -150,6 +150,13 @@ class Sameday
 		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 	}
 
+	/**
+	 * @return bool
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedayBadRequestException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public function refreshLockers()
 	{
 		if (empty($this->samedayOptions) ) {
@@ -313,6 +320,17 @@ class Sameday
 		return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
 	}
 
+	/**
+	 * @param $params
+	 *
+	 * @return bool
+	 * @throws \Sameday\Exceptions\SamedayAuthenticationException
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedayNotFoundException
+	 * @throws \Sameday\Exceptions\SamedayOtherException
+	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
 	public function postAwb($params)
 	{
 		if (empty($this->samedayOptions) ) {
@@ -324,6 +342,16 @@ class Sameday
 			$index = array_search($array, $params['shipping_lines']);
 			$serviceId = $params['shipping_lines'][$index]->get_meta_data()[0]->get_data()['value'];
 		}
+
+		$lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
+
+		if (isset($lockerId)) {
+			$locker = SamedayCourierQueryDb::getLockerSameday($lockerId, $this->isTesting());
+		}
+
+		$city = isset($locker) ? $locker->city :$params['shipping']['city'];
+		$county = isset($locker)  ? $locker->county : SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
+		$address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'];
 
 		$sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 			$this->samedayOptions['user'],
@@ -357,9 +385,9 @@ class Sameday
 			$serviceId,
 			new \Sameday\Objects\Types\AwbPaymentType($params['samedaycourier-package-awb-payment']),
 			new \Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
-				$params['shipping']['city'],
-				\SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']),
-				ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'],
+				$city,
+				$county,
+				$address,
 				ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
 				isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
 				isset($params['billing']['phone']) ? $params['billing']['email'] : "",
@@ -372,7 +400,10 @@ class Sameday
 			array(),
 			null,
 			null,
-			$params['samedaycourier-package-observation']
+			$params['samedaycourier-package-observation'],
+			'',
+			'',
+			$lockerId
 		);
 
 		try {
