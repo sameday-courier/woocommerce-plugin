@@ -360,7 +360,7 @@ class Sameday
 		));
 
 		$parcelDimensions[] = new \Sameday\Objects\ParcelDimensionsObject(
-			$params['samedaycourier-package-weight'],
+			$params['samedaycourier-package-weight'] <= 0 ? 1 : $params['samedaycourier-package-weight'],
 			$params['samedaycourier-package-length'],
 			$params['samedaycourier-package-height'],
 			$params['samedaycourier-package-width']

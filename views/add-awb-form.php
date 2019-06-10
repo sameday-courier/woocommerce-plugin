@@ -62,7 +62,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-weight"> ' . __("Package Weight") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-weight" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-weight" min="0.1" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '">
                              </td>
                         </tr>
                         <tr valign="middle">
