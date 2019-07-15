@@ -46,7 +46,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -54,7 +54,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-insurance-value"> ' . __("Insured value") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -70,7 +70,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-length"> ' . __("Package Length") . '</label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-length" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-length" value="">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-length" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-length" value="">
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -78,7 +78,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-height"> ' . __("Package Height") . ' </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-height" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-height" value="">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-height" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-height" value="">
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -86,7 +86,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-width"> ' . __("Package Width") . ' </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-width" min="0" style="width: 180px; height: 30px;" id="samedaycourier-package-width" value="">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-width" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-width" value="">
                              </td>
                         </tr>		                                    
                         <tr valign="middle">
