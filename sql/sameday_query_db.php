@@ -100,10 +100,11 @@ class SamedayCourierQueryDb
 		$data = array(
 			'sameday_id' => $service->getId(),
 			'sameday_name' => $service->getName(),
+			'sameday_code' => $service->getCode(),
 			'is_testing' => $is_testing,
 			'status' => 0
 		);
-		$format = array('%d','%s','%d','%d');
+		$format = array('%d','%s','%s','%d','%d');
 
 		$wpdb->insert($table, $data, $format);
 	}
