@@ -428,10 +428,8 @@ class Sameday
 
         $samedayOrderItemId = null;
         foreach ($params['shipping_lines'] as $id => $shippingLine) {
-            if ($shippingLine->get_method_id() == 'samedaycourier') {
-                $samedayOrderItemId = $id;
-                break;
-            }
+            $samedayOrderItemId = $id;
+            break;
         }
 
         $service = SamedayCourierQueryDb::getServiceSameday($serviceId, $this->isTesting());
