@@ -5,6 +5,23 @@ if (! defined( 'ABSPATH' ) ) {
 }
 
 function samedaycourierAddAwbForm($order) {
+    $samedayOption = get_option('woocommerce_samedaycourier_settings');
+    $is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
+
+    $samedayOrderItemId = null;
+    foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
+        if ($shippingLine->get_method_id() != 'samedaycourier') {
+            continue;
+        }
+
+        $serviceId = $shippingLine->get_meta('service_id');
+        if ($serviceId != '') {
+            break;
+        }
+
+        $serviceId = null;
+    }
+
 	$total_weight = 0;
 	foreach ($order->get_items() as $k => $v) {
 		$_product = wc_get_product($v['product_id']);
@@ -15,11 +32,9 @@ function samedaycourierAddAwbForm($order) {
 	$total_weight = $total_weight ?: 1;
 
 	$pickupPointOptions = '';
-	$samedayOption = get_option('woocommerce_samedaycourier_settings');
-	$is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
 	$pickupPoints = SamedayCourierQueryDb::getPickupPoints($is_testing);
 	foreach ($pickupPoints as $pickupPoint) {
-		$checked = $pickupPoint->default_pickup_point === '1' ? "checked" : "";
+		$checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
 		$pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
 	}
 
@@ -35,6 +50,16 @@ function samedaycourierAddAwbForm($order) {
 		$awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
 	}
 
+    $services = '';
+    $samedayServices = SamedayCourierQueryDb::getServices($is_testing);
+    foreach ($samedayServices as $samedayService) {
+        if ($samedayService->status <= 0) {
+            continue;
+        }
+
+        $checked = $serviceId == $samedayService->sameday_id ? "selected" : "";
+        $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
+    }
 
 	$form = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
 	            <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
@@ -116,6 +141,16 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 180px; height: 30px;" id="samedaycourier-package-awb-payment">
                                     ' . $awbPaymentTypeOptions . '
+								</select>
+                             </td>
+                        </tr>
+                        <tr valign="middle">
+                            <th scope="row" class="titledesc"> 
+                                <label for="samedaycourier-service"> ' . __("Service") . ' <span style="color: #ff2222"> * </span>  </label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <select form="addAwbForm" name="samedaycourier-service" style="width: 180px; height: 30px;" id="samedaycourier-service">
+                                    ' . $services . '
 								</select>
                              </td>
                         </tr>
