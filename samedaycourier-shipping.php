@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -583,22 +583,18 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>';
 
-		$shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->id);
-
-		if (empty($shipping_method_sameday)) {
-			$buttons = '
+        $buttons = '
 				<div class="address">
 					' . $_generateAwb  .'
 				</div>';
-		} else {
-			$buttons = '
-				<div class="address">
-					' . $_showAwb . $_removeAwb  .'
-				</div>';
-		}
 
-		if ($shipping_method_sameday === null) {
-			$buttons = "";
+        $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->id);
+
+		if (! empty($shipping_method_sameday)) {
+            $buttons = '
+                <div class="address">
+                    ' . $_showAwb . $_removeAwb  .'
+                </div>';
 		}
 
 		$awbModal = samedaycourierAddAwbForm($order);
