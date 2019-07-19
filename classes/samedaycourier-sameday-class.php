@@ -341,32 +341,7 @@ class Sameday
             return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
         }
 
-        $samedayOrderItemId = null;
-        foreach ($params['shipping_lines'] as $id => $shippingLine) {
-            if ($shippingLine->get_method_id() == 'samedaycourier') {
-                $samedayOrderItemId = $id;
-                break;
-            }
-        }
-
         $serviceId = $params['samedaycourier-service'];
-        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, $this->isTesting());
-        $metas = array(
-            'service_id' => $serviceId,
-            'service_code' => $service->sameday_code
-        );
-
-        // Add/update sameday metadata.
-        foreach ($metas as $key => $value) {
-            $shippingLine->update_meta_data($key, $value);
-        }
-        $shippingLine->save_meta_data();
-
-        // Set sameday shipping method.
-        $shippingLine->set_method_id('samedaycourier');
-        $shippingLine->save();
-        global $wpdb;
-        $wpdb->update($wpdb->prefix . 'woocommerce_order_items', array('order_item_name' => $service->name), array('order_item_id' => $samedayOrderItemId));
 
 		$lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
 
@@ -450,6 +425,32 @@ class Sameday
 		);
 
 		SamedayCourierQueryDb::saveAwb($awbDetails);
+
+        $samedayOrderItemId = null;
+        foreach ($params['shipping_lines'] as $id => $shippingLine) {
+            if ($shippingLine->get_method_id() == 'samedaycourier') {
+                $samedayOrderItemId = $id;
+                break;
+            }
+        }
+
+        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, $this->isTesting());
+        $metas = array(
+            'service_id' => $serviceId,
+            'service_code' => $service->sameday_code
+        );
+
+        // Add/update sameday metadata.
+        foreach ($metas as $key => $value) {
+            $shippingLine->update_meta_data($key, $value);
+        }
+        $shippingLine->save_meta_data();
+
+        // Set sameday shipping method.
+        $shippingLine->set_method_id('samedaycourier');
+        $shippingLine->save();
+        global $wpdb;
+        $wpdb->update($wpdb->prefix . 'woocommerce_order_items', array('order_item_name' => $service->name), array('order_item_id' => $samedayOrderItemId));
 
 		return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
 	}
