@@ -538,12 +538,12 @@ class Sameday
 			$this->isTesting()
 		));
 
-		$parcels = unserialize(SamedayCourierQueryDb::getAwbForOrderId($orderId)->parcels);
+		$awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        if (empty($awb)) {
+            return;
+        }
 
-		if (empty($parcels)) {
-			return;
-		}
-
+        $parcels = unserialize($awb->parcels);
 		foreach ($parcels as $parcel) {
 			$parcelStatus = $sameday->getParcelStatusHistory(new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
 			SamedayCourierQueryDb::refreshPackageHistory(
