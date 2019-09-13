@@ -9,6 +9,7 @@ function samedaycourierAddAwbForm($order) {
     $is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
 
     $samedayOrderItemId = null;
+    $serviceId = null;
     foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
         if ($shippingLine->get_method_id() != 'samedaycourier') {
             continue;
@@ -18,8 +19,6 @@ function samedaycourierAddAwbForm($order) {
         if ($serviceId != '') {
             break;
         }
-
-        $serviceId = null;
     }
 
 	$total_weight = 0;
@@ -65,13 +64,13 @@ function samedaycourierAddAwbForm($order) {
 	            <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
 		        <table>
                     <tbody>		                    	
-                        <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->id. '">
+                        <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->total . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->get_total() . '">
                              </td>
                         </tr>
                         <tr valign="middle">

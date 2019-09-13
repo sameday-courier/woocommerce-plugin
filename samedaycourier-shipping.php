@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -425,7 +425,7 @@ function wps_locker_row_layout() {
 	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
 	$chosen_shipping = $chosen_methods[0];
 	$serviceCode = explode(":", $chosen_shipping, 3);
-	$serviceCode = $serviceCode[2] ?: null;
+	$serviceCode = isset($serviceCode[2]) ? $serviceCode[2] : null;
 
 	$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
 
@@ -573,13 +573,13 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 			<p class="form-field form-field-wide wc-customer-user">
 				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
 				<a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
-				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->id . '">
+				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
 			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
 			</p>';
 
 		$_removeAwb = '
 			<p class="form-field form-field-wide wc-customer-user">
-				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->id . '">
+				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->get_id() . '">
 			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
 			</p>';
 
@@ -588,7 +588,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 					' . $_generateAwb  .'
 				</div>';
 
-        $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->id);
+        $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->get_id());
 
 		if (! empty($shipping_method_sameday)) {
             $buttons = '
@@ -600,9 +600,9 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		$awbModal = samedaycourierAddAwbForm($order);
 
 		$sameday = new Sameday();
-		$awbHistoryTable = $sameday->showAwbHistory($order->id);
+		$awbHistoryTable = $sameday->showAwbHistory($order->get_id());
 
-		$addNewParcelForm = samedaycourierAddNewParcelForm($order->id);
+		$addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
 
 		$newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
  							' . $addNewParcelForm . ' 
