@@ -42,13 +42,13 @@ class SamedayCourierServiceInstance
 	 * Plugin settings page
 	 */
 	public function plugin_settings_page() {
-		?>
+        ?>
         <div class="wrap">
 
             <div id="poststuff">
                 <div id="post-body" class="metabox-holder columns-3">
                     <div id="post-body-content">
-                        <?php if($_GET['action'] !== 'edit') { ?>
+                        <?php if(!isset($_GET['action']) || $_GET['action'] !== 'edit') { ?>
                         <div class="meta-box-sortables ui-sortable">
                             <div>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post">
@@ -57,10 +57,10 @@ class SamedayCourierServiceInstance
                                 </form>
                             </div>
                             <form method="post">
-								<?php
+                                <?php
                                     $this->services_obj->prepare_items();
                                     $this->services_obj->display();
-								?>
+                                ?>
                             </form>
                         </div>
                         <?php } else { ?>
@@ -70,11 +70,11 @@ class SamedayCourierServiceInstance
                 </div>
             </div>
         </div>
-		<?php }
-	}
+        <?php }
+    }
 
-	private function getStatuses()
-	{
+    private function getStatuses()
+    {
 		return array(
 			array(
 				'value' => 0,
