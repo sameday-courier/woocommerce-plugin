@@ -70,7 +70,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-repayment" min="0" step="0.1" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->get_total() . '">
+                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->get_total() . '">
                              </td>
                         </tr>
                         <tr valign="middle">
