@@ -367,7 +367,7 @@ class Sameday
 		);
 
 		$companyObject = null;
-		if (strlen($params['company'])) {
+		if (strlen($params['shipping']['company'])) {
 			$companyObject = new \Sameday\Objects\PostAwb\Request\CompanyEntityObject(
 				$params['shipping']['company'],
 				'',
