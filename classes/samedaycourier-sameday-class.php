@@ -349,7 +349,7 @@ class Sameday
 			$locker = SamedayCourierQueryDb::getLockerSameday($lockerId, $this->isTesting());
 		}
 
-		$city = isset($locker) ? $locker->city :$params['shipping']['city'];
+		$city = isset($locker) ? $locker->city : $params['shipping']['city'];
 		$county = isset($locker)  ? $locker->county : SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
 		$address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'];
 

@@ -100,31 +100,43 @@ class SamedayCourierHelperClass
 		return $sanitizedInputs;
 	}
 
-	/**
-	 * @return array|null
-	 */
-	public static function getShippingMethodSameday($orderId)
-	{
-		$data = array();
+    /**
+     * @return array|null
+     */
+    public static function getShippingMethodSameday($orderId)
+    {
+        $data = array();
 
-		$shippingLines = wc_get_order($orderId)->get_data()['shipping_lines'];
+        $shippingLines = wc_get_order($orderId)->get_data()['shipping_lines'];
 
-		$serviceMethod = null;
-		foreach ($shippingLines as $array) {
-			$index = array_search($array, $shippingLines);
-			$serviceMethod = $shippingLines[$index]->get_data()['method_id'];
-		}
+        $serviceMethod = null;
+        foreach ($shippingLines as $array) {
+            $index = array_search($array, $shippingLines);
+            $serviceMethod = $shippingLines[$index]->get_data()['method_id'];
+        }
 
-		if ($serviceMethod !== 'samedaycourier') {
-			return null;
-		}
+        if ($serviceMethod !== 'samedaycourier') {
+            return null;
+        }
 
-		$awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
 
-		if (!empty($awb)) {
-			$data['awb_number'] = $awb->awb_number;
-		}
+        if (!empty($awb)) {
+            $data['awb_number'] = $awb->awb_number;
+        }
 
-		return $data;
-	}
+        return $data;
+    }
+
+    /**
+     * @param string $shippingMethodInput
+     */
+    public static function parseShippingMethodCode($shippingMethodInput)
+    {
+        $serviceCode = explode(":", $shippingMethodInput, 3);
+
+        $serviceCode = isset($serviceCode[2]) ? $serviceCode[2] : null;
+
+        return $serviceCode;
+    }
 }

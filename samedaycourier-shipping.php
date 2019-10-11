@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -423,9 +423,7 @@ add_action('admin_post_add-new-parcel', function() {
 // LOCKER :
 function wps_locker_row_layout() {
 	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-	$chosen_shipping = $chosen_methods[0];
-	$serviceCode = explode(":", $chosen_shipping, 3);
-	$serviceCode = isset($serviceCode[2]) ? $serviceCode[2] : null;
+    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
 
 	$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
 
@@ -441,7 +439,7 @@ function wps_locker_row_layout() {
 			<th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
 			<td>
 				<select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
-					<option value=""> <strong> <?= __('Select a locker', 'wc-pickup-store') ?> </strong> </option>
+					<option value=""> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
 					<?php echo $lockerOptions; ?>
 				</select>
 			</td>
@@ -605,15 +603,26 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 		$addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
 
 		$newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
- 							' . $addNewParcelForm . ' 
+                            ' . $addNewParcelForm . ' 
                            </div>';
 
 		$historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
- 							' . $awbHistoryTable . ' 
+                            ' . $awbHistoryTable . ' 
                          </div>';
 
 		echo $buttons . $awbModal . $newParcelModal . $historyModal;
 	}
+});
+
+// Revision order before Submit
+add_action('woocommerce_checkout_process', function () {
+    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    if ($serviceCode === 'LN') {
+        if ($_POST['locker_id'] === null || $_POST['locker_id'] === '') {
+            wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+        }
+    }
 });
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
