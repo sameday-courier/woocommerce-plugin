@@ -34,7 +34,7 @@ For further information, contact us at software@sameday.ro !
  <hr> 
 <strong> Usage </strong>
 
-<p> In order to be able to use this plug-in, be sure you have at leas 3.6.4 Wordpress Version and the latest WooCommerce version installed.
+<p> In order to be able to use this plug-in, be sure you have at least 3.6.4 Wordpress Version and the latest WooCommerce version installed.
     Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin.
     Drag&drop the .zip folder you download for and install plugin. If every things works, activate plugin and now the new feature are ready to use.
  </p> 
