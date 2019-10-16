@@ -11,7 +11,7 @@ function samedaycourierAddAwbForm($order) {
     $samedayOrderItemId = null;
     $serviceId = null;
     foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
-        if ($shippingLine->get_method_id() != 'samedaycourier') {
+        if ($shippingLine->get_method_id() !== 'samedaycourier') {
             continue;
         }
 
@@ -21,33 +21,38 @@ function samedaycourierAddAwbForm($order) {
         }
     }
 
-	$total_weight = 0;
-	foreach ($order->get_items() as $k => $v) {
-		$_product = wc_get_product($v['product_id']);
-		$qty = $v['quantity'];
-		$weight = (float) $_product->get_weight();
-		$total_weight += round($weight * $qty, 2);
-	}
-	$total_weight = $total_weight ?: 1;
+    $total_weight = (float) 0;
+    $weight = (float) 0;
+    foreach ($order->get_items() as $k => $v) {
+        $_product = wc_get_product($v['product_id']);
+        $qty = $v['quantity'];
 
-	$pickupPointOptions = '';
-	$pickupPoints = SamedayCourierQueryDb::getPickupPoints($is_testing);
-	foreach ($pickupPoints as $pickupPoint) {
-		$checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
-		$pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
-	}
+        if (isset($_product) && $_product !== false) {
+            $weight = (float) $_product->get_weight();
+        }
 
-	$packageTypeOptions = '';
-	$packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
-	foreach ($packagesType as $packageType) {
-		$packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
-	}
+        $total_weight += round($weight * $qty, 2);
+    }
+    $total_weight = $total_weight ?: 1;
 
-	$awbPaymentTypeOptions = '';
-	$awbPaymentsType = SamedayCourierHelperClass::getAwbPaymentTypeOptions();
-	foreach ($awbPaymentsType as $awbPaymentType) {
-		$awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
-	}
+    $pickupPointOptions = '';
+    $pickupPoints = SamedayCourierQueryDb::getPickupPoints($is_testing);
+    foreach ($pickupPoints as $pickupPoint) {
+        $checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
+        $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
+    }
+
+    $packageTypeOptions = '';
+    $packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
+    foreach ($packagesType as $packageType) {
+        $packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
+    }
+
+    $awbPaymentTypeOptions = '';
+    $awbPaymentsType = SamedayCourierHelperClass::getAwbPaymentTypeOptions();
+    foreach ($awbPaymentsType as $awbPaymentType) {
+        $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
+    }
 
     $services = '';
     $samedayServices = SamedayCourierQueryDb::getServices($is_testing);
@@ -60,9 +65,9 @@ function samedaycourierAddAwbForm($order) {
         $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
-	$form = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
-	            <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
-		        <table>
+    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
+                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
+                <table>
                     <tbody>		                    	
                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
                          <tr valign="middle">
@@ -120,7 +125,7 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 180px; height: 30px;" id="samedaycourier-package-pickup-point" >
                                     ' . $pickupPointOptions . '
-								</select>
+                                </select>
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -130,7 +135,7 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-package-type" style="width: 180px; height: 30px;" id="samedaycourier-package-type">
                                     ' . $packageTypeOptions . '
-								</select>
+                                </select>
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -140,7 +145,7 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 180px; height: 30px;" id="samedaycourier-package-awb-payment">
                                     ' . $awbPaymentTypeOptions . '
-								</select>
+                                </select>
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -150,7 +155,7 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-service" style="width: 180px; height: 30px;" id="samedaycourier-service">
                                     ' . $services . '
-								</select>
+                                </select>
                              </td>
                         </tr>
                         <tr valign="middle">
@@ -160,13 +165,13 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
                              </td>
-                        </tr>			                
+                        </tr>                
                         <tr>
                             <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb") . ' </button> </th>
                         </tr>
                     </tbody>
-                </table>		
-			</div>';
+                </table>
+            </div>';
 
-	return $form;
+    return $form;
 }

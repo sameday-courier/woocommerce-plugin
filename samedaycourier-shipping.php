@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.8
+ * Version: 1.0.9
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -14,14 +14,14 @@
  */
 
 if (! defined( 'ABSPATH' ) ) {
-	exit;
+    exit;
 }
 
 /**
  * Check if WooCommerce plugin is enabled
  */
 if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), '')) {
-	exit;
+    exit;
 }
 
 require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -43,416 +43,416 @@ require_once (plugin_basename('views/awb-history-table.php'));
 require_once (plugin_basename('views/add-new-parcel-form.php'));
 
 function samedaycourier_shipping_method() {
-	if (! class_exists('SamedayCourier_Shipping_Method')) {
-		class SamedayCourier_Shipping_Method extends WC_Shipping_Method
-		{
-			/**
-			 * @var bool
-			 */
-			private $configValidation;
+    if (! class_exists('SamedayCourier_Shipping_Method')) {
+        class SamedayCourier_Shipping_Method extends WC_Shipping_Method
+        {
+            /**
+             * @var bool
+             */
+            private $configValidation;
 
-			public function __construct( $instance_id = 0 )
-			{
-				parent::__construct( $instance_id );
+            public function __construct( $instance_id = 0 )
+            {
+                parent::__construct( $instance_id );
 
-				$this->id = 'samedaycourier';
-				$this->method_title = __('SamedayCourier', 'samedaycourier');
-				$this->method_description = __('Custom Shipping Method for SamedayCourier', 'samedaycourier');
+                $this->id = 'samedaycourier';
+                $this->method_title = __('SamedayCourier', 'samedaycourier');
+                $this->method_description = __('Custom Shipping Method for SamedayCourier', 'samedaycourier');
 
-				$this->configValidation = false;
+                $this->configValidation = false;
 
-				$this->init();
-			}
+                $this->init();
+            }
 
-			/**
-			 * @param array $package
-			 */
-			public function calculate_shipping( $package = array() )
-			{
-				if ($this->settings['enabled'] === 'no') {
-					return;
-				}
+            /**
+             * @param array $package
+             */
+            public function calculate_shipping( $package = array() )
+            {
+                if ($this->settings['enabled'] === 'no') {
+                    return;
+                }
 
-				$useEstimatedCost = $this->settings['estimated_cost'] === 'yes' ? 1 : 0;
+                $useEstimatedCost = $this->settings['estimated_cost'] === 'yes' ? 1 : 0;
 
-				$availableServices = $this->getAvailableServices();
-				if (!empty($availableServices)) {
-					foreach ( $availableServices as $service ) {
-						if ($service->sameday_code === "LS") {
-							continue;
-						}
-
-						if ($service->sameday_code === "2H" && SamedayCourierHelperClass::convertStateCodeToName($package['destination']['country'], $package['destination']['state']) !== "București") {
-							continue;
-						}
-
-						if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > 1) {
-						    continue;
+                $availableServices = $this->getAvailableServices();
+                if (!empty($availableServices)) {
+                    foreach ( $availableServices as $service ) {
+                        if ($service->sameday_code === "LS") {
+                            continue;
                         }
 
-						$price = $service->price;
+                        if ($service->sameday_code === "2H" && SamedayCourierHelperClass::convertStateCodeToName($package['destination']['country'], $package['destination']['state']) !== "București") {
+                            continue;
+                        }
 
-						if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
-							$price = 0;
-						}
+                        if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > 1) {
+                            continue;
+                        }
 
-						if ($useEstimatedCost) {
-							$estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
+                        $price = $service->price;
 
-							if (isset($estimatedCost)) {
-								$price = $estimatedCost;
-							}
-						}
+                        if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
+                            $price = 0;
+                        }
 
-						$rate = array(
-							'id' => $this->id . ":" . $service->sameday_id . ":" . $service->sameday_code,
-							'label' => $service->name,
-							'cost' => $price,
-							'meta_data' => array(
-								'service_id' => $service->sameday_id,
-								'service_code' => $service->sameday_code
-							)
-						);
+                        if ($useEstimatedCost) {
+                            $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
 
-						if ($service->sameday_code === "LN") {
-							$this->syncLockers();
-							$rate['lockers'] = SamedayCourierQueryDb::getLockers($this->isTesting());
-						}
+                            if (isset($estimatedCost)) {
+                                $price = $estimatedCost;
+                            }
+                        }
 
-						$this->add_rate( $rate );
-					}
-				}
-			}
+                        $rate = array(
+                            'id' => $this->id . ":" . $service->sameday_id . ":" . $service->sameday_code,
+                            'label' => $service->name,
+                            'cost' => $price,
+                            'meta_data' => array(
+                                'service_id' => $service->sameday_id,
+                                'service_code' => $service->sameday_code
+                            )
+                        );
 
-			/**
-			 * @return bool
-			 */
-			private function syncLockers()
-			{
-				$time = time();
+                        if ($service->sameday_code === "LN") {
+                            $this->syncLockers();
+                            $rate['lockers'] = SamedayCourierQueryDb::getLockers($this->isTesting());
+                        }
 
-				$ltSync = $this->settings['sameday_sync_lockers_ts'];
+                        $this->add_rate( $rate );
+                    }
+                }
+            }
 
-				if ($time > ($ltSync + 3600)) {
-					$samedayClass = new Sameday();
-					return $samedayClass->refreshLockers();
-				}
+            /**
+             * @return bool
+             */
+            private function syncLockers()
+            {
+                $time = time();
 
-				return true;
-			}
+                $ltSync = $this->settings['sameday_sync_lockers_ts'];
 
-			/**
-			 * @return int
-			 */
-			private function isTesting()
-			{
-				return $this->settings['is_testing'] === 'yes' ? 1 : 0;
-			}
+                if ($time > ($ltSync + 3600)) {
+                    $samedayClass = new Sameday();
+                    return $samedayClass->refreshLockers();
+                }
 
-			/**
-			 * @param $address
-			 * @param $serviceId
-			 *
-			 * @return float|null
-			 */
-			private function getEstimatedCost($address, $serviceId)
-			{
-				$pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
-				$weight = WC()->cart->get_cart_contents_weight() ?: 1;
-				$state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
+                return true;
+            }
 
-				$estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
-					$pickupPointId,
-					null,
-					new Sameday\Objects\Types\PackageType(
-						Sameday\Objects\Types\PackageType::PARCEL
-					),
-					[new \Sameday\Objects\ParcelDimensionsObject($weight)],
-					$serviceId,
-					new Sameday\Objects\Types\AwbPaymentType(
-						Sameday\Objects\Types\AwbPaymentType::CLIENT
-					),
-					new Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
-						ucwords(strtolower($address['city'])) !== 'Bucuresti' ? $address['city'] : 'Sector 1',
-						$state,
-						ltrim($address['address']) . " " . $address['address_2'],
-						null,
-						null,
-						null,
-						null
-					),
-					0,
-					WC()->cart->subtotal,
-					null,
-					array()
-				);
+            /**
+             * @return int
+             */
+            private function isTesting()
+            {
+                return $this->settings['is_testing'] === 'yes' ? 1 : 0;
+            }
 
-				$sameday =  new Sameday\Sameday(
-					SamedayCourierApi::initClient(
-						$this->settings['user'],
-						$this->settings['password'],
-						$this->isTesting()
-					)
-				);
+            /**
+             * @param $address
+             * @param $serviceId
+             *
+             * @return float|null
+             */
+            private function getEstimatedCost($address, $serviceId)
+            {
+                $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
+                $weight = WC()->cart->get_cart_contents_weight() ?: 1;
+                $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
 
-				try {
-					$estimation = $sameday->postAwbEstimation($estimateCostRequest);
-					$cost = $estimation->getCost();
+                $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
+                    $pickupPointId,
+                    null,
+                    new Sameday\Objects\Types\PackageType(
+                        Sameday\Objects\Types\PackageType::PARCEL
+                    ),
+                    [new \Sameday\Objects\ParcelDimensionsObject($weight)],
+                    $serviceId,
+                    new Sameday\Objects\Types\AwbPaymentType(
+                        Sameday\Objects\Types\AwbPaymentType::CLIENT
+                    ),
+                    new Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
+                        ucwords(strtolower($address['city'])) !== 'Bucuresti' ? $address['city'] : 'Sector 1',
+                        $state,
+                        ltrim($address['address']) . " " . $address['address_2'],
+                        null,
+                        null,
+                        null,
+                        null
+                    ),
+                    0,
+                    WC()->cart->subtotal,
+                    null,
+                    array()
+                );
 
-					return $cost;
-				} catch (\Sameday\Exceptions\SamedayBadRequestException $exception) {
-					return null;
-				}
-			}
+                $sameday =  new Sameday\Sameday(
+                    SamedayCourierApi::initClient(
+                        $this->settings['user'],
+                        $this->settings['password'],
+                        $this->isTesting()
+                    )
+                );
 
-			private function getAvailableServices()
-			{
-				$services = SamedayCourierQueryDb::getAvailableServices($this->isTesting());
+                try {
+                    $estimation = $sameday->postAwbEstimation($estimateCostRequest);
+                    $cost = $estimation->getCost();
 
-				$availableServices = array();
-				foreach ($services as $service) {
-					switch ($service->status) {
-						case 1:
-							$availableServices[] = $service;
-							break;
+                    return $cost;
+                } catch (\Sameday\Exceptions\SamedayBadRequestException $exception) {
+                    return null;
+                }
+            }
 
-						case 2:
-							$working_days = unserialize($service->working_days);
+            private function getAvailableServices()
+            {
+                $services = SamedayCourierQueryDb::getAvailableServices($this->isTesting());
 
-							$today = \SamedayCourierHelperClass::getDays()[date('w')]['text'];
-							$date_from = mktime((int) $working_days["order_date_{$today}_h_from"], (int) $working_days["order_date_{$today}_m_from"], (int) $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
-							$date_to = mktime((int) $working_days["order_date_{$today}_h_until"], (int) $working_days["order_date_{$today}_m_until"], (int) $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
-							$time = time();
+                $availableServices = array();
+                foreach ($services as $service) {
+                    switch ($service->status) {
+                        case 1:
+                            $availableServices[] = $service;
+                            break;
 
-							if (!isset($working_days["order_date_{$today}_enabled"]) || $time < $date_from || $time > $date_to) {
-								// Not working on this day, or out of available time period.
-								break;
-							}
+                        case 2:
+                            $working_days = unserialize($service->working_days);
 
-							$availableServices[] = $service;
-							break;
-					}
-				}
+                            $today = \SamedayCourierHelperClass::getDays()[date('w')]['text'];
+                            $date_from = mktime((int) $working_days["order_date_{$today}_h_from"], (int) $working_days["order_date_{$today}_m_from"], (int) $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
+                            $date_to = mktime((int) $working_days["order_date_{$today}_h_until"], (int) $working_days["order_date_{$today}_m_until"], (int) $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
+                            $time = time();
 
-				return $availableServices;
-			}
+                            if (!isset($working_days["order_date_{$today}_enabled"]) || $time < $date_from || $time > $date_to) {
+                                // Not working on this day, or out of available time period.
+                                break;
+                            }
 
-			private function init()
-			{
-				$this->form_fields = array(
-					'enabled' => array(
-						'title' => __( 'Enable', 'samedaycourier' ),
-						'type' => 'checkbox',
-						'description' => __( 'Enable this shipping.', 'samedaycourier' ),
-						'default' => 'yes'
-					),
+                            $availableServices[] = $service;
+                            break;
+                    }
+                }
 
-					'title' => array(
-						'title' => __( 'Title', 'samedaycourier' ),
-						'type' => 'text',
-						'description' => __( 'Title to be display on site', 'samedaycourier' ),
-						'default' => __( 'SamedayCourier Shipping', 'samedaycourier' )
-					),
+                return $availableServices;
+            }
 
-					'user' => array(
-						'title' => __( 'Username', 'samedaycourier' ),
-						'type' => 'text',
-						'description' => __( 'Username', 'samedaycourier' ),
-						'default' => __( '', 'samedaycourier' )
-					),
+            private function init()
+            {
+                $this->form_fields = array(
+                    'enabled' => array(
+                        'title' => __( 'Enable', 'samedaycourier' ),
+                        'type' => 'checkbox',
+                        'description' => __( 'Enable this shipping.', 'samedaycourier' ),
+                        'default' => 'yes'
+                    ),
 
-					'password' => array(
-						'title' => __( 'Password', 'samedaycourier' ),
-						'type' => 'password',
-						'description' => __( 'Password', 'samedaycourier' ),
-						'default' => __( '', 'samedaycourier' )
-					),
+                    'title' => array(
+                        'title' => __( 'Title', 'samedaycourier' ),
+                        'type' => 'text',
+                        'description' => __( 'Title to be display on site', 'samedaycourier' ),
+                        'default' => __( 'SamedayCourier Shipping', 'samedaycourier' )
+                    ),
 
-					'default_label_format' => array(
-						'title'   => __( 'Default label format', 'samedaycourier' ) . ' *',
-						'default' => 'A4',
-						'type'    => 'select',
-						'options' => [
-							'A4' => __( Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier' ),
-							'A6' => __( Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier' ),
-						],
-					),
+                    'user' => array(
+                        'title' => __( 'Username', 'samedaycourier' ),
+                        'type' => 'text',
+                        'description' => __( 'Username', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
 
-					'is_testing' => array(
-						'title' => __( 'Is testing', 'samedaycourier' ),
-						'type' => 'checkbox',
-						'description' => __( 'Disable this for production mode', 'samedaycourier' ),
-						'default' => 'yes'
-					),
+                    'password' => array(
+                        'title' => __( 'Password', 'samedaycourier' ),
+                        'type' => 'password',
+                        'description' => __( 'Password', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
 
-					'estimated_cost' => array(
-						'title' => __( 'Use estimated cost', 'samedaycourier' ),
-						'type' => 'checkbox',
-						'description' => __( 'This will show shipping cost calculated by Sameday Api for each service and show it on checkout page', 'samedaycourier' ),
-						'default' => 'no'
-					)
-				);
+                    'default_label_format' => array(
+                        'title'   => __( 'Default label format', 'samedaycourier' ) . ' *',
+                        'default' => 'A4',
+                        'type'    => 'select',
+                        'options' => [
+                            'A4' => __( Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier' ),
+                            'A6' => __( Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier' ),
+                        ],
+                    ),
 
-				// Show on checkout:
-				$this->enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'yes';
-				$this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'SamedayCourier', 'samedaycourier' );
+                    'is_testing' => array(
+                        'title' => __( 'Is testing', 'samedaycourier' ),
+                        'type' => 'checkbox',
+                        'description' => __( 'Disable this for production mode', 'samedaycourier' ),
+                        'default' => 'yes'
+                    ),
 
-				$this->init_settings();
+                    'estimated_cost' => array(
+                        'title' => __( 'Use estimated cost', 'samedaycourier' ),
+                        'type' => 'checkbox',
+                        'description' => __( 'This will show shipping cost calculated by Sameday Api for each service and show it on checkout page', 'samedaycourier' ),
+                        'default' => 'no'
+                    )
+                );
 
-				add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ));
-			}
+                // Show on checkout:
+                $this->enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'yes';
+                $this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'SamedayCourier', 'samedaycourier' );
 
-			public function process_admin_options()
-			{
-				$post_data = $this->get_post_data();
+                $this->init_settings();
 
-				$sameday = SamedayCourierApi::initClient(
-					$post_data['woocommerce_samedaycourier_user'],
-					$post_data['woocommerce_samedaycourier_password'],
-					$post_data['woocommerce_samedaycourier_is_testing']
-				);
+                add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ));
+            }
+
+            public function process_admin_options()
+            {
+                $post_data = $this->get_post_data();
+
+                $sameday = SamedayCourierApi::initClient(
+                    $post_data['woocommerce_samedaycourier_user'],
+                    $post_data['woocommerce_samedaycourier_password'],
+                    $post_data['woocommerce_samedaycourier_is_testing']
+                );
 
 
-				if (! $this->configValidation ) {
-					$this->configValidation = true;
+                if (! $this->configValidation ) {
+                    $this->configValidation = true;
 
-					if ( $sameday->login() ) {
-						return parent::process_admin_options();
-					} else {
-						WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
-					}
-				}
-			}
+                    if ( $sameday->login() ) {
+                        return parent::process_admin_options();
+                    } else {
+                        WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
+                    }
+                }
+            }
 
-			public function admin_options()
-			{
-				$serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
-				$pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
-				$lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
-				$buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
+            public function admin_options()
+            {
+                $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
+                $pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
+                $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
+                $buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
-				$adminOptins = parent::admin_options();
+                $adminOptins = parent::admin_options();
 
-				echo $adminOptins . $buttons;
-			}
-		}
-	}
+                echo $adminOptins . $buttons;
+            }
+        }
+    }
 }
 
 // Shipping Method init.
 add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 
 function add_samedaycourier_shipping_method( $methods ) {
-	$methods['samedaycourier'] = 'SamedayCourier_Shipping_Method';
+    $methods['samedaycourier'] = 'SamedayCourier_Shipping_Method';
 
-	return $methods;
+    return $methods;
 }
 
 add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method');
 
 // Plugin settings.
 add_action('plugins_loaded', function () {
-	SamedayCourierServiceInstance::get_instance();
-	SamedayCourierPickupPointInstance::get_instance();
-	SamedayCourierLockerInstance::get_instance();
+    SamedayCourierServiceInstance::get_instance();
+    SamedayCourierPickupPointInstance::get_instance();
+    SamedayCourierLockerInstance::get_instance();
 });
 
 add_action('admin_post_refresh_services', function () {
-	$samedayClass = new Sameday();
-	return $samedayClass->refreshServices();
+    $samedayClass = new Sameday();
+    return $samedayClass->refreshServices();
 });
 
 add_action('admin_post_refresh_pickup_points', function () {
-	$samedayClass = new Sameday();
-	return $samedayClass->refreshPickupPoints();
+    $samedayClass = new Sameday();
+    return $samedayClass->refreshPickupPoints();
 });
 
 add_action('admin_post_refresh_lockers', function () {
-	$samedayClass = new Sameday();
-	return $samedayClass->refreshLockers();
+    $samedayClass = new Sameday();
+    return $samedayClass->refreshLockers();
 });
 
 add_action('admin_post_edit_service', function() {
-	$samedayClass = new Sameday();
-	return $samedayClass->editService();
+    $samedayClass = new Sameday();
+    return $samedayClass->editService();
 });
 
 add_action('admin_post_add_awb', function (){
-	$postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
-	$orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
-	if (empty($orderDetails)) {
-		return wp_redirect(admin_url() . '/index.php');
-	}
+    $postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
+    $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
+    if (empty($orderDetails)) {
+        return wp_redirect(admin_url() . '/index.php');
+    }
 
-	$data = array_merge($postFields, $orderDetails->get_data());
-	$samedayClass = new Sameday();
-	return $samedayClass->postAwb($data);
+    $data = array_merge($postFields, $orderDetails->get_data());
+    $samedayClass = new Sameday();
+    return $samedayClass->postAwb($data);
 });
 
 add_action('admin_post_remove-awb', function (){
-	$awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($_POST['order-id']));
-	if (empty($awb)) {
-		return wp_redirect(admin_url() . '/index.php');
-	}
+    $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($_POST['order-id']));
+    if (empty($awb)) {
+        return wp_redirect(admin_url() . '/index.php');
+    }
 
-	$samedayClass = new Sameday();
-	return $samedayClass->removeAwb($awb);
+    $samedayClass = new Sameday();
+    return $samedayClass->removeAwb($awb);
 });
 
 add_action('admin_post_show-awb-pdf', function (){
-	$orderId = sanitize_key($_POST['order-id']);
-	if (!isset($orderId)) {
-		return wp_redirect(admin_url() . '/index.php');
-	}
+    $orderId = sanitize_key($_POST['order-id']);
+    if (!isset($orderId)) {
+        return wp_redirect(admin_url() . '/index.php');
+    }
 
-	$samedayClass = new Sameday();
-	return $samedayClass->showAwbAsPdf($orderId);
+    $samedayClass = new Sameday();
+    return $samedayClass->showAwbAsPdf($orderId);
 });
 
 add_action('admin_post_add-new-parcel', function() {
-	$postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
-	if (empty($postFields)) {
-		return wp_redirect(admin_url() . '/index.php');
-	}
+    $postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
+    if (empty($postFields)) {
+        return wp_redirect(admin_url() . '/index.php');
+    }
 
-	$samedayClass = new Sameday();
-	return $samedayClass->addNewParcel($postFields);
+    $samedayClass = new Sameday();
+    return $samedayClass->addNewParcel($postFields);
 });
 
 
 // LOCKER :
 function wps_locker_row_layout() {
-	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
 
-	$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
+    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
 
-	$lockers = SamedayCourierQueryDb::getLockers($is_testing);
-	$lockerOptions = '';
-	foreach ($lockers as $locker) {
-		$lockerOptions .= '<option value="' . $locker->locker_id . '">' . $locker->name . '</option>';
-	}
+    $lockers = SamedayCourierQueryDb::getLockers($is_testing);
+    $lockerOptions = '';
+    foreach ($lockers as $locker) {
+        $lockerOptions .= '<option value="' . $locker->locker_id . '">' . $locker->name . '</option>';
+    }
 
-	if ( is_checkout() && $serviceCode === "LN") {
-	?>
-		<tr class="shipping-pickup-store">
-			<th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
-			<td>
-				<select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
-					<option value=""> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
-					<?php echo $lockerOptions; ?>
-				</select>
-			</td>
-		</tr>
-	<?php }
+    if ( is_checkout() && $serviceCode === "LN") {
+    ?>
+        <tr class="shipping-pickup-store">
+            <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
+            <td>
+                <select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
+                    <option value=""> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                    <?php echo $lockerOptions; ?>
+                </select>
+            </td>
+        </tr>
+    <?php }
 }
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function add_locker_id_to_order_data( $order_id ) {
-	if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
-		$locker_id = $_POST['locker_id'];
-		update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
-	}
+    if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
+        $locker_id = $_POST['locker_id'];
+        update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
+    }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
 
@@ -460,158 +460,158 @@ add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_da
  ** Order detail styles
  **/
 function wps_locker_style() {
-	?>
-	<style type="text/css">
-		.shipping-pickup-store td .title {
-			float: left;
-			line-height: 30px;
-		}
-		.shipping-pickup-store td span.text {
-			float: right;
-		}
-		.shipping-pickup-store td span.description {
-			clear: both;
-		}
-		.shipping-pickup-store td > span:not([class*="select"]) {
-			display: block;
-			font-size: 11px;
-			font-weight: normal;
-			line-height: 1.3;
-			margin-bottom: 0;
-			padding: 6px 0;
-			text-align: justify;
-		}
-	</style>
-	<?php
+    ?>
+    <style type="text/css">
+        .shipping-pickup-store td .title {
+            float: left;
+            line-height: 30px;
+        }
+        .shipping-pickup-store td span.text {
+            float: right;
+        }
+        .shipping-pickup-store td span.description {
+            clear: both;
+        }
+        .shipping-pickup-store td > span:not([class*="select"]) {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            line-height: 1.3;
+            margin-bottom: 0;
+            padding: 6px 0;
+            text-align: justify;
+        }
+    </style>
+    <?php
 }
 add_action('wp_head', 'wps_locker_style');
 // Locker !
 
 add_action('admin_head', function () {
-	if (isset($_GET["add-awb"])){
-		if ($_GET["add-awb"] === "error") {
-			echo '
-				<div class="notice notice-error is-dismissible">
-					<p> <strong>' . __("Something did not work properly and the awb could not be generated successfully !") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
+    if (isset($_GET["add-awb"])){
+        if ($_GET["add-awb"] === "error") {
+            echo '
+                <div class="notice notice-error is-dismissible">
+                    <p> <strong>' . __("Something did not work properly and the awb could not be generated successfully !") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
 
-		if ($_GET["add-awb"] === "success") {
-			echo '
-				<div class="notice notice-success is-dismissible">
-					<p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
-	}
+        if ($_GET["add-awb"] === "success") {
+            echo '
+                <div class="notice notice-success is-dismissible">
+                    <p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
+    }
 
-	if (isset($_GET["remove-awb"])) {
-		if ($_GET["remove-awb"] === "error") {
-			echo '
-				<div class="notice notice-error is-dismissible">
-					<p> <strong>' . __("Something did not work properly and the awb could not be removed successfully !") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
+    if (isset($_GET["remove-awb"])) {
+        if ($_GET["remove-awb"] === "error") {
+            echo '
+                <div class="notice notice-error is-dismissible">
+                    <p> <strong>' . __("Something did not work properly and the awb could not be removed successfully !") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
 
-		if ($_GET["remove-awb"] === "success") {
-			echo '
-				<div class="notice notice-success is-dismissible">
-					<p> <strong>' . __("Awb was successfully removed !") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
-	}
+        if ($_GET["remove-awb"] === "success") {
+            echo '
+                <div class="notice notice-success is-dismissible">
+                    <p> <strong>' . __("Awb was successfully removed !") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
+    }
 
-	if (isset($_GET["show-awb"])) {
-		if ($_GET["show-awb"] === "error") {
-			echo '
-				<div class="notice notice-error is-dismissible">
-					<p> <strong>' . __("Awb invalid !") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
-	}
+    if (isset($_GET["show-awb"])) {
+        if ($_GET["show-awb"] === "error") {
+            echo '
+                <div class="notice notice-error is-dismissible">
+                    <p> <strong>' . __("Awb invalid !") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
+    }
 
-	if (isset($_GET["add-new-parcel"])) {
-		if ($_GET["add-new-parcel"] === "error") {
-			echo '
-				<div class="notice notice-error is-dismissible">
-					<p> <strong>' . __("Something did not work properly and the system could not be able to generate new parcel for this awb!") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
+    if (isset($_GET["add-new-parcel"])) {
+        if ($_GET["add-new-parcel"] === "error") {
+            echo '
+                <div class="notice notice-error is-dismissible">
+                    <p> <strong>' . __("Something did not work properly and the system could not be able to generate new parcel for this awb!") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
 
-		if ($_GET["add-new-parcel"] === "success") {
-			echo '
-				<div class="notice notice-success is-dismissible">
-					<p> <strong>' . __("New parcel has been added to this awb!") . '</strong> </p>
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-			';
-		}
-	}
+        if ($_GET["add-new-parcel"] === "success") {
+            echo '
+                <div class="notice notice-success is-dismissible">
+                    <p> <strong>' . __("New parcel has been added to this awb!") . '</strong> </p>
+                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
+            ';
+        }
+    }
 
-	echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
-		  <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
-		  <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add-new-parcel"></form>
+    echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
+          <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
+          <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add-new-parcel"></form>
           <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
 });
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ) {
-	add_thickbox();
-	if ($_GET['action'] === 'edit') {
+    add_thickbox();
+    if ($_GET['action'] === 'edit') {
 
-		$_generateAwb = '
-			<p class="form-field form-field-wide wc-customer-user">
-				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
-			</p>';
+        $_generateAwb = '
+            <p class="form-field form-field-wide wc-customer-user">
+                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
+            </p>';
 
-		$_showAwb = '
-			<p class="form-field form-field-wide wc-customer-user">
-				<a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
-				<a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
-				<input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-			    <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
-			</p>';
+        $_showAwb = '
+            <p class="form-field form-field-wide wc-customer-user">
+                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
+                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+                <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
+                <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
+            </p>';
 
-		$_removeAwb = '
-			<p class="form-field form-field-wide wc-customer-user">
-				<input type="hidden" form="removeAwb" name="order-id" value="' . $order->get_id() . '">
-			  	<button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
-			</p>';
+        $_removeAwb = '
+            <p class="form-field form-field-wide wc-customer-user">
+                <input type="hidden" form="removeAwb" name="order-id" value="' . $order->get_id() . '">
+                <button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
+            </p>';
 
         $buttons = '
-				<div class="address">
-					' . $_generateAwb  .'
-				</div>';
+                <div class="address">
+                    ' . $_generateAwb  .'
+                </div>';
 
         $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->get_id());
 
-		if (! empty($shipping_method_sameday)) {
+        if (! empty($shipping_method_sameday)) {
             $buttons = '
                 <div class="address">
                     ' . $_showAwb . $_removeAwb  .'
                 </div>';
-		}
+        }
 
-		$awbModal = samedaycourierAddAwbForm($order);
+        $awbModal = samedaycourierAddAwbForm($order);
 
-		$sameday = new Sameday();
-		$awbHistoryTable = $sameday->showAwbHistory($order->get_id());
+        $sameday = new Sameday();
+        $awbHistoryTable = $sameday->showAwbHistory($order->get_id());
 
-		$addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
+        $addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
 
-		$newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
+        $newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
                             ' . $addNewParcelForm . ' 
                            </div>';
 
-		$historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
+        $historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
                             ' . $awbHistoryTable . ' 
                          </div>';
 
-		echo $buttons . $awbModal . $newParcelModal . $historyModal;
-	}
+        echo $buttons . $awbModal . $newParcelModal . $historyModal;
+    }
 });
 
 // Revision order before Submit
