@@ -139,4 +139,71 @@ class SamedayCourierHelperClass
 
         return $serviceCode;
     }
+
+    /**
+     * @param array $errors
+     *
+     * @return string
+     */
+    public static function parseAwbErrors($errors)
+    {
+        $allErrors = array();
+        foreach ($errors as $error) {
+            foreach ($error['errors'] as $message) {
+                $allErrors[] = implode('.', $error['key']) . ': ' . $message;
+            }
+        }
+
+        return implode('<br/>', $allErrors);
+    }
+
+    /**
+     * @param string $notice
+     * @param string $notice_message
+     * @param string $type
+     * @param bool $dismissible
+     *
+     * @return void
+     */
+    public static function addFlashNotice($notice = "", $notice_message = "", $type = "warning", $dismissible = false)
+    {
+        update_option($notice, array(
+                "message" => $notice_message,
+                "type" => $type,
+                "dismissible" => $dismissible
+            )
+        );
+    }
+
+    /**
+     * @param $notice
+     *
+     * @return void
+     */
+    public static function showFlashNotice($notice)
+    {
+        $notices = get_option($notice);
+        if (! empty($notices)) {
+            self::printFlashNotice($notices['type'], $notices['message'], $notices['dismissible']);
+
+            // After show flash message in page, remove it from db.
+            delete_option($notice);
+        }
+    }
+
+    /**
+     * @param $type
+     * @param $dismissible
+     * @param $message
+     *
+     * @return void
+     */
+    public static function printFlashNotice($type, $message, $dismissible)
+    {
+        printf( '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
+            $type,
+            ($dismissible) ? "is-dismissible" : "",
+            $message
+        );
+    }
 }
