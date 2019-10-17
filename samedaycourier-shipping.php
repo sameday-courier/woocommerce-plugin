@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.9
+ * Version: 1.0.10
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -197,9 +197,8 @@ function samedaycourier_shipping_method() {
 
                 try {
                     $estimation = $sameday->postAwbEstimation($estimateCostRequest);
-                    $cost = $estimation->getCost();
 
-                    return $cost;
+                    return $estimation->getCost();
                 } catch (\Sameday\Exceptions\SamedayBadRequestException $exception) {
                     return null;
                 }
@@ -490,65 +489,37 @@ add_action('wp_head', 'wps_locker_style');
 add_action('admin_head', function () {
     if (isset($_GET["add-awb"])){
         if ($_GET["add-awb"] === "error") {
-            echo '
-                <div class="notice notice-error is-dismissible">
-                    <p> <strong>' . __("Something did not work properly and the awb could not be generated successfully !") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::showFlashNotice('add_awb_notice');
         }
 
         if ($_GET["add-awb"] === "success") {
-            echo '
-                <div class="notice notice-success is-dismissible">
-                    <p> <strong>' . __("Awb was successfully generated !") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully generated !"), true);
         }
     }
 
     if (isset($_GET["remove-awb"])) {
         if ($_GET["remove-awb"] === "error") {
-            echo '
-                <div class="notice notice-error is-dismissible">
-                    <p> <strong>' . __("Something did not work properly and the awb could not be removed successfully !") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::showFlashNotice('remove_awb_notice');
         }
 
         if ($_GET["remove-awb"] === "success") {
-            echo '
-                <div class="notice notice-success is-dismissible">
-                    <p> <strong>' . __("Awb was successfully removed !") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully removed !"), true);
         }
     }
 
     if (isset($_GET["show-awb"])) {
         if ($_GET["show-awb"] === "error") {
-            echo '
-                <div class="notice notice-error is-dismissible">
-                    <p> <strong>' . __("Awb invalid !") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::printFlashNotice('error', __("Awb invalid !"), true);
         }
     }
 
     if (isset($_GET["add-new-parcel"])) {
         if ($_GET["add-new-parcel"] === "error") {
-            echo '
-                <div class="notice notice-error is-dismissible">
-                    <p> <strong>' . __("Something did not work properly and the system could not be able to generate new parcel for this awb!") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::showFlashNotice('add_new_parcel_notice');
         }
 
         if ($_GET["add-new-parcel"] === "success") {
-            echo '
-                <div class="notice notice-success is-dismissible">
-                    <p> <strong>' . __("New parcel has been added to this awb!") . '</strong> </p>
-                <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
-            ';
+            SamedayCourierHelperClass::printFlashNotice('success', __("New parcel has been added to this awb!") , true);
         }
     }
 
