@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.10
+ * Version: 1.0.11
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -74,6 +74,7 @@ function samedaycourier_shipping_method() {
                 }
 
                 $useEstimatedCost = $this->settings['estimated_cost'] === 'yes' ? 1 : 0;
+                $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
 
                 $availableServices = $this->getAvailableServices();
                 if (!empty($availableServices)) {
@@ -101,6 +102,10 @@ function samedaycourier_shipping_method() {
 
                             if (isset($estimatedCost)) {
                                 $price = $estimatedCost;
+
+                                if (isset($estimatedCostExtraFee) && $estimatedCostExtraFee > 0) {
+                                    $price += round($price * ($estimatedCostExtraFee /100), 2);
+                                }
                             }
                         }
 
@@ -254,14 +259,14 @@ function samedaycourier_shipping_method() {
                     ),
 
                     'user' => array(
-                        'title' => __( 'Username', 'samedaycourier' ),
+                        'title' => __( 'Username', 'samedaycourier' ) . ' *',
                         'type' => 'text',
                         'description' => __( 'Username', 'samedaycourier' ),
                         'default' => __( '', 'samedaycourier' )
                     ),
 
                     'password' => array(
-                        'title' => __( 'Password', 'samedaycourier' ),
+                        'title' => __( 'Password', 'samedaycourier' ) . ' *',
                         'type' => 'password',
                         'description' => __( 'Password', 'samedaycourier' ),
                         'default' => __( '', 'samedaycourier' )
@@ -275,6 +280,7 @@ function samedaycourier_shipping_method() {
                             'A4' => __( Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier' ),
                             'A6' => __( Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier' ),
                         ],
+                        'description' => __('Awb paper format')
                     ),
 
                     'is_testing' => array(
@@ -287,8 +293,21 @@ function samedaycourier_shipping_method() {
                     'estimated_cost' => array(
                         'title' => __( 'Use estimated cost', 'samedaycourier' ),
                         'type' => 'checkbox',
-                        'description' => __( 'This will show shipping cost calculated by Sameday Api for each service and show it on checkout page', 'samedaycourier' ),
+                        'description' => __( 'This is the shipping cost calculated by Sameday Api for each service. <br/> If you enable this option the estimated cost will be shown on checkout page', 'samedaycourier' ),
                         'default' => 'no'
+                    ),
+
+                    'estimated_cost_extra_fee' => array(
+                        'title' => __('Extra fee', 'samedaycourier'),
+                        'type' => 'number',
+                        'css' => 'width:100px;',
+                        'description' => __('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0', 'samedaycourier'),
+                        'custom_attributes' => array(
+                            'min' => 0,
+                            'onkeypress' => 'return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
+                            'data-placeholder' => __('Extra fee', 'samedaycourier')
+                        ),
+                        'default' => 0
                     )
                 );
 
