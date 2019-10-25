@@ -2,10 +2,10 @@
 Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
-Requires at least: 3.4
-Tested up to: 5.2
-Stable tag: 3.6
-Requires PHP: 5.2.4
+Requires at least: 4.7
+Tested up to: 5.2.4
+Stable tag: 3.4.7
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://sameday.ro
 
@@ -33,16 +33,16 @@ Features:
 
 == Installation ==
 
-In order to be able to use this plug-in, be sure you have at least 3.6.4 Wordpress Version and the latest WooCommerce version installed. Open your Wordpress admin dashboard and go to
-Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin. Drag&drop the .zip folder you download for and install plugin. If every things works, activate plugin
-and now the new feature are ready to use.
+In order to be able to use this plug-in, be sure you have at least 4.7 Wordpress Version and the latest WooCommerce version installed.
+Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin. Drag&drop the .zip folder you download for and install plugin.
+If every things works, activate plugin and now the new feature are ready to use.
 
 Settup your Plugin
 
-Go to WooCommerce/Settings and choose SamedayCourier tab. Complete the form and press Save changes. If everythings works well you recive a success message. After that,
-you are able to import the services and pick-up point assinged by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing.
-In the checkout page of your store, your clients are able to see and choose one of the Sameday service. If a customer chooses the order to be shipped with Sameday, you will be able to see
-this in the order list and will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. You can show the history of the awb, add a new parcel or simply
+Go to WooCommerce/Settings and choose SamedayCourier tab. Complete the form and press Save changes. If everythings works well you recive a success message.
+After that, you are able to import the Services and Pick-up point assinged by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing.
+In the checkout page of your store, your clients are able to see and choose one of the Sameday service.
+In the order list will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. You can show the history of the awb, add a new parcel or simply
 remove the awb.
 
 == Frequently Asked Questions ==
