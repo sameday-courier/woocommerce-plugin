@@ -1,7 +1,7 @@
 <?php
 
 if (! defined( 'ABSPATH' ) ) {
-	exit;
+    exit;
 }
 
 function samedaycourierAddAwbForm($order) {
@@ -65,18 +65,26 @@ function samedaycourierAddAwbForm($order) {
         $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
-    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">			        
-                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>				       
+    $payment_gateway = wc_get_payment_gateway_by_order($order);
+    $repayment = $order->get_total();
+
+    if ($payment_gateway->id !== 'cod') {
+        $repayment = 0;
+    }
+
+    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
+                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
-                    <tbody>		                    	
+                    <tbody>                   
                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $order->get_total() . '">
-                             </td>
+                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
+                                <span>' . __("Payment type: ") . $payment_gateway->title . '</span>
+                             </td>                             
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
