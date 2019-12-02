@@ -40,9 +40,13 @@ If every things works, activate plugin and now the new feature are ready to use.
 Settup your Plugin
 
 Go to WooCommerce/Settings and choose SamedayCourier tab. Complete the form and press Save changes. If everythings works well you recive a success message.
-After that, you are able to import the Services and Pick-up point assinged by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing.
-In the checkout page of your store, your clients are able to see and choose one of the Sameday service.
-In the order list will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. You can show the history of the awb, add a new parcel or simply
+After that, you are able to import the Services and Pick-up point assinged by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing
+and (optional) for the locker list.
+Activate the services by changing the status from "Disabled" to "Always" or "Interval".
+Add the new SamedayCourier shipping method to your Shipping zones. Go to WooCommerce/Settings menu, open the Shipping zones tab. Choose the shipping zone for which you want to use
+Sameday services and press "Edit" button then press "Add shipping method" and select "SamedayCourier".
+After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.
+In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also you can show the history of the awb, add a new parcel or simply
 remove the awb.
 
 == Frequently Asked Questions ==
@@ -54,7 +58,54 @@ delivery service.
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.16 =
+* Update documentation.
+
+= 1.0.15 =
+* Add new feature. Add SamedayCourier shipping method in shipping zone.
+
+= 1.0.14 =
+* Bug fix. Show awb history. Catches an exception if no data has been found.
+
+= 1.0.13 =
+* Add new feature. Fill "Repayment" field in the "Generate awb" form with the value of total amount of order only if the payment method is set as "COD" otherwise leave value as 0.
+However you are able to change this value as you want.
+
+= 1.0.12 =
+* Bug fix. Estimate cost method.
+
+= 1.0.11 =
+* Add new feature. Apply extra fee on expedition estimated cost. This feature is useful for those who wish to apply an additional charge to the transport cost over the transport cost calculated by Sameday for each individual shipment.
+Especially useful for those who have unpaid VAT companies.
+
+= 1.0.10 =
+* Bug fix. Error notification. Show an error message details if the awb generation was unsuccesful.
+
+= 1.0.9 =
+* Bug fix & code refactor.
+
+= 1.0.8 =
+* Bug fix. easyBox id must become required if client choose Locker NextDay service in checkout page before submit the order.
+
+= 1.0.7 =
+* Minor update. Show Compnay name on SamedayCourier Awb if the client fill "company" field with data.
+
+= 1.0.6 =
+* Bug fix. Change "Repayment" field <html> validation.
+
+= 1.0.5 =
+* Bug fix & code refactor.
+
+= 1.0.4 =
+* Bug fix & code refactor.
+
+= 1.0.3 =
+* Code improvement. The administrator can change the delivery service before generating the awb regardless of the option chosen by the customer.
+
+= 1.0.2 =
+* Change Version iteration from 1.0.1 to 1.0.2
+
+= 1.0.1 =
 * SamedayCourier init version.
 
 == Upgrade Notice ==
