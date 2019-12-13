@@ -3,7 +3,7 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 4.7
-Tested up to: 5.2.4
+Tested up to: 5.3.1
 Stable tag: 3.4.7
 Requires PHP: 5.6
 License: GPLv2 or later
