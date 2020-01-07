@@ -58,6 +58,9 @@ delivery service.
 
 == Changelog ==
 
+= 1.0.17 =
+* Add hiperlink in admin zone that land you to Sameday eAWB platform.
+
 = 1.0.16 =
 * Update documentation.
 
