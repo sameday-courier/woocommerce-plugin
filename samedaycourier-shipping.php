@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.16
+ * Version: 1.0.17
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -413,7 +413,7 @@ add_action('admin_post_add_awb', function (){
     return $samedayClass->postAwb($data);
 });
 
-add_action('admin_post_remove-awb', function (){
+add_action('admin_post_remove-awb', function () {
     $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($_POST['order-id']));
     if (empty($awb)) {
         return wp_redirect(admin_url() . '/index.php');
@@ -579,13 +579,14 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 
         $buttons = '
                 <div class="address">
-                    ' . $_generateAwb  .'
+                    ' . $_generateAwb . '
                 </div>';
 
         $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->get_id());
 
         $newParcelModal = '';
         $historyModal = '';
+        $_goTo_eAWB = '';
 
         if (! empty($shipping_method_sameday)) {
             $buttons = '
@@ -605,11 +606,20 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
             $historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
                             ' . $awbHistoryTable . ' 
                          </div>';
+
+            $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($order->get_id()));
+            $awbNumber = $awb->awb_number;
+
+            $_goTo_eAWB = '
+                <p class="form-field form-field-wide wc-customer-user">
+                    <a href="https://eawb.sameday.ro/awb?awbOrParcelNumber='.$awbNumber.'&tab=allAwbs" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
+                </p>
+            ';
         }
 
         $awbModal = samedaycourierAddAwbForm($order);
 
-        echo $buttons . $awbModal . $newParcelModal . $historyModal;
+        echo $buttons . $awbModal . $newParcelModal . $historyModal . $_goTo_eAWB;
     }
 });
 
@@ -623,6 +633,19 @@ add_action('woocommerce_checkout_process', function () {
         }
     }
 });
+
+// Insert links to eAWB ::
+add_filter('plugin_row_meta', function ($links, $pluginFileName, $pluginData, $status) {
+    print $pluginFileName . '<br/>';
+    if (strpos($pluginFileName, basename(__FILE__))) {
+        $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
+        $pathToEawb = 'https://eawb.sameday.ro/';
+        $links[] = '<a href="'. esc_html__($pathToSettings, 'woocommerce') .'" target="_blank"> '. esc_html__( 'Settings', 'woocommerce' ) .' </a>';
+        $links[] = '<a href="'. esc_html__($pathToEawb, 'woocommerce') .'" target="_blank"> '. esc_html__( 'eAWB', 'woocommerce' ) .' </a>';
+    }
+
+    return $links;
+}, 10, 4);
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
