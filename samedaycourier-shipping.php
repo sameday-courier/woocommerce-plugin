@@ -635,8 +635,7 @@ add_action('woocommerce_checkout_process', function () {
 });
 
 // Insert links to eAWB ::
-add_filter('plugin_row_meta', function ($links, $pluginFileName, $pluginData, $status) {
-    print $pluginFileName . '<br/>';
+add_filter('plugin_row_meta', function ($links, $pluginFileName) {
     if (strpos($pluginFileName, basename(__FILE__))) {
         $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
         $pathToEawb = 'https://eawb.sameday.ro/';
