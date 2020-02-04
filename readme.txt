@@ -58,6 +58,9 @@ delivery service.
 
 == Changelog ==
 
+= 1.0.18 =
+* Skip decimal validation on Edit Service menu on "Price" field.
+
 = 1.0.17 =
 * Add hiperlink in admin zone that land you to Sameday eAWB platform.
 
