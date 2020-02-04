@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.17
+ * Version: 1.0.18
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -144,7 +144,7 @@ function samedaycourier_shipping_method() {
 
                 $ltSync = $this->settings['sameday_sync_lockers_ts'];
 
-                if ($time > ($ltSync + 3600)) {
+                if ($time > ($ltSync + 86400)) {
                     $samedayClass = new Sameday();
                     return $samedayClass->refreshLockers();
                 }

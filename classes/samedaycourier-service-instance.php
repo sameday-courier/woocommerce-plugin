@@ -164,7 +164,7 @@ class SamedayCourierServiceInstance
                                 <label for="samedaycourier-price"> Price <span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-price" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.$service->price.'"> 
+                                <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.$service->price.'"> 
                             </td>
                         </tr>
                         <tr valign="top">
@@ -172,7 +172,7 @@ class SamedayCourierServiceInstance
                                 <label for="samedaycourier-free-delivery-price"> Free delivery price  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-free-delivery-price" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
+                                <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
                             </td>
                         </tr>
                        <tr valign="top">
