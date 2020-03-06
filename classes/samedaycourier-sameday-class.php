@@ -343,15 +343,30 @@ class Sameday
 
         $serviceId = $params['samedaycourier-service'];
 
-        $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
+        $serviceTaxIds = array();
+        if (!empty($params['samedaycourier-open-package-status'])) {
 
+            $serviceTaxes = SamedayCourierQueryDb::getServiceOptionalTaxes($this->samedayOptions['is_testing'], $serviceId);
+            $serviceTaxId = null;
+            if (!empty($serviceTaxes)) {
+                foreach ($serviceTaxes as $serviceTax) {
+                    if ($serviceTax->getName() === 'Deschidere Colet' && $serviceTax->getPackageType()->getType() === $params['samedaycourier-package-type']) {
+                        $serviceTaxId = $serviceTax->getId();
+                    }
+                }
+            }
+
+            $serviceTaxIds[] = $serviceTaxId;
+        }
+
+        $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
         if (isset($lockerId)) {
             $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, $this->isTesting());
         }
 
         $city = isset($locker) ? $locker->city : $params['shipping']['city'];
         $county = isset($locker)  ? $locker->county : SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
-        $address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . " " . $params['shipping']['address_2'];
+        $address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
             $this->samedayOptions['user'],

@@ -171,11 +171,11 @@ function samedaycourier_shipping_method() {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
                 $weight = WC()->cart->get_cart_contents_weight() ?: 1;
                 $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
-                $openPackage = WC()->session->get('open_package') === 'yes' ? 1 : 0;
 
+                $openPackage = WC()->session->get('open_package');
                 $serviceTaxIds = array();
-                if ($openPackage) {
-                    $serviceTaxIds[] = '22';
+                if ($openPackage === 'yes') {
+                    $serviceTaxIds[] = 22;
                 }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
@@ -320,7 +320,21 @@ function samedaycourier_shipping_method() {
                             'data-placeholder' => __('Extra fee', 'samedaycourier')
                         ),
                         'default' => 0
-                    )
+                    ),
+
+                    'open_package_status' => array(
+                        'title' => __( 'Open package status', 'samedaycourier' ),
+                        'type' => 'checkbox',
+                        'description' => __( 'Enable this option if you want to offer your customers the opening of the package at delivery time', 'samedaycourier' ),
+                        'default' => 'no'
+                    ),
+
+                    'open_package_label' => array(
+                        'title' => __( 'Open package label', 'samedaycourier' ),
+                        'type' => 'text',
+                        'description' => __( 'This appear in checkout page', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
                 );
 
                 // Show on checkout:
@@ -458,17 +472,17 @@ function wps_open_package_layout() {
         $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
         if (get_option('woocommerce_samedaycourier_settings')['open_package_status'] === "yes") {
             ?>
-            <tr class="shipping-pickup-store">
-                <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
-                <td>
-                    <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
-                        <li>
-                            <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
-                            <label for="open_package"><?php echo get_option('woocommerce_samedaycourier_settings')['open_package_label']; ?></label>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
+                <tr class="shipping-pickup-store">
+                    <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
+                    <td>
+                        <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                            <li>
+                                <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
+                                <label for="open_package"><?php echo get_option('woocommerce_samedaycourier_settings')['open_package_label']; ?></label>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
             <?php
         }
     }
@@ -528,13 +542,12 @@ function set_open_package_option($order_id) {
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'set_open_package_option');
 
-
 // LOCKER :
 function wps_locker_row_layout() {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
 
-    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
+    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
     $lockers = SamedayCourierQueryDb::getLockers($is_testing);
     $lockerOptions = '';
