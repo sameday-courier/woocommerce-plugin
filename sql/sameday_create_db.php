@@ -78,28 +78,37 @@ function samedaycourier_create_db() {
         PRIMARY KEY (id)
 	) $charset_collate;";
 
-	$tablesToCreate = array(
-		$createAwbTable, $createPickUpPointTable, $createServiceTable, $createPackageTable, $createLockerTable
-	);
+    $tablesToCreate = array(
+        $createAwbTable, $createPickUpPointTable, $createServiceTable, $createPackageTable, $createLockerTable
+    );
 
-	$tablesToAlter = array();
+    $tablesToAlter = array();
 
-	$servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
+    $servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
 
-	if (! isset($servicesRows->sameday_code)) {
-		$alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '' ;";
+    if (! isset($servicesRows->sameday_code)) {
+        $alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '' ;";
 
-		$tablesToAlter[] = $alterServiceTable;
-	}
+        $tablesToAlter[] = $alterServiceTable;
+    }
 
-	foreach ($tablesToCreate as $sql) {
-		$wpdb->query($sql);
-	}
+    if (! isset($servicesRows->service_optional_taxes)) {
+        $alterServiceTable = "ALTER TABLE $service ADD `service_optional_taxes` TEXT DEFAULT NULL ;";
 
-	if (! empty($tablesToAlter)) {
-		foreach ($tablesToAlter as $sql) {
-			$wpdb->query($sql);
-		}
-	}
+        $tablesToAlter[] = $alterServiceTable;
+    }
+
+    /**
+     * Create Tables
+     */
+    foreach ($tablesToCreate as $sql) {
+        $wpdb->query($sql);
+    }
+
+    if (! empty($tablesToAlter)) {
+        foreach ($tablesToAlter as $sql) {
+            $wpdb->query($sql);
+        }
+    }
 }
 

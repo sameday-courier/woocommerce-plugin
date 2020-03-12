@@ -175,7 +175,7 @@ function samedaycourier_shipping_method() {
                 $openPackage = WC()->session->get('open_package');
                 $serviceTaxIds = array();
                 if ($openPackage === 'yes') {
-                    $serviceTaxIds[] = 22;
+                    $serviceTaxIds[] = $this->getServiceTaxId();
                 }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
@@ -379,6 +379,14 @@ function samedaycourier_shipping_method() {
 
                 echo $adminOptins . $buttons;
             }
+
+            /**
+             *
+             */
+            private function getServiceTaxId()
+            {
+
+            }
         }
     }
 }
@@ -467,8 +475,10 @@ add_action('admin_post_add-new-parcel', function() {
 function wps_open_package_layout() {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
+    $servicesWithOptionalTaxes = SamedayCourierQueryDb::getServicesWithOptionalTaxes($is_testing);
 
-    if ( is_checkout() && $serviceCode !== null && $serviceCode !== "LN") {
+    if ( is_checkout() && in_array($serviceCode, $servicesWithOptionalTaxes)) {
         $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
         if (get_option('woocommerce_samedaycourier_settings')['open_package_status'] === "yes") {
             ?>
