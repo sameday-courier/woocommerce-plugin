@@ -345,18 +345,7 @@ class Sameday
 
         $serviceTaxIds = array();
         if (!empty($params['samedaycourier-open-package-status'])) {
-
-            $serviceTaxes = SamedayCourierQueryDb::getServiceOptionalTaxes($this->samedayOptions['is_testing'], $serviceId);
-            $serviceTaxId = null;
-            if (!empty($serviceTaxes)) {
-                foreach ($serviceTaxes as $serviceTax) {
-                    if ($serviceTax->getName() === 'Deschidere Colet' && $serviceTax->getPackageType()->getType() === $params['samedaycourier-package-type']) {
-                        $serviceTaxId = $serviceTax->getId();
-                    }
-                }
-            }
-
-            $serviceTaxIds[] = $serviceTaxId;
+            $serviceTaxIds[] = SamedayCourierQueryDb::getServiceTaxId($serviceId,(int) $params['samedaycourier-package-type'], $this->isTesting());
         }
 
         $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
@@ -412,7 +401,7 @@ class Sameday
             $params['samedaycourier-package-repayment'],
             new \Sameday\Objects\Types\CodCollectorType(\Sameday\Objects\Types\CodCollectorType::CLIENT),
             null,
-            array(),
+            $serviceTaxIds,
             null,
             null,
             $params['samedaycourier-package-observation'],

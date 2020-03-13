@@ -175,7 +175,7 @@ function samedaycourier_shipping_method() {
                 $openPackage = WC()->session->get('open_package');
                 $serviceTaxIds = array();
                 if ($openPackage === 'yes') {
-                    $serviceTaxIds[] = $this->getServiceTaxId($serviceId, $weight);
+                    $serviceTaxIds[] = SamedayCourierQueryDb::getServiceTaxId($serviceId, \Sameday\Objects\Types\PackageType::PARCEL, $this->isTesting());
                 }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
@@ -378,27 +378,6 @@ function samedaycourier_shipping_method() {
                 $adminOptins = parent::admin_options();
 
                 echo $adminOptins . $buttons;
-            }
-
-            /**
-             * @return int
-             */
-            private function getServiceTaxId($serviceId, $weight)
-            {
-                switch ($weight)
-                {
-                    case $weight < 1:
-                        $packageType = \Sameday\Objects\Types\PackageType::ENVELOPE;
-                        break;
-                    case $weight < 20:
-                        $packageType = \Sameday\Objects\Types\PackageType::PARCEL;
-                        break;
-                    default:
-                        $packageType = \Sameday\Objects\Types\PackageType::LARGE;
-                        break;
-                }
-
-                return SamedayCourierQueryDb::getServiceTaxId($serviceId, $packageType, $this->isTesting());
             }
         }
     }
