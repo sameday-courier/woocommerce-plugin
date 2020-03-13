@@ -169,13 +169,13 @@ function samedaycourier_shipping_method() {
             private function getEstimatedCost($address, $serviceId)
             {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
-                $weight = WC()->cart->get_cart_contents_weight() ?: 1;
+                $weight = WC()->cart->get_cart_contents_weight() ?: .1;
                 $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
 
                 $openPackage = WC()->session->get('open_package');
                 $serviceTaxIds = array();
                 if ($openPackage === 'yes') {
-                    $serviceTaxIds[] = $this->getServiceTaxId();
+                    $serviceTaxIds[] = $this->getServiceTaxId($serviceId, $weight);
                 }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
@@ -381,11 +381,24 @@ function samedaycourier_shipping_method() {
             }
 
             /**
-             *
+             * @return int
              */
-            private function getServiceTaxId()
+            private function getServiceTaxId($serviceId, $weight)
             {
+                switch ($weight)
+                {
+                    case $weight < 1:
+                        $packageType = \Sameday\Objects\Types\PackageType::ENVELOPE;
+                        break;
+                    case $weight < 20:
+                        $packageType = \Sameday\Objects\Types\PackageType::PARCEL;
+                        break;
+                    default:
+                        $packageType = \Sameday\Objects\Types\PackageType::LARGE;
+                        break;
+                }
 
+                return SamedayCourierQueryDb::getServiceTaxId($serviceId, $packageType, $this->isTesting());
             }
         }
     }

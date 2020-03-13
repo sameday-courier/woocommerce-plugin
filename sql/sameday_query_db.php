@@ -72,6 +72,39 @@ class SamedayCourierQueryDb
         );
     }
 
+    /**
+     * @param $serviceId
+     * @param $packageType
+     * @param $is_testing
+     *
+     * @return int
+     */
+    static function getServiceTaxId($serviceId, $packageType, $is_testing)
+    {
+        global $wpdb;
+
+        $query = "SELECT service_optional_taxes FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND sameday_id = {$serviceId} ";
+        $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes);
+
+        $serviceTaxId = null;
+
+        if ($result) {
+            $taxObject = array_filter($result, function (\Sameday\Objects\Service\OptionalTaxObject $taxObject) use ($packageType) {
+                if ($taxObject->getName() === 'Deschidere Colet') {
+                    if ($taxObject->getPackageType()->getType() === $packageType) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+
+            $serviceTaxId = reset($taxObject)->getId();
+        }
+
+        return  $serviceTaxId;
+    }
+
 	/**
 	 * @param $id
 	 *
