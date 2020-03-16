@@ -343,9 +343,15 @@ class Sameday
 
         $serviceId = $params['samedaycourier-service'];
 
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, $this->isTesting());
         $serviceTaxIds = array();
         if (!empty($params['samedaycourier-open-package-status'])) {
-            $serviceTaxIds[] = SamedayCourierQueryDb::getServiceTaxId($serviceId,(int) $params['samedaycourier-package-type'], $this->isTesting());
+            foreach ($optionalServices as $optionalService) {
+                if ($optionalService->getCode() === 'OPCG' && $optionalService->getPackageType()->getType() === (int) $params['samedaycourier-package-type']) {
+                    $serviceTaxIds[] = $optionalService->getId();
+                    break;
+                }
+            }
         }
 
         $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );

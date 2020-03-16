@@ -172,10 +172,15 @@ function samedaycourier_shipping_method() {
                 $weight = WC()->cart->get_cart_contents_weight() ?: .1;
                 $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
 
-                $openPackage = WC()->session->get('open_package');
+                $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, $this->isTesting());
                 $serviceTaxIds = array();
-                if ($openPackage === 'yes') {
-                    $serviceTaxIds[] = SamedayCourierQueryDb::getServiceTaxId($serviceId, \Sameday\Objects\Types\PackageType::PARCEL, $this->isTesting());
+                if (WC()->session->get('open_package') === 'yes') {
+                    foreach ($optionalServices as $optionalService) {
+                        if ($optionalService->getCode() === 'OPCG' && $optionalService->getPackageType()->getType() === \Sameday\Objects\Types\PackageType::PARCEL) {
+                            $serviceTaxIds[] = $optionalService->getId();
+                            break;
+                        }
+                    }
                 }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
@@ -464,16 +469,32 @@ add_action('admin_post_add-new-parcel', function() {
 });
 
 // Open Package :
-function wps_open_package_layout() {
+function wps_sameday_shipping_options_layout() {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
     $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
-    $servicesWithOptionalTaxes = SamedayCourierQueryDb::getServicesWithOptionalTaxes($is_testing);
+    $service = SamedayCourierQueryDb::getServiceSamedayCode($serviceCode, $is_testing);
+    /** @var \Sameday\Objects\Service\OptionalTaxObject[] $optionalTaxes */
+    $optionalTaxes = [];
+    if ($service) {
+        $optionalTaxes = unserialize($service->service_optional_taxes);
+        if (!$optionalTaxes) {
+            $optionalTaxes = [];
+        }
+    }
 
-    if ( is_checkout() && in_array($serviceCode, $servicesWithOptionalTaxes)) {
-        $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
-        if (get_option('woocommerce_samedaycourier_settings')['open_package_status'] === "yes") {
-            ?>
+    $taxOpenPackage = 0;
+    foreach ($optionalTaxes as $optionalTax) {
+        if ($optionalTax->getCode() === 'OPCG') {
+            $taxOpenPackage = $optionalTax->getId();
+        }
+    }
+
+    if (is_checkout()) {
+        if ($taxOpenPackage) {
+            $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
+            if (get_option('woocommerce_samedaycourier_settings')['open_package_status'] === "yes") {
+                ?>
                 <tr class="shipping-pickup-store">
                     <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
                     <td>
@@ -485,11 +506,12 @@ function wps_open_package_layout() {
                         </ul>
                     </td>
                 </tr>
-            <?php
+                <?php
+            }
         }
     }
 }
-add_action('woocommerce_review_order_after_shipping', 'wps_open_package_layout');
+add_action('woocommerce_review_order_after_shipping', 'wps_sameday_shipping_options_layout');
 
 // Enabling, disabling and refreshing session shipping methods data
 add_action( 'woocommerce_checkout_update_order_review', 'refresh_shipping_methods', 10, 1);

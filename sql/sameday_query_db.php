@@ -73,36 +73,20 @@ class SamedayCourierQueryDb
     }
 
     /**
-     * @param $serviceId
-     * @param $packageType
-     * @param $is_testing
+     * @param int $samedayServiceId
+     * @param bool $is_testing
      *
-     * @return int
+     * @return \Sameday\Objects\Service\OptionalTaxObject[]
      */
-    static function getServiceTaxId($serviceId, $packageType, $is_testing)
+    static function getServiceIdOptionalTaxes($samedayServiceId, $is_testing)
     {
         global $wpdb;
 
-        $query = "SELECT service_optional_taxes FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND sameday_id = {$serviceId} ";
+        $query = "SELECT service_optional_taxes FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND sameday_id = {$samedayServiceId} ";
+        /** @var \Sameday\Objects\Service\OptionalTaxObject[]|false $result */
         $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes);
 
-        $serviceTaxId = null;
-
-        if ($result) {
-            $taxObject = array_filter($result, function (\Sameday\Objects\Service\OptionalTaxObject $taxObject) use ($packageType) {
-                if ($taxObject->getName() === 'Deschidere Colet') {
-                    if ($taxObject->getPackageType()->getType() === $packageType) {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-
-            $serviceTaxId = reset($taxObject)->getId();
-        }
-
-        return  $serviceTaxId;
+        return is_array($result) ? $result : array();
     }
 
 	/**
@@ -136,7 +120,20 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	/**
+    /**
+     * @param string $code
+     * @param bool $is_testing
+     *
+     * @return array|object|void|null
+     */
+    static function getServiceSamedayCode($samedayCode, $is_testing)
+    {
+        global $wpdb;
+
+        return $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE sameday_code={$samedayCode}  AND is_testing = {$is_testing}");
+    }
+
+    /**
 	 * @param \Sameday\Objects\Service\ServiceObject $service
 	 *
 	 * @param int $is_testing
