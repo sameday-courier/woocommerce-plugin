@@ -58,11 +58,15 @@ delivery service.
 
 == Changelog ==
 
+= 1.0.19 =
+* Add new feature. This option allows customers to use the package opening service when their parcels are delivered to them by the courier.
+  Usage: In order to implement this new feature in your site, after update plugin you MUST refresh the Service list.
+
 = 1.0.18 =
-* Skip decimal validation on Edit Service menu on "Price" field.
+* Add an improvement. Skip decimal validation on Edit Service menu on "Price" field.
 
 = 1.0.17 =
-* Add hiperlink in admin zone that land you to Sameday eAWB platform.
+* Add new feature. Add hiperlink in admin zone that land you to Sameday eAWB platform.
 
 = 1.0.16 =
 * Update documentation.
