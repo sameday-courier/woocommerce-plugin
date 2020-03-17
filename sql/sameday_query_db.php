@@ -55,6 +55,40 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
+    /**
+     * @param $is_testing
+     *
+     * @return array|object|null
+     */
+    static function getServicesWithOptionalTaxes($is_testing)
+    {
+        global $wpdb;
+
+        $query = "SELECT sameday_code FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND service_optional_taxes IS NOT NULL";
+
+        return array_map(function ($services) {
+                return $services->sameday_code;
+            }, $wpdb->get_results($query)
+        );
+    }
+
+    /**
+     * @param int $samedayServiceId
+     * @param bool $is_testing
+     *
+     * @return \Sameday\Objects\Service\OptionalTaxObject[]
+     */
+    static function getServiceIdOptionalTaxes($samedayServiceId, $is_testing)
+    {
+        global $wpdb;
+
+        $query = "SELECT service_optional_taxes FROM " . $wpdb->prefix . 'sameday_service' . " WHERE is_testing = {$is_testing} AND sameday_id = {$samedayServiceId} ";
+        /** @var \Sameday\Objects\Service\OptionalTaxObject[]|false $result */
+        $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes);
+
+        return is_array($result) ? $result : array();
+    }
+
 	/**
 	 * @param $id
 	 *
@@ -86,7 +120,20 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	/**
+    /**
+     * @param string $code
+     * @param bool $is_testing
+     *
+     * @return array|object|void|null
+     */
+    static function getServiceSamedayCode($samedayCode, $is_testing)
+    {
+        global $wpdb;
+
+        return $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . 'sameday_service' . " WHERE sameday_code={$samedayCode}  AND is_testing = {$is_testing}");
+    }
+
+    /**
 	 * @param \Sameday\Objects\Service\ServiceObject $service
 	 *
 	 * @param int $is_testing
@@ -102,9 +149,10 @@ class SamedayCourierQueryDb
 			'sameday_name' => $service->getName(),
 			'sameday_code' => $service->getCode(),
 			'is_testing' => $is_testing,
-			'status' => 0
+			'status' => 0,
+            'service_optional_taxes' => !empty($service->getOptionalTaxes()) ? serialize($service->getOptionalTaxes()) : null
 		);
-		$format = array('%d','%s','%s','%d','%d');
+		$format = array('%d','%s','%s','%d','%d','%s');
 
 		$wpdb->insert($table, $data, $format);
 	}
@@ -132,7 +180,8 @@ class SamedayCourierQueryDb
 		$table = $wpdb->prefix . 'sameday_service';
 
 		$service = array(
-			'sameday_code' => $serviceObject->getCode()
+			'sameday_code' => $serviceObject->getCode(),
+            'service_optional_taxes' => !empty($serviceObject->getOptionalTaxes()) ? serialize($serviceObject->getOptionalTaxes()) : null
 		);
 
 		$wpdb->update($table, $service, array('id' => $id));

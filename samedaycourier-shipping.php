@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.18
+ * Version: 1.0.19
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -169,8 +169,19 @@ function samedaycourier_shipping_method() {
             private function getEstimatedCost($address, $serviceId)
             {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
-                $weight = WC()->cart->get_cart_contents_weight() ?: 1;
+                $weight = WC()->cart->get_cart_contents_weight() ?: .1;
                 $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
+
+                $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, $this->isTesting());
+                $serviceTaxIds = array();
+                if (WC()->session->get('open_package') === 'yes') {
+                    foreach ($optionalServices as $optionalService) {
+                        if ($optionalService->getCode() === 'OPCG' && $optionalService->getPackageType()->getType() === \Sameday\Objects\Types\PackageType::PARCEL) {
+                            $serviceTaxIds[] = $optionalService->getId();
+                            break;
+                        }
+                    }
+                }
 
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
                     $pickupPointId,
@@ -195,7 +206,7 @@ function samedaycourier_shipping_method() {
                     0,
                     WC()->cart->subtotal,
                     null,
-                    array()
+                    $serviceTaxIds
                 );
 
                 $sameday =  new Sameday\Sameday(
@@ -314,7 +325,21 @@ function samedaycourier_shipping_method() {
                             'data-placeholder' => __('Extra fee', 'samedaycourier')
                         ),
                         'default' => 0
-                    )
+                    ),
+
+                    'open_package_status' => array(
+                        'title' => __( 'Open package status', 'samedaycourier' ),
+                        'type' => 'checkbox',
+                        'description' => __( 'Enable this option if you want to offer your customers the opening of the package at delivery time', 'samedaycourier' ),
+                        'default' => 'no'
+                    ),
+
+                    'open_package_label' => array(
+                        'title' => __( 'Open package label', 'samedaycourier' ),
+                        'type' => 'text',
+                        'description' => __( 'This appear in checkout page', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
                 );
 
                 // Show on checkout:
@@ -443,13 +468,110 @@ add_action('admin_post_add-new-parcel', function() {
     return $samedayClass->addNewParcel($postFields);
 });
 
+// Open Package :
+function wps_sameday_shipping_options_layout() {
+    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
+    $service = SamedayCourierQueryDb::getServiceSamedayCode($serviceCode, $is_testing);
+    /** @var \Sameday\Objects\Service\OptionalTaxObject[] $optionalTaxes */
+    $optionalTaxes = [];
+    if ($service) {
+        $optionalTaxes = unserialize($service->service_optional_taxes);
+        if (!$optionalTaxes) {
+            $optionalTaxes = [];
+        }
+    }
+
+    $taxOpenPackage = 0;
+    foreach ($optionalTaxes as $optionalTax) {
+        if ($optionalTax->getCode() === 'OPCG') {
+            $taxOpenPackage = $optionalTax->getId();
+        }
+    }
+
+    if (is_checkout()) {
+        if ($taxOpenPackage) {
+            $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
+            if (get_option('woocommerce_samedaycourier_settings')['open_package_status'] === "yes") {
+                ?>
+                <tr class="shipping-pickup-store">
+                    <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
+                    <td>
+                        <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                            <li>
+                                <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
+                                <label for="open_package"><?php echo get_option('woocommerce_samedaycourier_settings')['open_package_label']; ?></label>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <?php
+            }
+        }
+    }
+}
+add_action('woocommerce_review_order_after_shipping', 'wps_sameday_shipping_options_layout');
+
+// Enabling, disabling and refreshing session shipping methods data
+add_action( 'woocommerce_checkout_update_order_review', 'refresh_shipping_methods', 10, 1);
+function refresh_shipping_methods() {
+    foreach ( WC()->cart->get_shipping_packages() as $package_key => $package) {
+        WC()->session->set( 'shipping_for_package_' . $package_key, $package);
+    }
+
+    WC()->cart->calculate_shipping();
+}
+
+add_action( 'wp_ajax_woo_get_ajax_data', 'woo_get_ajax_data' );
+add_action( 'wp_ajax_nopriv_woo_get_ajax_data', 'woo_get_ajax_data' );
+function woo_get_ajax_data() {
+    WC()->session->set('open_package', $_POST['open_package']);
+    die();
+}
+
+add_action( 'wp_footer', 'custom_checkout_script' );
+function custom_checkout_script() {
+    ?>
+    <script>
+        var $ = jQuery;
+        $(document).on('change', '#open_package', function () {
+            let isChecked = 'no';
+            if ($(this).prop('checked')) {
+                isChecked = 'yes';
+            }
+
+            $.ajax({
+                'type': 'POST',
+                'url': wc_checkout_params.ajax_url,
+                'data': {
+                    'action': 'woo_get_ajax_data',
+                    'open_package': isChecked
+                },
+                success: function () {
+                    $(document.body).trigger('update_checkout');
+                }
+            });
+        });
+    </script>
+    <?php
+}
+
+function set_open_package_option($order_id) {
+    if (isset($_POST['open_package'])) {
+        update_post_meta($order_id, '_sameday_shipping_open_package_option', sanitize_text_field($_POST['open_package']), true);
+    }
+
+    WC()->session->set('open_package', 'no');
+}
+add_action( 'woocommerce_checkout_update_order_meta', 'set_open_package_option');
 
 // LOCKER :
 function wps_locker_row_layout() {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
 
-    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === "yes" ? 1 : 0;
+    $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
     $lockers = SamedayCourierQueryDb::getLockers($is_testing);
     $lockerOptions = '';

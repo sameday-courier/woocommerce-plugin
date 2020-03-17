@@ -61,7 +61,7 @@ function samedaycourierAddAwbForm($order) {
             continue;
         }
 
-        $checked = $serviceId == $samedayService->sameday_id ? "selected" : "";
+        $checked = $serviceId == $samedayService->sameday_id ? 'selected' : '';
         $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
@@ -71,6 +71,8 @@ function samedaycourierAddAwbForm($order) {
     if ($payment_gateway->id !== 'cod') {
         $repayment = 0;
     }
+
+    $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
@@ -164,6 +166,15 @@ function samedaycourierAddAwbForm($order) {
                                 <select form="addAwbForm" name="samedaycourier-service" style="width: 180px; height: 30px;" id="samedaycourier-service">
                                     ' . $services . '
                                 </select>
+                                <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
+                             </td>
+                        </tr>
+                        <tr valign="middle">
+                            <th scope="row" class="titledesc"> 
+                                <label for="samedaycourier-open-package-status"> ' . __("Open package") . '</label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <input type="checkbox" form="addAwbForm" name="samedaycourier-open-package-status" id="samedaycourier-open-package-status" '.$openPackage.'>
                              </td>
                         </tr>
                         <tr valign="middle">
