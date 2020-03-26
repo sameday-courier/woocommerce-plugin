@@ -47,11 +47,11 @@ function samedaycourier_shipping_method() {
         class SamedayCourier_Shipping_Method extends WC_Shipping_Method
         {
             /**
-             * @var bool
+             * SamedayCourier_Shipping_Method constructor.
+             *
+             * @param int $instance_id
              */
-            private $configValidation;
-
-            public function __construct( $instance_id = 0 )
+            public function __construct($instance_id = 0)
             {
                 parent::__construct( $instance_id );
 
@@ -226,6 +226,9 @@ function samedaycourier_shipping_method() {
                 }
             }
 
+            /**
+             * @return array
+             */
             private function getAvailableServices()
             {
                 $services = SamedayCourierQueryDb::getAvailableServices($this->isTesting());
@@ -258,6 +261,9 @@ function samedaycourier_shipping_method() {
                 return $availableServices;
             }
 
+            /**
+             * @return void
+             */
             private function init()
             {
                 $this->form_fields = array(
@@ -351,28 +357,30 @@ function samedaycourier_shipping_method() {
                 add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ));
             }
 
+            /**
+             * @return void
+             */
             public function process_admin_options()
             {
                 $post_data = $this->get_post_data();
 
+                /** @var \Sameday\SamedayClient $sameday */
                 $sameday = SamedayCourierApi::initClient(
                     $post_data['woocommerce_samedaycourier_user'],
                     $post_data['woocommerce_samedaycourier_password'],
-                    $post_data['woocommerce_samedaycourier_is_testing']
+                    isset($post_data['woocommerce_samedaycourier_is_testing']) ? true : false
                 );
 
-
-                if (! $this->configValidation ) {
-                    $this->configValidation = true;
-
-                    if ( $sameday->login() ) {
-                        return parent::process_admin_options();
-                    } else {
-                        WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
-                    }
+                if ($sameday->login()) {
+                    parent::process_admin_options();
+                } else {
+                    WC_Admin_Settings::add_error(__('Invalid username/password combination provided! Settings have not been changed!'));
                 }
             }
 
+            /**
+             * @return void
+             */
             public function admin_options()
             {
                 $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
@@ -380,9 +388,7 @@ function samedaycourier_shipping_method() {
                 $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
                 $buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
-                $adminOptins = parent::admin_options();
-
-                echo $adminOptins . $buttons;
+                echo parent::admin_options() . $buttons;
             }
         }
     }
