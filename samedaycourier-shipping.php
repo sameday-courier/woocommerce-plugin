@@ -79,7 +79,7 @@ function samedaycourier_shipping_method() {
                     return;
                 }
 
-                $useEstimatedCost = $this->settings['estimated_cost'] === 'yes' ? 1 : 0;
+                $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
 
                 $availableServices = $this->getAvailableServices();
@@ -99,20 +99,23 @@ function samedaycourier_shipping_method() {
 
                         $price = $service->price;
 
-                        if ($service->price_free != null && WC()->cart->subtotal > $service->price_free) {
-                            $price = 0;
-                        }
-
-                        if ($useEstimatedCost) {
+                        if ($useEstimatedCost !== 'no') {
                             $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
 
                             if (isset($estimatedCost)) {
-                                $price = $estimatedCost;
+
+                                if (($useEstimatedCost === 'yes') || ($useEstimatedCost === 'btfp' && $service->price < $estimatedCost)) {
+                                    $price = $estimatedCost;
+                                }
 
                                 if (isset($estimatedCostExtraFee) && $estimatedCostExtraFee > 0) {
                                     $price += round($price * ($estimatedCostExtraFee /100), 2);
                                 }
                             }
+                        }
+
+                        if ($service->price_free !== null && WC()->cart->subtotal > $service->price_free) {
+                            $price = 0;
                         }
 
                         $rate = array(
@@ -308,10 +311,16 @@ function samedaycourier_shipping_method() {
                     ),
 
                     'estimated_cost' => array(
-                        'title' => __( 'Use estimated cost', 'samedaycourier' ),
-                        'type' => 'checkbox',
-                        'description' => __( 'This is the shipping cost calculated by Sameday Api for each service. <br/> If you enable this option the estimated cost will be shown on checkout page', 'samedaycourier' ),
-                        'default' => 'no'
+                        'title'   => __( 'Use estimated cost', 'samedaycourier' ) . ' *',
+                        'default' => 'no',
+                        'type'    => 'select',
+                        'options' => [
+                            'no' => __( 'Never', 'samedaycourier' ),
+                            'yes' => __( 'Always', 'samedaycourier' ),
+                            'btfp' => __('If its cost is bigger than fixed price')
+                        ],
+                        'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
+                        If you enable this option the estimated cost will be shown on checkout page')
                     ),
 
                     'estimated_cost_extra_fee' => array(
@@ -321,7 +330,7 @@ function samedaycourier_shipping_method() {
                         'description' => __('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0', 'samedaycourier'),
                         'custom_attributes' => array(
                             'min' => 0,
-                            'onkeypress' => 'return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
+                            'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
                             'data-placeholder' => __('Extra fee', 'samedaycourier')
                         ),
                         'default' => 0
