@@ -58,6 +58,11 @@ delivery service.
 
 == Changelog ==
 
+= 1.0.20 =
+* Add new feature. A new option has been added for the "Use estimated cost" field.
+  The admin can choose to display on the site the price of the transit cost calculated by Sameday, only if its value
+  exceeds the value of the fixed cost assigned by the admin for each service (exp. Additional km situation).
+
 = 1.0.19 =
 * Add new feature. This option allows customers to use the package opening service when their parcels are delivered to them by the courier.
   Usage: In order to implement this new feature in your site, after update plugin you MUST refresh the Service list.

@@ -320,7 +320,11 @@ function samedaycourier_shipping_method() {
                             'btfp' => __('If its cost is bigger than fixed price')
                         ],
                         'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
-                        If you enable this option the estimated cost will be shown on checkout page')
+                        Never* You choose to display only the fixed price that you set for each service<br/>
+                        Always* You choose to display only the price estimated by SamedayCourier API<br/>
+                        If its cost is bigger than fixed price* You choose to display the cost estimated by 
+                        SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
+                        ')
                     ),
 
                     'estimated_cost_extra_fee' => array(
