@@ -66,6 +66,25 @@ Yes! Using this plug-in is free. However, the service offered by our company is 
 After signing the contract, the client will receive a set of credentials (username and password). With these credentials, the customer will be able to use the Sameday Courier
 delivery service.
 
+= Can I make changes to the plugin's source code ? =
+
+Sure. However, keep in mind that if you make changes to the source code of the plugin you can no longer benefit from the updates we make constantly. Because in a situation like this in case of an update your changes would be overwritten.
+
+NOTE: We encourage customers to fork our github repository and contribute with their ideas
+Link to Github: https://github.com/sameday-courier/woocommerce-plugin
+
+= Are all easyBox delivery services available ? =
+
+No! For the moment only the service Locker NextDay is available.
+
+= I activated the Locker NextDay service but I don't see it on the checkout page =
+
+The service is only visible for orders that have a single product in the cart. So make sure you don't have more than one product in your cart.
+
+= I use the estimated cost option but the fixed cost appears on the order page =
+
+This situation may be due to the fact that the name of the locality does not match our nomenclature of localities.
+
 == Screenshots ==
 
 1. Initial configuration for the plugin
@@ -89,7 +108,10 @@ In order to setup the plugin, you need to provide the following information (ple
 * `Password` = Password provided by Sameday as result of enrolling to our services
 * `Default label format` = The format of paper (eg. A4) for creating the awbs
 * `Is testing` = If checked, the plugin will be set in development mode. This feature is intended to test services. Should not be checked on production environment
-* `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price), always (estimated by Sameday). For extra information regarding these options, please refer to the screenshot 1
+
+    NOTE: Each environment (eg. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
+
+* `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price - refer to Edit Service form), always (estimated by Sameday). For extra information regarding to these options, please refer to the screenshot 1
 * `Extra fee` = Extra fee, defined in percentage value, which will be applied on top of the estimated cost provided by Sameday
 * `Open package status` = Allow the clients to open the package in the moment of delivery in order to check the conformity of the delivered product(s)
 * `Open package label` = This text will be displayed on the checkout page in order to ask them if they would like to open the package on delivery. Please refer to the previous option (Open package status)
@@ -112,7 +134,10 @@ By default, all the services fetched using the previous indications are disabled
 * From the services page click on the service name to start editing
 * `Service name` = The name that it will be displayed to your clients on the checkout page (see screenshot 5 for more details)
 * `Price` = Fixed price for this service. This is the delivery price that the clients will pay if they choose this delivery service
-* `Free delivery price` = The minimum order price for which the delivery is free of charge. This is a numeric value bigger than 1
+* `Free delivery price` = The minimum order price for which the delivery is free of charge. This is a numeric value bigger than 0
+
+NOTE: If you don't want to apply an free of charge option leave this field blank
+
 * `Status` = Enable or disable the service. If enabled, the clients will be able to choose this delivery service
 
 = Add shipping method to shipping zone =
@@ -128,8 +153,6 @@ For more details, please refer to screenshot 4.
 = Creating an AWB =
 
 The AWB is the transport document, created by Sameday, in order to process your transport order.
-
-Assuming that you registered an order in your platform and the shipping method is through Sameday:
 
 * Go to the order page
 * Click on the button `Generate AWB`
