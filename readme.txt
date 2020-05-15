@@ -13,15 +13,15 @@ Sameday Courier shipping method plugin
 
 == Description ==
 
-Overview
+= Overview =
 
 This plug-in is intended to implement a new shipping method using the Sameday Courier service. As a store owner, after installing the plugin, you are able to import the list of Sameday Courier
 service and delivery points assigned to your account. If your customer chooses the order to be delivered with Sameday Courier, you will be able to see this in the list of commands in your store's
 administration panel. You will also be able to create an AWB. You can then add a new parcel in the created AWB and show the AWB as a pdf format. If you want, you can show the AWB history or delete the AWB.
 
-For further information, contact us at software@sameday.ro !
+For further information, contact us at software[at]sameday.ro !
 
-Features:
+= Features =
 
 *   Config Sameday Courier shipping method
 *   Import Sameday Courier pickup-points
@@ -33,30 +33,129 @@ Features:
 
 == Installation ==
 
-In order to be able to use this plug-in, be sure you have at least 4.7 Wordpress Version and the latest WooCommerce version installed.
-Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin. Drag&drop the .zip folder you download for and install plugin.
+= Requirements =
+
+* Wordpress v4.7 or later
+* WooCommerce v3.8 or later
+
+= Plugin installation procedure =
+
+* Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu
+* Press Add new button and then press Upload Plugin.
+* Drag & drop the .zip folder you downloaded and install plugin.
+
 If every things works, activate plugin and now the new feature are ready to use.
 
-Settup your Plugin
+= Setup your Plugin =
 
-Go to WooCommerce/Settings and choose SamedayCourier tab. Complete the form and press Save changes. If everythings works well you recive a success message.
-After that, you are able to import the Services and Pick-up point assinged by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing
-and (optional) for the locker list.
-Activate the services by changing the status from "Disabled" to "Always" or "Interval".
-Add the new SamedayCourier shipping method to your Shipping zones. Go to WooCommerce/Settings menu, open the Shipping zones tab. Choose the shipping zone for which you want to use
-Sameday services and press "Edit" button then press "Add shipping method" and select "SamedayCourier".
+1. Go to WooCommerce/Settings and choose SamedayCourier tab.
+2. Complete the form and press Save changes. If everythings works well you recive a success message.
+3. After that, you are able to import the Services and Pick-up point assigned by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing and (optional) for the locker list.
+4. Activate the services by changing the status from "Disabled" to "Always" or "Interval".
+5. Add the new SamedayCourier shipping method to your Shipping zones. Go to WooCommerce/Settings menu, open the Shipping zones tab. Choose the shipping zone for which you want to use Sameday services and press "Edit" button then press "Add shipping method" and select "SamedayCourier".
+
 After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.
-In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also you can show the history of the awb, add a new parcel or simply
-remove the awb.
+
+In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also you can show the history of the awb, add a new parcel or simply remove the awb.
 
 == Frequently Asked Questions ==
 
 = This plugin is free to use ? =
 Yes! Using this plug-in is free. However, the service offered by our company is based on a contract. The terms and conditions of the contract are negotiated individually.
+
 After signing the contract, the client will receive a set of credentials (username and password). With these credentials, the customer will be able to use the Sameday Courier
 delivery service.
 
+== Screenshots ==
+
+1. Initial configuration for the plugin
+2. Update services
+3. Enabling services
+4. Add shipping method to shipping zone
+5. How clients will choose one of Sameday's shipping methods
+6. Creating an AWB
+7. Adding more parcels to the AWB
+8. Show AWB History
+
+== Configuration ==
+
+= Initial configuration for the plugin =
+
+In order to setup the plugin, you need to provide the following information (please refer to screenshot 1 - Initial configuration for the plugin):
+
+* Go to plugin's Settings
+* `Title` = The title that it will be displayed on your website
+* `Username` = Username provided by Sameday as result of enrolling to our services
+* `Password` = Password provided by Sameday as result of enrolling to our services
+* `Default label format` = The format of paper (eg. A4) for creating the awbs
+* `Is testing` = If checked, the plugin will be set in development mode. This feature is intended to test services. Should not be checked on production environment
+* `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price), always (estimated by Sameday). For extra information regarding these options, please refer to the screenshot 1
+* `Extra fee` = Extra fee, defined in percentage value, which will be applied on top of the estimated cost provided by Sameday
+* `Open package status` = Allow the clients to open the package in the moment of delivery in order to check the conformity of the delivered product(s)
+* `Open package label` = This text will be displayed on the checkout page in order to ask them if they would like to open the package on delivery. Please refer to the previous option (Open package status)
+
+= Update services, pickup-points & lockers =
+
+To use the plugin, you need to get the available services (see screenshot 2 for details).
+
+* In the settings page, click on the button `Services`
+* Click on the button `Refresh services`
+
+Now the list of services should be populated.
+
+NOTE: The same procedure should be applied for pickup-points and lockers.
+
+= Enabling services =
+
+By default, all the services fetched using the previous indications are disabled. Thus, you need to enable those that you want to provide to your clients (please refer to screenshot 3).
+
+* From the services page click on the service name to start editing
+* `Service name` = The name that it will be displayed to your clients on the checkout page (see screenshot 5 for more details)
+* `Price` = Fixed price for this service. This is the delivery price that the clients will pay if they choose this delivery service
+* `Free delivery price` = The minimum order price for which the delivery is free of charge. This is a numeric value bigger than 1
+* `Status` = Enable or disable the service. If enabled, the clients will be able to choose this delivery service
+
+= Add shipping method to shipping zone =
+
+By default, Sameday operates only in Romania. If you would like to deliver your packages within this shipping zone:
+
+* Go to WooCommerce Shipping zones
+* `Zone Regions`= Choose Romania or counties from Romania
+* Click on the button `Add shipping method`, choose SamedayCourier and save
+
+For more details, please refer to screenshot 4.
+
+= Creating an AWB =
+
+The AWB is the transport document, created by Sameday, in order to process your transport order.
+
+Assuming that you registered an order in your platform and the shipping method is through Sameday:
+
+* Go to the order page
+* Click on the button `Generate AWB`
+* In the modal, which originally is pre-completed, you can customize the shipping details (please refer to screenshot 6 for more details)
+* `Repayment` = The amount that the courier should take from the client in the moment of delivery (eg. If the order is already paid, the repayment will be 0)
+* `Insured value` = The amount that should be insured for the given AWB
+* `Package weight` = The package weight
+* `Package length` = The package length (optional)
+* `Package height` = The package height (optional)
+* `Package width` = The package width (optional)
+* `Pickup-point` = The location from which the package will be taken
+* `Package type` = The type of the package predefined by Sameday
+* `AWB Payment` = Determine who will pay for delivering this package. By default, the site owner
+* `Service` = A list of enabled services (refer to the `Enable services` section)
+* `Observation` = Any text that will be displayed on observation field in AWB
+
+An parcel it's a package of the types predefined by Sameday (Envelope, Parcel, Large Parcel).
+Any AWB can have one or more parcels (default one).
+
+After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
+
 == Changelog ==
+
+= 1.0.21 =
+
+* Update doc.
 
 = 1.0.20 =
 * Add new feature. A new option has been added for the "Use estimated cost" field.
@@ -128,7 +227,3 @@ Especially useful for those who have unpaid VAT companies.
 = 1.0 =
 
 New features will be added soon.
-
-== Screenshots ==
-
-1. You found some screenshots in /assets/screenshots folder
