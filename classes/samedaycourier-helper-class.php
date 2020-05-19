@@ -206,4 +206,17 @@ class SamedayCourierHelperClass
             $message
         );
     }
+
+    /**
+     * @param $string
+     *
+     * @return string|string[]
+     */
+    public static function removeAccents($string)
+    {
+        $from = ['Ă', 'ă', 'Â', 'â', 'Î', 'î', 'Ș', 'ș', 'Ț', 'ț'];
+        $to =   ['A', 'a', 'A', 'a', 'I', 'i', 'S', 's', 'T', 't'];
+
+        return str_replace($from, $to, $string);
+    }
 }

@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.21
+ * Version: 1.0.22
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -174,6 +174,7 @@ function samedaycourier_shipping_method() {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId($this->isTesting());
                 $weight = WC()->cart->get_cart_contents_weight() ?: .1;
                 $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
+                $city = \SamedayCourierHelperClass::removeAccents($address['city']);
 
                 $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, $this->isTesting());
                 $serviceTaxIds = array();
@@ -198,7 +199,7 @@ function samedaycourier_shipping_method() {
                         Sameday\Objects\Types\AwbPaymentType::CLIENT
                     ),
                     new Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
-                        ucwords(strtolower($address['city'])) !== 'Bucuresti' ? $address['city'] : 'Sector 1',
+                        ucwords(strtolower($city)) !== 'Bucuresti' ? $city : 'Sector 1',
                         $state,
                         ltrim($address['address']) !== '' ? ltrim($address['address']) : '123',
                         null,
