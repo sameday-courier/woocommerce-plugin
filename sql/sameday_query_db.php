@@ -245,7 +245,28 @@ class SamedayCourierQueryDb
 		return $result;
 	}
 
-	static function getLockers($is_testing)
+    /**
+     * @param $is_testing
+     *
+     * @return array|object|void|null
+     */
+	public static function getCities($is_testing)
+    {
+        global $wpdb;
+
+        $tableName = $wpdb->prefix . 'sameday_locker';
+
+        $query = "SELECT city, county FROM {$tableName} WHERE is_testing={$is_testing} GROUP BY city";
+
+        return $wpdb->get_results($query);
+    }
+
+    /**
+     * @param $is_testing
+     *
+     * @return array|object|null
+     */
+	public static function getLockers($is_testing)
 	{
 		global $wpdb;
 
@@ -254,6 +275,22 @@ class SamedayCourierQueryDb
 
 		return $result;
 	}
+
+    /**
+     * @param $city
+     * @param $is_testing
+     *
+     * @return array|object|null
+     */
+	public static function getLockersByCity($city, $is_testing)
+    {
+        global $wpdb;
+
+        $query = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE city='{$city}' AND is_testing = '{$is_testing}'";
+        $result = $wpdb->get_results($query);
+
+        return $result;
+    }
 
 	/**
 	 * @param \Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject

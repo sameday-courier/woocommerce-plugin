@@ -587,10 +587,24 @@ function wps_locker_row_layout() {
 
     $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
-    $lockers = SamedayCourierQueryDb::getLockers($is_testing);
+    $cities = SamedayCourierQueryDb::getCities($is_testing);
+    $lockers = array();
+    foreach ($cities as $city) {
+        if (null !== $city->city) {
+            $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity($city->city, $is_testing);
+        }
+    }
+
     $lockerOptions = '';
-    foreach ($lockers as $locker) {
-        $lockerOptions .= '<option value="' . $locker->locker_id . '">' . $locker->name . '</option>';
+    $options = '';
+    foreach ($lockers as $city => $cityLockers) {
+        $optionGroup = "<optgroup label='{$city}'></optgroup>";
+        foreach ($cityLockers as $locker) {
+            $lockerDetails = "<span style='font-size: 8px'>" . $locker->name . ' - ' . $locker->address . "</span>";
+            $options .= '<option value="' . $locker->locker_id . '">' . $lockerDetails . '</option>';
+        }
+
+        $lockerOptions .= $optionGroup . $options;
     }
 
     if ( is_checkout() && $serviceCode === "LN") {
