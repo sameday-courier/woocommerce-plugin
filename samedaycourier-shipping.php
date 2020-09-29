@@ -595,10 +595,12 @@ function wps_locker_row_layout() {
         }
     }
 
+    //var_dump($lockers); exit;
+
     $lockerOptions = '';
-    $options = '';
     foreach ($lockers as $city => $cityLockers) {
-        $optionGroup = "<optgroup label='{$city}' style='font-size: 11px;'></optgroup>";
+        $optionGroup = "<optgroup label='{$city}' style='font-size: 13px;'></optgroup>";
+        $options = '';
         foreach ($cityLockers as $locker) {
             $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
             $options .= '<option value="' . $locker->locker_id . '" style="font-size: 9px">' . $lockerDetails . '</option>';
