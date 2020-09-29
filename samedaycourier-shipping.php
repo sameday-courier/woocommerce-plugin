@@ -598,10 +598,10 @@ function wps_locker_row_layout() {
     $lockerOptions = '';
     $options = '';
     foreach ($lockers as $city => $cityLockers) {
-        $optionGroup = "<optgroup label='{$city}'></optgroup>";
+        $optionGroup = "<optgroup label='{$city}' style='font-size: 11px;'></optgroup>";
         foreach ($cityLockers as $locker) {
-            $lockerDetails = "<span style='font-size: 8px'>" . $locker->name . ' - ' . $locker->address . "</span>";
-            $options .= '<option value="' . $locker->locker_id . '">' . $lockerDetails . '</option>';
+            $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
+            $options .= '<option value="' . $locker->locker_id . '" style="font-size: 9px">' . $lockerDetails . '</option>';
         }
 
         $lockerOptions .= $optionGroup . $options;
@@ -613,7 +613,7 @@ function wps_locker_row_layout() {
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
                 <select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
-                    <option value=""> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                    <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                     <?php echo $lockerOptions; ?>
                 </select>
             </td>
