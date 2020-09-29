@@ -595,8 +595,6 @@ function wps_locker_row_layout() {
         }
     }
 
-    //var_dump($lockers); exit;
-
     $lockerOptions = '';
     foreach ($lockers as $city => $cityLockers) {
         $optionGroup = "<optgroup label='{$city}' style='font-size: 13px;'></optgroup>";
