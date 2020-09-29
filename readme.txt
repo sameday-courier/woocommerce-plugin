@@ -176,6 +176,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.23 =
+
+* Group locker list by city. This list will be shown in the checkout page.
+
 = 1.0.22 =
 
 * Before the locality parameter is sent to the cost estimation method, it is parsed to remove its diacritics.

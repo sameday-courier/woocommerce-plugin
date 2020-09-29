@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.22
+ * Version: 1.0.23
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -587,10 +587,24 @@ function wps_locker_row_layout() {
 
     $is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
 
-    $lockers = SamedayCourierQueryDb::getLockers($is_testing);
+    $cities = SamedayCourierQueryDb::getCities($is_testing);
+    $lockers = array();
+    foreach ($cities as $city) {
+        if (null !== $city->city) {
+            $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity($city->city, $is_testing);
+        }
+    }
+
     $lockerOptions = '';
-    foreach ($lockers as $locker) {
-        $lockerOptions .= '<option value="' . $locker->locker_id . '">' . $locker->name . '</option>';
+    $options = '';
+    foreach ($lockers as $city => $cityLockers) {
+        $optionGroup = "<optgroup label='{$city}' style='font-size: 11px;'></optgroup>";
+        foreach ($cityLockers as $locker) {
+            $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
+            $options .= '<option value="' . $locker->locker_id . '" style="font-size: 9px">' . $lockerDetails . '</option>';
+        }
+
+        $lockerOptions .= $optionGroup . $options;
     }
 
     if ( is_checkout() && $serviceCode === "LN") {
@@ -598,8 +612,8 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <select name="locker_id" id="shipping-pickup-store-select" style="width: 120px; height: 40px;">
-                    <option value=""> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
+                    <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                     <?php echo $lockerOptions; ?>
                 </select>
             </td>
