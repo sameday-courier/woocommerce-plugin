@@ -63,8 +63,8 @@ function samedaycourierCreateAwbHistoryTable($packages) {
     }
 
     foreach ($packages as $package) {
-        $summary = unserialize($package->summary);
-        $packageHistory = unserialize($package->history);
+        $summary = unserialize($package['summary']);
+        $packageHistory = unserialize($package['history']);
         $historyRows = '';
         foreach ($packageHistory as $history) {
             $historyRows .= '

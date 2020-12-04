@@ -1,5 +1,7 @@
 <?php
 
+use Sameday\Exceptions\SamedaySDKException;
+
 if (! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -26,7 +28,7 @@ class Sameday
 
     /**
      * @throws \Sameday\Exceptions\SamedayAuthorizationException
-     * @throws \Sameday\Exceptions\SamedaySDKException
+     * @throws SamedaySDKException
      * @throws \Sameday\Exceptions\SamedayServerException
      */
     public function refreshServices()
@@ -154,7 +156,7 @@ class Sameday
      * @return bool
      * @throws \Sameday\Exceptions\SamedayAuthorizationException
      * @throws \Sameday\Exceptions\SamedayBadRequestException
-     * @throws \Sameday\Exceptions\SamedaySDKException
+     * @throws SamedaySDKException
      * @throws \Sameday\Exceptions\SamedayServerException
      */
     public function refreshLockers()
@@ -328,7 +330,7 @@ class Sameday
      * @throws \Sameday\Exceptions\SamedayAuthorizationException
      * @throws \Sameday\Exceptions\SamedayNotFoundException
      * @throws \Sameday\Exceptions\SamedayOtherException
-     * @throws \Sameday\Exceptions\SamedaySDKException
+     * @throws SamedaySDKException
      * @throws \Sameday\Exceptions\SamedayServerException
      */
     public function postAwb($params)
@@ -465,6 +467,12 @@ class Sameday
         return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
     }
 
+	/**
+	 * @param $awb
+	 *
+	 * @return bool
+	 * @throws SamedaySDKException
+	 */
     public function removeAwb($awb)
     {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
@@ -475,7 +483,7 @@ class Sameday
 
         try {
             $sameday->deleteAwb(new Sameday\Requests\SamedayDeleteAwbRequest($awb->awb_number));
-            SamedayCourierQueryDb::deleteAwb($awb->id);
+            SamedayCourierQueryDb::deleteAwbAndParcels($awb);
         } catch (\Exception $e) {
             $error = $e->getMessage();
         }
@@ -492,7 +500,7 @@ class Sameday
      * @param $orderId
      *
      * @return bool
-     * @throws \Sameday\Exceptions\SamedaySDKException
+     * @throws SamedaySDKException
      */
     public function showAwbAsPdf($orderId)
     {
@@ -533,16 +541,11 @@ class Sameday
     }
 
 	/**
-     * @param $orderId
-     *
-     * @return string|void
-     * @throws \Sameday\Exceptions\SamedayAuthenticationException
-     * @throws \Sameday\Exceptions\SamedayAuthorizationException
-     * @throws \Sameday\Exceptions\SamedayNotFoundException
-     * @throws \Sameday\Exceptions\SamedayOtherException
-     * @throws \Sameday\Exceptions\SamedaySDKException
-     * @throws \Sameday\Exceptions\SamedayServerException
-     */
+	 * @param $orderId
+	 *
+	 * @return string|void
+	 * @throws SamedaySDKException
+	 */
     public function showAwbHistory($orderId)
     {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
@@ -557,7 +560,11 @@ class Sameday
         }
 
         $parcels = unserialize($awb->parcels);
-        foreach ($parcels as $parcel) {
+
+        global $wpdb;
+	    $wpdb->delete($wpdb->prefix . 'sameday_package', ['order_id' => $orderId]);
+
+	    foreach ($parcels as $parcel) {
             try {
                 $parcelStatus = $sameday->getParcelStatusHistory(new \Sameday\Requests\SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
             } catch (Exception $exception) {
@@ -586,7 +593,7 @@ class Sameday
      * @throws \Sameday\Exceptions\SamedayAuthorizationException
      * @throws \Sameday\Exceptions\SamedayNotFoundException
      * @throws \Sameday\Exceptions\SamedayOtherException
-     * @throws \Sameday\Exceptions\SamedaySDKException
+     * @throws SamedaySDKException
      * @throws \Sameday\Exceptions\SamedayServerException
      */
     public function addNewParcel($params)

@@ -176,6 +176,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.24 =
+
+* Bug fix. Show AWB History.
+
 = 1.0.23 =
 
 * Group locker list by city. This list will be shown in the checkout page.
