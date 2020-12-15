@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.24
+ * Version: 1.0.25
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -46,11 +46,18 @@ function samedaycourier_shipping_method() {
     if (! class_exists('SamedayCourier_Shipping_Method')) {
         class SamedayCourier_Shipping_Method extends WC_Shipping_Method
         {
+            const CASH_ON_DELIVERY = 'cod';
+
             /**
              * @var bool
              */
             private $configValidation;
 
+	        /**
+	         * SamedayCourier_Shipping_Method constructor.
+	         *
+	         * @param int $instance_id
+	         */
             public function __construct( $instance_id = 0 )
             {
                 parent::__construct( $instance_id );
@@ -73,7 +80,7 @@ function samedaycourier_shipping_method() {
             /**
              * @param array $package
              */
-            public function calculate_shipping( $package = array() )
+            public function calculate_shipping($package = array())
             {
                 if ($this->settings['enabled'] === 'no') {
                     return;
@@ -187,6 +194,13 @@ function samedaycourier_shipping_method() {
                     }
                 }
 
+                // Check if the client has to pay anything as repayment value
+                $repaymentAmount = WC()->cart->subtotal;
+	            $paymentMethod = WC()->session->get('payment_method');
+	            if (isset($paymentMethod) && ($paymentMethod !== self::CASH_ON_DELIVERY)) {
+		            $repaymentAmount = 0;
+                }
+
                 $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
                     $pickupPointId,
                     null,
@@ -208,7 +222,7 @@ function samedaycourier_shipping_method() {
                         null
                     ),
                     0,
-                    WC()->cart->subtotal,
+	                $repaymentAmount,
                     null,
                     $serviceTaxIds
                 );
@@ -540,7 +554,14 @@ function refresh_shipping_methods() {
 add_action( 'wp_ajax_woo_get_ajax_data', 'woo_get_ajax_data' );
 add_action( 'wp_ajax_nopriv_woo_get_ajax_data', 'woo_get_ajax_data' );
 function woo_get_ajax_data() {
-    WC()->session->set('open_package', $_POST['open_package']);
+    if (isset($_POST['open_package'])) {
+	    WC()->session->set('open_package', $_POST['open_package']);
+    }
+
+    if (isset($_POST['payment_method'])) {
+	    WC()->session->set('payment_method', $_POST['payment_method']);
+    }
+
     die();
 }
 
@@ -548,25 +569,47 @@ add_action( 'wp_footer', 'custom_checkout_script' );
 function custom_checkout_script() {
     ?>
     <script>
-        var $ = jQuery;
+        let $ = jQuery;
         $(document).on('change', '#open_package', function () {
             let isChecked = 'no';
             if ($(this).prop('checked')) {
                 isChecked = 'yes';
             }
 
+            doAjaxCall({
+                'action': 'woo_get_ajax_data',
+                'open_package': isChecked
+            });
+        });
+
+        $('body').on('updated_checkout', function () {
+            $('input[name="payment_method"]').change(function () {
+                doAjaxCall({
+                    'action': 'woo_get_ajax_data',
+                    'payment_method': $("input[name='payment_method']:checked").val()
+                })
+            });
+        });
+
+        const doAjaxCall = function (params) {
             $.ajax({
                 'type': 'POST',
                 'url': wc_checkout_params.ajax_url,
-                'data': {
-                    'action': 'woo_get_ajax_data',
-                    'open_package': isChecked
-                },
+                'data': params,
                 success: function () {
                     $(document.body).trigger('update_checkout');
                 }
-            });
-        });
+            })
+        }
+
+        window.onload = function () {
+            doAjaxCall(
+                {
+                    'action': 'woo_get_ajax_data',
+                    'payment_method': $("input[name='payment_method']:checked").val()
+                }
+            );
+        }
     </script>
     <?php
 }
@@ -578,7 +621,7 @@ function set_open_package_option($order_id) {
 
     WC()->session->set('open_package', 'no');
 }
-add_action( 'woocommerce_checkout_update_order_meta', 'set_open_package_option');
+add_action('woocommerce_checkout_update_order_meta', 'set_open_package_option');
 
 // LOCKER :
 function wps_locker_row_layout() {

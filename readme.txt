@@ -176,6 +176,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.25 =
+
+* Add new feature. Recalculate the estimated cost after payment method is changed.
+
 = 1.0.24 =
 
 * Bug fix. Show AWB History.
