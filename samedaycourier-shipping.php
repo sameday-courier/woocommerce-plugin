@@ -594,7 +594,7 @@ function custom_checkout_script() {
         const doAjaxCall = function (params) {
             $.ajax({
                 'type': 'POST',
-                'url': wc_checkout_params.ajax_url,
+                'url': woocommerce_params.ajax_url,
                 'data': params,
                 success: function () {
                     $(document.body).trigger('update_checkout');
