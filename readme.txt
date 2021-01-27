@@ -3,7 +3,7 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 4.7
-Tested up to: 5.3.1
+Tested up to: 5.6
 Stable tag: 3.4.7
 Requires PHP: 5.6
 License: GPLv2 or later
@@ -36,7 +36,7 @@ For further information, contact us at software[at]sameday.ro !
 = Requirements =
 
 * Wordpress v4.7 or later
-* WooCommerce v3.8 or later
+* WooCommerce v5.6 or later
 
 = Plugin installation procedure =
 
@@ -168,6 +168,7 @@ The AWB is the transport document, created by Sameday, in order to process your 
 * `AWB Payment` = Determine who will pay for delivering this package. By default, the site owner
 * `Service` = A list of enabled services (refer to the `Enable services` section)
 * `Observation` = Any text that will be displayed on observation field in AWB
+* `Client Reference` = Set a unique reference for each AWB. This field can be associated with the id of the order.
 
 An parcel it's a package of the types predefined by Sameday (Envelope, Parcel, Large Parcel).
 Any AWB can have one or more parcels (default one).
@@ -175,6 +176,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.0.26 =
+
+* Add new feature. Set a unique reference for each AWB. This field can be associated with the id of the order.
 
 = 1.0.25 =
 
