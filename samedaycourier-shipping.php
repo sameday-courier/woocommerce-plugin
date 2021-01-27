@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.26
+ * Version: 1.0.27
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -565,7 +565,7 @@ function woo_get_ajax_data() {
     die();
 }
 
-add_action( 'wp_footer', 'custom_checkout_script' );
+add_action('woocommerce_before_checkout_form', 'custom_checkout_script');
 function custom_checkout_script() {
     ?>
     <script>
@@ -594,7 +594,7 @@ function custom_checkout_script() {
         const doAjaxCall = function (params) {
             $.ajax({
                 'type': 'POST',
-                'url': wc_checkout_params.ajax_url,
+                'url': woocommerce_params.ajax_url,
                 'data': params,
                 success: function () {
                     $(document.body).trigger('update_checkout');

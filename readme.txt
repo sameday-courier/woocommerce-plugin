@@ -177,6 +177,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.27 =
+
+* Bug fix. Include custom.js file only in checkout page instead of globally.
+
 = 1.0.26 =
 
 * Add new feature. Set a unique reference for each AWB. This field can be associated with the id of the order.
