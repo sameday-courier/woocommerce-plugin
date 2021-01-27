@@ -78,7 +78,7 @@ function samedaycourierAddAwbForm($order) {
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
                     <tbody>                   
-                        <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
+                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
@@ -184,7 +184,16 @@ function samedaycourierAddAwbForm($order) {
                             <td class="forminp forminp-text">
                                 <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
                              </td>
-                        </tr>                
+                        </tr>
+                        <tr valign="middle">
+                            <th scope="row" class="titledesc"> 
+                                <label for="samedaycourier-client-reference"> ' . __("Client Reference") . ' </label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <input type="text" form="addAwbForm" name="samedaycourier-client-reference" style="width: 181px; height: 30px;" id="samedaycourier-client-reference" value="' . $order->get_id() . '">
+                             	<span>' . __("By default this field is complete with Order ID") . '</span>
+                             </td>
+                        </tr>                  
                         <tr>
                             <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb") . ' </button> </th>
                         </tr>

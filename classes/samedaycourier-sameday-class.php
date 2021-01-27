@@ -411,7 +411,7 @@ class Sameday
             null,
             $serviceTaxIds,
             null,
-            null,
+	        $params['samedaycourier-client-reference'],
             $params['samedaycourier-package-observation'],
             '',
             '',
