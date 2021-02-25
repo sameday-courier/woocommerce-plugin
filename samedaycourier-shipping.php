@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.27
+ * Version: 1.0.28
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -88,6 +88,7 @@ function samedaycourier_shipping_method() {
 
                 $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
+                $lockerMaxItems = (int) $this->settings['locker_max_items'];
 
                 $availableServices = $this->getAvailableServices();
                 if (!empty($availableServices)) {
@@ -100,7 +101,7 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > 1) {
+                        if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > $lockerMaxItems) {
                             continue;
                         }
 
@@ -335,10 +336,10 @@ function samedaycourier_shipping_method() {
                             'btfp' => __('If its cost is bigger than fixed price')
                         ],
                         'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
-                        Never* You choose to display only the fixed price that you set for each service<br/>
-                        Always* You choose to display only the price estimated by SamedayCourier API<br/>
-                        If its cost is bigger than fixed price* You choose to display the cost estimated by 
-                        SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
+                            Never* You choose to display only the fixed price that you set for each service<br/>
+                            Always* You choose to display only the price estimated by SamedayCourier API<br/>
+                            If its cost is bigger than fixed price* You choose to display the cost estimated by 
+                            SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
                         ')
                     ),
 
@@ -367,6 +368,13 @@ function samedaycourier_shipping_method() {
                         'type' => 'text',
                         'description' => __( 'This appear in checkout page', 'samedaycourier' ),
                         'default' => __( '', 'samedaycourier' )
+                    ),
+
+                    'locker_max_items' => array(
+	                    'title' => __( 'Locker max. items', 'samedaycourier' ),
+	                    'type' => 'number',
+	                    'description' => __( 'The maximum amount of items accepted inside the locker', 'samedaycourier' ),
+	                    'default' => 1
                     ),
                 );
 
