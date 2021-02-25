@@ -115,6 +115,7 @@ In order to setup the plugin, you need to provide the following information (ple
 * `Extra fee` = Extra fee, defined in percentage value, which will be applied on top of the estimated cost provided by Sameday
 * `Open package status` = Allow the clients to open the package in the moment of delivery in order to check the conformity of the delivered product(s)
 * `Open package label` = This text will be displayed on the checkout page in order to ask them if they would like to open the package on delivery. Please refer to the previous option (Open package status)
+* `Locker max. items` = The maximum amount of items accepted inside the locker
 
 = Update services, pickup-points & lockers =
 
@@ -176,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.0.28 =
+
+* Add new feature. Set maximum amount of items to fit in lockers.
 
 = 1.0.27 =
 
