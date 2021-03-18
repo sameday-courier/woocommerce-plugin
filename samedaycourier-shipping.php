@@ -88,6 +88,7 @@ function samedaycourier_shipping_method() {
 
                 $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
+                $costCashOnDelivery = (float) $this->settings['extra_cost_cash_on_delivery'];
                 $lockerMaxItems = (int) $this->settings['locker_max_items'];
 
                 $availableServices = $this->getAvailableServices();
@@ -111,6 +112,10 @@ function samedaycourier_shipping_method() {
                             $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
 
                             if (isset($estimatedCost)) {
+
+                                if (isset($costCashOnDelivery) && $costCashOnDelivery > 0) {
+                                    $estimatedCost += round($costCashOnDelivery, 2);
+                                }
 
                                 if (($useEstimatedCost === 'yes') || ($useEstimatedCost === 'btfp' && $service->price < $estimatedCost)) {
                                     $price = $estimatedCost;
@@ -355,6 +360,20 @@ function samedaycourier_shipping_method() {
                         ),
                         'default' => 0
                     ),
+
+                    'extra_cost_cash_on_delivery' => array(
+                        'title' => __('Extra Fee Cash On Delivery', 'samedaycourier'),
+                        'type' => 'number',
+                        'css' => 'width:100px;',
+                        'description' => __('Apply extra fee on estimated cost. This is a fix value. <br/> If you don\'t want to add extra fee on estimated cost value, such as cash on delivery leave this field blank or 0', 'samedaycourier'),
+                        'custom_attributes' => array(
+                            'min' => 0,
+                            'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
+                            'data-placeholder' => __('Extra Fee Cash On Delivery', 'samedaycourier')
+                        ),
+                        'default' => 0
+                    ),
+                    
 
                     'open_package_status' => array(
                         'title' => __( 'Open package status', 'samedaycourier' ),
