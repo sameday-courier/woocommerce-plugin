@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.29 =
+
+* Bug fix. Avoid package_hash notice.
+
 = 1.0.28 =
 
 * Add new feature. Set maximum amount of items to fit in lockers.
