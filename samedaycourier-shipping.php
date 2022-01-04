@@ -664,10 +664,7 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
-                    <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
-                    <?php echo $lockerOptions; ?>
-                </select>
+                <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Select easyBox', 'wc-pickup-store') ?></button>
             </td>
         </tr>
     <?php }
@@ -681,6 +678,15 @@ function add_locker_id_to_order_data( $order_id ) {
     }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
+
+/**
+ ** Add external JS file for Lockers
+ **/
+function lockers_enqueue_script() {
+    wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js');
+}
+add_action('wp_enqueue_scripts', 'lockers_enqueue_script');
+
 
 /**
  ** Order detail styles
