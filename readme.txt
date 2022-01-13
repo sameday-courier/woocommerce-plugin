@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.0.30 =
+
+* Code improvement. Store Sameday Token into database in order to avoid unnecessary calls to Sameday Auth Method.
+
 = 1.0.29 =
 
 * Bug fix. Avoid package_hash notice.
