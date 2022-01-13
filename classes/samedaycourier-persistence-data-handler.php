@@ -16,9 +16,7 @@ class PersistenceDataHander implements SamedayPersistentDataInterface
 
 	public function get($key)
 	{
-		$options = get_option("woocommerce_samedaycourier_settings_{$key}")[self::KEYS[$key]];
-
-		return $options;
+		return get_option("woocommerce_samedaycourier_settings_{$key}")[self::KEYS[$key]];
 	}
 
 	public function set($key, $value): void
