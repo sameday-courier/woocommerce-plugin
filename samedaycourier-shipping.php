@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.0.29
+ * Version: 1.0.30
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -41,6 +41,7 @@ require_once (plugin_basename('classes/samedaycourier-locker-instance.php'));
 require_once (plugin_basename('views/add-awb-form.php'));
 require_once (plugin_basename('views/awb-history-table.php'));
 require_once (plugin_basename('views/add-new-parcel-form.php'));
+require_once (plugin_basename('classes/samedaycourier-persistence-data-handler.php'));
 
 function samedaycourier_shipping_method() {
     if (! class_exists('SamedayCourier_Shipping_Method')) {
@@ -394,7 +395,7 @@ function samedaycourier_shipping_method() {
                 $sameday = SamedayCourierApi::initClient(
                     $post_data['woocommerce_samedaycourier_user'],
                     $post_data['woocommerce_samedaycourier_password'],
-                    $post_data['woocommerce_samedaycourier_is_testing']
+	                $post_data['woocommerce_samedaycourier_is_testing'] ?? 0
                 );
 
 

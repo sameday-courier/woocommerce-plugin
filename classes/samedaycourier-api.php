@@ -24,7 +24,9 @@ class SamedayCourierApi
 			$password,
 			$is_testing ? 'https://sameday-api.demo.zitec.com' : 'https://api.sameday.ro',
 			'WOOCOMMERCE ' . WC()->version,
-			WC()->version
+			WC()->version,
+			'curl',
+			new PersistenceDataHander()
 		);
 	}
 }
