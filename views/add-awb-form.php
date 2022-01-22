@@ -6,7 +6,7 @@ if (! defined( 'ABSPATH' ) ) {
 
 function samedaycourierAddAwbForm($order) {
     $samedayOption = get_option('woocommerce_samedaycourier_settings');
-    $is_testing = $samedayOption['is_testing'] === 'yes' ? 1 : 0;
+    $is_testing = $samedayOption['is_testing'];
 
     $samedayOrderItemId = null;
     $serviceId = null;

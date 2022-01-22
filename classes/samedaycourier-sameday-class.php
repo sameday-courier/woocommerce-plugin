@@ -11,36 +11,22 @@ if (! defined( 'ABSPATH' ) ) {
  */
 class Sameday
 {
-    /**
-     * @var mixed|void
-     */
-    private $samedayOptions;
-
-    public function __construct()
-    {
-        $this->samedayOptions = get_option('woocommerce_samedaycourier_settings');
-    }
-
-    private function isTesting()
-    {
-        return $this->samedayOptions['is_testing'] === 'yes' ? 1 : 0;
-    }
-
-    /**
-     * @throws \Sameday\Exceptions\SamedayAuthorizationException
-     * @throws SamedaySDKException
-     * @throws \Sameday\Exceptions\SamedayServerException
-     */
+	/**
+	 * @return bool
+	 * @throws SamedaySDKException
+	 * @throws \Sameday\Exceptions\SamedayAuthorizationException
+	 * @throws \Sameday\Exceptions\SamedayServerException
+	 */
     public function refreshServices()
     {
-        if (empty($this->samedayOptions)) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings())) {
             wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
         ));
 
         $remoteServices = [];
@@ -57,10 +43,10 @@ class Sameday
             }
 
             foreach ($services->getServices() as $serviceObject) {
-                $service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), $this->isTesting());
+                $service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
                 if (! $service) {
                     // Service not found, add it.
-                    SamedayCourierQueryDb::addService($serviceObject, $this->isTesting());
+                    SamedayCourierQueryDb::addService($serviceObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
                 } else {
                     SamedayCourierQueryDb::updateServiceCode($serviceObject, $service->id);
                 }
@@ -80,7 +66,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getServices($this->isTesting())
+            SamedayCourierQueryDb::getServices(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
         );
 
         // Delete local services that aren't present in remote services anymore.
@@ -95,14 +81,14 @@ class Sameday
 
     public function refreshPickupPoints()
     {
-        if (empty($this->samedayOptions) ) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
         }
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+	        SamedayCourierHelperClass::getSamedaySettings()['user'],
+	        SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
         ));
 
         $remotePickupPoints = [];
@@ -117,10 +103,10 @@ class Sameday
             }
 
             foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
-                $pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), $this->isTesting());
+                $pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
                 if (!$pickupPoint) {
                     // Pickup point not found, add it.
-                    SamedayCourierQueryDb::addPickupPoint($pickupPointObject, $this->isTesting());
+                    SamedayCourierQueryDb::addPickupPoint($pickupPointObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
                 } else {
                     SamedayCourierQueryDb::updatePickupPoint($pickupPointObject, $pickupPoint->id);
                 }
@@ -139,7 +125,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getPickupPoints($this->isTesting())
+            SamedayCourierQueryDb::getPickupPoints(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
         );
 
         // Delete local pickup points that aren't present in remote pickup points anymore.
@@ -161,14 +147,14 @@ class Sameday
      */
     public function refreshLockers()
     {
-        if (empty($this->samedayOptions) ) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             wp_redirect(admin_url() . 'admin.php?page=sameday_lockers');
         }
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+	        SamedayCourierHelperClass::getSamedaySettings()['user'],
+	        SamedayCourierHelperClass::getSamedaySettings()['password'],
+	        SamedayCourierHelperClass::getApiUrl()
         ));
 
         $request = new Sameday\Requests\SamedayGetLockersRequest();
@@ -181,10 +167,10 @@ class Sameday
 
         $remoteLockers = [];
         foreach ($lockers->getLockers() as $lockerObject) {
-            $locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), $this->isTesting());
+            $locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
             if (!$locker) {
                 // Pickup point not found, add it.
-                SamedayCourierQueryDb::addLocker($lockerObject, $this->isTesting());
+                SamedayCourierQueryDb::addLocker($lockerObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
             } else {
                 SamedayCourierQueryDb::updateLocker($lockerObject, $locker->id);
             }
@@ -202,7 +188,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getLockers($this->isTesting())
+            SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
         );
 
         // Delete local lockers that aren't present in remote lockers anymore.
@@ -217,15 +203,14 @@ class Sameday
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_lockers');
     }
 
-    /**
-     * @return void
-     */
     private function updateLastSyncTimestamp()
     {
         $time = time();
 
-        $this->samedayOptions['sameday_sync_lockers_ts'] = $time;
-        update_option('woocommerce_samedaycourier_settings', $this->samedayOptions);
+		$samedayOptions = SamedayCourierHelperClass::getSamedaySettings();
+	    $samedayOptions['sameday_sync_lockers_ts'] = $time;
+
+        update_option('woocommerce_samedaycourier_settings', $samedayOptions);
     }
 
     /**
@@ -335,7 +320,7 @@ class Sameday
      */
     public function postAwb($params)
     {
-        if (empty($this->samedayOptions) ) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             wp_redirect(admin_url() . "post.php?post={$params['samedaycourier-order-id']}&action=edit");
         }
 
@@ -345,7 +330,7 @@ class Sameday
 
         $serviceId = $params['samedaycourier-service'];
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, $this->isTesting());
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
         $serviceTaxIds = array();
         if (!empty($params['samedaycourier-open-package-status'])) {
             foreach ($optionalServices as $optionalService) {
@@ -358,7 +343,7 @@ class Sameday
 
         $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
         if (isset($lockerId)) {
-            $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, $this->isTesting());
+            $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
         }
 
         $city = isset($locker) ? $locker->city : $params['shipping']['city'];
@@ -366,9 +351,9 @@ class Sameday
         $address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+	        SamedayCourierHelperClass::getSamedaySettings()['user'],
+	        SamedayCourierHelperClass::getSamedaySettings()['password'],
+	        SamedayCourierHelperClass::getApiUrl()
         ));
 
         $parcelDimensions[] = new \Sameday\Objects\ParcelDimensionsObject(
@@ -443,10 +428,11 @@ class Sameday
         $samedayOrderItemId = null;
         foreach ($params['shipping_lines'] as $id => $shippingLine) {
             $samedayOrderItemId = $id;
+
             break;
         }
 
-        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, $this->isTesting());
+        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
         $metas = array(
             'service_id' => $serviceId,
             'service_code' => $service->sameday_code
@@ -476,9 +462,9 @@ class Sameday
     public function removeAwb($awb)
     {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+	        SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
         ));
 
         try {
@@ -504,12 +490,12 @@ class Sameday
      */
     public function showAwbAsPdf($orderId)
     {
-        $defaultLabelFormat = $this->samedayOptions['default_label_format'];
+        $defaultLabelFormat = SamedayCourierHelperClass::getSamedaySettings()['default_label_format'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
         ));
 
         $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
@@ -549,9 +535,9 @@ class Sameday
     public function showAwbHistory($orderId)
     {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            $this->samedayOptions['user'],
-            $this->samedayOptions['password'],
-            $this->isTesting()
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
         ));
 
         $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
@@ -599,9 +585,9 @@ class Sameday
     public function addNewParcel($params)
     {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-                $this->samedayOptions['user'],
-                $this->samedayOptions['password'],
-                $this->isTesting()
+                SamedayCourierHelperClass::getSamedaySettings()['user'],
+                SamedayCourierHelperClass::getSamedaySettings()['password'],
+                SamedayCourierHelperClass::getApiUrl()
             )
         );
 
