@@ -83,10 +83,6 @@ class SamedayCourierServiceInstance
 			array(
 				'value' => 1,
 				'text' => __('Always')
-			),
-			array(
-				'value' => 2,
-				'text' => __('Interval2')
 			)
 		);
 	}
