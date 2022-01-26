@@ -48,7 +48,6 @@ function samedaycourier_create_db() {
         price DOUBLE(10, 2),
         price_free DOUBLE(10, 2),
         status INT(11),
-        working_days TEXT,
         PRIMARY KEY (id),
 		UNIQUE KEY id (id)
 	) $charset_collate;";
