@@ -44,7 +44,10 @@ class SamedayCourierHelperClass
 	 */
 	public static function getApiUrl(): string
 	{
-		return self::getEnvModes()[self::getSamedaySettings()['host_country']][self::getSamedaySettings()['is_testing']];
+		// The default will always be RO
+		$hostCountry = self::getSamedaySettings()['host_country'] ?? self::API_HOST_LOCALE_RO;
+
+		return self::getEnvModes()[$hostCountry][self::getSamedaySettings()['is_testing']];
 	}
 
 	/**
