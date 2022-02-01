@@ -242,10 +242,6 @@ class Sameday
             'status' => array(
                 'required' => false,
                 'value' => $_POST['samedaycourier-status']
-            ),
-            'working_days' => array(
-                'required' => false,
-                'value' => $_POST['samedaycourier-working_days']
             )
         );
 
@@ -257,36 +253,6 @@ class Sameday
             }
         }
 
-        if ($post_fields['status']['value'] === '2') {
-            $days = \SamedayCourierHelperClass::getDays();
-
-            $workingDays = $post_fields['working_days']['value'];
-
-            $enabledDays = array();
-            foreach ($days as $day) {
-                if (isset($workingDays["order_date_{$day['text']}_enabled"])) {
-                    $enabledDays[] = $workingDays["order_date_{$day['text']}_enabled"];
-                }
-            }
-
-            foreach ($enabledDays as $day) {
-                if ((int) $workingDays["order_date_{$day}_h_from"] > (int) $workingDays["order_date_{$day}_h_until"]) {
-                    $errors[] = __("Until hour must be greater than from hour");
-                }
-
-                if ( ((int) $workingDays["order_date_{$day}_h_from"] > 23) || ((int) $workingDays["order_date_{$day}_h_until"] > 23)) {
-                    $errors[] = __("Hours must be less than 23");
-                }
-
-                if ( ((int) $workingDays["order_date_{$day}_m_from"] > 59) || ((int) $workingDays["order_date_{$day}_m_until"] > 59)) {
-                    $errors[] = __("Minutes must be less than 59");
-                }
-
-                if ( ((int) $workingDays["order_date_{$day}_s_from"] > 59) || ((int) $workingDays["order_date_{$day}_s_until"] > 59)) {
-                    $errors[] = __("Seconds be less than 59");
-                }
-            }
-        }
         // End of Validation check.
 
         if (empty($errors)) {
@@ -295,8 +261,7 @@ class Sameday
                 'name' => $post_fields['name']['value'],
                 'price' => $post_fields['price']['value'],
                 'price_free' => $post_fields['price_free']['value'],
-                'status' => $post_fields['status']['value'],
-                'working_days' => serialize($post_fields['working_days']['value'])
+                'status' => $post_fields['status']['value']
             );
 
             SamedayCourierQueryDb::updateService($service);

@@ -241,22 +241,6 @@ function samedaycourier_shipping_method() {
                         case 1:
                             $availableServices[] = $service;
                             break;
-
-                        case 2:
-                            $working_days = unserialize($service->working_days);
-
-                            $today = \SamedayCourierHelperClass::getDays()[date('w')]['text'];
-                            $date_from = mktime((int) $working_days["order_date_{$today}_h_from"], (int) $working_days["order_date_{$today}_m_from"], (int) $working_days["order_date_{$today}_s_from"], date('m'), date('d'), date('Y'));
-                            $date_to = mktime((int) $working_days["order_date_{$today}_h_until"], (int) $working_days["order_date_{$today}_m_until"], (int) $working_days["order_date_{$today}_s_until"], date('m'), date('d'), date('Y'));
-                            $time = time();
-
-                            if (!isset($working_days["order_date_{$today}_enabled"]) || $time < $date_from || $time > $date_to) {
-                                // Not working on this day, or out of available time period.
-                                break;
-                            }
-
-                            $availableServices[] = $service;
-                            break;
                     }
                 }
 
