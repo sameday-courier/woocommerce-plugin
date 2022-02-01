@@ -32,7 +32,7 @@ class SamedayCourierService extends WP_List_Table
 
 		global $wpdb;
 
-		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
+		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'];
 
 		$sql = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE is_testing=".$is_testing;
 
@@ -58,7 +58,7 @@ class SamedayCourierService extends WP_List_Table
 	public static function record_count() {
 		global $wpdb;
 
-		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'] === 'yes' ? 1 : 0;
+		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'];
 
 		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_service WHERE is_testing=".$is_testing;
 

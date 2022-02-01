@@ -9,7 +9,7 @@ use \Sameday\SamedayClient;
 
 class PersistenceDataHander implements SamedayPersistentDataInterface
 {
-	protected const KEYS = [
+	const KEYS = [
 		SamedayClient::KEY_TOKEN => 'token',
 		SamedayClient::KEY_TOKEN_EXPIRES => 'expires_at'
 	];
