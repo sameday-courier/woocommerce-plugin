@@ -178,6 +178,14 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.1.1 =
+
+* Bug fix. SamedayCourierHelperClass::getApiUrl() must be of the type string.
+
+= 1.1.0 =
+
+* Code improvement. Remove is_testing options. The env. mode will be setup based on the set of credentials. Remove Sameday service interval.
+
 = 1.0.30 =
 
 * Code improvement. Store Sameday Token into database in order to avoid unnecessary calls to Sameday Auth Method.

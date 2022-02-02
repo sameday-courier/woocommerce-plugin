@@ -398,7 +398,7 @@ function samedaycourier_shipping_method() {
 			                if ($sameday->login()) {
 				                $isTesting = (int) (SamedayCourierHelperClass::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
 				                $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
-				                $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
+				                //$post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
 				                $isLogged = true;
 
                                 break;
