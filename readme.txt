@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.1 =
+
+* Add new feature. Integrate Sameday LockersPlugin library.
+
 = 1.1.1 =
 
 * Bug fix. SamedayCourierHelperClass::getApiUrl() must be of the type string.
