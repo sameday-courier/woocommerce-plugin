@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.1.0
+ * Version: 1.2.1
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -663,10 +663,8 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
-                    <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
-                    <?php echo $lockerOptions; ?>
-                </select>
+                <input type="hidden" id="locker_id" name="locker_id" value="">
+                <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
             </td>
         </tr>
     <?php }
@@ -680,6 +678,21 @@ function add_locker_id_to_order_data( $order_id ) {
     }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
+
+/**
+ ** Add external JS file for Lockers
+ **/
+
+function preprod_lockers_enqueue_script() {
+    wp_enqueue_script( 'preprod-locker-plugin', 'https://cdnsameday.azureedge.net/preprod-locker-plugin/lockerpluginsdk.js');
+}
+add_action('wp_enqueue_scripts', 'preprod_lockers_enqueue_script');
+
+function lockers_enqueue_script() {
+    wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js');
+}
+add_action('wp_enqueue_scripts', 'lockers_enqueue_script');
+
 
 /**
  ** Order detail styles
