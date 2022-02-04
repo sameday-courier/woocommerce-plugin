@@ -1,5 +1,8 @@
 <?php
 
+use Sameday\Exceptions\SamedaySDKException;
+use Sameday\SamedayClient;
+
 if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -10,21 +13,23 @@ if (! defined( 'ABSPATH' ) ) {
 class SamedayCourierApi
 {
 	/**
-	 * @param null $username
-	 * @param null $password
-	 * @param null $is_testing
+	 * @param $username
+	 * @param $password
+	 * @param $apiUrl
 	 *
-	 * @return \Sameday\SamedayClient
-	 * @throws \Sameday\Exceptions\SamedaySDKException
+	 * @return SamedayClient
+	 * @throws SamedaySDKException
 	 */
-	static function initClient($username, $password, $is_testing)
+	public static function initClient($username, $password, $apiUrl): SamedayClient
 	{
-		return new \Sameday\SamedayClient(
+		return new SamedayClient(
 			$username,
 			$password,
-			$is_testing ? 'https://sameday-api.demo.zitec.com' : 'https://api.sameday.ro',
+			$apiUrl,
 			'WOOCOMMERCE ' . WC()->version,
-			WC()->version
+			WC()->version,
+			'curl',
+			new PersistenceDataHander()
 		);
 	}
 }

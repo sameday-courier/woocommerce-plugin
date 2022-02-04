@@ -6,6 +6,52 @@ if (! defined( 'ABSPATH' ) ) {
 
 class SamedayCourierHelperClass
 {
+	const API_PROD = 0;
+	const API_DEMO = 1;
+
+	const API_HOST_LOCALE_RO = 'RO';
+	const API_HOST_LOCAL_HU = 'HU';
+
+	public static function getSamedaySettings(): array
+	{
+		return get_option('woocommerce_samedaycourier_settings');
+	}
+
+	public static function getEnvModes(): array
+	{
+		return [
+			self::API_HOST_LOCALE_RO => [
+				self::API_PROD => 'https://api.sameday.ro',
+				self::API_DEMO => 'https://sameday-api.demo.zitec.com',
+			],
+			self::API_HOST_LOCAL_HU => [
+				self::API_PROD => 'https://api.sameday.hu',
+				self::API_DEMO => 'https://sameday-api.demo.zitec.hu',
+			],
+		];
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function isTesting(): int
+	{
+		return (int) self::getSamedaySettings()['is_testing'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getApiUrl(): string
+	{
+		// The default will always be RO:
+		$hostCountry = self::getSamedaySettings()['host_country']  !== ""
+			? self::getSamedaySettings()['host_country']
+			: self::API_HOST_LOCALE_RO;
+
+		return self::getEnvModes()[$hostCountry][self::getSamedaySettings()['is_testing']];
+	}
+
 	/**
 	 * @return array
 	 */
