@@ -358,7 +358,7 @@ function samedaycourier_shipping_method() {
 	                    'type' => 'select',
 	                    'description' => __( 'The value of this field will be appear automatically after you complete the authentication', 'samedaycourier' ),
 	                    'default' => 'none',
-	                    'disabled' => true,
+                        'disabled' => true,
 	                    'options' => array(
 		                    SamedayCourierHelperClass::API_HOST_LOCALE_RO => __( SamedayCourierHelperClass::API_HOST_LOCALE_RO, 'samedaycourier' ),
 		                    SamedayCourierHelperClass::API_HOST_LOCAL_HU => __( SamedayCourierHelperClass::API_HOST_LOCALE_RO, 'samedaycourier' ),
@@ -366,6 +366,7 @@ function samedaycourier_shipping_method() {
 	                    ),
                     ),
                 );
+
 
                 // Show on checkout:
                 $this->enabled = $this->settings['enabled'] ?? 'yes';
@@ -693,7 +694,18 @@ function lockers_enqueue_script() {
 }
 add_action('wp_enqueue_scripts', 'lockers_enqueue_script');
 
+function general_admin_notice(){
+    $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
+    
+    if (!get_option( 'woocommerce_samedaycourier_settings', 'host_country' ) ) {
+        echo '<div class="notice error"><p>
+                '.__( 'You need to update settings for Sameday Courier plugin.', 'samedaycourier' ).'
+              <a href="'.$pathToSettings.'">'.__( 'Please click here', 'samedaycourier' ).'</a></p></div>';
+    }
 
+
+}
+add_action('admin_notices', 'general_admin_notice');
 /**
  ** Order detail styles
  **/
