@@ -146,7 +146,6 @@ class SamedayCourierServiceInstance
                                 </select>
                             </td>
                         </tr>
-                        '.$intervals.'
                         <tr>
                             <th><button class="button-primary" type="submit" value="Submit" > Edit Service </button> </th>
                         </tr>

@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.2.1
+ * Version: 1.2.3
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -398,7 +398,7 @@ function samedaycourier_shipping_method() {
 			                if ($sameday->login()) {
 				                $isTesting = (int) (SamedayCourierHelperClass::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
 				                $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
-				                //$post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
+				                $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
 				                $isLogged = true;
 
                                 break;

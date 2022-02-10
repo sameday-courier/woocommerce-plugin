@@ -32,7 +32,7 @@ class SamedayCourierLockers extends WP_List_Table
 
 		global $wpdb;
 
-		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'];
+		$is_testing = SamedayCourierHelperClass::isTesting();
 
 		$sql = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
 
@@ -58,7 +58,7 @@ class SamedayCourierLockers extends WP_List_Table
 	public static function record_count() {
 		global $wpdb;
 
-		$is_testing = get_option('woocommerce_samedaycourier_settings')['is_testing'];
+		$is_testing = SamedayCourierHelperClass::isTesting();
 
 		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
 

@@ -43,10 +43,10 @@ class Sameday
             }
 
             foreach ($services->getServices() as $serviceObject) {
-                $service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+                $service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), SamedayCourierHelperClass::isTesting());
                 if (! $service) {
                     // Service not found, add it.
-                    SamedayCourierQueryDb::addService($serviceObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+                    SamedayCourierQueryDb::addService($serviceObject, SamedayCourierHelperClass::isTesting());
                 } else {
                     SamedayCourierQueryDb::updateServiceCode($serviceObject, $service->id);
                 }
@@ -66,7 +66,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getServices(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
+            SamedayCourierQueryDb::getServices(SamedayCourierHelperClass::isTesting())
         );
 
         // Delete local services that aren't present in remote services anymore.
@@ -103,10 +103,10 @@ class Sameday
             }
 
             foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
-                $pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+                $pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), SamedayCourierHelperClass::isTesting());
                 if (!$pickupPoint) {
                     // Pickup point not found, add it.
-                    SamedayCourierQueryDb::addPickupPoint($pickupPointObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+                    SamedayCourierQueryDb::addPickupPoint($pickupPointObject, SamedayCourierHelperClass::isTesting());
                 } else {
                     SamedayCourierQueryDb::updatePickupPoint($pickupPointObject, $pickupPoint->id);
                 }
@@ -125,7 +125,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getPickupPoints(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
+            SamedayCourierQueryDb::getPickupPoints(SamedayCourierHelperClass::isTesting())
         );
 
         // Delete local pickup points that aren't present in remote pickup points anymore.
@@ -167,10 +167,10 @@ class Sameday
 
         $remoteLockers = [];
         foreach ($lockers->getLockers() as $lockerObject) {
-            $locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+            $locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), SamedayCourierHelperClass::isTesting());
             if (!$locker) {
                 // Pickup point not found, add it.
-                SamedayCourierQueryDb::addLocker($lockerObject, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+                SamedayCourierQueryDb::addLocker($lockerObject, SamedayCourierHelperClass::isTesting());
             } else {
                 SamedayCourierQueryDb::updateLocker($lockerObject, $locker->id);
             }
@@ -188,7 +188,7 @@ class Sameday
                 );
             },
 
-            SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::getSamedaySettings()['is_testing'])
+            SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting())
         );
 
         // Delete local lockers that aren't present in remote lockers anymore.
@@ -295,7 +295,7 @@ class Sameday
 
         $serviceId = $params['samedaycourier-service'];
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
         $serviceTaxIds = array();
         if (!empty($params['samedaycourier-open-package-status'])) {
             foreach ($optionalServices as $optionalService) {
@@ -308,7 +308,7 @@ class Sameday
 
         $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
         if (isset($lockerId)) {
-            $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+            $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, SamedayCourierHelperClass::isTesting());
         }
 
         $city = isset($locker) ? $locker->city : $params['shipping']['city'];
@@ -397,7 +397,7 @@ class Sameday
             break;
         }
 
-        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, SamedayCourierHelperClass::getSamedaySettings()['is_testing']);
+        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, SamedayCourierHelperClass::isTesting());
         $metas = array(
             'service_id' => $serviceId,
             'service_code' => $service->sameday_code
