@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.3 =
+
+* Bug fix. Set default value for is_testing option. Remove unnecessary variable "$intervals".
+
 = 1.2.1 =
 
 * Add new feature. Integrate Sameday LockersPlugin library.
