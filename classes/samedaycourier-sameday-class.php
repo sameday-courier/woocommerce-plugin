@@ -306,13 +306,10 @@ class Sameday
             }
         }
 
-        $lockerId = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
-        if (isset($lockerId)) {
-            $locker = SamedayCourierQueryDb::getLockerSameday($lockerId, SamedayCourierHelperClass::isTesting());
-        }
+        $locker = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
 
-        $city = isset($locker) ? $locker->city : $params['shipping']['city'];
-        $county = isset($locker)  ? $locker->county : SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
+        $city =  $params['shipping']['city'];
+        $county =  SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
         $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
@@ -365,7 +362,7 @@ class Sameday
             $params['samedaycourier-package-observation'],
             '',
             '',
-            $lockerId
+            $locker
         );
 
         try {
