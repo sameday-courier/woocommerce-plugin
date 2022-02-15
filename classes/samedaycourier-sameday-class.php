@@ -313,7 +313,7 @@ class Sameday
 
         $city = isset($locker) ? $locker->city : $params['shipping']['city'];
         $county = isset($locker)  ? $locker->county : SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
-        $address = isset($locker) ? $locker->address : ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
+        $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],

@@ -178,7 +178,7 @@ function samedaycourierAddAwbForm($order) {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-observation"> ' . __("Observation") . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-observation"> ' . __("Observation") . ' </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 181px; height: 30px;" id="samedaycourier-package-observation" ></textarea>
