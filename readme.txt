@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.4 =
+
+* Code improvement. Set AwbRecipientEntityObject with data of client instead of locker data.
+
 = 1.2.3 =
 
 * Bug fix. Set default value for is_testing option. Remove unnecessary variable "$intervals".
