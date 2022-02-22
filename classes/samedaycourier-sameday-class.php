@@ -350,7 +350,8 @@ class Sameday
                 ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
                 isset($params['billing']['phone']) ? $params['billing']['phone'] : "",
                 isset($params['billing']['phone']) ? $params['billing']['email'] : "",
-                $companyObject
+                $companyObject,
+                $params['shipping']['postcode']
             ),
             $params['samedaycourier-package-insurance-value'],
             $params['samedaycourier-package-repayment'],

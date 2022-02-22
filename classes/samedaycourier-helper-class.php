@@ -26,7 +26,7 @@ class SamedayCourierHelperClass
 			],
 			self::API_HOST_LOCAL_HU => [
 				self::API_PROD => 'https://api.sameday.hu',
-				self::API_DEMO => 'https://sameday-api.demo.zitec.hu',
+				self::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
 			],
 		];
 	}
