@@ -340,6 +340,17 @@ function samedaycourier_shipping_method() {
 	                    'default' => 1
                     ),
 
+                    'lockers_map' => array(
+                        'title'   => __( 'Use locker map', 'samedaycourier' ),
+                        'default' => 'no',
+                        'type'    => 'select',
+                        'options' => [
+                            'no' => __( 'No', 'samedaycourier' ),
+                            'yes' => __( 'Yes', 'samedaycourier' ),
+                        ],
+                        'description' => __('For this moment, lockers map is available only for Romania and is not responsive.')
+                    ),
+
                     'is_testing' => array(
 	                    'title' => __( 'Env. Mode', 'samedaycourier' ),
 	                    'type' => 'select',
@@ -663,8 +674,16 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <input type="hidden" id="locker_id" name="locker_id" value="">
-                <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
+                <?php if (SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] === "yes") { ?>
+                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
+                <?php }else{ ?>
+                    <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
+                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                        <?php echo $lockerOptions; ?>
+                    </select>
+                <?php } ?>
+                <input type="hidden" id="locker_id" name="locker_id" value="">         
+            
             </td>
         </tr>
     <?php }
