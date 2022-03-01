@@ -178,6 +178,15 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.6 =
+
+* Add new feature. The client can choose if he wants to show SamedayCourier lockerPlugins map in checkout page.
+By Default the plugin shows lockers list as a drop-down field.
+
+= 1.2.5 =
+
+* Add new feature. Integrate ULRs in order to use SamedayCourier Hungarian API.
+
 = 1.2.4 =
 
 * Code improvement. Set AwbRecipientEntityObject with data of client instead of locker data.
