@@ -10,10 +10,20 @@
         /* DOM node selectors. */
         
         let selectors = {
-            selectLocker: document.querySelector('#select_locker'),
+            selectLockerMap: document.querySelector('#select_locker'),
+            selectLocker: document.querySelector('#shipping-pickup-store-select'),
+            lockerId: document.querySelector('#locker_id')
         };
 
-        selectors.selectLocker.addEventListener('click',openLockers);
+        if (typeof( selectors.selectLockerMap) != 'undefined' && selectors.selectLockerMap != null){
+            selectors.selectLockerMap.addEventListener('click',openLockers);
+        }else{
+            selectors.selectLocker.onchange = (event) => {
+                let lockerId = event.target.value;
+                selectors.lockerId.value = lockerId;
+            }
+        }
+        
     }
     
     function openLockers() {
