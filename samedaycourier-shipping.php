@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -674,7 +674,7 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <?php if (SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] === "yes") { ?>
+                <?php if ((isset(SamedayCourierHelperClass::getSamedaySettings()['lockers_map']) ? SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] : null) == "yes") { ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php }else{ ?>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
