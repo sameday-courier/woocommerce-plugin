@@ -17,7 +17,7 @@
 
         if (typeof( selectors.selectLockerMap) != 'undefined' && selectors.selectLockerMap != null){
             selectors.selectLockerMap.addEventListener('click',openLockers);
-        }else{
+        }else if (typeof( selectors.selectLocker) != 'undefined' && selectors.selectLocker != null){
             selectors.selectLocker.onchange = (event) => {
                 let lockerId = event.target.value;
                 selectors.lockerId.value = lockerId;
