@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.8 =
+
+* Bug fix
+
 = 1.2.7 =
 
 * Bug fix. SamedayCourierHelperClass::getHostCountry() must be of the type string.
