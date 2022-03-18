@@ -47,7 +47,9 @@ class SamedayCourierHelperClass
 	public static function getHostCountry(): string
 	{
 		// The default will always be RO
-		return self::getSamedaySettings()['host_country'] ?? self::API_HOST_LOCALE_RO;
+		return  (null !== self::getSamedaySettings()['host_country'] || "" !== self::getSamedaySettings()['host_country'])
+			? self::getSamedaySettings()['host_country']
+			: self::API_HOST_LOCALE_RO;
 	}
 
 	/**
