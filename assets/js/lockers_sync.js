@@ -15,6 +15,11 @@
             lockerId: document.querySelector('#locker_id')
         };
 
+        /* Add select2 to lockers dropdown. */
+        jQuery('select#shipping-pickup-store-select').select2();
+
+        /* Map Event. */
+        
         if (typeof( selectors.selectLockerMap) != 'undefined' && selectors.selectLockerMap != null){
             selectors.selectLockerMap.addEventListener('click',openLockers);
         }else if (typeof( selectors.selectLocker) != 'undefined' && selectors.selectLocker != null){
