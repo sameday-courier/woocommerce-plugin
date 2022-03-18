@@ -3,7 +3,7 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 5.8
-Tested up to: 5.8
+Tested up to: 5.9
 Stable tag: 6.1.0
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -177,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.2.9 =
+
+* Bug fix. Validate if Host Country param is undefined.
 
 = 1.2.8 =
 
