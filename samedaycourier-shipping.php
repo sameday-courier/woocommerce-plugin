@@ -677,7 +677,7 @@ function wps_locker_row_layout() {
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php }else{ ?>
-                    <select name="locker_id" id="shipping-pickup-store-select" style="width: 130px; height: 30px; font-size: 13px">
+                    <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
                         <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
@@ -738,6 +738,23 @@ function wps_locker_style() {
             padding: 6px 0;
             text-align: justify;
         }
+
+        [aria-labelledby="select2-shipping-pickup-store-select-container"]{
+            height: 100% !important;
+        }
+        
+        #select2-shipping-pickup-store-select-container{
+            word-wrap: break-word !important;
+            text-overflow: inherit !important;
+            white-space: normal !important;
+        }
+
+        #select2-shipping-pickup-store-select-results{
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
     </style>
     <?php
 }
