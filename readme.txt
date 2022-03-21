@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.11 =
+
+* Fixed select2 error. Check if element exist.
+
 = 1.2.10 =
 
 * Set lockers list as a select2 field.
