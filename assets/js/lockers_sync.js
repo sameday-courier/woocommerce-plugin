@@ -38,16 +38,19 @@
         let selectors = {
             lockerId: document.querySelector('#locker_id'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
-            inputCity: document.querySelector('#select_locker'),
+            selectLocker: document.querySelector('#select_locker'),
         };
+        const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have an unique clientId
+        const countryCode= selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
+        const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase(); //language of the plugin
+        window.LockerPlugin.init({ clientId: clientId, countryCode: countryCode, langCode: langCode });
+        var pluginInstance = window.LockerPlugin.getInstance();
 
-        window.LockerPlugin.init();
-        let plugin = window.LockerPlugin.getInstance();
-        plugin.open();
+        pluginInstance.open();
 
-        plugin.subscribe((message) => {
+        pluginInstance.subscribe((message) => {
             selectors.lockerId.value = message.lockerId;
-            plugin.close();
+            pluginInstance.close();
         })
     }
     

@@ -675,7 +675,7 @@ function wps_locker_row_layout() {
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
-                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
+                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php }else{ ?>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
                         <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
