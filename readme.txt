@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.12 =
+
+* Add client ID and country for lockers map.
+
 = 1.2.11 =
 
 * Fixed select2 error. Check if element exist.
