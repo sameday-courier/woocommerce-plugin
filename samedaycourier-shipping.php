@@ -703,7 +703,7 @@ add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_da
  **/
 
 function preprod_lockers_enqueue_script() {
-    wp_enqueue_script( 'preprod-locker-plugin', 'https://cdnsameday.azureedge.net/preprod-locker-plugin/lockerpluginsdk.js');
+    wp_enqueue_script( 'prod-locker-plugin', 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js');
 }
 add_action('wp_enqueue_scripts', 'preprod_lockers_enqueue_script');
 
