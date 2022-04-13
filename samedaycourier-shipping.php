@@ -682,8 +682,9 @@ function wps_locker_row_layout() {
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker_id" name="locker_id" value="">         
-            
+                <input type="hidden" id="locker_id" name="locker_id" value=""> 
+                <input type="text" id="locker_name" name="locker_name" value="">        
+                <textarea  type="text" id="locker_address" name="locker_address" value=""> </textarea>
             </td>
         </tr>
     <?php }
@@ -694,6 +695,14 @@ function add_locker_id_to_order_data( $order_id ) {
     if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
         $locker_id = $_POST['locker_id'];
         update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
+    }
+    if ( isset( $_POST['locker_name'] ) &&  '' != $_POST['locker_name']) {
+        $locker_id = $_POST['locker_name'];
+        update_post_meta( $order_id, '_sameday_shipping_locker_name',  sanitize_text_field($locker_name), true);
+    }
+    if ( isset( $_POST['locker_address'] ) &&  '' != $_POST['locker_address']) {
+        $locker_id = $_POST['locker_address'];
+        update_post_meta( $order_id, '_sameday_shipping_locker_address',  sanitize_text_field($locker_address), true);
     }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
@@ -742,7 +751,12 @@ function wps_locker_style() {
         [aria-labelledby="select2-shipping-pickup-store-select-container"]{
             height: 100% !important;
         }
-        
+        #locker_name, #locker_address{
+            width:100%;
+            border:0px;
+            pointer-events: none;
+            resize: none;
+        }
         #select2-shipping-pickup-store-select-container{
             word-wrap: break-word !important;
             text-overflow: inherit !important;

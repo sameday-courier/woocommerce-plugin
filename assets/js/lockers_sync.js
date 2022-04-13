@@ -8,7 +8,10 @@
     function init() {
         
         /* DOM node selectors. */
-        
+
+        $('#locker_name').hide();
+        $('#locker_address').hide();
+
         let selectors = {
             selectLockerMap: document.querySelector('#select_locker'),
             selectLocker: document.querySelector('#shipping-pickup-store-select'),
@@ -50,6 +53,10 @@
 
         pluginInstance.subscribe((message) => {
             selectors.lockerId.value = message.lockerId;
+            $('#locker_name').val(message.name);
+            $('#locker_address').val(message.address);
+            $('#locker_name').show();
+            $('#locker_address').show();
             pluginInstance.close();
         })
     }
