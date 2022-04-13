@@ -347,8 +347,7 @@ function samedaycourier_shipping_method() {
                         'options' => [
                             'no' => __( 'No', 'samedaycourier' ),
                             'yes' => __( 'Yes', 'samedaycourier' ),
-                        ],
-                        'description' => __('For this moment, lockers map is available only for Romania and is not responsive.')
+                        ]
                     ),
 
                     'is_testing' => array(
