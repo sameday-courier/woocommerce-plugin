@@ -178,6 +178,11 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.13 =
+
+* Refresh Sameday Api token after each new auth with another set of user credentials
+  (Be aware that when you switch from one user to another you will have to redo the import of services and pick-up points !).
+
 = 1.2.12 =
 
 * Add client ID and country for lockers map.
