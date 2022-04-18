@@ -8,9 +8,10 @@
     function init() {
         
         /* DOM node selectors. */
-
-        $('#locker_name').hide();
-        $('#locker_address').hide();
+        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null){
+        document.getElementById("locker_name").style.display = "none";
+        document.getElementById("locker_address").style.display = "none";
+        }
 
         let selectors = {
             selectLockerMap: document.querySelector('#select_locker'),
@@ -54,26 +55,29 @@
         pluginInstance.subscribe((message) => {
             selectors.lockerId.value = message.lockerId;
             setCookie("lockerId", message.lockerId, 30);
-            $('#locker_name').val(message.name);
+            document.getElementById("locker_name").value = message.name;
             setCookie("locker_name", message.name, 30);
-            $('#locker_address').val(message.address);
+            document.getElementById("locker_address").value = message.address;
             setCookie("locker_address", message.address, 30);
-            $('#locker_name').show();
-            $('#locker_address').show();
+            document.getElementById("locker_name").style.display = "block";
+            document.getElementById("locker_address").style.display = "block";
             pluginInstance.close();
         })
     }
     
 
     function checkCookie() {
-        let lockerIdcookie = getCookie("lockerId");
-        let lockerNamedcookie = getCookie("locker_name");
-        let lockerAddresscookie = getCookie("locker_address");
-        $('#locker_id').val(lockerIdcookie);
-        $('#locker_name').val(lockerNamedcookie);
-        $('#locker_address').val(lockerAddresscookie);
-        $('#locker_name').show();
-        $('#locker_address').show();
+
+        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null){
+            let lockerIdcookie = getCookie("lockerId");
+            let lockerNamedcookie = getCookie("locker_name");
+            let lockerAddresscookie = getCookie("locker_address");
+            document.getElementById("locker_id").value = lockerIdcookie;
+            document.getElementById("locker_name").value = lockerNamedcookie;
+            document.getElementById("locker_address").value = lockerAddresscookie;
+            document.getElementById("locker_name").style.display = "block";
+            document.getElementById("locker_address").style.display = "block";
+        }
        
       }
     /**
