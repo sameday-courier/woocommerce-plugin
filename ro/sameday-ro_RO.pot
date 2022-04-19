@@ -2,17 +2,25 @@
 # This file is distributed under the same license as the Plugins - SamedayCourier Shipping - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-09-06 22:26:29+0000\n"
+"PO-Revision-Date: 2022-04-19 11:30+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
-"X-Generator: GlotPress/3.0.0\n"
-"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && "
+"n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: Loco https://localise.biz/\n"
+"Language: ro_RO\n"
 "Project-Id-Version: Plugins - SamedayCourier Shipping - Development (trunk)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-19 11:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: Română\n"
+"X-Loco-Version: 2.6.1; wp-5.9.3"
 
 #: samedaycourier-shipping.php:352
-msgid "For this moment, lockers map is available only for Romania and is not responsive."
+msgid ""
+"For this moment, lockers map is available only for Romania and is not "
+"responsive."
 msgstr ""
 
 #: samedaycourier-shipping.php:345
@@ -36,7 +44,9 @@ msgid "Prod"
 msgstr ""
 
 #: samedaycourier-shipping.php:358 samedaycourier-shipping.php:371
-msgid "The value of this field will be appear automatically after you complete the authentication"
+msgid ""
+"The value of this field will be appear automatically after you complete the "
+"authentication"
 msgstr ""
 
 #: samedaycourier-shipping.php:356
@@ -61,11 +71,16 @@ msgstr ""
 
 #: samedaycourier-shipping.php:302
 msgid ""
-"This is the shipping cost calculated by Sameday Api for each service. <br/> \n"
-"                            Never* You choose to display only the fixed price that you set for each service<br/>\n"
-"                            Always* You choose to display only the price estimated by SamedayCourier API<br/>\n"
-"                            If its cost is bigger than fixed price* You choose to display the cost estimated by \n"
-"                            SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.\n"
+"This is the shipping cost calculated by Sameday Api for each service. <br/> "
+"\n"
+"                            Never* You choose to display only the fixed "
+"price that you set for each service<br/>\n"
+"                            Always* You choose to display only the price "
+"estimated by SamedayCourier API<br/>\n"
+"                            If its cost is bigger than fixed price* You "
+"choose to display the cost estimated by \n"
+"                            SamedayCourier Api only in the situation that "
+"this cost exceed the fixed price set by you for each service.\n"
 "                        "
 msgstr ""
 
@@ -86,8 +101,12 @@ msgid "Open package label"
 msgstr "Etichetă deschide pachetul"
 
 #: samedaycourier-shipping.php:326
-msgid "Enable this option if you want to offer your customers the opening of the package at delivery time"
-msgstr "Activează această opțiune dacă vrei să oferi clienților posibilitatea de a deschide pachetul în momentul livrării"
+msgid ""
+"Enable this option if you want to offer your customers the opening of the "
+"package at delivery time"
+msgstr ""
+"Activează această opțiune dacă vrei să oferi clienților posibilitatea de a "
+"deschide pachetul în momentul livrării"
 
 #: samedaycourier-shipping.php:324
 msgid "Open package status"
@@ -119,7 +138,7 @@ msgstr "Tip de plată:"
 
 #: views/add-awb-form.php:197
 msgid "Generate Awb"
-msgstr "Generează AWB-ul"
+msgstr "Generează AWB-ul 1"
 
 #: views/add-awb-form.php:152
 msgid "Awb payment"
@@ -438,12 +457,22 @@ msgid "Sameday Locker"
 msgstr "Compartiment Sameday"
 
 #: samedaycourier-shipping.php:434
-msgid "Invalid username/password combination provided! Settings have not been changed!"
-msgstr "Combinația nume utilizator și parolă este invalidă! Setările nu au fost modificate!"
+msgid ""
+"Invalid username/password combination provided! Settings have not been "
+"changed!"
+msgstr ""
+"Combinația nume utilizator și parolă este invalidă! Setările nu au fost "
+"modificate!"
 
 #: samedaycourier-shipping.php:314
-msgid "Apply extra fee on estimated cost. This is a % value. <br/> If you don't want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0"
-msgstr "Aplică o taxă suplimentară la costul estimat. Aceasta este o valoare %. <br/> Dacă nu vrei să adaugi taxa suplimentară, cum ar fi T.V.A., lasă câmpul gol sau pune un 0"
+msgid ""
+"Apply extra fee on estimated cost. This is a % value. <br/> If you don't "
+"want to add extra fee on estimated cost value, such as T.V.A. leave this "
+"field blank or 0"
+msgstr ""
+"Aplică o taxă suplimentară la costul estimat. Aceasta este o valoare %. <br/>"
+" Dacă nu vrei să adaugi taxa suplimentară, cum ar fi T.V.A., lasă câmpul gol "
+"sau pune un 0"
 
 #: samedaycourier-shipping.php:311 samedaycourier-shipping.php:318
 msgid "Extra fee"
