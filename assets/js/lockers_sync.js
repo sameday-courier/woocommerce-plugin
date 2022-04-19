@@ -72,11 +72,13 @@
             let lockerIdcookie = getCookie("lockerId");
             let lockerNamedcookie = getCookie("locker_name");
             let lockerAddresscookie = getCookie("locker_address");
-            document.getElementById("locker_id").value = lockerIdcookie;
-            document.getElementById("locker_name").value = lockerNamedcookie;
-            document.getElementById("locker_address").value = lockerAddresscookie;
-            document.getElementById("locker_name").style.display = "block";
-            document.getElementById("locker_address").style.display = "block";
+            if(lockerIdcookie.length > 1){
+                document.getElementById("locker_id").value = lockerIdcookie;
+                document.getElementById("locker_name").value = lockerNamedcookie;
+                document.getElementById("locker_address").value = lockerAddresscookie;
+                document.getElementById("locker_name").style.display = "block";
+                document.getElementById("locker_address").style.display = "block";
+            }
         }
        
       }
