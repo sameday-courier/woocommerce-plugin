@@ -1,0 +1,512 @@
+# Translation of Plugins - SamedayCourier Shipping - Development (trunk) in Romanian
+# This file is distributed under the same license as the Plugins - SamedayCourier Shipping - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2021-09-06 22:26:29+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/3.0.0\n"
+"Language: ro\n"
+"Project-Id-Version: Plugins - SamedayCourier Shipping - Development (trunk)\n"
+
+#: samedaycourier-shipping.php:352
+msgid "For this moment, lockers map is available only for Romania and is not responsive."
+msgstr ""
+
+#: samedaycourier-shipping.php:345
+msgid "Use locker map"
+msgstr ""
+
+#: samedaycourier-shipping.php:683
+msgid "Show Locker Map"
+msgstr ""
+
+#: samedaycourier-shipping.php:369
+msgid "Env. Host Country"
+msgstr ""
+
+#: samedaycourier-shipping.php:363
+msgid "Demo"
+msgstr ""
+
+#: samedaycourier-shipping.php:362
+msgid "Prod"
+msgstr ""
+
+#: samedaycourier-shipping.php:358 samedaycourier-shipping.php:371
+msgid "The value of this field will be appear automatically after you complete the authentication"
+msgstr ""
+
+#: samedaycourier-shipping.php:356
+msgid "Env. Mode"
+msgstr ""
+
+#: samedaycourier-shipping.php:340
+msgid "The maximum amount of items accepted inside the locker"
+msgstr ""
+
+#: samedaycourier-shipping.php:338
+msgid "Locker max. items"
+msgstr ""
+
+#: views/add-awb-form.php:193
+msgid "By default this field is complete with Order ID"
+msgstr ""
+
+#: views/add-awb-form.php:189
+msgid "Client Reference"
+msgstr ""
+
+#: samedaycourier-shipping.php:302
+msgid ""
+"This is the shipping cost calculated by Sameday Api for each service. <br/> \n"
+"                            Never* You choose to display only the fixed price that you set for each service<br/>\n"
+"                            Always* You choose to display only the price estimated by SamedayCourier API<br/>\n"
+"                            If its cost is bigger than fixed price* You choose to display the cost estimated by \n"
+"                            SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.\n"
+"                        "
+msgstr ""
+
+#: samedaycourier-shipping.php:300
+msgid "If its cost is bigger than fixed price"
+msgstr "Dacă costul este mai mare decât prețul fixat."
+
+#: samedaycourier-shipping.php:298
+msgid "Never"
+msgstr "Niciodată"
+
+#: samedaycourier-shipping.php:333
+msgid "This appear in checkout page"
+msgstr "Asta apare în pagina de finalizare a comenzii"
+
+#: samedaycourier-shipping.php:331
+msgid "Open package label"
+msgstr "Etichetă deschide pachetul"
+
+#: samedaycourier-shipping.php:326
+msgid "Enable this option if you want to offer your customers the opening of the package at delivery time"
+msgstr "Activează această opțiune dacă vrei să oferi clienților posibilitatea de a deschide pachetul în momentul livrării"
+
+#: samedaycourier-shipping.php:324
+msgid "Open package status"
+msgstr "Stare deschide pachetul"
+
+#: samedaycourier-shipping.php:552 views/add-awb-form.php:173
+msgid "Open package"
+msgstr "Deschide pachetul"
+
+#: samedaycourier-shipping.php:898
+msgid "eAWB"
+msgstr "eAWB"
+
+#: samedaycourier-shipping.php:897
+msgid "Settings"
+msgstr "Setări"
+
+#: samedaycourier-shipping.php:870
+msgid "Sameday eAwb"
+msgstr "Sameday eAwb"
+
+#: views/awb-history-table.php:62
+msgid "No data found"
+msgstr "Nu am găsit date"
+
+#: views/add-awb-form.php:87
+msgid "Payment type: "
+msgstr "Tip de plată:"
+
+#: views/add-awb-form.php:197
+msgid "Generate Awb"
+msgstr "Generează AWB-ul"
+
+#: views/add-awb-form.php:152
+msgid "Awb payment"
+msgstr "Plată AWB"
+
+#: views/add-awb-form.php:142
+msgid "Package type"
+msgstr "Tip de pachet"
+
+#: views/add-awb-form.php:124
+msgid "Package Width"
+msgstr "Lățime pachet"
+
+#: views/add-awb-form.php:116
+msgid "Package Height"
+msgstr "Înălțime pachet"
+
+#: views/add-awb-form.php:108
+msgid "Package Length"
+msgstr "Lungime pachet"
+
+#: views/add-awb-form.php:100
+msgid "Package Weight"
+msgstr "Greutate pachet"
+
+#: views/add-awb-form.php:92
+msgid "Insured value"
+msgstr "Valoare asigurată"
+
+#: views/add-awb-form.php:83
+msgid "Repayment"
+msgstr "Rambursare"
+
+#: views/awb-history-table.php:117
+msgid "Picked up at"
+msgstr "Ridicat la"
+
+#: views/awb-history-table.php:116
+msgid "Is picked up"
+msgstr "Este ridicat"
+
+#: views/awb-history-table.php:115
+msgid "Delivery attempts"
+msgstr "Încercări de livrare"
+
+#: views/awb-history-table.php:114
+msgid "Delivered"
+msgstr "Livrat"
+
+#: views/awb-history-table.php:112
+msgid "Parcel number"
+msgstr "Număr colet"
+
+#: views/awb-history-table.php:100
+msgid "Reason"
+msgstr "Motiv"
+
+#: views/awb-history-table.php:99
+msgid "Translation"
+msgstr "Traducere"
+
+#: views/awb-history-table.php:97
+msgid "Date"
+msgstr "Dată"
+
+#: views/awb-history-table.php:96
+msgid "State"
+msgstr "Județ (provincie, stat)"
+
+#: views/awb-history-table.php:95
+msgid "Label"
+msgstr "Etichetă"
+
+#: views/awb-history-table.php:8
+msgid "Awb History"
+msgstr "Istoric AWB-uri"
+
+#: views/add-awb-form.php:181 views/add-new-parcel-form.php:58
+msgid "Observation"
+msgstr "Observație"
+
+#: samedaycourier-shipping.php:349 views/add-new-parcel-form.php:52
+msgid "No"
+msgstr "Nu"
+
+#: samedaycourier-shipping.php:350 views/add-new-parcel-form.php:51
+msgid "Yes"
+msgstr "Da"
+
+#: views/add-new-parcel-form.php:47
+msgid "Is last"
+msgstr "Este ultimul"
+
+#: views/add-new-parcel-form.php:39
+msgid "Parcel width"
+msgstr "Lățime colet"
+
+#: views/add-new-parcel-form.php:31
+msgid "Parcel height"
+msgstr "Înălțime colet"
+
+#: views/add-new-parcel-form.php:23
+msgid "Parcel length"
+msgstr "Lungime colet"
+
+#: views/add-new-parcel-form.php:15 views/awb-history-table.php:113
+msgid "Parcel weight"
+msgstr "Greutate colet"
+
+#: classes/samedaycourier-helper-class.php:124
+msgid "Saturday"
+msgstr "Sâmbătă"
+
+#: classes/samedaycourier-helper-class.php:120
+msgid "Friday"
+msgstr "Vineri"
+
+#: classes/samedaycourier-helper-class.php:116
+msgid "Thursday"
+msgstr "Joi"
+
+#: classes/samedaycourier-helper-class.php:112
+msgid "Wednesday"
+msgstr "Miercuri"
+
+#: classes/samedaycourier-helper-class.php:108
+msgid "Tuesday"
+msgstr "Marți"
+
+#: classes/samedaycourier-helper-class.php:104
+msgid "Monday"
+msgstr "Luni"
+
+#: classes/samedaycourier-helper-class.php:100
+msgid "Sunday"
+msgstr "Duminică"
+
+#: classes/samedaycourier-helper-class.php:86
+msgid "Client"
+msgstr "Client"
+
+#: classes/samedaycourier-helper-class.php:76
+msgid "Large package"
+msgstr "Pachet mare"
+
+#: classes/samedaycourier-helper-class.php:72
+msgid "Envelope"
+msgstr "Plic"
+
+#: classes/samedaycourier-helper-class.php:68
+msgid "Parcel"
+msgstr "Colet"
+
+#: classes/samedaycourier-services.php:126
+msgid "Edit"
+msgstr "Editează"
+
+#: classes/samedaycourier-services.php:125 views/awb-history-table.php:94
+msgid "Status"
+msgstr "Stare"
+
+#: classes/samedaycourier-services.php:124
+msgid "Price free"
+msgstr "Gratuit"
+
+#: classes/samedaycourier-services.php:123
+msgid "Price"
+msgstr "Preț"
+
+#: classes/samedaycourier-services.php:121
+msgid "Sameday name"
+msgstr "Nume Sameday"
+
+#: classes/samedaycourier-services.php:71
+msgid "No services avaliable."
+msgstr "Nu este disponibil niciun serviciu."
+
+#: classes/samedaycourier-services.php:18
+msgid "Services"
+msgstr "Servicii"
+
+#: classes/samedaycourier-services.php:17 views/add-awb-form.php:162
+msgid "Service"
+msgstr "Serviciu"
+
+#: classes/samedaycourier-service-instance.php:85
+#: samedaycourier-shipping.php:299
+msgid "Always"
+msgstr "Întotdeauna"
+
+#: classes/samedaycourier-service-instance.php:81
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: classes/samedaycourier-lockers.php:104
+msgid "Postal code"
+msgstr "Cod poștal"
+
+#: classes/samedaycourier-lockers.php:103
+msgid "Longitude"
+msgstr "Longitudine"
+
+#: classes/samedaycourier-lockers.php:102
+msgid "Latitude"
+msgstr "Latitudine"
+
+#: classes/samedaycourier-lockers.php:97
+msgid "Locker ID"
+msgstr "ID compartiment"
+
+#: classes/samedaycourier-lockers.php:71
+msgid "No lockers avaliable."
+msgstr "Niciun compartiment disponibil."
+
+#: classes/samedaycourier-lockers.php:18
+msgid "Lockers"
+msgstr "Compartimente"
+
+#: classes/samedaycourier-lockers.php:17
+msgid "Locker"
+msgstr "Compartiment"
+
+#: classes/samedaycourier-pickuppoints.php:123
+msgid "Is default "
+msgstr "Este implicit"
+
+#: classes/samedaycourier-pickuppoints.php:122
+msgid "Contact Persons"
+msgstr "Persoane de contact"
+
+#: classes/samedaycourier-lockers.php:101
+#: classes/samedaycourier-pickuppoints.php:121
+msgid "Address"
+msgstr "Adresă"
+
+#: classes/samedaycourier-lockers.php:100
+#: classes/samedaycourier-pickuppoints.php:120 views/awb-history-table.php:98
+msgid "County"
+msgstr "Județ"
+
+#: classes/samedaycourier-lockers.php:99
+#: classes/samedaycourier-pickuppoints.php:119
+msgid "City"
+msgstr "Oraș"
+
+#: classes/samedaycourier-lockers.php:98
+#: classes/samedaycourier-pickuppoints.php:118
+#: classes/samedaycourier-services.php:122
+msgid "Name"
+msgstr "Nume"
+
+#: classes/samedaycourier-pickuppoints.php:117
+#: classes/samedaycourier-services.php:120
+msgid "Sameday ID"
+msgstr "ID Sameday"
+
+#: classes/samedaycourier-pickuppoints.php:71
+msgid "No pickup-points avaliable."
+msgstr "Niciun punct de ridicare disponibil."
+
+#: classes/samedaycourier-pickuppoints.php:18
+msgid "Pickup-points"
+msgstr "Puncte de ridicare"
+
+#: classes/samedaycourier-pickuppoints.php:17 views/add-awb-form.php:132
+msgid "Pickup-point"
+msgstr "Punct de ridicare"
+
+#: samedaycourier-shipping.php:887
+msgid "Please choose your EasyBox Locker !"
+msgstr "Te rog alege compartimentul EasyBox!"
+
+#: samedaycourier-shipping.php:832
+msgid "Remove Awb"
+msgstr "Înlătură AWB-ul"
+
+#: samedaycourier-shipping.php:826
+msgid "Show as pdf"
+msgstr "Arată ca fișier PDF"
+
+#: samedaycourier-shipping.php:824
+msgid "Awb history"
+msgstr "Istoric AWB-uri"
+
+#: samedaycourier-shipping.php:823 views/add-new-parcel-form.php:8
+#: views/add-new-parcel-form.php:65
+msgid "Add new parcel"
+msgstr "Adaugă colet nou"
+
+#: samedaycourier-shipping.php:818 views/add-awb-form.php:77
+msgid "Generate awb"
+msgstr "Generează AWB-ul"
+
+#: samedaycourier-shipping.php:802
+msgid "New parcel has been added to this awb!"
+msgstr "A fost adăugat un colet nou la acest AWB!"
+
+#: samedaycourier-shipping.php:792
+msgid "Awb invalid !"
+msgstr "AWB invalid!"
+
+#: samedaycourier-shipping.php:786
+msgid "Awb was successfully removed !"
+msgstr "AWB-ul a fost înlăturat cu succes!"
+
+#: samedaycourier-shipping.php:776
+msgid "Awb was successfully generated !"
+msgstr "AWB-ul a fost generat cu succes!"
+
+#: samedaycourier-shipping.php:686
+msgid "Select easyBox"
+msgstr "Selectează easyBox"
+
+#: samedaycourier-shipping.php:680
+msgid "Sameday Locker"
+msgstr "Compartiment Sameday"
+
+#: samedaycourier-shipping.php:434
+msgid "Invalid username/password combination provided! Settings have not been changed!"
+msgstr "Combinația nume utilizator și parolă este invalidă! Setările nu au fost modificate!"
+
+#: samedaycourier-shipping.php:314
+msgid "Apply extra fee on estimated cost. This is a % value. <br/> If you don't want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0"
+msgstr "Aplică o taxă suplimentară la costul estimat. Aceasta este o valoare %. <br/> Dacă nu vrei să adaugi taxa suplimentară, cum ar fi T.V.A., lasă câmpul gol sau pune un 0"
+
+#: samedaycourier-shipping.php:311 samedaycourier-shipping.php:318
+msgid "Extra fee"
+msgstr "Taxă suplimentară"
+
+#: samedaycourier-shipping.php:294
+msgid "Use estimated cost"
+msgstr "Folosește costul estimat"
+
+#: samedaycourier-shipping.php:290
+msgid "Awb paper format"
+msgstr "Format hârtie pentru AWB"
+
+#: samedaycourier-shipping.php:283
+msgid "Default label format"
+msgstr "Format implicit pentru etichete"
+
+#: samedaycourier-shipping.php:276 samedaycourier-shipping.php:278
+msgid "Password"
+msgstr "Parolă"
+
+#: samedaycourier-shipping.php:269 samedaycourier-shipping.php:271
+msgid "Username"
+msgstr "Nume utilizator"
+
+#: samedaycourier-shipping.php:264
+msgid "Title to be display on site"
+msgstr "Titlu care să fie afișat pe site"
+
+#: samedaycourier-shipping.php:262
+msgid "Title"
+msgstr "Titlu"
+
+#: samedaycourier-shipping.php:257
+msgid "Enable this shipping."
+msgstr "Activează această livrare."
+
+#: samedaycourier-shipping.php:255
+msgid "Enable"
+msgstr "Activează"
+
+#: samedaycourier-shipping.php:67
+msgid "Custom Shipping Method for SamedayCourier"
+msgstr "Metodă de livrare personalizată pentru SamedayCourier"
+
+#. Author URI of the plugin
+msgid "https://www.sameday.ro/contact"
+msgstr "https://www.sameday.ro/contact"
+
+#. Author of the plugin
+#: samedaycourier-shipping.php:66 samedaycourier-shipping.php:384
+msgid "SamedayCourier"
+msgstr "SamedayCourier"
+
+#. Description of the plugin
+msgid "SamedayCourier Shipping Method for WooCommerce"
+msgstr "Metodă de livrare SamedayCourier pentru WooCommerce"
+
+#. Plugin URI of the plugin
+msgid "https://github.com/sameday-courier/woocommerce-plugin"
+msgstr "https://github.com/sameday-courier/woocommerce-plugin"
+
+#. Plugin Name of the plugin
+#: samedaycourier-shipping.php:265
+msgid "SamedayCourier Shipping"
+msgstr "SamedayCourier Shipping"
