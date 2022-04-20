@@ -17,8 +17,7 @@
     const init = () => {
         /* DOM node selectors. */
         if (isset( () => document.getElementById("locker_name"))) {
-            document.getElementById("locker_name").style.display = "none";
-            document.getElementById("locker_address").style.display = "none";
+            document.getElementById("showLockerDetails").style.display = "none";
         }
 
         let selectors = {
@@ -65,8 +64,7 @@
             setCookie("locker_name", message.name, 30);
             document.getElementById("locker_address").value = message.address;
             setCookie("locker_address", message.address, 30);
-            document.getElementById("locker_name").style.display = "block";
-            document.getElementById("locker_address").style.display = "block";
+            document.getElementById("showLockerDetails").style.display = "block";
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
             pluginInstance.close();
@@ -84,8 +82,7 @@
                 document.getElementById("locker_id").value = lockerIdcookie;
                 document.getElementById("locker_name").value = lockerNamedcookie;
                 document.getElementById("locker_address").value = lockerAddresscookie;
-                document.getElementById("locker_name").style.display = "block";
-                document.getElementById("locker_address").style.display = "block";
+                document.getElementById("showLockerDetails").style.display = "block";
             }
 
             if (isset( () => document.querySelector('#shipping-pickup-store-select'))) {
