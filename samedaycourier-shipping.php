@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.2.13
+ * Version: 1.2.14
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -681,14 +681,16 @@ function wps_locker_row_layout() {
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php }else{ ?>
+                    <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
                         <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker_id" name="locker_id" value=""> 
-                <input type="text" id="locker_name" name="locker_name" value="">        
-                <textarea  type="text" id="locker_address" name="locker_address" value=""> </textarea>
+                <input type="hidden" id="locker_id" name="locker_id">
+                <input type="hidden" id="locker_name" name="locker_name">
+                <input type="hidden" id="locker_address" name="locker_address">
+                <span id="showLockerDetails" style="font-size: 13px; font-weight: bold;"></span>
             </td>
         </tr>
     <?php }
@@ -696,17 +698,9 @@ function wps_locker_row_layout() {
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function add_locker_id_to_order_data( $order_id ) {
-    if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
+    if (isset( $_POST['locker_id'])) {
         $locker_id = $_POST['locker_id'];
         update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
-    }
-    if ( isset( $_POST['locker_name'] ) &&  '' != $_POST['locker_name']) {
-        $locker_id = $_POST['locker_name'];
-        update_post_meta( $order_id, '_sameday_shipping_locker_name',  sanitize_text_field($locker_name), true);
-    }
-    if ( isset( $_POST['locker_address'] ) &&  '' != $_POST['locker_address']) {
-        $locker_id = $_POST['locker_address'];
-        update_post_meta( $order_id, '_sameday_shipping_locker_address',  sanitize_text_field($locker_address), true);
     }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');

@@ -5,12 +5,20 @@
  * @namespace selectLocker
  */
 
-    function init() {
-        
+    // Validate if element is defined and is not null
+    const isset = (accessor) => {
+        try {
+            return accessor() !== undefined && accessor() !== null
+        } catch (e) {
+            return false
+        }
+    }
+
+    const init = () => {
         /* DOM node selectors. */
-        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null){
-        document.getElementById("locker_name").style.display = "none";
-        document.getElementById("locker_address").style.display = "none";
+        if (isset( () => document.getElementById("locker_name"))) {
+            document.getElementById("locker_name").style.display = "none";
+            document.getElementById("locker_address").style.display = "none";
         }
 
         let selectors = {
@@ -20,22 +28,20 @@
         };
 
         /* Map Event. */
-        
-        if (typeof( selectors.selectLockerMap) != 'undefined' && selectors.selectLockerMap != null){
-            selectors.selectLockerMap.addEventListener('click',openLockers);
-        }else if (typeof( selectors.selectLocker) != 'undefined' && selectors.selectLocker != null){
+        if (isset(() => selectors.selectLockerMap)) {
+            selectors.selectLockerMap.addEventListener('click', openLockers);
+        } else if (isset( () => selectors.selectLocker)) {
             /* Add select2 to lockers dropdown. */
             jQuery('select#shipping-pickup-store-select').select2();
 
             selectors.selectLocker.onchange = (event) => {
-                let lockerId = event.target.value;
-                selectors.lockerId.value = lockerId;
+                selectors.lockerId.value = event.target.value;
+                document.getElementById("showLockerDetails").innerHTML = '';
             }
         }
-        
     }
     
-    function openLockers() {
+    const openLockers = () => {
 
         /* DOM node selectors. */
 
@@ -61,62 +67,65 @@
             setCookie("locker_address", message.address, 30);
             document.getElementById("locker_name").style.display = "block";
             document.getElementById("locker_address").style.display = "block";
+            document.getElementById("showLockerDetails").innerHTML = message.name + ' ' +message.address;
+
             pluginInstance.close();
         })
     }
     
 
-    function checkCookie() {
+    function showCookie() {
 
-        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null){
+        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null) {
             let lockerIdcookie = getCookie("lockerId");
             let lockerNamedcookie = getCookie("locker_name");
             let lockerAddresscookie = getCookie("locker_address");
-            if(lockerIdcookie.length > 1){
+            if (lockerIdcookie.length > 1) {
                 document.getElementById("locker_id").value = lockerIdcookie;
                 document.getElementById("locker_name").value = lockerNamedcookie;
                 document.getElementById("locker_address").value = lockerAddresscookie;
                 document.getElementById("locker_name").style.display = "block";
                 document.getElementById("locker_address").style.display = "block";
             }
+
+            if (isset( () => document.querySelector('#shipping-pickup-store-select'))) {
+                document.getElementById("showLockerDetails").innerHTML = '';
+            } else {
+                document.getElementById("showLockerDetails").innerHTML = lockerNamedcookie + ' ' + lockerAddresscookie;
+            }
         }
-       
-      }
+    }
+
     /**
      * Initialise component after ajax complete
      */
-
     (function() {
         const send = XMLHttpRequest.prototype.send
         XMLHttpRequest.prototype.send = function() {
             this.addEventListener('load', function() {
                 init();
-                checkCookie();
+                showCookie();
             })
             return send.apply(this, arguments)
         }
-    })()
+    })();
     
 
-    function setCookie(cname,cvalue,exdays) {
-        const d = new Date();
-        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    const setCookie = (key, value, days) => {
+        let d = new Date();
+        d.setTime(d.getTime() + (days*24*60*60*1000));
         let expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      }
+
+        document.cookie = key + "=" + value + ";" + expires + ";path=/";
+    }
       
-      function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "";
-      }
+    const getCookie = (key) => {
+        let cookie = '';
+        document.cookie.split(';').forEach(function (value) {
+            if (value.split('=')[0].trim() === key) {
+                return cookie = value.split('=')[1];
+            }
+        });
+
+        return cookie;
+    }
