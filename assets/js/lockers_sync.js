@@ -67,7 +67,7 @@
             setCookie("locker_address", message.address, 30);
             document.getElementById("locker_name").style.display = "block";
             document.getElementById("locker_address").style.display = "block";
-            document.getElementById("showLockerDetails").innerHTML = message.name + ' ' +message.address;
+            document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
             pluginInstance.close();
         })
@@ -76,7 +76,7 @@
 
     function showCookie() {
 
-        if (typeof(document.getElementById("locker_name")) != 'undefined' &&  document.getElementById("locker_name") != null) {
+        if (isset( () => document.getElementById("locker_name"))) {
             let lockerIdcookie = getCookie("lockerId");
             let lockerNamedcookie = getCookie("locker_name");
             let lockerAddresscookie = getCookie("locker_address");
@@ -91,7 +91,7 @@
             if (isset( () => document.querySelector('#shipping-pickup-store-select'))) {
                 document.getElementById("showLockerDetails").innerHTML = '';
             } else {
-                document.getElementById("showLockerDetails").innerHTML = lockerNamedcookie + ' ' + lockerAddresscookie;
+                document.getElementById("showLockerDetails").innerHTML = lockerNamedcookie + '<br/>' + lockerAddresscookie;
             }
         }
     }

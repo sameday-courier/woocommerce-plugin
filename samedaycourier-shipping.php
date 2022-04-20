@@ -690,7 +690,7 @@ function wps_locker_row_layout() {
                 <input type="hidden" id="locker_id" name="locker_id">
                 <input type="hidden" id="locker_name" name="locker_name">
                 <input type="hidden" id="locker_address" name="locker_address">
-                <span id="showLockerDetails" style="font-size: 13px; font-weight: bold;"></span>
+                <span id="showLockerDetails"></span>
             </td>
         </tr>
     <?php }
@@ -726,6 +726,11 @@ add_action('wp_enqueue_scripts', 'lockers_enqueue_script');
 function wps_locker_style() {
     ?>
     <style type="text/css">
+        #showLockerDetails{
+            font-size: 13px; 
+            font-weight: bold;
+            line-height: 22px;
+        }
         .shipping-pickup-store td .title {
             float: left;
             line-height: 30px;
