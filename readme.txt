@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.14 =
+
+* Add new feature. Show details about selected locker in checkout page.
+
 = 1.2.13 =
 
 * Refresh Sameday Api token after each new auth with another set of user credentials

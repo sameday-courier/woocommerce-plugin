@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.2.13
+ * Version: 1.2.14
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -348,8 +348,7 @@ function samedaycourier_shipping_method() {
                         'options' => [
                             'no' => __( 'No', 'samedaycourier' ),
                             'yes' => __( 'Yes', 'samedaycourier' ),
-                        ],
-                        'description' => __('For this moment, lockers map is available only for Romania and is not responsive.')
+                        ]
                     ),
 
                     'is_testing' => array(
@@ -682,13 +681,16 @@ function wps_locker_row_layout() {
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php }else{ ?>
+                    <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
                         <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker_id" name="locker_id" value="">         
-            
+                <input type="hidden" id="locker_id" name="locker_id">
+                <input type="hidden" id="locker_name" name="locker_name">
+                <input type="hidden" id="locker_address" name="locker_address">
+                <span id="showLockerDetails"></span>
             </td>
         </tr>
     <?php }
@@ -696,7 +698,7 @@ function wps_locker_row_layout() {
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function add_locker_id_to_order_data( $order_id ) {
-    if ( isset( $_POST['locker_id'] ) &&  '' != $_POST['locker_id']) {
+    if (isset( $_POST['locker_id'])) {
         $locker_id = $_POST['locker_id'];
         update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
     }
@@ -724,6 +726,11 @@ add_action('wp_enqueue_scripts', 'lockers_enqueue_script');
 function wps_locker_style() {
     ?>
     <style type="text/css">
+        #showLockerDetails{
+            font-size: 13px; 
+            font-weight: bold;
+            line-height: 22px;
+        }
         .shipping-pickup-store td .title {
             float: left;
             line-height: 30px;
@@ -747,7 +754,12 @@ function wps_locker_style() {
         [aria-labelledby="select2-shipping-pickup-store-select-container"]{
             height: 100% !important;
         }
-        
+        #locker_name, #locker_address{
+            width:100%;
+            border:0px;
+            pointer-events: none;
+            resize: none;
+        }
         #select2-shipping-pickup-store-select-container{
             word-wrap: break-word !important;
             text-overflow: inherit !important;
