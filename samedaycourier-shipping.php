@@ -99,7 +99,7 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > $lockerMaxItems) {
+                        if ($service->sameday_code === "LN" && WC()->cart->get_cart_contents_count() > $lockerMaxItems) {
                             continue;
                         }
 
