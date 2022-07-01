@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.15 =
+
+* Load locker map only if select LN checkbox.
+
 = 1.2.14 =
 
 * Add new feature. Show details about selected locker in checkout page.
