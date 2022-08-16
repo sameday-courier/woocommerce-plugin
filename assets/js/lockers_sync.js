@@ -100,8 +100,12 @@
         const send = XMLHttpRequest.prototype.send
         XMLHttpRequest.prototype.send = function() {
             this.addEventListener('load', function() {
-                init();
-                showCookie();
+                if ($("input:checked").val()) {
+                    if($("input:checked").val().includes("LN")){
+                        init();
+                        showCookie();
+                    }
+                }
             })
             return send.apply(this, arguments)
         }
