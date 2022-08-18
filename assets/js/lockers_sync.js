@@ -78,7 +78,7 @@
             let lockerIdcookie = getCookie("lockerId");
             let lockerNamedcookie = getCookie("locker_name");
             let lockerAddresscookie = getCookie("locker_address");
-            if (lockerIdcookie.length > 1) {
+            if (parseInt(lockerIdcookie) > 0) {
                 document.getElementById("locker_id").value = lockerIdcookie;
                 document.getElementById("locker_name").value = lockerNamedcookie;
                 document.getElementById("locker_address").value = lockerAddresscookie;
