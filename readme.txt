@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.16 =
+
+* BugFix frontend: Single digit Locker ids were not restored from cookie
+
 = 1.2.15 =
 
 * Load locker map only if select LN checkbox.
