@@ -6,7 +6,7 @@
  */
 
     // Validate if element is defined and is not null
-    const isset = (accessor) => {
+    const is_set = (accessor) => {
         try {
             return accessor() !== undefined && accessor() !== null
         } catch (e) {
@@ -16,7 +16,7 @@
 
     const init = () => {
         /* DOM node selectors. */
-        if (isset( () => document.getElementById("locker_name"))) {
+        if (is_set( () => document.getElementById("locker_name"))) {
             document.getElementById("showLockerDetails").style.display = "none";
         }
 
@@ -27,9 +27,9 @@
         };
 
         /* Map Event. */
-        if (isset(() => selectors.selectLockerMap)) {
+        if (is_set(() => selectors.selectLockerMap)) {
             selectors.selectLockerMap.addEventListener('click', openLockers);
-        } else if (isset( () => selectors.selectLocker)) {
+        } else if (is_set( () => selectors.selectLocker)) {
             /* Add select2 to lockers dropdown. */
             jQuery('select#shipping-pickup-store-select').select2();
 
@@ -59,11 +59,11 @@
 
         pluginInstance.subscribe((message) => {
             selectors.lockerId.value = message.lockerId;
-            setCookie("lockerId", message.lockerId, 30);
+            set_cookie("lockerId", message.lockerId, 30);
             document.getElementById("locker_name").value = message.name;
-            setCookie("locker_name", message.name, 30);
+            set_cookie("locker_name", message.name, 30);
             document.getElementById("locker_address").value = message.address;
-            setCookie("locker_address", message.address, 30);
+            set_cookie("locker_address", message.address, 30);
             document.getElementById("showLockerDetails").style.display = "block";
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
@@ -74,21 +74,21 @@
 
     function showCookie() {
 
-        if (isset( () => document.getElementById("locker_name"))) {
-            let lockerIdcookie = getCookie("lockerId");
-            let lockerNamedcookie = getCookie("locker_name");
-            let lockerAddresscookie = getCookie("locker_address");
-            if (parseInt(lockerIdcookie) > 0) {
-                document.getElementById("locker_id").value = lockerIdcookie;
-                document.getElementById("locker_name").value = lockerNamedcookie;
-                document.getElementById("locker_address").value = lockerAddresscookie;
+        if (is_set( () => document.getElementById("locker_name"))) {
+            let lockerIdCookie = get_cookie("lockerId");
+            let lockerNamesCookie = get_cookie("locker_name");
+            let lockerAddressCookie = get_cookie("locker_address");
+            if (parseInt(lockerIdCookie) > 0) {
+                document.getElementById("locker_id").value = lockerIdCookie;
+                document.getElementById("locker_name").value = lockerNamesCookie;
+                document.getElementById("locker_address").value = lockerAddressCookie;
                 document.getElementById("showLockerDetails").style.display = "block";
             }
 
-            if (isset( () => document.querySelector('#shipping-pickup-store-select'))) {
+            if (is_set( () => document.querySelector('#shipping-pickup-store-select'))) {
                 document.getElementById("showLockerDetails").innerHTML = '';
             } else {
-                document.getElementById("showLockerDetails").innerHTML = lockerNamedcookie + '<br/>' + lockerAddresscookie;
+                document.getElementById("showLockerDetails").innerHTML = lockerNamesCookie + '<br/>' + lockerAddressCookie;
             }
         }
     }
@@ -98,10 +98,13 @@
      */
     (function() {
         const send = XMLHttpRequest.prototype.send
+
         XMLHttpRequest.prototype.send = function() {
             this.addEventListener('load', function() {
-                if ($("input:checked").val()) {
-                    if($("input:checked").val().includes("LN")){
+                let selected_shipping_rate = document.querySelector("input[type='radio'][class=shipping_method]:checked").value;
+                if (undefined !== selected_shipping_rate || '' !== selected_shipping_rate) {
+                    let shipping_rate_code = selected_shipping_rate.split(':')[2];
+                    if (undefined !== shipping_rate_code && shipping_rate_code === 'LN') {
                         init();
                         showCookie();
                     }
@@ -110,9 +113,8 @@
             return send.apply(this, arguments)
         }
     })();
-    
 
-    const setCookie = (key, value, days) => {
+    const set_cookie = (key, value, days) => {
         let d = new Date();
         d.setTime(d.getTime() + (days*24*60*60*1000));
         let expires = "expires=" + d.toUTCString();
@@ -120,7 +122,7 @@
         document.cookie = key + "=" + value + ";" + expires + ";path=/";
     }
       
-    const getCookie = (key) => {
+    const get_cookie = (key) => {
         let cookie = '';
         document.cookie.split(';').forEach(function (value) {
             if (value.split('=')[0].trim() === key) {
