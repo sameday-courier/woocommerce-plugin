@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.2.18 =
+
+* Bug fix. Load locker_syncs.js lib only in checkout page.
+
 = 1.2.17 =
 
 * Bug fix. Load locker map only if select LN checkbox.
