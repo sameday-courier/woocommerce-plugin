@@ -306,8 +306,14 @@ class Sameday
             }
         }
 
-        $locker = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
 
+        $lockerDetails = json_decode(get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true);
+        
+        if(strlen($lockerDetails['id']) > 1){
+            $locker = $lockerDetails['id'];
+        }else{
+            $locker = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
+        }
         $city =  $params['shipping']['city'];
         $county =  SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
         $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];

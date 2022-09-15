@@ -59,8 +59,14 @@
         pluginInstance.open();
 
         pluginInstance.subscribe((message) => {
-            selectors.lockerId.value = message.lockerId;
-            set_cookie("lockerId", message.lockerId, 30);
+            let lockerDetails = new Object();
+            lockerDetails.id = message.lockerId;
+            lockerDetails.name  = message.name;
+            lockerDetails.address = message.address;
+          
+
+            selectors.lockerId.value = JSON.stringify(lockerDetails);
+            set_cookie("lockerId", JSON.stringify(lockerDetails), 30);
             document.getElementById("locker_name").value = message.name;
             set_cookie("locker_name", message.name, 30);
             document.getElementById("locker_address").value = message.address;
