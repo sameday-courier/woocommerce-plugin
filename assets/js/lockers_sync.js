@@ -5,6 +5,7 @@
  * @namespace selectLocker
  */
 
+
     // Validate if element is defined and is not null
     const is_set = (accessor) => {
         try {
@@ -101,8 +102,8 @@
         const send = XMLHttpRequest.prototype.send
 
         XMLHttpRequest.prototype.send = function() {
-            this.addEventListener('load', function() {
-                let selected_shipping_rate = document.querySelector("input[type='radio'][class=shipping_method]:checked").value;
+            this.addEventListener('load', function() {    
+                let selected_shipping_rate = document.querySelector("input:checked").value;
                 if (undefined !== selected_shipping_rate || '' !== selected_shipping_rate) {
                     let shipping_rate_code = selected_shipping_rate.split(':')[2];
                     if (undefined !== shipping_rate_code && shipping_rate_code === 'LN') {
