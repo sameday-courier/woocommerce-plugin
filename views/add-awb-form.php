@@ -4,6 +4,9 @@ if (! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+/**
+ * @throws JsonException
+ */
 function samedaycourierAddAwbForm($order) {
     $is_testing = SamedayCourierHelperClass::isTesting();
 
@@ -71,10 +74,35 @@ function samedaycourierAddAwbForm($order) {
         $repayment = 0;
     }
 
+	$locker = null;
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
-    $lockerDetails = json_decode(get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true), true);
-    $lockerDetailsName = $lockerDetails['name'];
-    $lockerDetailsAddress = $lockerDetails['address'];
+	$postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true);
+
+	if ('' !== $postMetaLocker) {
+		$locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
+	}
+
+	$lockerName = null;
+	$lockerAddress = null;
+
+	if (is_int($locker)) {
+		// Get locker from local import
+		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
+		if (null !== $localLockerSameday) {
+			$lockerName = $localLockerSameday->name;
+			$lockerAddress = $localLockerSameday->address;
+		}
+	}
+
+	if (is_array($locker)) {
+		$lockerName = $locker['name'];
+		$lockerAddress = $locker['address'];
+	}
+
+	$lockerDetails = null;
+	if (null !== $lockerName && null !== $lockerAddress) {
+		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
+	}
     
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
@@ -171,13 +199,13 @@ function samedaycourierAddAwbForm($order) {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                        if(strlen($lockerDetails['id']) > 1){
-                            $form .=  '<tr valign="middle">
+                        if (null !== $lockerDetails){
+                            $form .=  '<tr style="vertical-align: middle;">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <div style="font-weight:bold">' . $lockerDetailsName . ' - ' . $lockerDetailsAddress .'</div>
+                                <div style="font-weight:bold">' . $lockerDetails .'</div>
                              </td>
                         </tr>';
                         }

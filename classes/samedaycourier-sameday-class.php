@@ -17,6 +17,7 @@ use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
+use Sameday\Requests\SamedayPostParcelRequest;
 
 if (! defined( 'ABSPATH' ) ) {
     exit;
@@ -297,17 +298,18 @@ class Sameday
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
     }
 
-    /**
-     * @param $params
-     *
-     * @return bool
-     * @throws SamedayAuthenticationException
-     * @throws SamedayAuthorizationException
-     * @throws SamedayNotFoundException
-     * @throws SamedayOtherException
-     * @throws SamedaySDKException
-     * @throws SamedayServerException
-     */
+	/**
+	 * @param $params
+	 *
+	 * @return bool
+	 * @throws SamedayAuthenticationException
+	 * @throws SamedayAuthorizationException
+	 * @throws SamedayNotFoundException
+	 * @throws SamedayOtherException
+	 * @throws SamedaySDKException
+	 * @throws SamedayServerException
+	 * @throws JsonException
+	 */
     public function postAwb($params): bool
     {
         if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
@@ -333,7 +335,7 @@ class Sameday
         }
 
 
-        $lockerDetails = json_decode(get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true);
+        $lockerDetails = json_decode( get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true, 512, JSON_THROW_ON_ERROR );
         
         if(strlen($lockerDetails['id']) > 1){
             $locker = $lockerDetails['id'];
@@ -599,7 +601,7 @@ class Sameday
 
         $position = $this->getPosition($awb->parcels);
 
-        $request = new \Sameday\Requests\SamedayPostParcelRequest(
+        $request = new SamedayPostParcelRequest(
             $awb->awb_number,
             new Sameday\Objects\ParcelDimensionsObject(
                 round($params['samedaycourier-parcel-weight'], 2),

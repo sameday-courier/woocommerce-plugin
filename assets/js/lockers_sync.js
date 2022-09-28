@@ -49,17 +49,17 @@
             inputCounty: document.querySelector('#select2-billing_state-container'),
             selectLocker: document.querySelector('#select_locker'),
         };
-        const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have an unique clientId
+        const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have unique clientId
         const countryCode= selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
         const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase(); //language of the plugin
         const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase(); //sameday username
-        window.LockerPlugin.init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
-        var pluginInstance = window.LockerPlugin.getInstance();
+        window['LockerPlugin'].init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
+        let pluginInstance = window['LockerPlugin'].getInstance();
 
         pluginInstance.open();
 
         pluginInstance.subscribe((message) => {
-            let lockerDetails = new Object();
+            let lockerDetails = {};
             lockerDetails.id = message.lockerId;
             lockerDetails.name  = message.name;
             lockerDetails.address = message.address;
