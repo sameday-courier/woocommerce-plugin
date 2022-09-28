@@ -616,7 +616,8 @@ class Sameday
         if (isset($errors)) {
             $noticeError = SamedayCourierHelperClass::parseAwbErrors($errors);
             SamedayCourierHelperClass::addFlashNotice('add_new_parcel_notice', $noticeError, 'error', true);
-            return wp_redirect(add_query_arg('add-new-parcel', 'error', "post.php?post={$awb->order_id}&action=edit"));
+
+            return wp_redirect(add_query_arg('add-new-parcel', 'error', "post.php?post=$awb->order_id&action=edit"));
         }
 
         $parcels = array_merge(unserialize($awb->parcels), array(new ParcelObject(
@@ -636,7 +637,7 @@ class Sameday
      *
      * @return int
      */
-    private function getPosition($parcels)
+    private function getPosition($parcels): int
     {
         $nrOfParcels = count(unserialize($parcels));
 

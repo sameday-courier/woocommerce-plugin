@@ -2,10 +2,10 @@
 Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
-Requires at least: 5.8
-Tested up to: 5.9
-Stable tag: 6.1.0
-Requires PHP: 7.2
+Requires at least: 6.0
+Tested up to: 6.0
+Stable tag: 6.9.0
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
 
@@ -40,23 +40,23 @@ For further information, contact us at software[at]sameday.ro !
 
 = Plugin installation procedure =
 
-* Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu
+* Open your WordPress admin dashboard and go to Plugins/Installed Plugins menu
 * Press Add new button and then press Upload Plugin.
 * Drag & drop the .zip folder you downloaded and install plugin.
 
-If every things works, activate plugin and now the new feature are ready to use.
+If every thing works, activate plugin and now the new feature are ready to use.
 
 = Setup your Plugin =
 
 1. Go to WooCommerce/Settings and choose SamedayCourier tab.
-2. Complete the form and press Save changes. If everythings works well you recive a success message.
+2. Complete the form and press Save changes. If everything works well you receive a success message.
 3. After that, you are able to import the Services and Pick-up point assigned by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing and (optional) for the locker list.
 4. Activate the services by changing the status from "Disabled" to "Always" or "Interval".
 5. Add the new SamedayCourier shipping method to your Shipping zones. Go to WooCommerce/Settings menu, open the Shipping zones tab. Choose the shipping zone for which you want to use Sameday services and press "Edit" button then press "Add shipping method" and select "SamedayCourier".
 
 After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.
 
-In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also you can show the history of the awb, add a new parcel or simply remove the awb.
+In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also, you can show the history of the awb, add a new parcel or simply remove the awb.
 
 == Frequently Asked Questions ==
 
@@ -70,14 +70,14 @@ delivery service.
 
 Sure. However, keep in mind that if you make changes to the source code of the plugin you can no longer benefit from the updates we make constantly. Because in a situation like this in case of an update your changes would be overwritten.
 
-NOTE: We encourage customers to fork our github repository and contribute with their ideas
+NOTE: We encourage customers to fork our GitHub repository and contribute with their ideas
 Link to Github: https://github.com/sameday-courier/woocommerce-plugin
 
 = Are all easyBox delivery services available ? =
 
 No! For the moment only the service Locker NextDay is available.
 
-= I activated the Locker NextDay service but I don't see it on the checkout page =
+= I activated the Locker NextDay service, but I don't see it on the checkout page =
 
 The service is only visible for orders that have a single product in the cart. So make sure you don't have more than one product in your cart.
 
@@ -100,13 +100,13 @@ This situation may be due to the fact that the name of the locality does not mat
 
 = Initial configuration for the plugin =
 
-In order to setup the plugin, you need to provide the following information (please refer to screenshot 1 - Initial configuration for the plugin):
+In order to set up the plugin, you need to provide the following information (please refer to screenshot 1 - Initial configuration for the plugin):
 
 * Go to plugin's Settings
 * `Title` = The title that it will be displayed on your website
 * `Username` = Username provided by Sameday as result of enrolling to our services
 * `Password` = Password provided by Sameday as result of enrolling to our services
-* `Default label format` = The format of paper (eg. A4) for creating the awbs
+* `Default label format` = The format of paper (e.g. A4) for creating the awbs
 * `Is testing` = If checked, the plugin will be set in development mode. This feature is intended to test services. Should not be checked on production environment
 
     NOTE: Each environment (eg. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
