@@ -87,6 +87,7 @@ function samedaycourier_shipping_method() {
                 $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
                 $lockerMaxItems = (int) $this->settings['locker_max_items'];
+                $useLockerMap = $this->settings['lockers_map'] === 'yes';
 
                 $availableServices = $this->getAvailableServices();
                 if (!empty($availableServices)) {
@@ -135,7 +136,10 @@ function samedaycourier_shipping_method() {
                         );
 
                         if ($service->sameday_code === "LN") {
-                            $this->syncLockers();
+                            if (false === $useLockerMap) {
+	                            $this->syncLockers();
+                            }
+
                             $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
                         }
 
@@ -145,19 +149,17 @@ function samedaycourier_shipping_method() {
             }
 
             /**
-             * @return bool
+             * @return void
              */
-            private function syncLockers()
+            private function syncLockers(): void
             {
                 $time = time();
 
                 $ltSync = $this->settings['sameday_sync_lockers_ts'];
 
                 if ($time > ($ltSync + 86400)) {
-                    return (new Sameday())->refreshLockers();
+                    (new Sameday())->updateLockersList();
                 }
-
-                return true;
             }
 
             /**
@@ -227,25 +229,14 @@ function samedaycourier_shipping_method() {
 
                 try {
 	                return $sameday->postAwbEstimation($estimateCostRequest)->getCost();
-                } catch (\Sameday\Exceptions\SamedayBadRequestException $exception) {
+                } catch (Exception $exception) {
                     return null;
                 }
             }
 
             private function getAvailableServices()
             {
-                $services = SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting());
-
-                $availableServices = array();
-                foreach ($services as $service) {
-                    switch ($service->status) {
-                        case 1:
-                            $availableServices[] = $service;
-                            break;
-                    }
-                }
-
-                return $availableServices;
+                return SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting());
             }
 
             private function init(): void
