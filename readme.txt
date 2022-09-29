@@ -171,12 +171,19 @@ The AWB is the transport document, created by Sameday, in order to process your 
 * `Observation` = Any text that will be displayed on observation field in AWB
 * `Client Reference` = Set a unique reference for each AWB. This field can be associated with the id of the order.
 
-An parcel it's a package of the types predefined by Sameday (Envelope, Parcel, Large Parcel).
+A parcel it's a package of the types predefined by Sameday (Envelope, Parcel, Large Parcel).
 Any AWB can have one or more parcels (default one).
 
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.3.0 =
+
+* Major release. Refactor code in order to work with PHP 7.4 version.
+  Integrate AddLockerDetails_admin branch in order to show in AWB form the details of selected locker for LN services.
+  Rezolve fix init map.
+  Do estimate cost only if city and address fields are complete in checkout page.
 
 = 1.2.19 =
 
