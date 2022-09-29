@@ -5,6 +5,7 @@
  * @namespace selectLocker
  */
 
+
     // Validate if element is defined and is not null
     const is_set = (accessor) => {
         try {
@@ -23,7 +24,7 @@
         let selectors = {
             selectLockerMap: document.querySelector('#select_locker'),
             selectLocker: document.querySelector('#shipping-pickup-store-select'),
-            lockerId: document.querySelector('#locker_id')
+            lockerId: document.querySelector('#locker_id'),
         };
 
         /* Map Event. */
@@ -49,18 +50,24 @@
             inputCounty: document.querySelector('#select2-billing_state-container'),
             selectLocker: document.querySelector('#select_locker'),
         };
-        const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have an unique clientId
+        const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have unique clientId
         const countryCode= selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
         const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase(); //language of the plugin
         const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase(); //sameday username
-        window.LockerPlugin.init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
-        var pluginInstance = window.LockerPlugin.getInstance();
+        window['LockerPlugin'].init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
+        let pluginInstance = window['LockerPlugin'].getInstance();
 
         pluginInstance.open();
 
         pluginInstance.subscribe((message) => {
-            selectors.lockerId.value = message.lockerId;
-            set_cookie("lockerId", message.lockerId, 30);
+            let lockerDetails = {};
+            lockerDetails.id = message.lockerId;
+            lockerDetails.name  = message.name;
+            lockerDetails.address = message.address;
+          
+
+            selectors.lockerId.value = JSON.stringify(lockerDetails);
+            set_cookie("lockerId", JSON.stringify(lockerDetails), 30);
             document.getElementById("locker_name").value = message.name;
             set_cookie("locker_name", message.name, 30);
             document.getElementById("locker_address").value = message.address;
@@ -102,16 +109,14 @@
 
         XMLHttpRequest.prototype.send = function() {
             this.addEventListener('load', function() {
-                let selected_shipping_rate = document.querySelector("input[type='radio'][class=shipping_method]:checked").value;
-                if (undefined !== selected_shipping_rate || '' !== selected_shipping_rate) {
-                    let shipping_rate_code = selected_shipping_rate.split(':')[2];
-                    if (undefined !== shipping_rate_code && shipping_rate_code === 'LN') {
-                        init();
-                        showCookie();
-                    }
+                const locker_map_button = document.getElementById('select_locker') || false;
+                if (locker_map_button) {
+                    init();
+                    showCookie();
                 }
-            })
-            return send.apply(this, arguments)
+            });
+
+            return send.apply(this, arguments);
         }
     })();
 

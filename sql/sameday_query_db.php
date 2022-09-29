@@ -271,10 +271,9 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE is_testing = '{$is_testing}'";
-		$result = $wpdb->get_results($query);
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE is_testing = '$is_testing'";
 
-		return $result;
+		return $wpdb->get_results($query);
 	}
 
     /**

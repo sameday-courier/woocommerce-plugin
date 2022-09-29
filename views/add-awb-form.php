@@ -4,25 +4,27 @@ if (! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-function samedaycourierAddAwbForm($order) {
+/**
+ * @throws JsonException
+ */
+function samedaycourierAddAwbForm($order): string {
     $is_testing = SamedayCourierHelperClass::isTesting();
 
-    $samedayOrderItemId = null;
     $serviceId = null;
     foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
         if ($shippingLine->get_method_id() !== 'samedaycourier') {
             continue;
         }
 
-        $serviceId = $shippingLine->get_meta('service_id');
-        if ($serviceId != '') {
+        $serviceId = (int) $shippingLine->get_meta('service_id');
+        if ($serviceId) {
             break;
         }
     }
 
-    $total_weight = (float) 0;
-    $weight = (float) 0;
-    foreach ($order->get_items() as $k => $v) {
+    $total_weight = 0.0;
+    $weight = 0.0;
+    foreach ($order->get_items() as $v) {
         $_product = wc_get_product($v['product_id']);
         $qty = $v['quantity'];
 
@@ -60,7 +62,7 @@ function samedaycourierAddAwbForm($order) {
             continue;
         }
 
-        $checked = $serviceId == $samedayService->sameday_id ? 'selected' : '';
+        $checked = $serviceId === $samedayService->sameday_id ? 'selected' : '';
         $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
@@ -71,8 +73,35 @@ function samedaycourierAddAwbForm($order) {
         $repayment = 0;
     }
 
+	$locker = null;
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
+	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true)) {
+		$locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
+	}
+
+	$lockerName = null;
+	$lockerAddress = null;
+
+	if (is_int($locker)) {
+		// Get locker from local import
+		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
+		if (null !== $localLockerSameday) {
+			$lockerName = $localLockerSameday->name;
+			$lockerAddress = $localLockerSameday->address;
+		}
+	}
+
+	if (is_array($locker)) {
+		$lockerName = $locker['name'];
+		$lockerAddress = $locker['address'];
+	}
+
+	$lockerDetails = null;
+	if (null !== $lockerName && null !== $lockerAddress) {
+		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
+	}
+    
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
@@ -83,7 +112,7 @@ function samedaycourierAddAwbForm($order) {
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
+                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
                                 <span>' . __("Payment type: ") . $payment_gateway->title . '</span>
                              </td>                             
                         </tr>
@@ -167,8 +196,18 @@ function samedaycourierAddAwbForm($order) {
                                 </select>
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
-                        </tr>
-                        <tr valign="middle">
+                        </tr> ';
+                        if (null !== $lockerDetails){
+                            $form .=  '<tr style="vertical-align: middle;">
+                            <th scope="row" class="titledesc"> 
+                                <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <div style="font-weight:bold">' . $lockerDetails .'</div>
+                             </td>
+                        </tr>';
+                        }
+                        $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-open-package-status"> ' . __("Open package") . '</label>
                             </th> 
