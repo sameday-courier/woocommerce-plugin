@@ -85,7 +85,7 @@ function samedaycourier_shipping_method() {
                 }
 
                 $useEstimatedCost = $this->settings['estimated_cost'];
-                $estimatedCostExtraFee = (float) $this->settings['estimated_cost_extra_fee'];
+                $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
                 $lockerMaxItems = (int) $this->settings['locker_max_items'];
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
 
@@ -106,7 +106,11 @@ function samedaycourier_shipping_method() {
 
                         $price = $service->price;
 
-                        if ($useEstimatedCost !== 'no') {
+                        if (
+	                        '' !== $package['destination']['city']
+	                        && '' !== $package['destination']['address']
+                            && $useEstimatedCost !== 'no'
+                        ) {
                             $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
 
                             if (isset($estimatedCost)) {
@@ -115,7 +119,7 @@ function samedaycourier_shipping_method() {
                                     $price = $estimatedCost;
                                 }
 
-                                if (isset($estimatedCostExtraFee) && $estimatedCostExtraFee > 0) {
+                                if ($estimatedCostExtraFee > 0) {
                                     $price += round($price * ($estimatedCostExtraFee /100), 2);
                                 }
                             }
@@ -135,11 +139,8 @@ function samedaycourier_shipping_method() {
                             )
                         );
 
-                        if ($service->sameday_code === "LN") {
-                            if (false === $useLockerMap) {
-	                            $this->syncLockers();
-                            }
-
+                        if (( $service->sameday_code === "LN" ) && (false === $useLockerMap)) {
+                            $this->syncLockers();
                             $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
                         }
 
@@ -664,7 +665,7 @@ function wps_locker_row_layout() {
         $lockerOptions .= $optionGroup . $options;
     }
 
-    if ( is_checkout() && $serviceCode === "LN") {
+    if ($serviceCode === "LN" && is_checkout()) {
     ?>
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
