@@ -24,7 +24,7 @@
         let selectors = {
             selectLockerMap: document.querySelector('#select_locker'),
             selectLocker: document.querySelector('#shipping-pickup-store-select'),
-            lockerId: document.querySelector('#locker_id')
+            lockerId: document.querySelector('#locker_id'),
         };
 
         /* Map Event. */
@@ -108,17 +108,15 @@
         const send = XMLHttpRequest.prototype.send
 
         XMLHttpRequest.prototype.send = function() {
-            this.addEventListener('load', function() {    
-                let selected_shipping_rate = document.querySelector("input:checked").value;
-                if (undefined !== selected_shipping_rate || '' !== selected_shipping_rate) {
-                    let shipping_rate_code = selected_shipping_rate.split(':')[2];
-                    if (undefined !== shipping_rate_code && shipping_rate_code === 'LN') {
-                        init();
-                        showCookie();
-                    }
+            this.addEventListener('load', function() {
+                const locker_map_button = document.getElementById('select_locker') || false;
+                if (locker_map_button) {
+                    init();
+                    showCookie();
                 }
-            })
-            return send.apply(this, arguments)
+            });
+
+            return send.apply(this, arguments);
         }
     })();
 
