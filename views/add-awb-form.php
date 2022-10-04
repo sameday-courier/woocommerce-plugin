@@ -62,7 +62,7 @@ function samedaycourierAddAwbForm($order): string {
             continue;
         }
 
-        $checked = $serviceId === $samedayService->sameday_id ? 'selected' : '';
+        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
         $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 

@@ -672,14 +672,14 @@ function wps_locker_row_layout() {
             <td>
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
-                <?php }else{ ?>
+                <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
                         <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker_id" name="locker_id">
+                <input type="hidden" id="locker" name="locker">
                 <input type="hidden" id="locker_name" name="locker_name">
                 <input type="hidden" id="locker_address" name="locker_address">
                 <span id="showLockerDetails"></span>
@@ -689,13 +689,14 @@ function wps_locker_row_layout() {
 }
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
-function add_locker_id_to_order_data( $order_id ) {
-    if (isset( $_POST['locker_id'])) {
-        $locker_id = $_POST['locker_id'];
-        update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker_id), true);
+function add_locker_to_order_data( $order_id ) {
+    if (isset( $_POST['locker'])) {
+        $locker = $_POST['locker'];
+
+        update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker), true);
     }
 }
-add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_id_to_order_data');
+add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data');
 
 /**
  ** Add external JS file for Lockers
@@ -745,7 +746,7 @@ function wps_locker_style() {
         }
         #locker_name, #locker_address{
             width:100%;
-            border:0px;
+            border:0;
             pointer-events: none;
             resize: none;
         }
@@ -884,7 +885,7 @@ add_action('woocommerce_checkout_process', function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
     if ($serviceCode === 'LN') {
-        if ($_POST['locker_id'] === null || $_POST['locker_id'] === '') {
+        if ($_POST['locker'] === null || $_POST['locker'] === '') {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }

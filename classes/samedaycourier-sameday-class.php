@@ -405,8 +405,10 @@ class Sameday
         try {
             // No errors, post AWB.
             $awb = $sameday->postAwb($request);
-        } catch ( SamedayBadRequestException $e) {
+        } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
+        } catch (Exception $e) {
+			$errors[] = $e->getMessage();
         }
 
         if (null !== $errors && null === $awb) {

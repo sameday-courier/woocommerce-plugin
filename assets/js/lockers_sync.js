@@ -24,7 +24,7 @@
         let selectors = {
             selectLockerMap: document.querySelector('#select_locker'),
             selectLocker: document.querySelector('#shipping-pickup-store-select'),
-            lockerId: document.querySelector('#locker_id'),
+            lockerId: document.querySelector('#locker'),
         };
 
         /* Map Event. */
@@ -46,7 +46,7 @@
         /* DOM node selectors. */
 
         let selectors = {
-            lockerId: document.querySelector('#locker_id'),
+            lockerId: document.querySelector('#locker'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
             selectLocker: document.querySelector('#select_locker'),
         };
@@ -67,11 +67,11 @@
           
 
             selectors.lockerId.value = JSON.stringify(lockerDetails);
-            set_cookie("lockerId", JSON.stringify(lockerDetails), 30);
+            set_cookie("locker", JSON.stringify(lockerDetails), 30);
+
             document.getElementById("locker_name").value = message.name;
-            set_cookie("locker_name", message.name, 30);
             document.getElementById("locker_address").value = message.address;
-            set_cookie("locker_address", message.address, 30);
+
             document.getElementById("showLockerDetails").style.display = "block";
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
@@ -83,20 +83,24 @@
     function showCookie() {
 
         if (is_set( () => document.getElementById("locker_name"))) {
-            let lockerIdCookie = get_cookie("lockerId");
-            let lockerNamesCookie = get_cookie("locker_name");
-            let lockerAddressCookie = get_cookie("locker_address");
-            if (parseInt(lockerIdCookie) > 0) {
-                document.getElementById("locker_id").value = lockerIdCookie;
-                document.getElementById("locker_name").value = lockerNamesCookie;
-                document.getElementById("locker_address").value = lockerAddressCookie;
-                document.getElementById("showLockerDetails").style.display = "block";
+
+            let lockerCookie = null;
+            if ('' !== get_cookie("locker")) {
+                lockerCookie = JSON.parse(get_cookie("locker"));
             }
 
-            if (is_set( () => document.querySelector('#shipping-pickup-store-select'))) {
-                document.getElementById("showLockerDetails").innerHTML = '';
-            } else {
-                document.getElementById("showLockerDetails").innerHTML = lockerNamesCookie + '<br/>' + lockerAddressCookie;
+            if (null !== lockerCookie) {
+                document.getElementById("locker").value = JSON.stringify(lockerCookie);
+                document.getElementById("locker_name").value = lockerCookie.name;
+                document.getElementById("locker_address").value = lockerCookie.address;
+
+                document.getElementById("showLockerDetails").style.display = "block";
+
+                if (is_set( () => document.querySelector('#shipping-pickup-store-select'))) {
+                    document.getElementById("showLockerDetails").innerHTML = '';
+                } else {
+                    document.getElementById("showLockerDetails").innerHTML = lockerCookie.name + '<br/>' + lockerCookie.address;
+                }
             }
         }
     }
@@ -110,10 +114,12 @@
         XMLHttpRequest.prototype.send = function() {
             this.addEventListener('load', function() {
                 const locker_map_button = document.getElementById('select_locker') || false;
-                if (locker_map_button) {
+                const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
+                if (locker_map_button || locker_drop_down_field) {
                     init();
-                    showCookie();
                 }
+
+                showCookie();
             });
 
             return send.apply(this, arguments);
