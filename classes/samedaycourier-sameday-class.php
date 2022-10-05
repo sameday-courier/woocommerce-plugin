@@ -335,13 +335,20 @@ class Sameday
         }
 
 
-        $lockerDetails = json_decode( get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true, 512, JSON_THROW_ON_ERROR );
-        
-        if(strlen($lockerDetails['id']) > 1){
+		$post_meta_samedaycourier_order_id = get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
+
+	    $lockerDetails = null;
+		if ('' !== $post_meta_samedaycourier_order_id) {
+			$lockerDetails = json_decode(get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true, 512, JSON_THROW_ON_ERROR );
+		}
+
+	    $locker = null;
+        if (isset($lockerDetails['id'])) {
             $locker = $lockerDetails['id'];
-        }else{
-            $locker = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true );
+        } else if ('' !== $post_meta_samedaycourier_order_id) {
+            $locker = $post_meta_samedaycourier_order_id;
         }
+
         $city =  $params['shipping']['city'];
         $county =  SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
         $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];

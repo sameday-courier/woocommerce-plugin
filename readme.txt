@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.3.1 =
+
+* Bug fix. Solve Fatal error: Uncaught JsonException: Syntax error.
+
 = 1.3.0 =
 
 * Major release. Refactor code in order to work with PHP 7.4 version.
