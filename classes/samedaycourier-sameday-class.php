@@ -274,7 +274,7 @@ class Sameday
         $errors = array();
 
         foreach ($post_fields as $field => $field_value) {
-            if ($field_value['required'] && '' !== $field_value['value']) {
+            if ($field_value['required'] && ('' === trim($field_value['value']))) {
                 $errors[] = __("The $field must not be empty");
             }
         }
