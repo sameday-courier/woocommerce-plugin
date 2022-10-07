@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.3.2 =
+
+* Bug fix. Solve edit service form error.
+
 = 1.3.1 =
 
 * Bug fix. Solve Fatal error: Uncaught JsonException: Syntax error.
