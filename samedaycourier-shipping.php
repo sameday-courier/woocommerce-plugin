@@ -440,6 +440,30 @@ function samedaycourier_shipping_method() {
     }
 }
 
+add_action('admin_init','load_lockers_sync');
+function load_lockers_sync() {
+  global $pagenow, $typenow;
+
+  if ( $pagenow == 'post.php' ) {
+    wp_enqueue_script('jquery');
+    wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js',array('jquery') );
+    wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js',array('jquery') );
+  }
+
+}
+
+add_action('wp_ajax_updateLocker', 'updateLocker_ajax');
+function updateLocker_ajax() {
+    $post_id = $_POST['id'];
+
+    $update_locker = $_POST['lockerId'];
+    global $pagenow, $typenow;
+    //Update the database with the new locker id value
+    update_post_meta($post_id,'_sameday_shipping_locker_id',$update_locker);
+
+    die($update_locker);
+}
+
 // Shipping Method init.
 add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 

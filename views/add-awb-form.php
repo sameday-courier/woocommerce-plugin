@@ -102,6 +102,9 @@ function samedaycourierAddAwbForm($order): string {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
     
+    $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'];
+    $username = SamedayCourierHelperClass::getSamedaySettings()['user'];
+
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
@@ -200,12 +203,15 @@ function samedaycourierAddAwbForm($order): string {
                         if (null !== $lockerDetails){
                             $form .=  '<tr style="vertical-align: middle;">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
-                            </th> 
-                            <td class="forminp forminp-text">
-                                <div style="font-weight:bold">' . $lockerDetails .'</div>
-                             </td>
-                        </tr>';
+                                    <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
+                                </th> 
+                                <td class="forminp forminp-text">
+                                    <div style="font-weight:bold" id="sameday_locker_name">' . $lockerDetails .'</div><br/>
+                                    <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
+                                </td>
+                            </tr>';
+
+                            
                         }
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
