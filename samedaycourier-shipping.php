@@ -452,18 +452,6 @@ function load_lockers_sync() {
 
 }
 
-add_action('wp_ajax_updateLocker', 'updateLocker_ajax');
-function updateLocker_ajax() {
-    $post_id = $_POST['id'];
-
-    $update_locker = $_POST['lockerId'];
-    global $pagenow, $typenow;
-    //Update the database with the new locker id value
-    update_post_meta($post_id,'_sameday_shipping_locker_id',$update_locker);
-
-    die($update_locker);
-}
-
 // Shipping Method init.
 add_action('woocommerce_shipping_init', 'samedaycourier_shipping_method');
 
@@ -506,6 +494,7 @@ add_action('admin_post_add_awb', function (){
     }
 
     $data = array_merge($postFields, $orderDetails->get_data());
+    
     return (new Sameday())->postAwb($data);
 });
 

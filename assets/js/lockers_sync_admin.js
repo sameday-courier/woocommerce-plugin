@@ -33,16 +33,9 @@ function openLockers(){
 
             pluginInstance.close();
             document.querySelector('#sameday_locker_name').innerHTML = message.name + " - " +message.address;
-            let searchParams = new URLSearchParams(window.location.search)
+            document.querySelector('#locker_id').value = JSON.stringify(lockerDetails);
 
-            jQuery.ajax({
-                type: "POST",
-                url: ajaxurl,
-                data: "action=updateLocker&id="+searchParams.get('post') + "&lockerId=" + message.lockerId,  
-                success: function(msg){
-          
-                }
-            });
+            
         })
 
 }
