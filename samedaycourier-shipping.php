@@ -379,7 +379,7 @@ function samedaycourier_shipping_method() {
                 add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ));
             }
 
-            public function process_admin_options()
+            public function process_admin_options(): void
             {
                 $post_data = $this->get_post_data();
 
@@ -419,22 +419,23 @@ function samedaycourier_shipping_method() {
                 if ($isLogged) {
                     $this->set_post_data($post_data);
 
-                    return parent::process_admin_options();
-                }
+                    parent::process_admin_options();
+                } else {
 
-	            WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
+	                WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
+                }
             }
 
-            public function admin_options()
+            public function admin_options(): void
             {
                 $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
                 $pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
                 $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
                 $buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
-                $adminOptins = parent::admin_options();
+                $adminOptions = parent::admin_options();
 
-                echo $adminOptins . $buttons;
+                echo $adminOptions . $buttons;
             }
         }
     }
@@ -442,12 +443,12 @@ function samedaycourier_shipping_method() {
 
 add_action('admin_init','load_lockers_sync');
 function load_lockers_sync() {
-  global $pagenow, $typenow;
+  global $pagenow;
 
-  if ( $pagenow == 'post.php' ) {
+  if ($pagenow === 'post.php') {
     wp_enqueue_script('jquery');
-    wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js',array('jquery') );
-    wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js',array('jquery') );
+    wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
+    wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
   }
 
 }

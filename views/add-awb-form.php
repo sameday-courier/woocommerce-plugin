@@ -81,7 +81,6 @@ function samedaycourierAddAwbForm($order): string {
         $locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
 	}
 
-    $lockerId = null;
 	$lockerName = null;
 	$lockerAddress = null;
 
@@ -89,7 +88,6 @@ function samedaycourierAddAwbForm($order): string {
 		// Get locker from local import
 		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
 		if (null !== $localLockerSameday) {
-            $lockerId = $localLockerSameday->id;
 			$lockerName = $localLockerSameday->name;
 			$lockerAddress = $localLockerSameday->address;
 		}
@@ -98,7 +96,6 @@ function samedaycourierAddAwbForm($order): string {
 	if (is_array($locker)) {
 		$lockerName = $locker['name'];
 		$lockerAddress = $locker['address'];
-        $lockerId = $locker['locker_id'];
 	}
 
 	$lockerDetails = null;
@@ -205,24 +202,17 @@ function samedaycourierAddAwbForm($order): string {
                              </td>
                         </tr> ';
                        
-                        if (null !== $lockerDetails){
+                        if (null !== $lockerDetails) {
                             $form .=  '<tr style="vertical-align: middle;">
-                            <th scope="row" class="titledesc"> 
+                            	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                                 </th> 
-                                
-
-                                <td class="forminp forminp-text">
-                                    <input type="text" form="addAwbForm" id="order_id" name="order_id" value="' . $order->get_id() . '">
-                                ';
+                                <td class="forminp forminp-text">';
                                 $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='".$lockerDetailsForm."'>";
-
-                                $form .='  <div style="font-weight:bold" id="sameday_locker_name">' . $lockerDetails .'</div><br/>
+                                $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
                                     <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
                                 </td>
                             </tr>';
-
-                            
                         }
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
