@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.3.2
+ * Version: 1.4.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -13,6 +13,9 @@
  * Text Domain: sameday
  */
 
+use Sameday\Exceptions\SamedayAuthorizationException;
+use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Exceptions\SamedayServerException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\SamedayClient;
@@ -51,7 +54,7 @@ function samedaycourier_shipping_method() {
     if (! class_exists('SamedayCourier_Shipping_Method')) {
         class SamedayCourier_Shipping_Method extends WC_Shipping_Method
         {
-            const CASH_ON_DELIVERY = 'cod';
+            public const CASH_ON_DELIVERY = 'cod';
 
 	        /**
 	         * SamedayCourier_Shipping_Method constructor.
@@ -78,7 +81,7 @@ function samedaycourier_shipping_method() {
             /**
              * @param array $package
              */
-            public function calculate_shipping($package = array())
+            public function calculate_shipping($package = array()): void
             {
                 if ($this->settings['enabled'] === 'no') {
                     return;
@@ -169,7 +172,7 @@ function samedaycourier_shipping_method() {
              *
              * @return float|null
              */
-            private function getEstimatedCost($address, $serviceId)
+            private function getEstimatedCost($address, $serviceId): ?float
             {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(SamedayCourierHelperClass::isTesting());
                 $weight = WC()->cart->get_cart_contents_weight() ?: .1;
@@ -434,9 +437,7 @@ function samedaycourier_shipping_method() {
                 $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
                 $buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
-                $adminOptions = parent::admin_options();
-
-                echo $adminOptions . $buttons;
+                echo parent::admin_options() . $buttons;
             }
         }
     }
@@ -880,11 +881,15 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                          </div>';
 
             $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($order->get_id()));
-            $awbNumber = $awb->awb_number;
+            $redirectToEawbSite = sprintf(
+                    '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
+	            SamedayCourierHelperClass::EAWB_INSTANCES[SamedayCourierHelperClass::getHostCountry()],
+	            $awb->awb_number
+            );
 
             $_goTo_eAWB = '
                 <p class="form-field form-field-wide wc-customer-user">
-                    <a href="https://eawb.sameday.ro/awb?awbOrParcelNumber='.$awbNumber.'&tab=allAwbs" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
+                    <a href="' . $redirectToEawbSite . '" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
                 </p>
             ';
         }
