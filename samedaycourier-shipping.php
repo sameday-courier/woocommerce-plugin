@@ -365,6 +365,7 @@ function samedaycourier_shipping_method() {
 	                    'options' => array(
 		                    SamedayCourierHelperClass::API_HOST_LOCALE_RO => __( SamedayCourierHelperClass::API_HOST_LOCALE_RO, 'samedaycourier' ),
 		                    SamedayCourierHelperClass::API_HOST_LOCAL_HU => __( SamedayCourierHelperClass::API_HOST_LOCAL_HU, 'samedaycourier' ),
+                            SamedayCourierHelperClass::API_HOST_LOCAL_BG => __( SamedayCourierHelperClass::API_HOST_LOCAL_BG, 'samedaycourier' ),
 		                    'none' => '',
 	                    ),
                     ),

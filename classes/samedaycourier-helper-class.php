@@ -11,6 +11,7 @@ class SamedayCourierHelperClass
 
 	const API_HOST_LOCALE_RO = 'RO';
 	const API_HOST_LOCAL_HU = 'HU';
+	const API_HOST_LOCAL_BG = 'BG';
 
 	public static function getSamedaySettings(): array
 	{
@@ -27,6 +28,10 @@ class SamedayCourierHelperClass
 			self::API_HOST_LOCAL_HU => [
 				self::API_PROD => 'https://api.sameday.hu',
 				self::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
+			],
+			self::API_HOST_LOCAL_BG => [
+				self::API_PROD => 'https://api.sameday.bg',
+				self::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
 			],
 		];
 	}
