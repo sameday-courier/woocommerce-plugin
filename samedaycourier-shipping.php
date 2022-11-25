@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -13,10 +13,8 @@
  * Text Domain: sameday
  */
 
-use Sameday\Exceptions\SamedayAuthorizationException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Exceptions\SamedayServerException;
 use Sameday\Objects\ParcelDimensionsObject;
+use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\SamedayClient;
 
@@ -176,8 +174,8 @@ function samedaycourier_shipping_method() {
             {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(SamedayCourierHelperClass::isTesting());
                 $weight = WC()->cart->get_cart_contents_weight() ?: .1;
-                $state = \SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
-                $city = \SamedayCourierHelperClass::removeAccents($address['city']);
+                $state = SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
+                $city = SamedayCourierHelperClass::removeAccents($address['city']);
 
                 $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
                 $serviceTaxIds = array();
@@ -534,7 +532,7 @@ function wps_sameday_shipping_options_layout() {
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
 
     $service = SamedayCourierQueryDb::getServiceSamedayCode($serviceCode, SamedayCourierHelperClass::isTesting());
-    /** @var \Sameday\Objects\Service\OptionalTaxObject[] $optionalTaxes */
+    /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
     if ($service) {
         $optionalTaxes = unserialize($service->service_optional_taxes);
