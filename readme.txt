@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.4.1 =
+
+* Bug fix. Track lockers_sync_admin.js file
+
 = 1.4.0 =
 
 * Major release. Refactor code in some legacy part of plugin.
