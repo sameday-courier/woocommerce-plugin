@@ -312,6 +312,20 @@ function samedaycourier_shipping_method() {
                         'default' => 0
                     ),
 
+                    'repayment_tax_label' => array(
+                        'title' => __( 'Repayment tax label', 'samedaycourier' ),
+                        'type' => 'text',
+                        'description' => __( 'Label for repayment tax. This appear in checkout page.', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
+
+                    'repayment_tax' => array(
+                        'title' => __( 'Repayment tax', 'samedaycourier' ),
+                        'type' => 'number',
+                        'description' => __( 'Add extra fee on checkout.', 'samedaycourier' ),
+                        'default' => __( '', 'samedaycourier' )
+                    ),
+
                     'open_package_status' => array(
                         'title' => __( 'Open package status', 'samedaycourier' ),
                         'type' => 'checkbox',
@@ -581,6 +595,26 @@ function woo_get_ajax_data() {
     }
 
     die();
+}
+
+
+add_action( 'woocommerce_cart_calculate_fees','checkout_repayment_tax' );
+function checkout_repayment_tax() {
+  global $woocommerce;
+
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+		return;
+    
+    $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'];
+	$repayment_tax = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax'];
+	
+    if(strlen($repayment_tax_label) < 1){
+        $repayment_tax_label = 'Repayment tax';
+    }
+    if( 'cod' == WC()->session->get( 'chosen_payment_method' ) ) {
+        $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '' );
+    }
+
 }
 
 add_action('woocommerce_before_checkout_form', 'custom_checkout_script');
