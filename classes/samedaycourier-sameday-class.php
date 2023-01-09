@@ -335,16 +335,19 @@ class Sameday
         }
 
 
-		$post_meta_samedaycourier_order_id = get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
+		$post_meta_samedaycourier_order_id = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
 
-	    $lockerDetails = null;
-		if ('' !== $post_meta_samedaycourier_order_id) {
-			$lockerDetails = json_decode(get_post_meta( $params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true ), true, 512, JSON_THROW_ON_ERROR );
+		if (isset($params['locker_id']) && '' !== $params['locker_id']) {
+			$lockerDetailsForm = json_decode(stripslashes(html_entity_decode($params['locker_id'])), true, 512, JSON_THROW_ON_ERROR );
 		}
 
+		if ('' !== $post_meta_samedaycourier_order_id) {
+            update_post_meta($params['samedaycourier-order-id'],'_sameday_shipping_locker_id',$params['locker_id']);
+		}
+       
 	    $locker = null;
-        if (isset($lockerDetails['id'])) {
-            $locker = $lockerDetails['id'];
+        if (isset($lockerDetailsForm['id'])) {
+            $locker = $lockerDetailsForm['id'];
         } else if ('' !== $post_meta_samedaycourier_order_id) {
             $locker = $post_meta_samedaycourier_order_id;
         }
@@ -449,6 +452,7 @@ class Sameday
             'service_code' => $service->sameday_code
         );
 
+
         // Add/update sameday metadata.
         foreach ($metas as $key => $value) {
             $shippingLine->update_meta_data($key, $value);
@@ -460,7 +464,8 @@ class Sameday
         $shippingLine->save();
         global $wpdb;
         $wpdb->update($wpdb->prefix . 'woocommerce_order_items', array('order_item_name' => $service->name), array('order_item_id' => $samedayOrderItemId));
-
+        
+        
         return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
     }
 

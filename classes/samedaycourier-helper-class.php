@@ -6,12 +6,18 @@ if (! defined( 'ABSPATH' ) ) {
 
 class SamedayCourierHelperClass
 {
-	const API_PROD = 0;
-	const API_DEMO = 1;
+	public const API_PROD = 0;
+	public const API_DEMO = 1;
 
-	const API_HOST_LOCALE_RO = 'RO';
-	const API_HOST_LOCAL_HU = 'HU';
-	const API_HOST_LOCAL_BG = 'BG';
+	public const API_HOST_LOCALE_RO = 'RO';
+	public const API_HOST_LOCAL_HU = 'HU';
+	public const API_HOST_LOCAL_BG = 'BG';
+
+	public const EAWB_INSTANCES = [
+		self::API_HOST_LOCALE_RO => 'https://eawb.sameday.ro',
+		self::API_HOST_LOCAL_HU => 'https://eawb.sameday.hu',
+		self::API_HOST_LOCAL_BG => 'https://eawb.sameday.bg',
+	];
 
 	public static function getSamedaySettings(): array
 	{

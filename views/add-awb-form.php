@@ -77,7 +77,8 @@ function samedaycourierAddAwbForm($order): string {
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
 	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true)) {
-		$locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
+        $lockerDetailsForm = $postMetaLocker;
+        $locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
 	}
 
 	$lockerName = null;
@@ -102,6 +103,9 @@ function samedaycourierAddAwbForm($order): string {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
     
+    $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'];
+    $username = SamedayCourierHelperClass::getSamedaySettings()['user'];
+
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
@@ -197,15 +201,18 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                        if (null !== $lockerDetails){
+                       
+                        if (null !== $lockerDetails) {
                             $form .=  '<tr style="vertical-align: middle;">
-                            <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
-                            </th> 
-                            <td class="forminp forminp-text">
-                                <div style="font-weight:bold">' . $lockerDetails .'</div>
-                             </td>
-                        </tr>';
+                            	<th scope="row" class="titledesc"> 
+                                    <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
+                                </th> 
+                                <td class="forminp forminp-text">';
+                                $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='".$lockerDetailsForm."'>";
+                                $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
+                                    <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
+                                </td>
+                            </tr>';
                         }
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 

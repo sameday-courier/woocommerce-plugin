@@ -111,7 +111,7 @@ In order to set up the plugin, you need to provide the following information (pl
 
     NOTE: Each environment (eg. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
 
-* `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price - refer to Edit Service form), always (estimated by Sameday). For extra information regarding to these options, please refer to the screenshot 1
+* `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price - refer to Edit Service form), always (estimated by Sameday). For extra information regard to these options, please refer to the screenshot 1
 * `Extra fee` = Extra fee, defined in percentage value, which will be applied on top of the estimated cost provided by Sameday
 * `Open package status` = Allow the clients to open the package in the moment of delivery in order to check the conformity of the delivered product(s)
 * `Open package label` = This text will be displayed on the checkout page in order to ask them if they would like to open the package on delivery. Please refer to the previous option (Open package status)
@@ -137,7 +137,7 @@ By default, all the services fetched using the previous indications are disabled
 * `Price` = Fixed price for this service. This is the delivery price that the clients will pay if they choose this delivery service
 * `Free delivery price` = The minimum order price for which the delivery is free of charge. This is a numeric value bigger than 0
 
-NOTE: If you don't want to apply an free of charge option leave this field blank
+NOTE: If you don't want to apply a free of charge option leave this field blank
 
 * `Status` = Enable or disable the service. If enabled, the clients will be able to choose this delivery service
 
@@ -158,7 +158,7 @@ The AWB is the transport document, created by Sameday, in order to process your 
 * Go to the order page
 * Click on the button `Generate AWB`
 * In the modal, which originally is pre-completed, you can customize the shipping details (please refer to screenshot 6 for more details)
-* `Repayment` = The amount that the courier should take from the client in the moment of delivery (ex. If the order is already paid, the repayment will be 0)
+* `Repayment` = The amount that the courier should take from the client in the moment of delivery (e.g. If the order is already paid, the repayment will be 0)
 * `Insured value` = The amount that should be insured for the given AWB
 * `Package weight` = The package weight
 * `Package length` = The package length (optional)
@@ -178,9 +178,19 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.4.2 =
+
+* Bug fix. Fatal error: Uncaught JsonException: Syntax error
+
+= 1.4.1 =
+
+* Bug fix. Track lockers_sync_admin.js file
+
 = 1.4.0 =
 
-* Add new feature. Add repayment fee. You are able to set an extra charge (Optional) to your customers for COD (cash on delivery) service.
+* Major release. Refactor code in some legacy part of plugin.
+  Add new feature in order that admin be able to change selected LockerId in Generate AWB Form.
+  Connecting plugin with eAWB Bulgarian instance.
 
 = 1.3.2 =
 
@@ -332,7 +342,7 @@ By Default the plugin shows lockers list as a drop-down field.
 * Add an improvement. Skip decimal validation on Edit Service menu on "Price" field.
 
 = 1.0.17 =
-* Add new feature. Add hiperlink in admin zone that land you to Sameday eAWB platform.
+* Add new feature. Add hyperlink in admin zone that land you to Sameday eAWB platform.
 
 = 1.0.16 =
 * Update documentation.
@@ -345,7 +355,7 @@ By Default the plugin shows lockers list as a drop-down field.
 
 = 1.0.13 =
 * Add new feature. Fill "Repayment" field in the "Generate awb" form with the value of total amount of order only if the payment method is set as "COD" otherwise leave value as 0.
-However you are able to change this value as you want.
+However, you are able to change this value as you want.
 
 = 1.0.12 =
 * Bug fix. Estimate cost method.
@@ -355,7 +365,7 @@ However you are able to change this value as you want.
 Especially useful for those who have unpaid VAT companies.
 
 = 1.0.10 =
-* Bug fix. Error notification. Show an error message details if the awb generation was unsuccesful.
+* Bug fix. Error notification. Show an error message details if the awb generation was unsuccessful.
 
 = 1.0.9 =
 * Bug fix & code refactor.
@@ -364,7 +374,7 @@ Especially useful for those who have unpaid VAT companies.
 * Bug fix. easyBox id must become required if client choose Locker NextDay service in checkout page before submit the order.
 
 = 1.0.7 =
-* Minor update. Show Compnay name on SamedayCourier Awb if the client fill "company" field with data.
+* Minor update. Show Company name on SamedayCourier Awb if the client fill "company" field with data.
 
 = 1.0.6 =
 * Bug fix. Change "Repayment" field <html> validation.
