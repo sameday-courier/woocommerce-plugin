@@ -597,24 +597,22 @@ function woo_get_ajax_data() {
     die();
 }
 
-
-add_action( 'woocommerce_cart_calculate_fees','checkout_repayment_tax' );
+add_action('woocommerce_cart_calculate_fees','checkout_repayment_tax');
 function checkout_repayment_tax() {
   global $woocommerce;
 
-	if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+	if (!defined( 'DOING_AJAX' ) && is_admin()) {
 		return;
-    
-    $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'];
-	$repayment_tax = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax'];
-	
-    if(strlen($repayment_tax_label) < 1){
-        $repayment_tax_label = 'Repayment tax';
-    }
-    if( 'cod' == WC()->session->get( 'chosen_payment_method' ) ) {
-        $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '' );
     }
 
+	$repayment_tax = (int) (SamedayCourierHelperClass::getSamedaySettings()['repayment_tax'] ?? null);
+
+    if ($repayment_tax > 0
+        && SamedayCourier_Shipping_Method::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
+    ) {
+        $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? 'Repayment tax';
+        $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
+    }
 }
 
 add_action('woocommerce_before_checkout_form', 'custom_checkout_script');

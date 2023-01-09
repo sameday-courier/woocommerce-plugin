@@ -158,7 +158,7 @@ The AWB is the transport document, created by Sameday, in order to process your 
 * Go to the order page
 * Click on the button `Generate AWB`
 * In the modal, which originally is pre-completed, you can customize the shipping details (please refer to screenshot 6 for more details)
-* `Repayment` = The amount that the courier should take from the client in the moment of delivery (eg. If the order is already paid, the repayment will be 0)
+* `Repayment` = The amount that the courier should take from the client in the moment of delivery (ex. If the order is already paid, the repayment will be 0)
 * `Insured value` = The amount that should be insured for the given AWB
 * `Package weight` = The package weight
 * `Package length` = The package length (optional)
@@ -177,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.4.0 =
+
+* Add new feature. Add repayment fee. You are able to set an extra charge (Optional) to your customers for COD (cash on delivery) service.
 
 = 1.3.2 =
 
