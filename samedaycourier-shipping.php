@@ -623,7 +623,7 @@ function checkout_repayment_tax() {
     if ($repayment_tax > 0
         && SamedayCourier_Shipping_Method::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
     ) {
-        $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? 'Repayment tax';
+        $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', 'samedaycourier');
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
