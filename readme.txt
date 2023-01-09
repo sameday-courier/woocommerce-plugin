@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.4.3 =
+
+* Add new feature. Add repayment fee. You are able to set an extra charge (Optional) to your customers for COD (cash on delivery) service.
+
 = 1.4.2 =
 
 * Bug fix. Fatal error: Uncaught JsonException: Syntax error
