@@ -6,6 +6,8 @@ if (! defined( 'ABSPATH' ) ) {
 
 class SamedayCourierHelperClass
 {
+	public const CASH_ON_DELIVERY = 'cod';
+
 	public const API_PROD = 0;
 	public const API_DEMO = 1;
 

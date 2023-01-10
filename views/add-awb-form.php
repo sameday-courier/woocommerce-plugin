@@ -69,7 +69,7 @@ function samedaycourierAddAwbForm($order): string {
     $payment_gateway = wc_get_payment_gateway_by_order($order);
     $repayment = $order->get_total();
 
-    if ($payment_gateway->id !== 'cod') {
+    if ($payment_gateway->id !== SamedayCourierHelperClass::CASH_ON_DELIVERY) {
         $repayment = 0;
     }
 
