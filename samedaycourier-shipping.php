@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.4.3
+ * Version: 1.4.4
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -52,8 +52,6 @@ function samedaycourier_shipping_method() {
     if (! class_exists('SamedayCourier_Shipping_Method')) {
         class SamedayCourier_Shipping_Method extends WC_Shipping_Method
         {
-            public const CASH_ON_DELIVERY = 'cod';
-
 	        /**
 	         * SamedayCourier_Shipping_Method constructor.
 	         *
@@ -191,7 +189,7 @@ function samedaycourier_shipping_method() {
                 // Check if the client has to pay anything as repayment value
                 $repaymentAmount = WC()->cart->subtotal;
 	            $paymentMethod = WC()->session->get('payment_method');
-	            if (isset($paymentMethod) && ($paymentMethod !== self::CASH_ON_DELIVERY)) {
+	            if (isset($paymentMethod) && ($paymentMethod !== SamedayCourierHelperClass::CASH_ON_DELIVERY)) {
 		            $repaymentAmount = 0;
                 }
 
@@ -610,18 +608,18 @@ function woo_get_ajax_data() {
     die();
 }
 
-add_action('woocommerce_cart_calculate_fees','checkout_repayment_tax');
+add_action('woocommerce_cart_calculate_fees', 'checkout_repayment_tax', 100);
 function checkout_repayment_tax() {
   global $woocommerce;
 
-	if (!defined( 'DOING_AJAX' ) && is_admin()) {
+	if (!defined( 'DOING_AJAX') && is_admin()) {
 		return;
     }
 
 	$repayment_tax = (int) (SamedayCourierHelperClass::getSamedaySettings()['repayment_tax'] ?? null);
 
     if ($repayment_tax > 0
-        && SamedayCourier_Shipping_Method::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
+        && SamedayCourierHelperClass::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
     ) {
         $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', 'samedaycourier');
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
