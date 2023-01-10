@@ -612,7 +612,7 @@ add_action('woocommerce_cart_calculate_fees', 'checkout_repayment_tax', 100);
 function checkout_repayment_tax() {
   global $woocommerce;
 
-	if (!defined( 'DOING_AJAX' ) && is_admin()) {
+	if (!defined( 'DOING_AJAX') && is_admin()) {
 		return;
     }
 
