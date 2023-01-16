@@ -124,7 +124,7 @@ function samedaycourier_shipping_method() {
                             }
                         }
 
-                        if ($service->price_free !== null && WC()->cart->subtotal > $service->price_free) {
+                        if ($service->price_free !== null && WC()->cart->total > $service->price_free) {
                             $price = 0;
                         }
 
