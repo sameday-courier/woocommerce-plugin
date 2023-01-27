@@ -186,6 +186,13 @@ function samedaycourier_shipping_method() {
                     }
                 }
 
+                foreach ($optionalServices as $optionalService) {
+                    if ($optionalService->getCode() === 'PDO') {
+                        $serviceTaxIds[] = 'PDO';
+                        break;
+                    }
+                }
+
                 // Check if the client has to pay anything as repayment value
                 $repaymentAmount = WC()->cart->subtotal;
 	            $paymentMethod = WC()->session->get('payment_method');
@@ -325,10 +332,11 @@ function samedaycourier_shipping_method() {
                         'default' => __( '', 'samedaycourier' )
                     ),
 
+
                     'open_package_status' => array(
                         'title' => __( 'Open package status', 'samedaycourier' ),
                         'type' => 'checkbox',
-                        'description' => __( 'Enable this option if you want to offer your customers the opening of the package at delivery time', 'samedaycourier' ),
+                        'description' => __( 'Enable this option if you want to offer your customers the opening of the package at delivery time.', 'samedaycourier' ),
                         'default' => 'no'
                     ),
 

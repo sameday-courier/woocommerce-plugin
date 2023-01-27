@@ -407,6 +407,7 @@ class Sameday
             $params['samedaycourier-package-observation'],
             '',
             '',
+            null,
             $locker
         );
 

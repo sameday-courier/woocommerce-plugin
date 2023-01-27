@@ -43,6 +43,16 @@ function samedaycourierAddAwbForm($order): string {
         $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
     }
 
+    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+    $serviceTaxIds = array();
+    $eligibleToLockerFirstMile = false;
+
+    foreach ($optionalServices as $optionalService) {
+        if ($optionalService->getCode() === 'PDO') {
+           $eligibleToLockerFirstMile = true;
+        }
+    }
+
     $packageTypeOptions = '';
     $packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
     foreach ($packagesType as $packageType) {
@@ -201,8 +211,18 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                       
+                        if($eligibleToLockerFirstMile){
+                            $form .= '<th scope="row" class="titledesc"> 
+                                <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker") . '</label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile">
+                                <span style="display:block;width:100%">' . __("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.") . '</span>
+                                <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map") . '</a></span>
+                                </td>';
+                        }
                         if (null !== $lockerDetails) {
+                           
                             $form .=  '<tr style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
