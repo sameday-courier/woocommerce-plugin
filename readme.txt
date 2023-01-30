@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.0 =
+
+* Add new feature. Add new additional service: Personal delivery at locker.
+
 = 1.4.4 =
 
 * Bug fix. "repayment fee", error "wc-ajax=add_to_cart:1"

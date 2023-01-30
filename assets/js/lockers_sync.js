@@ -67,7 +67,7 @@
           
 
             selectors.lockerId.value = JSON.stringify(lockerDetails);
-            set_cookie("locker", JSON.stringify(lockerDetails), 30);
+            _setCookie("locker", JSON.stringify(lockerDetails), 30);
 
             document.getElementById("locker_name").value = message.name;
             document.getElementById("locker_address").value = message.address;
@@ -85,8 +85,8 @@
         if (is_set( () => document.getElementById("locker_name"))) {
 
             let lockerCookie = null;
-            if ('' !== get_cookie("locker")) {
-                lockerCookie = JSON.parse(get_cookie("locker"));
+            if ('' !== _getCookie("locker")) {
+                lockerCookie = JSON.parse(_getCookie("locker"));
             }
 
             if (null !== lockerCookie) {
@@ -126,7 +126,7 @@
         }
     })();
 
-    const set_cookie = (key, value, days) => {
+    const _setCookie = (key, value, days) => {
         let d = new Date();
         d.setTime(d.getTime() + (days*24*60*60*1000));
         let expires = "expires=" + d.toUTCString();
@@ -134,7 +134,7 @@
         document.cookie = key + "=" + value + ";" + expires + ";path=/";
     }
       
-    const get_cookie = (key) => {
+    const _getCookie = (key) => {
         let cookie = '';
         document.cookie.split(';').forEach(function (value) {
             if (value.split('=')[0].trim() === key) {
