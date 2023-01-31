@@ -1,0 +1,20 @@
+/* Locker Dimensions Tooltip */
+.custom_tooltip {    
+    position: relative;    
+    display: inline-block;    
+    cursor: help;}
+.custom_tooltip .tooltiptext {    
+    visibility: hidden;    
+    width: auto;    
+    background-color: #198754;    
+    color: #ffffff;    
+    text-align: center;    
+    border-radius: 5px;    padding: 5px;
+    /* Position the tooltip */    
+    position: absolute;    
+    z-index: 10000;
+}
+.custom_tooltip:hover .tooltiptext {    
+    color: #ffffff;    
+    visibility: visible;
+}

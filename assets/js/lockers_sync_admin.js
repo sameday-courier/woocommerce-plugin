@@ -11,8 +11,26 @@ function init(){
     };
     
     selectors.selectLockerMap.addEventListener('click', openLockers);
+    changeServices();
 }      
 
+
+function changeServices(){
+    
+    document.getElementById('samedaycourier-service').addEventListener('change', function() {
+        let samedayCodeOption = this.selectedOptions[0].getAttribute("data-samedayCode");
+        let PdoEligible = this.selectedOptions[0].getAttribute("data-eligible");
+        if(samedayCodeOption == 'LN'){
+            document.getElementById('eligibleToLockerFirstMile').style.display = 'none';
+            document.getElementById('displayLocker').style.display = 'table-row';
+        }else if(samedayCodeOption == '24'){
+            document.getElementById('displayLocker').style.display = 'none';
+            if(PdoEligible == 'true'){
+                document.getElementById('eligibleToLockerFirstMile').style.display = 'table-row';
+            }
+        }
+    });
+}
 function openLockers() {
         /* DOM node selectors. */
         const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e"; // each integrator will have unique clientId

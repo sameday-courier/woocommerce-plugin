@@ -73,7 +73,11 @@ function samedaycourierAddAwbForm($order): string {
         }
 
         $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
-        $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
+        $serviceAllow = 'false';
+        if($serviceId == $samedayService->sameday_id){
+            $serviceAllow = 'true';
+        }
+        $services .= "<option data-eligible= '{$serviceAllow}'data-samedayCode='{$samedayService->sameday_code}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
     $payment_gateway = wc_get_payment_gateway_by_order($order);
@@ -211,19 +215,19 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                        if($eligibleToLockerFirstMile){
-                            $form .= '<th scope="row" class="titledesc"> 
+                        if($eligibleToLockerFirstMile){ $displayElement = 'table-row';}else{$displayElement = 'none';};
+                            $form .= '<tr id="eligibleToLockerFirstMile" style="display:'.$displayElement.'"><th scope="row" class="titledesc" > 
                                 <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker") . '</label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile">
                                 <span style="display:block;width:100%">' . __("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.") . '</span>
                                 <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map") . '</a></span>
-                                </td>';
-                        }
-                        if (null !== $lockerDetails) {
+                                <span class="custom_tooltip"> Show locker dimensions box    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
+                                <tr></td>';
+                        if (null !== $lockerDetails) { $displayLocker = 'table-row';}else{$displayLocker = 'none';};
                            
-                            $form .=  '<tr style="vertical-align: middle;">
+                            $form .=  '<tr id="displayLocker" style="vertical-align: middle;display:'.$displayLocker.'">
                             	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                                 </th> 
@@ -233,7 +237,7 @@ function samedaycourierAddAwbForm($order): string {
                                     <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
                                 </td>
                             </tr>';
-                        }
+                        
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-open-package-status"> ' . __("Open package") . '</label>

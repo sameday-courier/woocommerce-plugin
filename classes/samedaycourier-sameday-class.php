@@ -334,6 +334,13 @@ class Sameday
             }
         }
 
+        foreach ($optionalServices as $optionalService) {
+            if ($optionalService->getCode() === 'PDO') {
+                $serviceTaxIds[] = 'PDO';
+                break;
+            }
+        }
+
 
 		$post_meta_samedaycourier_order_id = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
 
