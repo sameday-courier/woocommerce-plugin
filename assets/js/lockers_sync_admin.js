@@ -16,20 +16,25 @@ function init(){
 
 
 function changeServices(){
+    let samedayCourierService = document.getElementById('samedaycourier-service');
     
-    document.getElementById('samedaycourier-service').addEventListener('change', function() {
-        let samedayCodeOption = this.selectedOptions[0].getAttribute("data-samedayCode");
-        let PdoEligible = this.selectedOptions[0].getAttribute("data-eligible");
-        if(samedayCodeOption == 'LN'){
-            document.getElementById('eligibleToLockerFirstMile').style.display = 'none';
-            document.getElementById('displayLocker').style.display = 'table-row';
-        }else if(samedayCodeOption == '24'){
-            document.getElementById('displayLocker').style.display = 'none';
-            if(PdoEligible == 'true'){
-                document.getElementById('eligibleToLockerFirstMile').style.display = 'table-row';
-            }
-        }
+    let optionFistMile = samedayCourierService.selectedOptions[0].getAttribute("data-fistMile");
+    let optionLastMile = samedayCourierService.selectedOptions[0].getAttribute("data-lastMile");
+    
+    displayDetails(optionFistMile, optionLastMile);
+   
+    samedayCourierService.addEventListener('change', function() {
+        let optionFistMile = this.selectedOptions[0].getAttribute("data-fistMile");
+        let optionLastMile = this.selectedOptions[0].getAttribute("data-lastMile");
+        displayDetails(optionFistMile, optionLastMile);
     });
+}
+
+function displayDetails(optionFistMile, optionLastMile){
+    document.getElementById("LockerFirstMile").className = '';
+    document.getElementById("LockerLastMile").className = '';
+    document.getElementById("LockerFirstMile").classList.add(optionFistMile);
+    document.getElementById("LockerLastMile").classList.add(optionLastMile);
 }
 function openLockers() {
         /* DOM node selectors. */

@@ -7,6 +7,17 @@ if (! defined( 'ABSPATH' ) ) {
 /**
  * @throws JsonException
  */
+
+function isServiceEligibleToLockerFirstMile($serviceId){
+    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+     
+    foreach ($optionalServices as $optionalService) {
+        if ($optionalService->getCode() === 'PDO') {
+            return $serviceId;
+        }
+    }
+}
+
 function samedaycourierAddAwbForm($order): string {
     $is_testing = SamedayCourierHelperClass::isTesting();
 
@@ -43,15 +54,7 @@ function samedaycourierAddAwbForm($order): string {
         $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
     }
 
-    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
-    $serviceTaxIds = array();
-    $eligibleToLockerFirstMile = false;
 
-    foreach ($optionalServices as $optionalService) {
-        if ($optionalService->getCode() === 'PDO') {
-           $eligibleToLockerFirstMile = true;
-        }
-    }
 
     $packageTypeOptions = '';
     $packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
@@ -65,20 +68,6 @@ function samedaycourierAddAwbForm($order): string {
         $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
     }
 
-    $services = '';
-    $samedayServices = SamedayCourierQueryDb::getServices($is_testing);
-    foreach ($samedayServices as $samedayService) {
-        if ($samedayService->status <= 0) {
-            continue;
-        }
-
-        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
-        $serviceAllow = 'false';
-        if($serviceId == $samedayService->sameday_id){
-            $serviceAllow = 'true';
-        }
-        $services .= "<option data-eligible= '{$serviceAllow}'data-samedayCode='{$samedayService->sameday_code}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
-    }
 
     $payment_gateway = wc_get_payment_gateway_by_order($order);
     $repayment = $order->get_total();
@@ -116,9 +105,34 @@ function samedaycourierAddAwbForm($order): string {
 	if (null !== $lockerName && null !== $lockerAddress) {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
-    
+  
     $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'];
     $username = SamedayCourierHelperClass::getSamedaySettings()['user'];
+
+    $services = '';
+    $samedayServices = SamedayCourierQueryDb::getServices($is_testing);
+
+    $serviceTaxIds = array();
+    
+    foreach ($samedayServices as $samedayService) {
+        if ($samedayService->status <= 0) {
+            continue;
+        }
+      
+        $firstMileId = isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
+
+        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
+        $allowFirstMile = 'hideElement';
+        if($firstMileId === $samedayService->sameday_id){
+            $allowFirstMile = 'showElement';
+        }
+
+        $allowLastMile = 'hideElement';
+        if($samedayService->sameday_code == 'LN'){
+            $allowLastMile = 'showElement';
+        }
+        $services .= "<option data-fistMile= '{$allowFirstMile}' data-lastMile='{$allowLastMile}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
+    }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
@@ -215,8 +229,7 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                        if($eligibleToLockerFirstMile){ $displayElement = 'table-row';}else{$displayElement = 'none';};
-                            $form .= '<tr id="eligibleToLockerFirstMile" style="display:'.$displayElement.'"><th scope="row" class="titledesc" > 
+                            $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
                                 <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker") . '</label>
                             </th> 
                             <td class="forminp forminp-text">
@@ -225,9 +238,8 @@ function samedaycourierAddAwbForm($order): string {
                                 <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map") . '</a></span>
                                 <span class="custom_tooltip"> Show locker dimensions box    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
                                 <tr></td>';
-                        if (null !== $lockerDetails) { $displayLocker = 'table-row';}else{$displayLocker = 'none';};
-                           
-                            $form .=  '<tr id="displayLocker" style="vertical-align: middle;display:'.$displayLocker.'">
+                       
+                            $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                                 </th> 

@@ -18,3 +18,11 @@
     color: #ffffff;    
     visibility: visible;
 }
+
+.showElement{
+    display: table-row;
+}
+
+.hideElement{
+    display: none;
+}
