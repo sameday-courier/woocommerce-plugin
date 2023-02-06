@@ -31,6 +31,7 @@ function changeServices(){
 }
 
 function displayDetails(optionFistMile, optionLastMile){
+    document.getElementById("samedaycourier-locker_first_mile").checked = false;
     document.getElementById("LockerFirstMile").className = '';
     document.getElementById("LockerLastMile").className = '';
     document.getElementById("LockerFirstMile").classList.add(optionFistMile);

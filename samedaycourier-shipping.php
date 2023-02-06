@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.4.4
+ * Version: 1.5.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -99,7 +99,7 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if ($service->sameday_code === "LN" && count(WC()->cart->get_cart()) > $lockerMaxItems) {
+                        if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && count(WC()->cart->get_cart()) > $lockerMaxItems) {
                             continue;
                         }
 
@@ -138,7 +138,7 @@ function samedaycourier_shipping_method() {
                             )
                         );
 
-                        if (( $service->sameday_code === "LN" ) && (false === $useLockerMap)) {
+                        if (( $service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE ) && (false === $useLockerMap)) {
                             $this->syncLockers();
                             $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
                         }
@@ -179,7 +179,7 @@ function samedaycourier_shipping_method() {
                 $serviceTaxIds = array();
                 if (WC()->session->get('open_package') === 'yes') {
                     foreach ($optionalServices as $optionalService) {
-                        if ($optionalService->getCode() === 'OPCG' && $optionalService->getPackageType()->getType() === PackageType::PARCEL) {
+                        if ($optionalService->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE && $optionalService->getPackageType()->getType() === PackageType::PARCEL) {
                             $serviceTaxIds[] = $optionalService->getId();
                             break;
                         }
@@ -558,7 +558,7 @@ function wps_sameday_shipping_options_layout() {
 
     $taxOpenPackage = 0;
     foreach ($optionalTaxes as $optionalTax) {
-        if ($optionalTax->getCode() === 'OPCG') {
+        if ($optionalTax->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE) {
             $taxOpenPackage = $optionalTax->getId();
         }
     }
@@ -712,7 +712,7 @@ function wps_locker_row_layout() {
         $lockerOptions .= $optionGroup . $options;
     }
 
-    if ($serviceCode === "LN" && is_checkout()) {
+    if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && is_checkout()) {
     ?>
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>

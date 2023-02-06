@@ -550,9 +550,10 @@ class SamedayCourierQueryDb
 	}
 
 	/**
-	 * @param int $orderId
+	 * @param $orderId
+	 * @param $parcels
 	 *
-	 * @param array $parcels
+	 * @return void
 	 */
 	public static function updateParcels($orderId, $parcels)
 	{
