@@ -324,16 +324,29 @@ class Sameday
 
         $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
         $serviceTaxIds = array();
-        if (!empty($params['samedaycourier-open-package-status'])) {
+
+        if (isset($params['samedaycourier-open-package-status'])) {
             foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === 'OPCG' && $optionalService->getPackageType()->getType() === (int) $params['samedaycourier-package-type']) {
-                    $serviceTaxIds[] = $optionalService->getId();
+                if ($optionalService->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE
+                    && $optionalService->getPackageType()->getType() === (int) $params['samedaycourier-package-type']
+                ) {
+                    $serviceTaxIds[] = SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE;
 
                     break;
                 }
             }
         }
 
+		if (isset($params['samedaycourier-locker_first_mile'])) {
+			foreach ($optionalServices as $optionalService) {
+				if ($optionalService->getCode() === SamedayCourierHelperClass::PERSONAL_DELIVERY_OPTION_CODE
+				    && $optionalService->getPackageType()->getType() === (int) $params['samedaycourier-package-type']
+				) {
+					$serviceTaxIds[] = SamedayCourierHelperClass::PERSONAL_DELIVERY_OPTION_CODE;
+					break;
+				}
+			}
+		}
 
 		$post_meta_samedaycourier_order_id = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
 
@@ -407,6 +420,7 @@ class Sameday
             $params['samedaycourier-package-observation'],
             '',
             '',
+            null,
             $locker
         );
 

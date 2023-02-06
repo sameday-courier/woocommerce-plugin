@@ -5,6 +5,23 @@ if (! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * @param $serviceId
+ *
+ * @return false|mixed
+ */
+function isServiceEligibleToLockerFirstMile($serviceId) {
+    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+     
+    foreach ($optionalServices as $optionalService) {
+        if ($optionalService->getCode() === SamedayCourierHelperClass::PERSONAL_DELIVERY_OPTION_CODE) {
+            return $serviceId;
+        }
+    }
+
+	return false;
+}
+
+/**
  * @throws JsonException
  */
 function samedaycourierAddAwbForm($order): string {
@@ -43,6 +60,8 @@ function samedaycourierAddAwbForm($order): string {
         $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
     }
 
+
+
     $packageTypeOptions = '';
     $packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
     foreach ($packagesType as $packageType) {
@@ -55,16 +74,6 @@ function samedaycourierAddAwbForm($order): string {
         $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
     }
 
-    $services = '';
-    $samedayServices = SamedayCourierQueryDb::getServices($is_testing);
-    foreach ($samedayServices as $samedayService) {
-        if ($samedayService->status <= 0) {
-            continue;
-        }
-
-        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
-        $services .= "<option value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
-    }
 
     $payment_gateway = wc_get_payment_gateway_by_order($order);
     $repayment = $order->get_total();
@@ -76,6 +85,7 @@ function samedaycourierAddAwbForm($order): string {
 	$locker = null;
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
+	$lockerDetailsForm = '';
 	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true)) {
         $lockerDetailsForm = $postMetaLocker;
         $locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
@@ -102,9 +112,30 @@ function samedaycourierAddAwbForm($order): string {
 	if (null !== $lockerName && null !== $lockerAddress) {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
-    
+  
     $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'];
     $username = SamedayCourierHelperClass::getSamedaySettings()['user'];
+
+    $services = '';
+    $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);
+
+	$allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+	$allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+    foreach ($samedayServices as $samedayService) {
+        $firstMileId = isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
+
+        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
+        $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+        if($firstMileId === $samedayService->sameday_id){
+            $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
+        }
+
+        $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+        if ($samedayService->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+            $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
+        }
+        $services .= "<option data-fistMile= '{$allowFirstMile}' data-lastMile='{$allowLastMile}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
+    }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
@@ -201,9 +232,17 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
+                            $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
+                                <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker") . '</label>
+                            </th> 
+                            <td class="forminp forminp-text">
+                                <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile">
+                                <span style="display:block;width:100%">' . __("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.") . '</span>
+                                <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map") . '</a></span>
+                                <span class="custom_tooltip"> ' . __("Show locker dimensions") . '    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
+                                <tr></td>';
                        
-                        if (null !== $lockerDetails) {
-                            $form .=  '<tr style="vertical-align: middle;">
+                            $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                                 </th> 
@@ -213,7 +252,7 @@ function samedaycourierAddAwbForm($order): string {
                                     <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
                                 </td>
                             </tr>';
-                        }
+                        
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-open-package-status"> ' . __("Open package") . '</label>

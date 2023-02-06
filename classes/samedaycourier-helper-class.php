@@ -8,6 +8,17 @@ class SamedayCourierHelperClass
 {
 	public const CASH_ON_DELIVERY = 'cod';
 
+	public const LOCKER_NEXT_DAY_CODE = "LN";
+
+	public const PERSONAL_DELIVERY_OPTION_CODE = 'PDO';
+
+	public const OPEN_PACKAGE_OPTION_CODE = 'OPCG';
+
+	public const TOGGLE_HTML_ELEMENT = [
+		'show' => 'showElement',
+		'hide' => 'hideElement',
+	];
+
 	public const API_PROD = 0;
 	public const API_DEMO = 1;
 
