@@ -351,7 +351,12 @@ class Sameday
 		$post_meta_samedaycourier_order_id = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
 
 		if (isset($params['locker_id']) && '' !== $params['locker_id']) {
-			$lockerDetailsForm = json_decode(stripslashes(html_entity_decode($params['locker_id'])), true, 512, JSON_THROW_ON_ERROR );
+			$lockerDetailsForm = json_decode(
+				SamedayCourierHelperClass::sanitizeInput($params['locker_id']),
+				true,
+				512,
+				JSON_THROW_ON_ERROR
+			);
 		}
 
 		if ('' !== $post_meta_samedaycourier_order_id) {
