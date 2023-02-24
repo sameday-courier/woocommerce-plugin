@@ -162,18 +162,29 @@ class SamedayCourierHelperClass
 	}
 
 	/**
-	 * @param $inputs
+	 * @param array $inputs
 	 *
 	 * @return array
 	 */
-	public static function sanitizeInputs($inputs)
+	public static function sanitizeInputs(array $inputs): array
 	{
-		$sanitizedInputs = array();
-		foreach ($inputs as $key => $val) {
-			$sanitizedInputs[$key] = strip_tags($val);
+		$data = [];
+		foreach ($inputs as $key => $input) {
+			if (is_int($input) || is_bool($input)) {
+				$data[$key] = $input;
+			}
+
+			if (is_string($input)) {
+				$data[$key] = self::sanitizeInput($input);
+			}
 		}
 
-		return $sanitizedInputs;
+		return $data;
+	}
+
+	public static function sanitizeInput(string $input): string
+	{
+		return stripslashes(strip_tags(str_replace("'", '&#39;', $input)));
 	}
 
     /**

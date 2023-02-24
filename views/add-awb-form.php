@@ -87,8 +87,13 @@ function samedaycourierAddAwbForm($order): string {
 
 	$lockerDetailsForm = '';
 	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true)) {
-        $lockerDetailsForm = $postMetaLocker;
-        $locker = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
+		$lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
+        $locker = json_decode(
+	        $lockerDetailsForm,
+			true,
+			512,
+			JSON_THROW_ON_ERROR
+        );
 	}
 
 	$lockerName = null;
@@ -247,7 +252,7 @@ function samedaycourierAddAwbForm($order): string {
                                     <label for="samedaycourier-locker-details"> ' . __("Locker details") . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
-                                $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='".$lockerDetailsForm."'>";
+                                $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='$lockerDetailsForm'>";
                                 $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
                                     <button class="button-primary" data-username="'.$username.'" data-country="'.$host_country.'" class="button alt sameday_select_locker" type="button" id="select_locker"> ' . __("Change locker") . ' </button> 
                                 </td>
