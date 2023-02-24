@@ -569,7 +569,7 @@ function wps_sameday_shipping_options_layout() {
             if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
                 ?>
                 <tr class="shipping-pickup-store">
-                    <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
+                    <th><strong><?php echo __('Open package', 'sameday') ?></strong></th>
                     <td>
                         <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
                             <li>
@@ -715,14 +715,14 @@ function wps_locker_row_layout() {
     if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && is_checkout()) {
     ?>
         <tr class="shipping-pickup-store">
-            <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
+            <th><strong><?php echo __('Sameday Locker', 'sameday') ?></strong></th>
             <td>
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
-                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
+                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'sameday') ?></button>
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'sameday') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
