@@ -32,6 +32,11 @@ class SamedayCourierHelperClass
 		self::API_HOST_LOCAL_BG => 'https://eawb.sameday.bg',
 	];
 
+	private const ORDER_BY_TYPES = [
+		'ASC',
+		'DESC',
+	];
+
 	public static function getSamedaySettings(): array
 	{
 		return get_option('woocommerce_samedaycourier_settings');
@@ -190,7 +195,7 @@ class SamedayCourierHelperClass
     /**
      * @return array|null
      */
-    public static function getShippingMethodSameday($orderId)
+    public static function getShippingMethodSameday($orderId): ?array
     {
         $data = array();
 
@@ -198,7 +203,7 @@ class SamedayCourierHelperClass
 
         $serviceMethod = null;
         foreach ($shippingLines as $array) {
-            $index = array_search($array, $shippingLines);
+            $index = array_search($array, $shippingLines, true);
             $serviceMethod = $shippingLines[$index]->get_data()['method_id'];
         }
 
@@ -218,13 +223,11 @@ class SamedayCourierHelperClass
     /**
      * @param string $shippingMethodInput
      */
-    public static function parseShippingMethodCode($shippingMethodInput)
+    public static function parseShippingMethodCode(string $shippingMethodInput)
     {
         $serviceCode = explode(":", $shippingMethodInput, 3);
 
-        $serviceCode = isset($serviceCode[2]) ? $serviceCode[2] : null;
-
-        return $serviceCode;
+        return $serviceCode[2] ?? null;
     }
 
     /**
@@ -232,7 +235,7 @@ class SamedayCourierHelperClass
      *
      * @return string
      */
-    public static function parseAwbErrors($errors)
+    public static function parseAwbErrors(array $errors): string
     {
         $allErrors = array();
         foreach ($errors as $error) {
@@ -252,7 +255,12 @@ class SamedayCourierHelperClass
      *
      * @return void
      */
-    public static function addFlashNotice($notice = "", $notice_message = "", $type = "warning", $dismissible = false)
+    public static function addFlashNotice(
+		string $notice = "",
+		string $notice_message = "",
+		string $type = "warning",
+		bool $dismissible = false
+    ): void
     {
         update_option($notice, array(
                 "message" => $notice_message,
@@ -267,7 +275,7 @@ class SamedayCourierHelperClass
      *
      * @return void
      */
-    public static function showFlashNotice($notice)
+    public static function showFlashNotice($notice): void
     {
         $notices = get_option($notice);
         if (! empty($notices)) {
@@ -285,7 +293,7 @@ class SamedayCourierHelperClass
      *
      * @return void
      */
-    public static function printFlashNotice($type, $message, $dismissible)
+    public static function printFlashNotice($type, $message, $dismissible): void
     {
         printf( '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
             $type,
@@ -306,4 +314,40 @@ class SamedayCourierHelperClass
 
         return str_replace($from, $to, $string);
     }
+
+	public static function buildGridQuery(
+		string $table,
+		bool $is_testing,
+		array $filters,
+		int $per_page,
+		int $page_number
+	): string
+	{
+		$sql = sprintf(
+			"SELECT * FROM %s WHERE is_testing='%s' ",
+			$table,
+			$is_testing
+		);
+
+		$orderBy = $_REQUEST['orderby'] ?? null;
+		$order = $_REQUEST['order'] ?? null;
+		if (null !== $orderBy && in_array($orderBy, $filters, true)) {
+			$sql .= sprintf(
+				" ORDER BY %s ",
+				esc_sql($orderBy)
+			);
+		}
+
+		if (null !== $order && in_array(strtoupper($order), self::ORDER_BY_TYPES, true)) {
+			$sql .= $order;
+		}
+
+		$sql .= " LIMIT $per_page";
+
+		$calculatePage = ($page_number - 1) * $per_page;
+
+		$sql .= " OFFSET $calculatePage ";
+
+		return $sql;
+	}
 }

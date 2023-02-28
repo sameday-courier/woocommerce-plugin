@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -502,7 +502,7 @@ add_action('admin_post_edit_service', function() {
     return (new Sameday())->editService();
 });
 
-add_action('admin_post_add_awb', function (){
+add_action('admin_post_add_awb', function () {
     $postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
     $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
     if (empty($orderDetails)) {
@@ -550,7 +550,7 @@ function wps_sameday_shipping_options_layout() {
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
     if ($service) {
-        $optionalTaxes = unserialize($service->service_optional_taxes);
+        $optionalTaxes = unserialize($service->service_optional_taxes, ['']);
         if (!$optionalTaxes) {
             $optionalTaxes = [];
         }
@@ -563,24 +563,22 @@ function wps_sameday_shipping_options_layout() {
         }
     }
 
-    if (is_checkout()) {
-        if ($taxOpenPackage) {
-            $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
-            if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
-                ?>
-                <tr class="shipping-pickup-store">
-                    <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
-                    <td>
-                        <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
-                            <li>
-                                <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
-                                <label for="open_package"><?php echo SamedayCourierHelperClass::getSamedaySettings()['open_package_label']; ?></label>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-                <?php
-            }
+    if ($taxOpenPackage && is_checkout()) {
+        $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
+        if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
+            ?>
+            <tr class="shipping-pickup-store">
+                <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
+                <td>
+                    <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                        <li>
+                            <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
+                            <label for="open_package"><?php echo SamedayCourierHelperClass::getSamedaySettings()['open_package_label']; ?></label>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <?php
         }
     }
 }
@@ -717,7 +715,7 @@ function wps_locker_row_layout() {
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
             <td>
-                <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes"){ ?>
+                <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
                     <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
@@ -726,7 +724,7 @@ function wps_locker_row_layout() {
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker" name="locker">
+                <input type="hidden" id="locker" name="locker" form="checkout">
                 <input type="hidden" id="locker_name" name="locker_name">
                 <input type="hidden" id="locker_address" name="locker_address">
                 <span id="showLockerDetails"></span>
@@ -935,7 +933,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 add_action('woocommerce_checkout_process', function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-    if ($serviceCode === 'LN') {
+    if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
         if ($_POST['locker'] === null || $_POST['locker'] === '') {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }

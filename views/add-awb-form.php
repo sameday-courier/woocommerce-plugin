@@ -143,10 +143,11 @@ function samedaycourierAddAwbForm($order): string {
     }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
-                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb") . '</strong> </h3>      
+                <h3 style="text-align: center; color: #082d98"> <strong> ' . __("Generate awb") . '</strong> </h3>      
                 <table>
-                    <tbody>                   
-                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="'. $order->get_id() . '">
+                    <tbody>
+                         <input type="hidden" form="addAwbForm" name="_wpnonce" value="'.wp_create_nonce('add-awb').'">         
+                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="' . $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment") . ' <span style="color: #ff2222"> * </span>  </label>

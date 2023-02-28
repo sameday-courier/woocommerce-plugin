@@ -11,43 +11,47 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 class SamedayCourierPickupPoints extends WP_List_Table
 {
 	/** Class constructor */
-	public function __construct() {
-
+	public function __construct()
+	{
 		parent::__construct( [
-			'singular' => __( 'Pickup-point', 'samedaycourier' ),
-			'plural'   => __( 'Pickup-points', 'samedaycourier' ),
+			'singular' => __('Pickup-point', 'samedaycourier'),
+			'plural'   => __('Pickup-points', 'samedaycourier'),
 			'ajax'     => false
 		] );
 	}
 
+	private const ACCEPTED_FILTERS = [
+		'sameday_id'
+	];
+
+	private const GRID_PER_PAGE_VALUE = 10;
+
 	/**
-	 * Retrieve pickup_points data from the database
-	 *
 	 * @param int $per_page
 	 * @param int $page_number
 	 *
-	 * @return mixed
+	 * @return array|object|stdClass[]|null
 	 */
-	public static function get_pickup_points( $per_page = 5, $page_number = 1 ) {
+	public static function get_pickup_points(
+		int $per_page = self::GRID_PER_PAGE_VALUE,
+		int $page_number = 1
+	)
+	{
 
 		global $wpdb;
 
+		$table = "{$wpdb->prefix}sameday_pickup_point";
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
-		$sql = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing=".$is_testing;
+		$sql = SamedayCourierHelperClass::buildGridQuery(
+			$table,
+			$is_testing,
+			self::ACCEPTED_FILTERS,
+			$per_page,
+			$page_number
+		);
 
-		if ( ! empty( $_REQUEST['orderby'] ) ) {
-			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
-			$sql .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
-		}
-
-		$sql .= " LIMIT $per_page";
-		$sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
-
-
-		$result = $wpdb->get_results( $sql, 'ARRAY_A' );
-
-		return $result;
+		return $wpdb->get_results($sql, 'ARRAY_A');
 	}
 
 	/**
@@ -55,20 +59,26 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 *
 	 * @return null|string
 	 */
-	public static function record_count() {
+	public static function record_count(): ?string
+	{
 		global $wpdb;
 
+		$table = "{$wpdb->prefix}sameday_pickup_point";
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing=".$is_testing;
+		$sql = sprintf(
+			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
+			$table,
+			$is_testing
+		);
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var($sql);
 	}
 
-
 	/** Text displayed when no pickup-points data is available */
-	public function no_items() {
-		_e( 'No pickup-points avaliable.', 'samedaycourier' );
+	public function no_items(): void
+	{
+		_e( 'No pickup-points avaliable.','samedaycourier');
 	}
 
 	/**
@@ -80,15 +90,13 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 * @return mixed
 	 */
 	public function column_default( $item, $column_name ) {
-		switch ( $column_name ) {
+		switch ($column_name) {
 			case 'contactPersons':
-				return $this->parseContactPersons(unserialize($item[ $column_name ]));
-					break;
+				return $this->parseContactPersons(unserialize($item[$column_name], ['']));
 			case 'default_pickup_point':
-				return $item[ $column_name ] == true ? '<strong> Yes </strong>' : 'No';
-					break;
+				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
 			default:
-				return $item[ $column_name ];
+				return $item[$column_name];
 		}
 	}
 
@@ -97,11 +105,11 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 *
 	 * @return string
 	 */
-	private function  parseContactPersons($contactPersons)
+	private function  parseContactPersons($contactPersons): string
 	{
 		$persons = array();
 		foreach ($contactPersons as $contact_person) {
-			$persons[] = "<strong> {$contact_person->getName()} </strong><br/> " . " ( {$contact_person->getPhone()} ) ";
+			$persons[] = "<strong>{$contact_person->getName()}</strong> <br/> {$contact_person->getPhone()}";
 		}
 
 		return implode(',', $persons);
@@ -112,8 +120,9 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	function get_columns() {
-		$columns = [
+	public function get_columns(): array
+	{
+		return [
 			'sameday_id' => __( 'Sameday ID', 'samedaycourier' ),
 			'sameday_alias' => __( 'Name', 'samedaycourier' ),
 			'city' => __( 'City', 'samedaycourier' ),
@@ -122,8 +131,6 @@ class SamedayCourierPickupPoints extends WP_List_Table
 			'contactPersons' => __( 'Contact Persons', 'samedaycourier' ),
 			'default_pickup_point' => __( 'Is default ', 'samedaycourier' ),
 		];
-
-		return $columns;
 	}
 
 	/**
@@ -131,24 +138,21 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	public function get_sortable_columns()
+	public function get_sortable_columns(): array
 	{
-		$sortable_columns = array(
+		return array(
 			'sameday_id' => array('sameday_id', true)
 		);
-
-		return $sortable_columns;
 	}
 
 	/**
 	 * Handles data query and filter, sorting, and pagination.
 	 */
-	public function prepare_items()
+	public function prepare_items(): void
 	{
-
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'pickup-points_per_page', 5 );
+		$per_page     = $this->get_items_per_page( 'pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
 		$current_page = $this->get_pagenum();
 		$total_items  = self::record_count();
 
@@ -157,7 +161,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 			'per_page'    => $per_page //WE have to determine how many items to show on a page
 		] );
 
-		$this->items = self::get_pickup_points( $per_page, $current_page );
+		$this->items = self::get_pickup_points($per_page, $current_page);
 	}
 }
 

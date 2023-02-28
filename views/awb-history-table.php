@@ -63,8 +63,8 @@ function samedaycourierCreateAwbHistoryTable($packages) {
     }
 
     foreach ($packages as $package) {
-        $summary = unserialize($package['summary']);
-        $packageHistory = unserialize($package['history']);
+        $summary = unserialize($package['summary'], ['']);
+        $packageHistory = unserialize($package['history'], ['']);
         $historyRows = '';
         foreach ($packageHistory as $history) {
             $historyRows .= '
@@ -123,9 +123,9 @@ function samedaycourierCreateAwbHistoryTable($packages) {
         <script>
             jQuery(document).ready(function($) {
                 $(document).on("click", ".showHistoryDetails", function() {
-                  show = $(this).val();
-                  awbNumber = $(this).data("awb-number");
-                  table_id = "history-" + awbNumber;
+                  let show = $(this).val();
+                  let awbNumber = $(this).data("awb-number");
+                  let table_id = "history-" + awbNumber;
                   if (show === "+") {
                       $("#"+table_id).css("display","block");
                       $(this).val("-");

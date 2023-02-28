@@ -20,34 +20,39 @@ class SamedayCourierService extends WP_List_Table
 		] );
 	}
 
+	private const ACCEPTED_FILTERS = [
+		'sameday_id'
+	];
+
+	private const GRID_PER_PAGE_VALUE = 10;
+
 	/**
-	 * Retrieve services data from the database
-	 *
 	 * @param int $per_page
 	 * @param int $page_number
 	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public static function get_services( $per_page = 5, $page_number = 1 ) {
+	public static function get_services(
+		int $per_page = self::GRID_PER_PAGE_VALUE,
+		int $page_number = 1
+	): array
+	{
 
 		global $wpdb;
 
 		$is_testing = SamedayCourierHelperClass::isTesting();
+		$table = $wpdb->prefix . "sameday_service";
 
-		$sql = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE is_testing=".$is_testing;
-
-		if ( ! empty( $_REQUEST['orderby'] ) ) {
-			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
-			$sql .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
-		}
-
-		$sql .= " LIMIT $per_page";
-		$sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
+		$sql = SamedayCourierHelperClass::buildGridQuery(
+			$table,
+			$is_testing,
+			self::ACCEPTED_FILTERS,
+			$per_page,
+			$page_number
+		);
 
 
-		$result = $wpdb->get_results( $sql, 'ARRAY_A' );
-
-		return $result;
+		return $wpdb->get_results($sql, 'ARRAY_A');
 	}
 
 	/**
@@ -55,31 +60,38 @@ class SamedayCourierService extends WP_List_Table
 	 *
 	 * @return null|string
 	 */
-	public static function record_count() {
+	public static function record_count(): ?string
+	{
 		global $wpdb;
 
+		$table = "{$wpdb->prefix}sameday_service";
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_service WHERE is_testing=".$is_testing;
+		$sql = sprintf(
+			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
+			$table,
+			$is_testing
+		);
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var($sql);
 	}
 
 
 	/** Text displayed when no service data is available */
-	public function no_items() {
-		_e( 'No services avaliable.', 'samedaycourier' );
+	public function no_items(): void
+	{
+		_e( 'No services available!','samedaycourier');
 	}
 
 	/**
 	 * @return array
 	 */
-	private function getListOfStatuses()
+	private function getListOfStatuses(): array
 	{
 		return [
-			'0' => 'Disabled',
-			'1' => 'Always',
-			'2' => 'Interval'
+			0 => 'Disabled',
+			1 => 'Always',
+			2 => 'Interval',
 		];
 	}
 
@@ -91,18 +103,25 @@ class SamedayCourierService extends WP_List_Table
 	 *
 	 * @return mixed
 	 */
-	public function column_default( $item, $column_name ) {
-		switch ( $column_name ) {
+	public function column_default( $item, $column_name )
+	{
+		switch ($column_name)
+		{
 			case 'status':
-				return $this->getListOfStatuses()[$item[ $column_name ]];
+				return $this->getListOfStatuses()[$item[$column_name]];
 			default:
-				return $item[ $column_name ];
+				return $item[$column_name];
 		}
 	}
 
-	function column_edit($item) {
+	public function column_edit($item): string
+	{
 		$actions = array(
-			'edit' => sprintf('<a href="?post_type=page&page=%s&action=%s&id=%s">Edit</a>',$_REQUEST['page'],'edit', $item['id']),
+			'edit' => sprintf(
+				'<a href="?post_type=page&page=%s&action=%s&id=%s">Edit</a>','sameday_services',
+				'edit',
+				(int) $item['id']
+			),
 		);
 
 		$args = '<span class="dashicons dashicons-edit"></span>';
@@ -115,8 +134,9 @@ class SamedayCourierService extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	function get_columns() {
-		$columns = [
+	public function get_columns(): array
+	{
+		return [
 			'sameday_id'    => __( 'Sameday ID', 'samedaycourier' ),
 			'sameday_name' => __( 'Sameday name', 'samedaycourier' ),
 			'name'    => __( 'Name', 'samedaycourier' ),
@@ -125,8 +145,6 @@ class SamedayCourierService extends WP_List_Table
 			'status'    => __( 'Status', 'samedaycourier' ),
 			'edit' => __('Edit', 'samedaycourier')
 		];
-
-		return $columns;
 	}
 
 	/**
@@ -134,32 +152,32 @@ class SamedayCourierService extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	public function get_sortable_columns()
+	public function get_sortable_columns(): array
 	{
-		$sortable_columns = array(
-			'sameday_id' => array( 'sameday_id', true )
+		return array(
+			'sameday_id' => array('sameday_id', true)
 		);
-
-		return $sortable_columns;
 	}
 
 	/**
 	 * Handles data query and filter, sorting, and pagination.
 	 */
-	public function prepare_items()
+	public function prepare_items(): void
 	{
 
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'services_per_page', 5 );
+		$per_page     = $this->get_items_per_page( 'services_per_page', self::GRID_PER_PAGE_VALUE);
 		$current_page = $this->get_pagenum();
 		$total_items  = self::record_count();
 
-		$this->set_pagination_args( [
-			'total_items' => $total_items, //WE have to calculate the total number of items
-			'per_page'    => $per_page //WE have to determine how many items to show on a page
-		] );
+		$this->set_pagination_args(
+			[
+				'total_items' => $total_items, //WE have to calculate the total number of items
+				'per_page'    => $per_page //WE have to determine how many items to show on a page
+			]
+		);
 
-		$this->items = self::get_services( $per_page, $current_page );
+		$this->items = self::get_services($per_page, $current_page);
 	}
 }

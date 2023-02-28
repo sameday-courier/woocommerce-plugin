@@ -14,40 +14,43 @@ class SamedayCourierLockers extends WP_List_Table
 	public function __construct() {
 
 		parent::__construct( [
-			'singular' => __( 'Locker', 'samedaycourier' ),
-			'plural'   => __( 'Lockers', 'samedaycourier' ),
+			'singular' => __('Locker', 'samedaycourier'),
+			'plural'   => __('Lockers', 'samedaycourier'),
 			'ajax'     => false
 		] );
 	}
 
+	private const GRID_PER_PAGE_VALUE = 10;
+
+	private const ACCEPTED_FILTERS = [
+		'locker_id'
+	];
+
 	/**
-	 * Retrieve lockers data from the database
-	 *
 	 * @param int $per_page
 	 * @param int $page_number
 	 *
-	 * @return mixed
+	 * @return array|object|stdClass[]|null
 	 */
-	public static function get_lockers( $per_page = 5, $page_number = 1 ) {
-
+	public static function get_lockers(
+		int $per_page = self::GRID_PER_PAGE_VALUE,
+		int $page_number = 1
+	)
+	{
 		global $wpdb;
 
+		$table = "{$wpdb->prefix}sameday_locker";
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
-		$sql = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
+		$sql = SamedayCourierHelperClass::buildGridQuery(
+			$table,
+			$is_testing,
+			self::ACCEPTED_FILTERS,
+			$per_page,
+			$page_number
+		);
 
-		if ( ! empty( $_REQUEST['orderby'] ) ) {
-			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
-			$sql .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
-		}
-
-		$sql .= " LIMIT $per_page";
-		$sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
-
-
-		$result = $wpdb->get_results( $sql, 'ARRAY_A' );
-
-		return $result;
+		return $wpdb->get_results($sql, 'ARRAY_A');
 	}
 
 	/**
@@ -55,20 +58,27 @@ class SamedayCourierLockers extends WP_List_Table
 	 *
 	 * @return null|string
 	 */
-	public static function record_count() {
+	public static function record_count(): ?string
+	{
 		global $wpdb;
 
+		$table = "{$wpdb->prefix}sameday_locker";
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}sameday_locker WHERE is_testing=".$is_testing;
+		$sql = sprintf(
+			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
+			$table,
+			$is_testing
+		);
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var($sql);
 	}
 
 
 	/** Text displayed when no lockers data is available */
-	public function no_items() {
-		_e( 'No lockers avaliable.', 'samedaycourier' );
+	public function no_items(): void
+	{
+		_e('No lockers available!', 'samedaycourier');
 	}
 
 	/**
@@ -79,11 +89,9 @@ class SamedayCourierLockers extends WP_List_Table
 	 *
 	 * @return mixed
 	 */
-	public function column_default( $item, $column_name ) {
-		switch ( $column_name ) {
-			default:
-				return $item[ $column_name ];
-		}
+	public function column_default($item, $column_name )
+	{
+		return $item[$column_name];
 	}
 
 
@@ -92,8 +100,9 @@ class SamedayCourierLockers extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	function get_columns() {
-		$columns = [
+	public function get_columns(): array
+	{
+		return [
 			'locker_id' => __( 'Locker ID', 'samedaycourier' ),
 			'name' => __( 'Name', 'samedaycourier' ),
 			'city' => __( 'City', 'samedaycourier' ),
@@ -103,8 +112,6 @@ class SamedayCourierLockers extends WP_List_Table
 			'lng' => __( 'Longitude', 'samedaycourier' ),
 			'postal_code' => __( 'Postal code', 'samedaycourier' )
 		];
-
-		return $columns;
 	}
 
 	/**
@@ -112,7 +119,7 @@ class SamedayCourierLockers extends WP_List_Table
 	 *
 	 * @return array
 	 */
-	public function get_sortable_columns()
+	public function get_sortable_columns(): array
 	{
 		return array(
 			'locker_id' => array(
@@ -125,12 +132,12 @@ class SamedayCourierLockers extends WP_List_Table
 	/**
 	 * Handles data query and filter, sorting, and pagination.
 	 */
-	public function prepare_items()
+	public function prepare_items(): void
 	{
 
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'lockers_per_page', 5 );
+		$per_page     = $this->get_items_per_page( 'lockers_per_page', self::GRID_PER_PAGE_VALUE);
 		$current_page = $this->get_pagenum();
 		$total_items  = self::record_count();
 
@@ -139,7 +146,7 @@ class SamedayCourierLockers extends WP_List_Table
 			'per_page'    => $per_page //WE have to determine how many items to show on a page
 		] );
 
-		$this->items = self::get_lockers( $per_page, $current_page );
+		$this->items = self::get_lockers($per_page, $current_page);
 	}
 }
 
