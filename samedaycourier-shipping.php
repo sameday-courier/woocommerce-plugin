@@ -515,21 +515,23 @@ add_action('admin_post_add_awb', function () {
 });
 
 add_action('admin_post_remove-awb', function () {
-    $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($_POST['order-id']));
+    $awb = SamedayCourierQueryDb::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
+    $nonce = $_POST['_wpnonce'];
     if (empty($awb)) {
         return wp_redirect(admin_url() . '/index.php');
     }
 
-    return (new Sameday())->removeAwb($awb);
+    return (new Sameday())->removeAwb($awb, $nonce);
 });
 
 add_action('admin_post_show-awb-pdf', function (){
-    $orderId = sanitize_key($_POST['order-id']);
+    $orderId = (int) sanitize_key($_POST['order-id']);
+	$nonce = $_POST['_wpnonce'];
     if (!isset($orderId)) {
         return wp_redirect(admin_url() . '/index.php');
     }
 
-    return (new Sameday())->showAwbAsPdf($orderId);
+    return (new Sameday())->showAwbAsPdf($orderId, $nonce);
 });
 
 add_action('admin_post_add-new-parcel', function() {
@@ -850,10 +852,22 @@ add_action('admin_head', function () {
         }
     }
 
-    echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add_awb"></form>
-          <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="show-awb-pdf"></form>
-          <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="add-new-parcel"></form>
-          <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'"><input type="hidden" name="action" value="remove-awb"></form>';
+    echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'">
+                <input type="hidden" name="action" value="add_awb">
+                <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('add-awb').'">
+          </form>
+          <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'">
+                <input type="hidden" name="action" value="show-awb-pdf">
+                <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('show-as-pdf').'">
+            </form>
+          <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'">
+                <input type="hidden" name="action" value="add-new-parcel">
+                <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('add-new-parcel').'">
+          </form>
+          <form id="removeAwb"  method="POST" action="'.admin_url('admin-post.php').'">
+                <input type="hidden" name="action" value="remove-awb">
+                <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('remove-awb').'"> 
+          </form>';
 });
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ) {

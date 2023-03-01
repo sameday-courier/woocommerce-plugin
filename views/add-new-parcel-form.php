@@ -8,8 +8,7 @@ function samedaycourierAddNewParcelForm($orderId) {
 	$form = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Add new parcel") . '</strong> </h3>';
 
 	$form .= '<table>
-	                <tbody>
-	                	<input type="hidden" form="addNewParcelForm" name="_wpnonce" value="'.wp_create_nonce('add-new-parcel').'">  		                    	
+	                <tbody>                    	
 	                    <input type="hidden" form="addNewParcelForm" name="samedaycourier-order-id" value="'. $orderId . '">
 	                     <tr valign="middle">
 	                        <th scope="row" class="titledesc"> 

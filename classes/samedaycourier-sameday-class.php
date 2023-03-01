@@ -290,10 +290,10 @@ class Sameday
         if (empty($errors)) {
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
-                'name' => $post_fields['name']['value'],
-                'price' => $post_fields['price']['value'],
-                'price_free' => $post_fields['price_free']['value'],
-                'status' => $post_fields['status']['value']
+                'name' => SamedayCourierHelperClass::sanitizeInput($post_fields['name']['value']),
+                'price' => (float) number_format($post_fields['price']['value'], 2),
+                'price_free' => (float) number_format($post_fields['price_free']['value'], 2),
+                'status' => (int) $post_fields['status']['value']
             );
 
             SamedayCourierQueryDb::updateService($service);
@@ -507,9 +507,9 @@ class Sameday
 	 * @return bool
 	 * @throws SamedaySDKException
 	 */
-    public function removeAwb($awb): bool
+    public function removeAwb($awb, $nonce): bool
     {
-		if ($this->isAdmin()) {
+		if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'remove-awb')) {
 			return false;
 		}
 
@@ -541,13 +541,14 @@ class Sameday
      * @return string
      * @throws SamedaySDKException
      */
-    public function showAwbAsPdf($orderId): string
+    public function showAwbAsPdf($orderId, $nonce): string
     {
-		if (false === $this->isAdmin()) {
-			return false;
-		}
+	    if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'show-as-pdf')) {
+		    return false;
+	    }
 
-        $defaultLabelFormat = SamedayCourierHelperClass::getSamedaySettings()['default_label_format'];
+
+	    $defaultLabelFormat = SamedayCourierHelperClass::getSamedaySettings()['default_label_format'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
             SamedayCourierHelperClass::getSamedaySettings()['user'],
