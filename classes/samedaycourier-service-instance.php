@@ -111,7 +111,7 @@ class SamedayCourierServiceInstance
                 <input type="hidden" name="action" value="edit_service">
                 <table class="form-table editServiceForm">
                     <tbody>
-                        <input type="hidden" name="samedaycourier-service-id" value="'.$id.'">
+                        <input type="hidden" name="samedaycourier-service-id" value="'.esc_html($id).'">
                         <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('edit-service').'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 
