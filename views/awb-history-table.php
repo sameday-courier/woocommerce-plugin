@@ -5,7 +5,7 @@ if (! defined( 'ABSPATH' ) ) {
 }
 
 function samedaycourierCreateAwbHistoryTable($packages) {
-    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History") . '</strong> </h3>';
+    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", "samedaycourier") . '</strong> </h3>';
 
     $style = '<style>
                 .packages {
@@ -59,7 +59,7 @@ function samedaycourierCreateAwbHistoryTable($packages) {
 
     $packageRows = '';
     if (empty($packages)) {
-        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found") .'</td></tr>';
+        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", "samedaycourier") .'</td></tr>';
     }
 
     foreach ($packages as $package) {
@@ -91,13 +91,13 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     <td colspan="7">
                         <table class="history" id="history-'.$summary->getParcelAwbNumber().'" style="width: 100%; display: none; text-align: center">
                           <tr>
-                            <th style="width: 15%">' . __("Status") . '</th>
-                            <th style="width: 20%">' . __("Label") . '</th>
-                            <th style="width: 15%">' . __("State") . '</th>
-                            <th style="width: 15%">' . __("Date") . '</th>
-                            <th style="width: 10%">' . __("County") . '</th>	
-                            <th style="width: 15%">' . __("Translation") . '</th>		
-                            <th style="width: 10%">' . __("Reason") . '</th>		    
+                            <th style="width: 15%">' . __("Status", "samedaycourier") . '</th>
+                            <th style="width: 20%">' . __("Label", "samedaycourier") . '</th>
+                            <th style="width: 15%">' . __("State", "samedaycourier") . '</th>
+                            <th style="width: 15%">' . __("Date", "samedaycourier") . '</th>
+                            <th style="width: 10%">' . __("County", "samedaycourier") . '</th>	
+                            <th style="width: 15%">' . __("Translation", "samedaycourier") . '</th>		
+                            <th style="width: 10%">' . __("Reason", "samedaycourier") . '</th>		    
                           </tr>
                           '.$historyRows.' 
                         </table>
@@ -109,12 +109,12 @@ function samedaycourierCreateAwbHistoryTable($packages) {
     $return .= '<table class="packages" style="width: 100%">
                   <tr>
                     <th></th>
-                    <th>' . __("Parcel number") . '</th>
-                    <th>' . __("Parcel weight") . '</th>
-                    <th>' . __("Delivered") . '</th>
-                    <th>' . __("Delivery attempts") . '</th>
-                    <th>' . __("Is picked up") . '</th>
-                    <th>' . __("Picked up at") . '</th>				    
+                    <th>' . __("Parcel number", "samedaycourier") . '</th>
+                    <th>' . __("Parcel weight", "samedaycourier") . '</th>
+                    <th>' . __("Delivered", "samedaycourier") . '</th>
+                    <th>' . __("Delivery attempts", "samedaycourier") . '</th>
+                    <th>' . __("Is picked up", "samedaycourier") . '</th>
+                    <th>' . __("Picked up at", "samedaycourier") . '</th>				    
                   </tr>
                   '.$packageRows.'		  
                 </table>';

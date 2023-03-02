@@ -114,7 +114,7 @@ class SamedayCourierServiceInstance
                         <input type="hidden" name="samedaycourier-service-id" value="'.$id.'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-service-name"> Service Name <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-service-name">  '.__( 'Service Name', 'samedaycourier' ).'<span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" id="samedaycourier-service-name" value="'.$service->name.'">
@@ -122,7 +122,7 @@ class SamedayCourierServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-price"> Price <span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-price">  '.__( 'Price', 'samedaycourier' ).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.$service->price.'"> 
@@ -130,7 +130,7 @@ class SamedayCourierServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-free-delivery-price"> Free delivery price  </label>
+                                <label for="samedaycourier-free-delivery-price">  '.__( 'Free delivery price', 'samedaycourier' ).' </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
@@ -138,7 +138,7 @@ class SamedayCourierServiceInstance
                         </tr>
                        <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-status"> Status <span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-status">  '.__( 'Status', 'samedaycourier' ).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <select name="samedaycourier-status" style="width: 297px; height: 36px;" id="samedaycourier-status">
@@ -147,7 +147,7 @@ class SamedayCourierServiceInstance
                             </td>
                         </tr>
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" > Edit Service </button> </th>
+                            <th><button class="button-primary" type="submit" value="Submit" >  '.__( 'Edit Service', 'samedaycourier' ).'</button> </th>
                         </tr>
                      </tbody>
                 </table>

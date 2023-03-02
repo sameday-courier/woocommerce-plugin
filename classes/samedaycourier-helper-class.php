@@ -89,15 +89,15 @@ class SamedayCourierHelperClass
 	{
 		return array(
 			array(
-				'name' => __("Parcel"),
+				'name' => __("Parcel", "samedaycourier"),
 				'value' => \Sameday\Objects\Types\PackageType::PARCEL
 			),
 			array(
-				'name' => __("Envelope"),
+				'name' => __("Envelope", "samedaycourier"),
 				'value' => \Sameday\Objects\Types\PackageType::ENVELOPE
 			),
 			array(
-				'name' => __("Large package"),
+				'name' => __("Large package", "samedaycourier"),
 				'value' => \Sameday\Objects\Types\PackageType::LARGE
 			)
 		);
@@ -107,7 +107,7 @@ class SamedayCourierHelperClass
 	{
 		return array(
 			array(
-				'name' => __("Client"),
+				'name' => __("Client", "samedaycourier"),
 				'value' => \Sameday\Objects\Types\AwbPaymentType::CLIENT
 			)
 		);
@@ -121,31 +121,31 @@ class SamedayCourierHelperClass
 		return array(
 			array(
 				'position' => 7,
-				'text' => __('Sunday'),
+				'text' => _e('Sunday', 'samedaycourier'),
 			),
 			array(
 				'position' => 1,
-				'text' => __('Monday'),
+				'text' => _e('Monday', 'samedaycourier'),
 			),
 			array(
 				'position' => 2,
-				'text' => __('Tuesday')
+				'text' => _e('Tuesday', 'samedaycourier')
 			),
 			array(
 				'position' => 3,
-				'text' => __('Wednesday')
+				'text' => _e('Wednesday', 'samedaycourier')
 			),
 			array(
 				'position' => 4,
-				'text' => __('Thursday')
+				'text' => _e('Thursday', 'samedaycourier')
 			),
 			array(
 				'position' => 5,
-				'text' => __('Friday')
+				'text' => _e('Friday', 'samedaycourier')
 			),
 			array(
 				'position' => 6,
-				'text' => __('Saturday')
+				'text' => _e('Saturday', 'samedaycourier')
 			)
 		);
 	}

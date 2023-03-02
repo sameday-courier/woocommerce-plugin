@@ -296,7 +296,7 @@ function samedaycourier_shipping_method() {
                             Always* You choose to display only the price estimated by SamedayCourier API<br/>
                             If its cost is bigger than fixed price* You choose to display the cost estimated by 
                             SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
-                        ')
+                        ', 'samedaycourier')
                     ),
 
                     'estimated_cost_extra_fee' => array(
@@ -822,7 +822,7 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["add-awb"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully generated !"), true);
+            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully generated !", "samedaycourier"), true);
         }
     }
 
@@ -832,13 +832,13 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["remove-awb"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully removed !"), true);
+            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully removed !", "samedaycourier"), true);
         }
     }
 
     if (isset($_GET["show-awb"])) {
         if ($_GET["show-awb"] === "error") {
-            SamedayCourierHelperClass::printFlashNotice('error', __("Awb invalid !"), true);
+            SamedayCourierHelperClass::printFlashNotice('error', __("Awb invalid !", "samedaycourier"), true);
         }
     }
 
@@ -848,7 +848,7 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["add-new-parcel"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("New parcel has been added to this awb!") , true);
+            SamedayCourierHelperClass::printFlashNotice('success', __("New parcel has been added to this awb!", "samedaycourier") , true);
         }
     }
 
