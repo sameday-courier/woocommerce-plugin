@@ -241,13 +241,13 @@ class Sameday
         update_option('woocommerce_samedaycourier_settings', $samedayOptions);
     }
 
-    /**
-     * @return bool
-     */
+	/**
+	 * @return bool
+	 */
     public function editService(): bool
     {
-		if (!$this->isAdmin()) {
-			return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+	    if (false === $this->isAdmin() || false === wp_verify_nonce($_POST['_wpnonce'], 'edit-service')) {
+		    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 		}
 
         if (!($_POST['action'] === 'edit_service')) {
@@ -301,7 +301,9 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+		$fieldId = (int) $post_fields['id']['value'];
+
+        return wp_redirect(admin_url() . "edit.php?post_type=page&page=sameday_services&action=edit&id='$fieldId'");
     }
 
 	/**

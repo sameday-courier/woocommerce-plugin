@@ -101,7 +101,7 @@ class SamedayCourierServiceInstance
 
 	    $statuses = '';
         foreach ($this->getStatuses() as $status) {
-            $checked = $service->status == $status['value'] ? 'selected' : '';
+            $checked = $service->status === $status['value'] ? 'selected' : '';
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 
@@ -112,12 +112,13 @@ class SamedayCourierServiceInstance
                 <table class="form-table editServiceForm">
                     <tbody>
                         <input type="hidden" name="samedaycourier-service-id" value="'.$id.'">
+                        <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('edit-service').'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-service-name"> Service Name <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" id="samedaycourier-service-name" value="'.$service->name.'">
+                                <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" id="samedaycourier-service-name" value="'.esc_html($service->name).'">
                              </td>
                         </tr>
                         <tr valign="top">
