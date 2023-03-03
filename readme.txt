@@ -181,6 +181,8 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 1.5.2 =
 
 * Add new feature. Improve code security by protecting all internal forms with nonce var and validate actions only as administrator.
+* Add samedaycourier-shipping text-domain for translations
+* Resolve issue with custom fields in checkout page
 
 = 1.5.1 =
 
