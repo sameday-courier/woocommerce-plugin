@@ -17,17 +17,19 @@ function init(){
 
 function changeServices(){
     let samedayCourierService = document.getElementById('samedaycourier-service');
-    
-    let optionFistMile = samedayCourierService.selectedOptions[0].getAttribute("data-fistMile");
-    let optionLastMile = samedayCourierService.selectedOptions[0].getAttribute("data-lastMile");
-    
-    displayDetails(optionFistMile, optionLastMile);
-   
-    samedayCourierService.addEventListener('change', function() {
-        let optionFistMile = this.selectedOptions[0].getAttribute("data-fistMile");
-        let optionLastMile = this.selectedOptions[0].getAttribute("data-lastMile");
+
+    if ("undefined" !== typeof samedayCourierService.selectedOptions[0]) {
+        let optionFistMile = samedayCourierService.selectedOptions[0].getAttribute("data-fistMile");
+        let optionLastMile = samedayCourierService.selectedOptions[0].getAttribute("data-lastMile");
+
         displayDetails(optionFistMile, optionLastMile);
-    });
+
+        samedayCourierService.addEventListener('change', function() {
+            let optionFistMile = this.selectedOptions[0].getAttribute("data-fistMile");
+            let optionLastMile = this.selectedOptions[0].getAttribute("data-lastMile");
+            displayDetails(optionFistMile, optionLastMile);
+        });
+    }
 }
 
 function displayDetails(optionFistMile, optionLastMile){
