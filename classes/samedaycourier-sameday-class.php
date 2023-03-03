@@ -647,7 +647,7 @@ class Sameday
      */
     public function addNewParcel($params): bool
     {
-		if (false === $this->isAdmin() || false === wp_verify_nonce('add-new-parcel')) {
+		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-new-parcel')) {
 			return false;
 		}
 
