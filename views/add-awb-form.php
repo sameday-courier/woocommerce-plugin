@@ -118,8 +118,8 @@ function samedaycourierAddAwbForm($order): string {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
   
-    $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'];
-    $username = SamedayCourierHelperClass::getSamedaySettings()['user'];
+    $host_country = SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null;
+    $username = SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null;
 
     $services = '';
     $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);

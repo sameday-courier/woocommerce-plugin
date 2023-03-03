@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.3 =
+
+* Bug fix. Handle undefined settings options.
+
 = 1.5.2 =
 
 * Add new feature. Improve code security by protecting all internal forms with nonce var and validate actions only as administrator.

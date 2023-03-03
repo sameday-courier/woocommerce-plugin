@@ -41,6 +41,10 @@ class SamedayCourierHelperClass
 
 	public static function getSamedaySettings(): array
 	{
+		if (false === get_option('woocommerce_samedaycourier_settings')) {
+			return [];
+		}
+
 		return get_option('woocommerce_samedaycourier_settings');
 	}
 
@@ -67,7 +71,7 @@ class SamedayCourierHelperClass
 	 */
 	public static function isTesting(): int
 	{
-		$isTesting = self::getSamedaySettings()['is_testing'];
+		$isTesting = self::getSamedaySettings()['is_testing'] ?? null;
 
 		return ($isTesting === 'yes' || $isTesting === '1') ? 1 : 0;
 	}
