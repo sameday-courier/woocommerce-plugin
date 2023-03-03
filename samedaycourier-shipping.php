@@ -718,7 +718,13 @@ function wps_locker_row_layout() {
             <th><strong><?php echo __('Sameday Locker', 'samedaycourier') ?></strong></th>
             <td>
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
-                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'samedaycourier') ?></button>
+                    <button type="button" class="button alt sameday_select_locker"
+                            id="select_locker"
+                            data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
+                            data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
+                    >
+                        <?php echo __('Show Locker Map', 'samedaycourier') ?>
+                    </button>
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
@@ -726,15 +732,25 @@ function wps_locker_row_layout() {
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
-                <input type="hidden" id="locker" name="locker" form="checkout">
-                <input type="hidden" id="locker_name" name="locker_name">
-                <input type="hidden" id="locker_address" name="locker_address">
+                <?php placeAdditionalFieldsForLocker(); ?>
                 <span id="showLockerDetails"></span>
             </td>
         </tr>
     <?php }
 }
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
+
+function placeAdditionalFieldsForLocker() {
+    $fields = ['locker', 'locker_name', 'locker_address'];
+    foreach ($fields as $field) {
+	    woocommerce_form_field($field, array(
+		    'type' => 'hidden',
+		    'class' => array('form-row form-row-wide'),
+		    'id' => $field,
+		    'required' => false,
+	    ), '');
+    }
+}
 
 function add_locker_to_order_data( $order_id ) {
     if (isset( $_POST['locker'])) {

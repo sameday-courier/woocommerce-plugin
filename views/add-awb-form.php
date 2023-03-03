@@ -142,8 +142,7 @@ function samedaycourierAddAwbForm($order): string {
         $services .= "<option data-fistMile= '{$allowFirstMile}' data-lastMile='{$allowLastMile}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
     }
 
-    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
-                <h3 style="text-align: center; color: #082d98"> <strong> ' . __("Generate awb", "samedaycourier") . '</strong> </h3>      
+    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", "samedaycourier") . '</strong> </h3>      
                 <table>
                     <tbody>       
