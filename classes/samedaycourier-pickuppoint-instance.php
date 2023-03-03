@@ -71,7 +71,8 @@ class SamedayCourierPickupPointInstance
 	/**
 	 * Screen options
 	 */
-	public function screen_option() {
+	public function screen_option(): void
+    {
 
 		$option = 'per_page';
 		$args   = [
@@ -86,7 +87,8 @@ class SamedayCourierPickupPointInstance
 	}
 
 	/** Singleton instance */
-	public static function get_instance() {
+	public static function get_instance(): self
+    {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self();
 		}

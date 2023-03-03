@@ -5,7 +5,7 @@ if (! defined( 'ABSPATH' ) ) {
 }
 
 function samedaycourierCreateAwbHistoryTable($packages) {
-    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History") . '</strong> </h3>';
+    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", SamedayCourierHelperClass::TEXT_DOMAIN) . '</strong> </h3>';
 
     $style = '<style>
                 .packages {
@@ -59,12 +59,12 @@ function samedaycourierCreateAwbHistoryTable($packages) {
 
     $packageRows = '';
     if (empty($packages)) {
-        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found") .'</td></tr>';
+        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", SamedayCourierHelperClass::TEXT_DOMAIN) .'</td></tr>';
     }
 
     foreach ($packages as $package) {
-        $summary = unserialize($package['summary']);
-        $packageHistory = unserialize($package['history']);
+        $summary = unserialize($package['summary'], ['']);
+        $packageHistory = unserialize($package['history'], ['']);
         $historyRows = '';
         foreach ($packageHistory as $history) {
             $historyRows .= '
@@ -91,13 +91,13 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     <td colspan="7">
                         <table class="history" id="history-'.$summary->getParcelAwbNumber().'" style="width: 100%; display: none; text-align: center">
                           <tr>
-                            <th style="width: 15%">' . __("Status") . '</th>
-                            <th style="width: 20%">' . __("Label") . '</th>
-                            <th style="width: 15%">' . __("State") . '</th>
-                            <th style="width: 15%">' . __("Date") . '</th>
-                            <th style="width: 10%">' . __("County") . '</th>	
-                            <th style="width: 15%">' . __("Translation") . '</th>		
-                            <th style="width: 10%">' . __("Reason") . '</th>		    
+                            <th style="width: 15%">' . __("Status", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                            <th style="width: 20%">' . __("Label", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                            <th style="width: 15%">' . __("State", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                            <th style="width: 15%">' . __("Date", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                            <th style="width: 10%">' . __("County", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>	
+                            <th style="width: 15%">' . __("Translation", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>		
+                            <th style="width: 10%">' . __("Reason", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>		    
                           </tr>
                           '.$historyRows.' 
                         </table>
@@ -109,12 +109,12 @@ function samedaycourierCreateAwbHistoryTable($packages) {
     $return .= '<table class="packages" style="width: 100%">
                   <tr>
                     <th></th>
-                    <th>' . __("Parcel number") . '</th>
-                    <th>' . __("Parcel weight") . '</th>
-                    <th>' . __("Delivered") . '</th>
-                    <th>' . __("Delivery attempts") . '</th>
-                    <th>' . __("Is picked up") . '</th>
-                    <th>' . __("Picked up at") . '</th>				    
+                    <th>' . __("Parcel number", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Parcel weight", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Delivered", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Delivery attempts", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Is picked up", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Picked up at", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>				    
                   </tr>
                   '.$packageRows.'		  
                 </table>';
@@ -123,9 +123,9 @@ function samedaycourierCreateAwbHistoryTable($packages) {
         <script>
             jQuery(document).ready(function($) {
                 $(document).on("click", ".showHistoryDetails", function() {
-                  show = $(this).val();
-                  awbNumber = $(this).data("awb-number");
-                  table_id = "history-" + awbNumber;
+                  let show = $(this).val();
+                  let awbNumber = $(this).data("awb-number");
+                  let table_id = "history-" + awbNumber;
                   if (show === "+") {
                       $("#"+table_id).css("display","block");
                       $(this).val("-");

@@ -28,6 +28,8 @@ if (! defined( 'ABSPATH' ) ) {
  */
 class Sameday
 {
+	private const USER_ADMIN_ROLE = 'administrator';
+
 	/**
 	 * @return bool
 	 * @throws SamedaySDKException
@@ -239,11 +241,15 @@ class Sameday
         update_option('woocommerce_samedaycourier_settings', $samedayOptions);
     }
 
-    /**
-     * @return bool
-     */
+	/**
+	 * @return bool
+	 */
     public function editService(): bool
     {
+	    if (false === $this->isAdmin() || false === wp_verify_nonce($_POST['_wpnonce'], 'edit-service')) {
+		    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+		}
+
         if (!($_POST['action'] === 'edit_service')) {
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
@@ -275,7 +281,7 @@ class Sameday
 
         foreach ($post_fields as $field => $field_value) {
             if ($field_value['required'] && ('' === trim($field_value['value']))) {
-                $errors[] = __("The $field must not be empty");
+                $errors[] = __("The $field must not be empty", SamedayCourierHelperClass::TEXT_DOMAIN);
             }
         }
 
@@ -284,10 +290,10 @@ class Sameday
         if (empty($errors)) {
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
-                'name' => $post_fields['name']['value'],
-                'price' => $post_fields['price']['value'],
-                'price_free' => $post_fields['price_free']['value'],
-                'status' => $post_fields['status']['value']
+                'name' => SamedayCourierHelperClass::sanitizeInput($post_fields['name']['value']),
+                'price' => (float) number_format($post_fields['price']['value'], 2),
+                'price_free' => (float) number_format($post_fields['price_free']['value'], 2),
+                'status' => (int) $post_fields['status']['value']
             );
 
             SamedayCourierQueryDb::updateService($service);
@@ -295,7 +301,9 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services&action=edit&id=' . $post_fields['id']['value']);
+		$fieldId = (int) $post_fields['id']['value'];
+
+        return wp_redirect(admin_url() . "edit.php?post_type=page&page=sameday_services&action=edit&id='$fieldId'");
     }
 
 	/**
@@ -312,6 +320,13 @@ class Sameday
 	 */
     public function postAwb($params): bool
     {
+		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-awb')) {
+			$noticeMessage = __('You are not allowed to do this operation !', SamedayCourierHelperClass::TEXT_DOMAIN);
+			SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+
+			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+		}
+
         if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             wp_redirect(admin_url() . "post.php?post={$params['samedaycourier-order-id']}&action=edit");
         }
@@ -494,8 +509,12 @@ class Sameday
 	 * @return bool
 	 * @throws SamedaySDKException
 	 */
-    public function removeAwb($awb): bool
+    public function removeAwb($awb, $nonce): bool
     {
+		if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'remove-awb')) {
+			return false;
+		}
+
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
             SamedayCourierHelperClass::getSamedaySettings()['user'],
 	        SamedayCourierHelperClass::getSamedaySettings()['password'],
@@ -524,9 +543,14 @@ class Sameday
      * @return string
      * @throws SamedaySDKException
      */
-    public function showAwbAsPdf($orderId): string
+    public function showAwbAsPdf($orderId, $nonce): string
     {
-        $defaultLabelFormat = SamedayCourierHelperClass::getSamedaySettings()['default_label_format'];
+	    if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'show-as-pdf')) {
+		    return false;
+	    }
+
+
+	    $defaultLabelFormat = SamedayCourierHelperClass::getSamedaySettings()['default_label_format'];
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
             SamedayCourierHelperClass::getSamedaySettings()['user'],
@@ -583,7 +607,7 @@ class Sameday
             return;
         }
 
-        $parcels = unserialize($awb->parcels);
+        $parcels = unserialize($awb->parcels, ['']);
 
         global $wpdb;
 
@@ -623,6 +647,10 @@ class Sameday
      */
     public function addNewParcel($params): bool
     {
+		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-new-parcel')) {
+			return false;
+		}
+
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
                 SamedayCourierHelperClass::getSamedaySettings()['user'],
                 SamedayCourierHelperClass::getSamedaySettings()['password'],
@@ -648,20 +676,21 @@ class Sameday
             $params['samedaycourier-parcel-is-last']
         );
 
+	    $parcel = null;
         try {
             $parcel = $sameday->postParcel($request);
         } catch ( SamedayBadRequestException $e) {
             $errors = $e->getErrors();
         }
 
-        if (isset($errors)) {
+        if (isset($errors) && null === $parcel) {
             $noticeError = SamedayCourierHelperClass::parseAwbErrors($errors);
             SamedayCourierHelperClass::addFlashNotice('add_new_parcel_notice', $noticeError, 'error', true);
 
             return wp_redirect(add_query_arg('add-new-parcel', 'error', "post.php?post=$awb->order_id&action=edit"));
         }
 
-        $parcels = array_merge(unserialize($awb->parcels), array(new ParcelObject(
+        $parcels = array_merge(unserialize($awb->parcels, ['']), array(new ParcelObject(
                     $position,
                     $parcel->getParcelAwbNumber()
                 )
@@ -670,8 +699,16 @@ class Sameday
 
         SamedayCourierQueryDb::updateParcels($awb->order_id, serialize($parcels));
 
-        return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post={$awb->order_id}&action=edit"));
+        return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post=$awb->order_id&action=edit"));
     }
+
+	private function isAdmin(): bool
+	{
+		$currentUser = wp_get_current_user();
+		$roles = $currentUser->roles ?? [];
+
+		return in_array(self::USER_ADMIN_ROLE, $roles, true);
+	}
 
     /**
      * @param $parcels
@@ -680,7 +717,7 @@ class Sameday
      */
     private function getPosition($parcels): int
     {
-        $nrOfParcels = count(unserialize($parcels));
+        $nrOfParcels = count(unserialize($parcels, ['']));
 
         return $nrOfParcels + 1;
     }
