@@ -14,8 +14,8 @@ class SamedayCourierLockers extends WP_List_Table
 	public function __construct() {
 
 		parent::__construct( [
-			'singular' => __('Locker', 'samedaycourier'),
-			'plural'   => __('Lockers', 'samedaycourier'),
+			'singular' => __('Locker', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'plural'   => __('Lockers', SamedayCourierHelperClass::TEXT_DOMAIN),
 			'ajax'     => false
 		] );
 	}
@@ -78,7 +78,7 @@ class SamedayCourierLockers extends WP_List_Table
 	/** Text displayed when no lockers data is available */
 	public function no_items(): void
 	{
-		_e('No lockers available!', 'samedaycourier');
+		_e('No lockers available!', SamedayCourierHelperClass::TEXT_DOMAIN);
 	}
 
 	/**
@@ -103,14 +103,14 @@ class SamedayCourierLockers extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'locker_id' => __('Locker ID', 'samedaycourier'),
-			'name' => __('Name', 'samedaycourier'),
-			'city' => __('City', 'samedaycourier'),
-			'county' => __('County', 'samedaycourier'),
-			'address' => __('Address', 'samedaycourier'),
-			'lat' => __('Latitude', 'samedaycourier'),
-			'lng' => __('Longitude', 'samedaycourier'),
-			'postal_code' => __('Postal code', 'samedaycourier')
+			'locker_id' => __('Locker ID', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'name' => __('Name', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'city' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'county' => __('County', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'address' => __('Address', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'lat' => __('Latitude', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'lng' => __('Longitude', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'postal_code' => __('Postal code', SamedayCourierHelperClass::TEXT_DOMAIN)
 		];
 	}
 

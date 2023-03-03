@@ -1,0 +1,544 @@
+# Copyright (C) 2023 SamedayCourier Shipping
+# This file is distributed under the same license as the SamedayCourier Shipping package.
+msgid ""
+msgstr ""
+"Project-Id-Version: SamedayCourier Shipping 1.5.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/samedaycourier-shipping\n"
+"POT-Creation-Date: 2023-03-03 18:22:10+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: classes/samedaycourier-helper-class.php:99
+msgid "Parcel"
+msgstr ""
+
+#: classes/samedaycourier-helper-class.php:103
+msgid "Envelope"
+msgstr ""
+
+#: classes/samedaycourier-helper-class.php:107
+msgid "Large package"
+msgstr ""
+
+#: classes/samedaycourier-helper-class.php:117
+msgid "Client"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:17
+msgid "Locker"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:18
+msgid "Lockers"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:81
+msgid "No lockers available!"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:106
+msgid "Locker ID"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:107
+#: classes/samedaycourier-pickuppoints.php:127
+#: classes/samedaycourier-services.php:142
+msgid "Name"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:108
+#: classes/samedaycourier-pickuppoints.php:128
+msgid "City"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:109
+#: classes/samedaycourier-pickuppoints.php:129 views/awb-history-table.php:98
+msgid "County"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:110
+#: classes/samedaycourier-pickuppoints.php:130
+msgid "Address"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:111
+msgid "Latitude"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:112
+msgid "Longitude"
+msgstr ""
+
+#: classes/samedaycourier-lockers.php:113
+msgid "Postal code"
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:17 views/add-awb-form.php:201
+msgid "Pickup-point"
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:18
+msgid "Pickup-points"
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:81
+msgid "No pickup-points avaliable."
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:126
+#: classes/samedaycourier-services.php:140
+msgid "Sameday ID"
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:131
+msgid "Contact Persons"
+msgstr ""
+
+#: classes/samedaycourier-pickuppoints.php:132
+msgid "Is default "
+msgstr ""
+
+#: classes/samedaycourier-sameday-class.php:324
+msgid "You are not allowed to do this operation !"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:81
+msgid "Disabled"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:85
+#: samedaycourier-shipping.php:291
+msgid "Always"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:118
+msgid "Service Name"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:126
+#: classes/samedaycourier-services.php:143
+msgid "Price"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:134
+msgid "Free delivery price"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:142
+#: classes/samedaycourier-services.php:145 views/awb-history-table.php:94
+msgid "Status"
+msgstr ""
+
+#: classes/samedaycourier-service-instance.php:151
+msgid "Edit Service"
+msgstr ""
+
+#: classes/samedaycourier-services.php:17 views/add-awb-form.php:231
+msgid "Service"
+msgstr ""
+
+#: classes/samedaycourier-services.php:18
+msgid "Services"
+msgstr ""
+
+#: classes/samedaycourier-services.php:83
+msgid "No services available!"
+msgstr ""
+
+#: classes/samedaycourier-services.php:141
+msgid "Sameday name"
+msgstr ""
+
+#: classes/samedaycourier-services.php:144
+msgid "Price free"
+msgstr ""
+
+#: classes/samedaycourier-services.php:146
+msgid "Edit"
+msgstr ""
+
+#: samedaycourier-shipping.php:65 samedaycourier-shipping.php:391
+msgid "SamedayCourier"
+msgstr ""
+
+#: samedaycourier-shipping.php:66
+msgid "Custom Shipping Method for SamedayCourier"
+msgstr ""
+
+#: samedaycourier-shipping.php:247
+msgid "Enable"
+msgstr ""
+
+#: samedaycourier-shipping.php:249
+msgid "Enable this shipping."
+msgstr ""
+
+#: samedaycourier-shipping.php:254
+msgid "Title"
+msgstr ""
+
+#: samedaycourier-shipping.php:256
+msgid "Title to be display on site"
+msgstr ""
+
+#: samedaycourier-shipping.php:257
+msgid "SamedayCourier Shipping"
+msgstr ""
+
+#: samedaycourier-shipping.php:261 samedaycourier-shipping.php:263
+msgid "Username"
+msgstr ""
+
+#: samedaycourier-shipping.php:268 samedaycourier-shipping.php:270
+msgid "Password"
+msgstr ""
+
+#: samedaycourier-shipping.php:275
+msgid "Default label format"
+msgstr ""
+
+#: samedaycourier-shipping.php:282
+msgid "Awb paper format"
+msgstr ""
+
+#: samedaycourier-shipping.php:286
+msgid "Use estimated cost"
+msgstr ""
+
+#: samedaycourier-shipping.php:290
+msgid "Never"
+msgstr ""
+
+#: samedaycourier-shipping.php:292
+msgid "If its cost is bigger than fixed price"
+msgstr ""
+
+#: samedaycourier-shipping.php:294
+msgid ""
+"This is the shipping cost calculated by Sameday Api for each service. <br/> \n"
+"                            Never* You choose to display only the fixed price that you set for each service<br/>\n"
+"                            Always* You choose to display only the price estimated by SamedayCourier API<br/>\n"
+"                            If its cost is bigger than fixed price* You choose to display the cost estimated by \n"
+"                            SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.\n"
+"                        "
+msgstr ""
+
+#: samedaycourier-shipping.php:303 samedaycourier-shipping.php:310
+msgid "Extra fee"
+msgstr ""
+
+#: samedaycourier-shipping.php:306
+msgid "Apply extra fee on estimated cost. This is a % value. <br/> If you don't want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0"
+msgstr ""
+
+#: samedaycourier-shipping.php:316
+msgid "Repayment tax label"
+msgstr ""
+
+#: samedaycourier-shipping.php:318
+msgid "Label for repayment tax. This appear in checkout page."
+msgstr ""
+
+#: samedaycourier-shipping.php:323 samedaycourier-shipping.php:627
+msgid "Repayment tax"
+msgstr ""
+
+#: samedaycourier-shipping.php:325
+msgid "Add extra fee on checkout."
+msgstr ""
+
+#: samedaycourier-shipping.php:331
+msgid "Open package status"
+msgstr ""
+
+#: samedaycourier-shipping.php:333
+msgid "Enable this option if you want to offer your customers the opening of the package at delivery time."
+msgstr ""
+
+#: samedaycourier-shipping.php:338
+msgid "Open package label"
+msgstr ""
+
+#: samedaycourier-shipping.php:340
+msgid "This appear in checkout page"
+msgstr ""
+
+#: samedaycourier-shipping.php:345
+msgid "Locker max. items"
+msgstr ""
+
+#: samedaycourier-shipping.php:347
+msgid "The maximum amount of items accepted inside the locker"
+msgstr ""
+
+#: samedaycourier-shipping.php:352
+msgid "Use locker map"
+msgstr ""
+
+#: samedaycourier-shipping.php:356 views/add-new-parcel-form.php:52
+msgid "No"
+msgstr ""
+
+#: samedaycourier-shipping.php:357 views/add-new-parcel-form.php:51
+msgid "Yes"
+msgstr ""
+
+#: samedaycourier-shipping.php:362
+msgid "Env. Mode"
+msgstr ""
+
+#: samedaycourier-shipping.php:364 samedaycourier-shipping.php:377
+msgid "The value of this field will be appear automatically after you complete the authentication"
+msgstr ""
+
+#: samedaycourier-shipping.php:368
+msgid "Prod"
+msgstr ""
+
+#: samedaycourier-shipping.php:369
+msgid "Demo"
+msgstr ""
+
+#: samedaycourier-shipping.php:375
+msgid "Env. Host Country"
+msgstr ""
+
+#: samedaycourier-shipping.php:441
+msgid "Invalid username/password combination provided! Settings have not been changed!"
+msgstr ""
+
+#: samedaycourier-shipping.php:573 views/add-awb-form.php:263
+msgid "Open package"
+msgstr ""
+
+#: samedaycourier-shipping.php:718
+msgid "Sameday Locker"
+msgstr ""
+
+#: samedaycourier-shipping.php:726
+msgid "Show Locker Map"
+msgstr ""
+
+#: samedaycourier-shipping.php:731
+msgid "Select easyBox"
+msgstr ""
+
+#: samedaycourier-shipping.php:841
+msgid "Awb was successfully generated !"
+msgstr ""
+
+#: samedaycourier-shipping.php:851
+msgid "Awb was successfully removed !"
+msgstr ""
+
+#: samedaycourier-shipping.php:857
+msgid "Awb invalid !"
+msgstr ""
+
+#: samedaycourier-shipping.php:867
+msgid "New parcel has been added to this awb!"
+msgstr ""
+
+#: samedaycourier-shipping.php:895 views/add-awb-form.php:146
+msgid "Generate awb"
+msgstr ""
+
+#: samedaycourier-shipping.php:900 views/add-new-parcel-form.php:8
+#: views/add-new-parcel-form.php:65
+msgid "Add new parcel"
+msgstr ""
+
+#: samedaycourier-shipping.php:901
+msgid "Awb history"
+msgstr ""
+
+#: samedaycourier-shipping.php:903
+msgid "Show as pdf"
+msgstr ""
+
+#: samedaycourier-shipping.php:909
+msgid "Remove Awb"
+msgstr ""
+
+#: samedaycourier-shipping.php:951
+msgid "Sameday eAwb"
+msgstr ""
+
+#: samedaycourier-shipping.php:968
+msgid "Please choose your EasyBox Locker !"
+msgstr ""
+
+#: samedaycourier-shipping.php:978
+msgid "Settings"
+msgstr ""
+
+#: samedaycourier-shipping.php:979
+msgid "eAWB"
+msgstr ""
+
+#: views/add-awb-form.php:152
+msgid "Repayment"
+msgstr ""
+
+#: views/add-awb-form.php:156
+msgid "Payment type: "
+msgstr ""
+
+#: views/add-awb-form.php:161
+msgid "Insured value"
+msgstr ""
+
+#: views/add-awb-form.php:169
+msgid "Package Weight"
+msgstr ""
+
+#: views/add-awb-form.php:177
+msgid "Package Length"
+msgstr ""
+
+#: views/add-awb-form.php:185
+msgid "Package Height"
+msgstr ""
+
+#: views/add-awb-form.php:193
+msgid "Package Width"
+msgstr ""
+
+#: views/add-awb-form.php:211
+msgid "Package type"
+msgstr ""
+
+#: views/add-awb-form.php:221
+msgid "Awb payment"
+msgstr ""
+
+#: views/add-awb-form.php:241
+msgid "Personal delivery at locker"
+msgstr ""
+
+#: views/add-awb-form.php:245
+msgid "Check this field if you want to apply for Personal delivery of the package at an easyBox terminal."
+msgstr ""
+
+#: views/add-awb-form.php:246
+msgid "Show map"
+msgstr ""
+
+#: views/add-awb-form.php:247
+msgid "Show locker dimensions"
+msgstr ""
+
+#: views/add-awb-form.php:252
+msgid "Locker details"
+msgstr ""
+
+#: views/add-awb-form.php:257
+msgid "Change locker"
+msgstr ""
+
+#: views/add-awb-form.php:271 views/add-new-parcel-form.php:58
+msgid "Observation"
+msgstr ""
+
+#: views/add-awb-form.php:279
+msgid "Client Reference"
+msgstr ""
+
+#: views/add-awb-form.php:283
+msgid "By default this field is complete with Order ID"
+msgstr ""
+
+#: views/add-awb-form.php:287
+msgid "Generate Awb"
+msgstr ""
+
+#: views/add-new-parcel-form.php:15 views/awb-history-table.php:113
+msgid "Parcel weight"
+msgstr ""
+
+#: views/add-new-parcel-form.php:23
+msgid "Parcel length"
+msgstr ""
+
+#: views/add-new-parcel-form.php:31
+msgid "Parcel height"
+msgstr ""
+
+#: views/add-new-parcel-form.php:39
+msgid "Parcel width"
+msgstr ""
+
+#: views/add-new-parcel-form.php:47
+msgid "Is last"
+msgstr ""
+
+#: views/awb-history-table.php:8
+msgid "Awb History"
+msgstr ""
+
+#: views/awb-history-table.php:62
+msgid "No data found"
+msgstr ""
+
+#: views/awb-history-table.php:95
+msgid "Label"
+msgstr ""
+
+#: views/awb-history-table.php:96
+msgid "State"
+msgstr ""
+
+#: views/awb-history-table.php:97
+msgid "Date"
+msgstr ""
+
+#: views/awb-history-table.php:99
+msgid "Translation"
+msgstr ""
+
+#: views/awb-history-table.php:100
+msgid "Reason"
+msgstr ""
+
+#: views/awb-history-table.php:112
+msgid "Parcel number"
+msgstr ""
+
+#: views/awb-history-table.php:114
+msgid "Delivered"
+msgstr ""
+
+#: views/awb-history-table.php:115
+msgid "Delivery attempts"
+msgstr ""
+
+#: views/awb-history-table.php:116
+msgid "Is picked up"
+msgstr ""
+
+#: views/awb-history-table.php:117
+msgid "Picked up at"
+msgstr ""
+#. Plugin Name of the plugin/theme
+msgid "SamedayCourier Shipping"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/sameday-courier/woocommerce-plugin"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "SamedayCourier Shipping Method for WooCommerce"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "SamedayCourier"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://www.sameday.ro/contact"
+msgstr ""

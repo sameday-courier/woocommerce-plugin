@@ -14,8 +14,8 @@ class SamedayCourierService extends WP_List_Table
 	public function __construct() {
 
 		parent::__construct( [
-			'singular' => __('Service', 'samedaycourier'),
-			'plural'   => __('Services', 'samedaycourier'),
+			'singular' => __('Service', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'plural'   => __('Services', SamedayCourierHelperClass::TEXT_DOMAIN),
 			'ajax'     => false
 		] );
 	}
@@ -80,7 +80,7 @@ class SamedayCourierService extends WP_List_Table
 	/** Text displayed when no service data is available */
 	public function no_items(): void
 	{
-		_e( 'No services available!','samedaycourier');
+		__( 'No services available!', SamedayCourierHelperClass::TEXT_DOMAIN);
 	}
 
 	/**
@@ -137,13 +137,13 @@ class SamedayCourierService extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id'    => __('Sameday ID', 'samedaycourier'),
-			'sameday_name' => __('Sameday name', 'samedaycourier'),
-			'name'    => __('Name', 'samedaycourier'),
-			'price'    => __('Price', 'samedaycourier'),
-			'price_free'    => __('Price free', 'samedaycourier'),
-			'status'    => __('Status', 'samedaycourier'),
-			'edit' => __('Edit', 'samedaycourier')
+			'sameday_id'    => __('Sameday ID', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'sameday_name' => __('Sameday name', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'name'    => __('Name', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'price'    => __('Price', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'price_free'    => __('Price free', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'status'    => __('Status', SamedayCourierHelperClass::TEXT_DOMAIN),
+			'edit' => __('Edit', SamedayCourierHelperClass::TEXT_DOMAIN)
 		];
 	}
 

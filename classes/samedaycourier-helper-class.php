@@ -32,6 +32,8 @@ class SamedayCourierHelperClass
 		self::API_HOST_LOCAL_BG => 'https://eawb.sameday.bg',
 	];
 
+	public const TEXT_DOMAIN = 'samedaycourier-shipping';
+
 	private const ORDER_BY_TYPES = [
 		'ASC',
 		'DESC',
@@ -94,15 +96,15 @@ class SamedayCourierHelperClass
 	{
 		return array(
 			array(
-				'name' => __("Parcel", "samedaycourier"),
+				'name' => __("Parcel", self::TEXT_DOMAIN),
 				'value' => \Sameday\Objects\Types\PackageType::PARCEL
 			),
 			array(
-				'name' => __("Envelope", "samedaycourier"),
+				'name' => __("Envelope", self::TEXT_DOMAIN),
 				'value' => \Sameday\Objects\Types\PackageType::ENVELOPE
 			),
 			array(
-				'name' => __("Large package", "samedaycourier"),
+				'name' => __("Large package", self::TEXT_DOMAIN),
 				'value' => \Sameday\Objects\Types\PackageType::LARGE
 			)
 		);
@@ -112,45 +114,8 @@ class SamedayCourierHelperClass
 	{
 		return array(
 			array(
-				'name' => __("Client", "samedaycourier"),
+				'name' => __("Client", self::TEXT_DOMAIN),
 				'value' => \Sameday\Objects\Types\AwbPaymentType::CLIENT
-			)
-		);
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function getDays()
-	{
-		return array(
-			array(
-				'position' => 7,
-				'text' => _e('Sunday', 'samedaycourier'),
-			),
-			array(
-				'position' => 1,
-				'text' => _e('Monday', 'samedaycourier'),
-			),
-			array(
-				'position' => 2,
-				'text' => _e('Tuesday', 'samedaycourier')
-			),
-			array(
-				'position' => 3,
-				'text' => _e('Wednesday', 'samedaycourier')
-			),
-			array(
-				'position' => 4,
-				'text' => _e('Thursday', 'samedaycourier')
-			),
-			array(
-				'position' => 5,
-				'text' => _e('Friday', 'samedaycourier')
-			),
-			array(
-				'position' => 6,
-				'text' => _e('Saturday', 'samedaycourier')
 			)
 		);
 	}
