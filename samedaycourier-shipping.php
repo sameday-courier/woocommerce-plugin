@@ -728,7 +728,7 @@ function wps_locker_row_layout() {
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'samedaycourier') ?> </strong> </option>
+                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
