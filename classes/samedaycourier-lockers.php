@@ -103,14 +103,14 @@ class SamedayCourierLockers extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'locker_id' => __( 'Locker ID', 'samedaycourier' ),
-			'name' => __( 'Name', 'samedaycourier' ),
-			'city' => __( 'City', 'samedaycourier' ),
-			'county' => __( 'County', 'samedaycourier' ),
-			'address' => __( 'Address', 'samedaycourier' ),
-			'lat' => __( 'Latitude', 'samedaycourier' ),
-			'lng' => __( 'Longitude', 'samedaycourier' ),
-			'postal_code' => __( 'Postal code', 'samedaycourier' )
+			'locker_id' => __('Locker ID', 'samedaycourier'),
+			'name' => __('Name', 'samedaycourier'),
+			'city' => __('City', 'samedaycourier'),
+			'county' => __('County', 'samedaycourier'),
+			'address' => __('Address', 'samedaycourier'),
+			'lat' => __('Latitude', 'samedaycourier'),
+			'lng' => __('Longitude', 'samedaycourier'),
+			'postal_code' => __('Postal code', 'samedaycourier')
 		];
 	}
 

@@ -143,7 +143,7 @@ function samedaycourierAddAwbForm($order): string {
     }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	      
-                <h3 style="text-align: center; color: #082d98"> <strong> ' . __("Generate awb") . '</strong> </h3>      
+                <h3 style="text-align: center; color: #082d98"> <strong> ' . __("Generate awb", "samedaycourier") . '</strong> </h3>      
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", "samedaycourier") . '</strong> </h3>      
                 <table>
                     <tbody>       

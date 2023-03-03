@@ -281,7 +281,7 @@ class Sameday
 
         foreach ($post_fields as $field => $field_value) {
             if ($field_value['required'] && ('' === trim($field_value['value']))) {
-                $errors[] = __("The $field must not be empty");
+                $errors[] = __("The $field must not be empty", 'samedaycourier');
             }
         }
 
@@ -321,7 +321,7 @@ class Sameday
     public function postAwb($params): bool
     {
 		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-awb')) {
-			$noticeMessage = __('You are not allowed to do this operation !');
+			$noticeMessage = __('You are not allowed to do this operation !', 'samedaycourier');
 			SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
 			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));

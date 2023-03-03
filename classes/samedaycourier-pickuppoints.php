@@ -78,7 +78,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		_e( 'No pickup-points avaliable.','samedaycourier');
+		__( 'No pickup-points avaliable.','samedaycourier');
 	}
 
 	/**
@@ -123,13 +123,13 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id' => __( 'Sameday ID', 'samedaycourier' ),
-			'sameday_alias' => __( 'Name', 'samedaycourier' ),
-			'city' => __( 'City', 'samedaycourier' ),
-			'county' => __( 'County', 'samedaycourier' ),
-			'address' => __( 'Address', 'samedaycourier' ),
-			'contactPersons' => __( 'Contact Persons', 'samedaycourier' ),
-			'default_pickup_point' => __( 'Is default ', 'samedaycourier' ),
+			'sameday_id' => __('Sameday ID', 'samedaycourier'),
+			'sameday_alias' => __('Name', 'samedaycourier'),
+			'city' => __('City', 'samedaycourier'),
+			'county' => __('County', 'samedaycourier'),
+			'address' => __('Address', 'samedaycourier'),
+			'contactPersons' => __('Contact Persons', 'samedaycourier'),
+			'default_pickup_point' => __('Is default ', 'samedaycourier'),
 		];
 	}
 

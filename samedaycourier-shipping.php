@@ -244,52 +244,52 @@ function samedaycourier_shipping_method() {
             {
                 $this->form_fields = array(
                     'enabled' => array(
-                        'title' => __( 'Enable', 'samedaycourier' ),
+                        'title' => __('Enable', 'samedaycourier'),
                         'type' => 'checkbox',
-                        'description' => __( 'Enable this shipping.', 'samedaycourier' ),
+                        'description' => __('Enable this shipping.', 'samedaycourier'),
                         'default' => 'yes'
                     ),
 
                     'title' => array(
-                        'title' => __( 'Title', 'samedaycourier' ),
+                        'title' => __('Title', 'samedaycourier'),
                         'type' => 'text',
-                        'description' => __( 'Title to be display on site', 'samedaycourier' ),
-                        'default' => __( 'SamedayCourier Shipping', 'samedaycourier' )
+                        'description' => __('Title to be display on site', 'samedaycourier'),
+                        'default' => __('SamedayCourier Shipping', 'samedaycourier')
                     ),
 
                     'user' => array(
-                        'title' => __( 'Username', 'samedaycourier' ) . ' *',
+                        'title' => __('Username', 'samedaycourier') . ' *',
                         'type' => 'text',
-                        'description' => __( 'Username', 'samedaycourier' ),
-                        'default' => __( '', 'samedaycourier' )
+                        'description' => __('Username', 'samedaycourier'),
+                        'default' => __('')
                     ),
 
                     'password' => array(
-                        'title' => __( 'Password', 'samedaycourier' ) . ' *',
+                        'title' => __('Password', 'samedaycourier') . ' *',
                         'type' => 'password',
-                        'description' => __( 'Password', 'samedaycourier' ),
-                        'default' => __( '', 'samedaycourier' )
+                        'description' => __('Password', 'samedaycourier'),
+                        'default' => __('')
                     ),
 
                     'default_label_format' => array(
-                        'title'   => __( 'Default label format', 'samedaycourier' ) . ' *',
+                        'title'   => __('Default label format', 'samedaycourier') . ' *',
                         'default' => 'A4',
                         'type'    => 'select',
                         'options' => [
-                            'A4' => __( Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier' ),
-                            'A6' => __( Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier' ),
+                            'A4' => __(Sameday\Objects\Types\AwbPdfType::A4, 'samedaycourier'),
+                            'A6' => __(Sameday\Objects\Types\AwbPdfType::A6, 'samedaycourier'),
                         ],
-                        'description' => __('Awb paper format')
+                        'description' => __('Awb paper format', 'samedaycourier')
                     ),
 
                     'estimated_cost' => array(
-                        'title'   => __( 'Use estimated cost', 'samedaycourier' ) . ' *',
+                        'title'   => __('Use estimated cost', 'samedaycourier') . ' *',
                         'default' => 'no',
                         'type'    => 'select',
                         'options' => [
-                            'no' => __( 'Never', 'samedaycourier' ),
-                            'yes' => __( 'Always', 'samedaycourier' ),
-                            'btfp' => __('If its cost is bigger than fixed price')
+                            'no' => __('Never', 'samedaycourier'),
+                            'yes' => __('Always', 'samedaycourier'),
+                            'btfp' => __('If its cost is bigger than fixed price', 'samedaycourier')
                         ],
                         'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
                             Never* You choose to display only the fixed price that you set for each service<br/>
@@ -570,7 +570,7 @@ function wps_sameday_shipping_options_layout() {
         if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
             ?>
             <tr class="shipping-pickup-store">
-                <th><strong><?php echo __('Open package', 'wc-pickup-store') ?></strong></th>
+                <th><strong><?php echo __('Open package', 'samedaycourier') ?></strong></th>
                 <td>
                     <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
                         <li>
@@ -715,14 +715,14 @@ function wps_locker_row_layout() {
     if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && is_checkout()) {
     ?>
         <tr class="shipping-pickup-store">
-            <th><strong><?php echo __('Sameday Locker', 'wc-pickup-store') ?></strong></th>
+            <th><strong><?php echo __('Sameday Locker', 'samedaycourier') ?></strong></th>
             <td>
                 <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
-                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'wc-pickup-store') ?></button>
+                    <button type="button" class="button alt sameday_select_locker"  id="select_locker" data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>' data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>' ><?php echo __('Show Locker Map', 'samedaycourier') ?></button>
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'wc-pickup-store') ?> </strong> </option>
+                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', 'samedaycourier') ?> </strong> </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
