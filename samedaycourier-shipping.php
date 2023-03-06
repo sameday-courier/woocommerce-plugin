@@ -900,7 +900,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                 <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
                 <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="showAsPdf" class="button-primary button-samll">'.  __('Show as pdf') . ' </button>
+                <button type="submit" form="showAsPdf" class="button-primary button-samll" formtarget="_blank">>'.  __('Show as pdf') . ' </button>
             </p>';
 
         $_removeAwb = '
