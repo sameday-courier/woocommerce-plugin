@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.4 =
+
+* Add new feature. Open Sameday AWB PDF page as a new tab.
+
 = 1.5.3 =
 
 * Bug fix. Handle undefined settings options.
