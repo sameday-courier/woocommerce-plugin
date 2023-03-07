@@ -28,7 +28,10 @@ if (! defined( 'ABSPATH' ) ) {
  */
 class Sameday
 {
-	private const USER_ADMIN_ROLE = 'administrator';
+	private const USER_ROLE_PERMISSIONS = [
+		'administrator',
+		'shop_manager',
+	];
 
 	/**
 	 * @return bool
@@ -246,7 +249,7 @@ class Sameday
 	 */
     public function editService(): bool
     {
-	    if (false === $this->isAdmin() || false === wp_verify_nonce($_POST['_wpnonce'], 'edit-service')) {
+	    if (false === $this->isAllowed() || false === wp_verify_nonce($_POST['_wpnonce'], 'edit-service')) {
 		    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
 		}
 
@@ -320,7 +323,7 @@ class Sameday
 	 */
     public function postAwb($params): bool
     {
-		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-awb')) {
+		if (false === $this->isAllowed() || false === wp_verify_nonce($params['_wpnonce'], 'add-awb')) {
 			$noticeMessage = __('You are not allowed to do this operation !', SamedayCourierHelperClass::TEXT_DOMAIN);
 			SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
@@ -511,7 +514,7 @@ class Sameday
 	 */
     public function removeAwb($awb, $nonce): bool
     {
-		if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'remove-awb')) {
+		if (false === $this->isAllowed() || false === wp_verify_nonce($nonce, 'remove-awb')) {
 			return false;
 		}
 
@@ -545,7 +548,7 @@ class Sameday
      */
     public function showAwbAsPdf($orderId, $nonce): string
     {
-	    if (false === $this->isAdmin() || false === wp_verify_nonce($nonce, 'show-as-pdf')) {
+	    if (false === $this->isAllowed() || false === wp_verify_nonce($nonce, 'show-as-pdf')) {
 		    return false;
 	    }
 
@@ -647,7 +650,7 @@ class Sameday
      */
     public function addNewParcel($params): bool
     {
-		if (false === $this->isAdmin() || false === wp_verify_nonce($params['_wpnonce'], 'add-new-parcel')) {
+		if (false === $this->isAllowed() || false === wp_verify_nonce($params['_wpnonce'], 'add-new-parcel')) {
 			return false;
 		}
 
@@ -702,12 +705,20 @@ class Sameday
         return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post=$awb->order_id&action=edit"));
     }
 
-	private function isAdmin(): bool
+	private function isAllowed(): bool
 	{
 		$currentUser = wp_get_current_user();
 		$roles = $currentUser->roles ?? [];
 
-		return in_array(self::USER_ADMIN_ROLE, $roles, true);
+		$userRolePermissions = self::USER_ROLE_PERMISSIONS;
+
+		foreach ($userRolePermissions as $role) {
+			if (in_array($role, $roles, true)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
     /**
