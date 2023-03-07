@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.5 =
+
+* Add new feature. Grant permissions to shop_manager in order to generate awb.
+
 = 1.5.4 =
 
 * Add new feature. Open Sameday AWB PDF page as a new tab.
