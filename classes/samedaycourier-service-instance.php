@@ -101,7 +101,7 @@ class SamedayCourierServiceInstance
 
 	    $statuses = '';
         foreach ($this->getStatuses() as $status) {
-            $checked = $service->status === $status['value'] ? 'selected' : '';
+            $checked = ((int) $service->status) === ((int) $status['value']) ? 'selected' : '';
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 

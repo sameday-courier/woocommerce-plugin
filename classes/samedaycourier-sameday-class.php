@@ -290,12 +290,17 @@ class Sameday
 
         // End of Validation check.
 
+	    $priceFree = null;
+		if ((float) $post_fields['price_free']['value'] > 0) {
+			$priceFree = (float) $post_fields['price_free']['value'];
+		}
+
         if (empty($errors)) {
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
                 'name' => SamedayCourierHelperClass::sanitizeInput($post_fields['name']['value']),
                 'price' => (float) $post_fields['price']['value'],
-                'price_free' => (float) $post_fields['price_free']['value'],
+                'price_free' => $priceFree,
                 'status' => (int) $post_fields['status']['value']
             );
 
