@@ -294,8 +294,8 @@ class Sameday
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
                 'name' => SamedayCourierHelperClass::sanitizeInput($post_fields['name']['value']),
-                'price' => (float) number_format($post_fields['price']['value'], 2),
-                'price_free' => (float) number_format($post_fields['price_free']['value'], 2),
+                'price' => (float) $post_fields['price']['value'],
+                'price_free' => (float) $post_fields['price_free']['value'],
                 'status' => (int) $post_fields['status']['value']
             );
 
