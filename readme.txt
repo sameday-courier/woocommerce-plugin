@@ -180,6 +180,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.5.7 =
 
+* Bug fix. Fix problem for virtual products.
+
+= 1.5.7 =
+
 * Bug fix. Deal with float values (replace casting to float for null values).
 
 = 1.5.6 =
