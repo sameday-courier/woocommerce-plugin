@@ -962,10 +962,12 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 // Revision order before Submit
 add_action('woocommerce_checkout_process', function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-    if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
-        if ($_POST['locker'] === null || $_POST['locker'] === '') {
-            wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+    if ($chosen_methods !== null){
+        $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+        if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+            if ($_POST['locker'] === null || $_POST['locker'] === '') {
+                wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+            }
         }
     }
 });
