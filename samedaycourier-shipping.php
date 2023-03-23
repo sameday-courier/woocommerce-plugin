@@ -764,13 +764,18 @@ add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data'
 /**
  ** Add external JS file for Lockers
  **/
-add_action('wp_enqueue_scripts', static function() {
-	global $wp;
-	if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
+
+add_action('wp_enqueue_scripts', 'load_lockers_sync_checkout', 99999 );
+
+function load_lockers_sync_checkout() {
+    global $wp;
+    if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
 		wp_enqueue_script( 'prod-locker-plugin', 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js');
-		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js');
-	}
-}, 9999);
+		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js',array( 'jquery' ), false, true );
+    }
+    
+}
+
 
 
 /**

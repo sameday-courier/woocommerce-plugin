@@ -6,6 +6,7 @@
  */
 
 
+//setInterval(function() { init(); showCookie(); }, 1000);
     // Validate if element is defined and is not null
     const is_set = (accessor) => {
         try {
@@ -108,23 +109,18 @@
     /**
      * Initialise component after ajax complete
      */
-    (function() {
-        const send = XMLHttpRequest.prototype.send
 
-        XMLHttpRequest.prototype.send = function() {
-            this.addEventListener('load', function() {
-                const locker_map_button = document.getElementById('select_locker') || false;
-                const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
-                if (locker_map_button || locker_drop_down_field) {
-                    init();
-                }
-
-                showCookie();
-            });
-
-            return send.apply(this, arguments);
+    jQuery(document.body).on(
+        "updated_checkout",
+        function (e) {
+            const locker_map_button = document.getElementById('select_locker') || false;
+            const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
+            if (locker_map_button || locker_drop_down_field) {
+                init();
+            }
+             showCookie();
         }
-    })();
+      )
 
     const _setCookie = (key, value, days) => {
         let d = new Date();
