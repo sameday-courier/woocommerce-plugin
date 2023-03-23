@@ -4,9 +4,6 @@
  *
  * @namespace selectLocker
  */
-
-
-//setInterval(function() { init(); showCookie(); }, 1000);
     // Validate if element is defined and is not null
     const is_set = (accessor) => {
         try {
@@ -43,9 +40,7 @@
     }
     
     const openLockers = () => {
-
         /* DOM node selectors. */
-
         let selectors = {
             lockerId: document.querySelector('#locker'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
@@ -77,7 +72,7 @@
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
             pluginInstance.close();
-        })
+        });
     }
     
 
@@ -109,18 +104,17 @@
     /**
      * Initialise component after ajax complete
      */
-
-    jQuery(document.body).on(
-        "updated_checkout",
-        function (e) {
+    jQuery(document.body).on("updated_checkout", () => {
             const locker_map_button = document.getElementById('select_locker') || false;
             const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
+
             if (locker_map_button || locker_drop_down_field) {
                 init();
             }
-             showCookie();
+
+            showCookie();
         }
-      )
+    );
 
     const _setCookie = (key, value, days) => {
         let d = new Date();
