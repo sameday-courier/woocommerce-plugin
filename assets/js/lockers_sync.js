@@ -4,8 +4,6 @@
  *
  * @namespace selectLocker
  */
-
-
     // Validate if element is defined and is not null
     const is_set = (accessor) => {
         try {
@@ -42,9 +40,7 @@
     }
     
     const openLockers = () => {
-
         /* DOM node selectors. */
-
         let selectors = {
             lockerId: document.querySelector('#locker'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
@@ -76,7 +72,7 @@
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
             pluginInstance.close();
-        })
+        });
     }
     
 
@@ -108,23 +104,17 @@
     /**
      * Initialise component after ajax complete
      */
-    (function() {
-        const send = XMLHttpRequest.prototype.send
+    jQuery(document.body).on("updated_checkout", () => {
+            const locker_map_button = document.getElementById('select_locker') || false;
+            const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
 
-        XMLHttpRequest.prototype.send = function() {
-            this.addEventListener('load', function() {
-                const locker_map_button = document.getElementById('select_locker') || false;
-                const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
-                if (locker_map_button || locker_drop_down_field) {
-                    init();
-                }
+            if (locker_map_button || locker_drop_down_field) {
+                init();
+            }
 
-                showCookie();
-            });
-
-            return send.apply(this, arguments);
+            showCookie();
         }
-    })();
+    );
 
     const _setCookie = (key, value, days) => {
         let d = new Date();

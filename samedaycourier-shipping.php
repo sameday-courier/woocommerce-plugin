@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.7
+ * Version: 1.5.8
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -764,13 +764,18 @@ add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data'
 /**
  ** Add external JS file for Lockers
  **/
-add_action('wp_enqueue_scripts', static function() {
-	global $wp;
-	if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
+
+add_action('wp_enqueue_scripts', 'load_lockers_sync_checkout', 99999 );
+
+function load_lockers_sync_checkout() {
+    global $wp;
+    if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
 		wp_enqueue_script( 'prod-locker-plugin', 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js');
-		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js');
-	}
-}, 9999);
+		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js',array( 'jquery' ), false, true );
+    }
+    
+}
+
 
 
 /**
@@ -962,10 +967,12 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 // Revision order before Submit
 add_action('woocommerce_checkout_process', function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-    if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
-        if ($_POST['locker'] === null || $_POST['locker'] === '') {
-            wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+    if ($chosen_methods !== null){
+        $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+        if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+            if ($_POST['locker'] === null || $_POST['locker'] === '') {
+                wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+            }
         }
     }
 });
