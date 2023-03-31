@@ -447,7 +447,7 @@ function samedaycourier_shipping_method() {
                 $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
                 $pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
                 $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
-                $buttons = '<a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
+                $buttons = '<a class="button-primary" id="import_all"> Import All </a> <a href="' . $serviceUrl . '" class="button-primary"> Services </a> <a href="' . $pickupPointUrl . '" class="button-primary"> Pickup-point </a> <a href="' . $lockerUrl . '" class="button-primary"> Lockers </a>';
 
                 echo parent::admin_options() . $buttons;
             }
@@ -458,6 +458,11 @@ function samedaycourier_shipping_method() {
 add_action('admin_init','load_lockers_sync');
 function load_lockers_sync() {
   global $pagenow;
+  if ($_GET['section'] === 'samedaycourier') {
+    wp_enqueue_script('jquery');
+    wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/sameday_admin.js', ['jquery']);
+    wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
+}
 
   if ($pagenow === 'post.php') {
     wp_enqueue_script('jquery');
@@ -497,6 +502,17 @@ add_action('admin_post_refresh_pickup_points', function () {
 add_action('admin_post_refresh_lockers', function () {
     return (new Sameday())->refreshLockers();
 });
+
+add_action( 'wp_ajax_all_import', 'prefix_ajax_all_import' );
+add_action( 'wp_ajax_nopriv_all_import', 'prefix_ajax_all_import' );
+
+function prefix_ajax_all_import() {
+    $refreshServices = (new Sameday())->refreshServices();
+    $refreshPickupPoints = (new Sameday())->refreshPickupPoints();
+    $refreshLockers = (new Sameday())->refreshLockers();
+
+    return array($refreshServices,$refreshPickupPoints,$refreshLockers);
+}
 
 add_action('admin_post_edit_service', function() {
     return (new Sameday())->editService();
