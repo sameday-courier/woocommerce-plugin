@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.6.0 =
+
+* Add new feature. Add button to Import local all data of your Sameday account such as Services, Pickup point and Lockers.
+
 = 1.5.8 =
 
 * Bug fix. Fix problem with ajaxComplete.
