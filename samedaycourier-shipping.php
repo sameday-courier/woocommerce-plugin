@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.8
+ * Version: 1.5.9
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -89,6 +89,12 @@ function samedaycourier_shipping_method() {
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
 
                 $availableServices = $this->getAvailableServices();
+
+	            $cartValue = (float) number_format(WC()->cart->subtotal, 2);
+	            if (true === SamedayCourierHelperClass::isApplyFreeShippingAfterDiscount()) {
+		            $cartValue = (float) number_format(WC()->cart->get_cart_contents_total(), 2);
+	            }
+
                 if (!empty($availableServices)) {
                     foreach ( $availableServices as $service ) {
                         if ($service->sameday_code === "LS") {
@@ -124,9 +130,9 @@ function samedaycourier_shipping_method() {
                             }
                         }
 
-                        if ($service->price_free !== null && WC()->cart->subtotal > $service->price_free) {
-                            $price = 0;
-                        }
+	                    if ($service->price_free !== null && ($cartValue > $service->price_free)) {
+		                    $price = 0;
+	                    }
 
                         $rate = array(
                             'id' => $this->id . ":" . $service->sameday_id . ":" . $service->sameday_code,
@@ -331,6 +337,18 @@ function samedaycourier_shipping_method() {
                         'title' => __('Open package status', SamedayCourierHelperClass::TEXT_DOMAIN),
                         'type' => 'checkbox',
                         'description' => __('Enable this option if you want to offer your customers the opening of the package at delivery time.', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'default' => 'no'
+                    ),
+
+                    'discount_free_shipping' => array(
+                        'title' => __('Free shipping after discount', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'type' => 'checkbox',
+                        'description' => __(
+                            'Enable this option if you want to apply free shipping to be calculated after discount.
+                            Otherwise the free shipping will be apply without taking into account the applied discount.
+                            This field is relevant if you choose free delivery price option.',
+                            SamedayCourierHelperClass::TEXT_DOMAIN
+                        ),
                         'default' => 'no'
                     ),
 
