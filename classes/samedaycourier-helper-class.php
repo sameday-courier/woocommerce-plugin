@@ -51,6 +51,11 @@ class SamedayCourierHelperClass
 		return get_option('woocommerce_samedaycourier_settings');
 	}
 
+	public static function getPathToSettingsPage(): string
+	{
+		return admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
+	}
+
 	public static function getEnvModes(): array
 	{
 		return [
