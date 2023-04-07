@@ -1,5 +1,8 @@
 <?php
 
+use Sameday\Objects\Types\AwbPaymentType;
+use Sameday\Objects\Types\PackageType;
+
 if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -67,6 +70,16 @@ class SamedayCourierHelperClass
 	}
 
 	/**
+	 * @return bool
+	 */
+	public static function isApplyFreeShippingAfterDiscount(): bool
+	{
+		$discountFreeShipping = self::getSamedaySettings()['discount_free_shipping'] ?? null;
+
+		return ! ( null === $discountFreeShipping || 'no' === $discountFreeShipping );
+	}
+
+	/**
 	 * @return int
 	 */
 	public static function isTesting(): int
@@ -96,30 +109,30 @@ class SamedayCourierHelperClass
 	/**
 	 * @return array
 	 */
-	public static function getPackageTypeOptions()
+	public static function getPackageTypeOptions(): array
 	{
 		return array(
 			array(
 				'name' => __("Parcel", self::TEXT_DOMAIN),
-				'value' => \Sameday\Objects\Types\PackageType::PARCEL
+				'value' => PackageType::PARCEL
 			),
 			array(
 				'name' => __("Envelope", self::TEXT_DOMAIN),
-				'value' => \Sameday\Objects\Types\PackageType::ENVELOPE
+				'value' => PackageType::ENVELOPE
 			),
 			array(
 				'name' => __("Large package", self::TEXT_DOMAIN),
-				'value' => \Sameday\Objects\Types\PackageType::LARGE
+				'value' => PackageType::LARGE
 			)
 		);
 	}
 
-	public static function getAwbPaymentTypeOptions()
+	public static function getAwbPaymentTypeOptions(): array
 	{
 		return array(
 			array(
 				'name' => __("Client", self::TEXT_DOMAIN),
-				'value' => \Sameday\Objects\Types\AwbPaymentType::CLIENT
+				'value' => AwbPaymentType::CLIENT
 			)
 		);
 	}
@@ -130,7 +143,7 @@ class SamedayCourierHelperClass
 	 *
 	 * @return string
 	 */
-	public static function convertStateCodeToName($countryCode, $stateCode)
+	public static function convertStateCodeToName($countryCode, $stateCode): string
 	{
 		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode]);
 	}
@@ -161,9 +174,11 @@ class SamedayCourierHelperClass
 		return stripslashes(strip_tags(str_replace("'", '&#39;', $input)));
 	}
 
-    /**
-     * @return array|null
-     */
+	/**
+	 * @param $orderId
+	 *
+	 * @return array|null
+	 */
     public static function getShippingMethodSameday($orderId): ?array
     {
         $data = array();
@@ -189,9 +204,11 @@ class SamedayCourierHelperClass
         return $data;
     }
 
-    /**
-     * @param string $shippingMethodInput
-     */
+	/**
+	 * @param string $shippingMethodInput
+	 *
+	 * @return mixed|string|null
+	 */
     public static function parseShippingMethodCode(string $shippingMethodInput)
     {
         $serviceCode = explode(":", $shippingMethodInput, 3);
