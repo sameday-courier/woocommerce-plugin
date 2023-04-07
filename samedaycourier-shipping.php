@@ -123,9 +123,19 @@ function samedaycourier_shipping_method() {
                                 }
                             }
                         }
-
-                        if ($service->price_free !== null && WC()->cart->subtotal > $service->price_free) {
-                            $price = 0;
+                        
+                        
+                        if(SamedayCourierHelperClass::getSamedaySettings()['discount_free_shipping'] === "yes"){
+                            $cart_sub_total = WC()->cart->subtotal - WC()->cart->get_cart_discount_total();
+                            if ($service->price_free !== null && $cart_sub_total > $service->price_free) {
+                                $price = 0;
+                            }else{
+                                $price = $service->price;
+                            }
+                        }else{
+                            if ($service->price_free !== null && WC()->cart->subtotal > $service->price_free) {
+                                $price = 0;
+                            }
                         }
 
                         $rate = array(
@@ -331,6 +341,13 @@ function samedaycourier_shipping_method() {
                         'title' => __('Open package status', SamedayCourierHelperClass::TEXT_DOMAIN),
                         'type' => 'checkbox',
                         'description' => __('Enable this option if you want to offer your customers the opening of the package at delivery time.', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'default' => 'no'
+                    ),
+
+                    'discount_free_shipping' => array(
+                        'title' => __('Free shipping before discount', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'type' => 'checkbox',
+                        'description' => __('Enable this option if you want to calculate free shipping before discount.', SamedayCourierHelperClass::TEXT_DOMAIN),
                         'default' => 'no'
                     ),
 

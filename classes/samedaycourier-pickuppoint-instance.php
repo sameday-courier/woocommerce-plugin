@@ -49,7 +49,9 @@ class SamedayCourierPickupPointInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-								<form action="<?php echo admin_url('admin-post.php') ?>" method="post">
+							<?php $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier'; ?>
+							<a href="<?php echo $pathToSettings; ?>" class="button-primary"> <?php echo __('Back', SamedayCourierHelperClass::TEXT_DOMAIN) ?></a>
+								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_pickup_points">
 									<input type="submit" class="button-primary" value="Refresh Pickup point">
 								</form>
