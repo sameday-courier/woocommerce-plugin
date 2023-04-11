@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.10 =
+
+* Calculate free price for delivery with or without coupons. Fix floating point issue.
+
 = 1.5.9 =
 
 * Calculate free price for delivery with or without coupons.

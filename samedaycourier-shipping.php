@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.9
+ * Version: 1.5.10
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -90,9 +90,9 @@ function samedaycourier_shipping_method() {
 
                 $availableServices = $this->getAvailableServices();
 
-	            $cartValue = (float) number_format(WC()->cart->subtotal, 2);
+	            $cartValue = WC()->cart->get_subtotal();
 	            if (true === SamedayCourierHelperClass::isApplyFreeShippingAfterDiscount()) {
-		            $cartValue = (float) number_format(WC()->cart->get_cart_contents_total(), 2);
+		            $cartValue = WC()->cart->get_cart_contents_total();
 	            }
 
                 if (!empty($availableServices)) {
