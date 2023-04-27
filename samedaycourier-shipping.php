@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.10
+ * Version: 1.5.11
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -587,17 +587,24 @@ function wps_sameday_shipping_options_layout() {
         $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
         if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
             ?>
-            <tr class="shipping-pickup-store">
-                <th><strong><?php echo __('Open package', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></th>
-                <td>
-                    <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
-                        <li>
-                            <input type="checkbox" name="open_package" id="open_package" <?php echo $isChecked; ?> >
-                            <label for="open_package"><?php echo SamedayCourierHelperClass::getSamedaySettings()['open_package_label']; ?></label>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
+                <tr class="shipping-pickup-store">
+                    <th><strong><?php echo __('Open package', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></th>
+                    <td>
+                        <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                            <li>
+                                <?php
+                                    woocommerce_form_field('open_package', array(
+                                        'type' => 'checkbox',
+                                        'class' => array('input-checkbox'),
+                                        'id' => 'open_package',
+                                        'label' => SamedayCourierHelperClass::getSamedaySettings()['open_package_label'],
+                                        'required' => false,
+                                    ), $isChecked);
+                                ?>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
             <?php
         }
     }
@@ -645,55 +652,6 @@ function checkout_repayment_tax() {
         $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', SamedayCourierHelperClass::TEXT_DOMAIN);
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
-}
-
-add_action('woocommerce_before_checkout_form', 'custom_checkout_script');
-function custom_checkout_script() {
-    ?>
-    <script>
-        let $ = jQuery;
-        $(document).on('change', '#open_package', function () {
-            let isChecked = 'no';
-            if ($(this).prop('checked')) {
-                isChecked = 'yes';
-            }
-
-            doAjaxCall({
-                'action': 'woo_get_ajax_data',
-                'open_package': isChecked
-            });
-        });
-
-        $('body').on('updated_checkout', function () {
-            $('input[name="payment_method"]').change(function () {
-                doAjaxCall({
-                    'action': 'woo_get_ajax_data',
-                    'payment_method': $("input[name='payment_method']:checked").val()
-                })
-            });
-        });
-
-        const doAjaxCall = function (params) {
-            $.ajax({
-                'type': 'POST',
-                'url': woocommerce_params.ajax_url,
-                'data': params,
-                success: function () {
-                    $(document.body).trigger('update_checkout');
-                }
-            })
-        }
-
-        window.onload = function () {
-            doAjaxCall(
-                {
-                    'action': 'woo_get_ajax_data',
-                    'payment_method': $("input[name='payment_method']:checked").val()
-                }
-            );
-        }
-    </script>
-    <?php
 }
 
 function set_open_package_option($order_id) {
@@ -782,19 +740,16 @@ add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data'
 /**
  ** Add external JS file for Lockers
  **/
+add_action('wp_enqueue_scripts', 'load_sameday_sync_checkout_js_scripts', 99999);
 
-add_action('wp_enqueue_scripts', 'load_lockers_sync_checkout', 99999 );
-
-function load_lockers_sync_checkout() {
+function load_sameday_sync_checkout_js_scripts() {
     global $wp;
     if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
 		wp_enqueue_script( 'prod-locker-plugin', 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js');
-		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js',array( 'jquery' ), false, true );
+		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js', array( 'jquery' ), false, true );
+	    wp_enqueue_script( 'open_package_script', plugin_dir_url( __FILE__ ) . 'assets/js/open_package_script.js', array( 'jquery' ), false, true );
     }
-    
 }
-
-
 
 /**
  ** Order detail styles
