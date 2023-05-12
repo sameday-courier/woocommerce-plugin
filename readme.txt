@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.5.12 =
+
+* Bug fix. Fix the issue caused by conflict with Checkout Field Manager plugin.
+
 = 1.5.11 =
 
 * Fix `$` sign notation conflict for using jQuery library.

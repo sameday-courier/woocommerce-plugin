@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.11
+ * Version: 1.5.12
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -717,7 +717,7 @@ function wps_locker_row_layout() {
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function placeAdditionalFieldsForLocker() {
-    $fields = ['locker', 'locker_name', 'locker_address'];
+    $fields = [' ', 'locker', 'locker_name', 'locker_address'];
     foreach ($fields as $field) {
 	    woocommerce_form_field($field, array(
 		    'type' => 'hidden',
