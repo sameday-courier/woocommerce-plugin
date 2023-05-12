@@ -111,6 +111,9 @@
             if (locker_map_button || locker_drop_down_field) {
                 init();
             }
+            jQuery('.shipping-pickup-store [id]').each(function (i) {
+                jQuery('.shipping-pickup-store [id="' + this.id + '"]').slice(1).remove();
+            });
 
             showCookie();
         }

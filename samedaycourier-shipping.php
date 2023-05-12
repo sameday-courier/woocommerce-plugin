@@ -717,7 +717,7 @@ function wps_locker_row_layout() {
 add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function placeAdditionalFieldsForLocker() {
-    $fields = ['locker', 'locker_name', 'locker_address'];
+    $fields = [' ', 'locker', 'locker_name', 'locker_address'];
     foreach ($fields as $field) {
 	    woocommerce_form_field($field, array(
 		    'type' => 'hidden',
