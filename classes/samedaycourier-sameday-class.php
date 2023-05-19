@@ -104,7 +104,7 @@ class Sameday
 	/**
 	 * @throws SamedaySDKException
 	 */
-	public function refreshPickupPoints(): bool
+	public function refreshSamedayPickupPoints(): bool
     {
         if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
@@ -170,7 +170,7 @@ class Sameday
      * @throws SamedaySDKException
      * @throws SamedayServerException
      */
-    public function refreshLockers(): bool
+    public function refreshSamedayLockers(): bool
     {
         if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
             return wp_redirect(admin_url() . 'admin.php?page=sameday_lockers');
