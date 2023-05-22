@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.5.12
+ * Version: 1.5.13
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -509,11 +509,11 @@ add_action('admin_post_refresh_services', function () {
 });
 
 add_action('admin_post_refresh_pickup_points', function () {
-    return (new Sameday())->refreshPickupPoints();
+    return (new Sameday())->refreshSamedayPickupPoints();
 });
 
 add_action('admin_post_refresh_lockers', function () {
-    return (new Sameday())->refreshLockers();
+    return (new Sameday())->refreshSamedayLockers();
 });
 
 add_action('admin_post_edit_service', function() {
@@ -612,8 +612,8 @@ function wps_sameday_shipping_options_layout() {
 add_action('woocommerce_review_order_after_shipping', 'wps_sameday_shipping_options_layout');
 
 // Enabling, disabling and refreshing session shipping methods data
-add_action( 'woocommerce_checkout_update_order_review', 'refresh_shipping_methods', 10, 1);
-function refresh_shipping_methods() {
+add_action( 'woocommerce_checkout_update_order_review', 'refresh_sameday_shiping_methods', 10, 1);
+function refresh_sameday_shiping_methods() {
     foreach (WC()->cart->get_shipping_packages() as $package_key => $package) {
 	    $package['package_hash'] = 'wc_ship_' . md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'));
         WC()->session->set( 'shipping_for_package_' . $package_key, $package);
