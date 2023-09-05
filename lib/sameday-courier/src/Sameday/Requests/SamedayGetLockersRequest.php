@@ -3,14 +3,17 @@
 namespace Sameday\Requests;
 
 use Sameday\Http\SamedayRequest;
+use Sameday\Requests\Traits\SamedayRequestPaginationTrait;
 
 /**
  * Request to get lockers list.
  *
  * @package Sameday
  */
-class SamedayGetLockersRequest implements SamedayRequestInterface
+class SamedayGetLockersRequest implements SamedayPaginatedRequestInterface
 {
+    use SamedayRequestPaginationTrait;
+
     /**
      * @var array
      */
@@ -34,8 +37,11 @@ class SamedayGetLockersRequest implements SamedayRequestInterface
         return new SamedayRequest(
             true,
             'GET',
-            '/api/locker/lockers',
-            count($this->lockerIds) > 0 ? ['lockersList' => implode(',', $this->lockerIds)] : []
+            '/api/client/lockers',
+            array_merge(
+                count($this->lockerIds) > 0 ? ['lockersList' => implode(',', $this->lockerIds)] : [],
+                $this->buildPagination()
+            )
         );
     }
 
