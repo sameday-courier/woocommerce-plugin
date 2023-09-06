@@ -13,6 +13,10 @@
  * Text Domain: sameday
  */
 
+use Sameday\Exceptions\SamedayAuthorizationException;
+use Sameday\Exceptions\SamedayBadRequestException;
+use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Exceptions\SamedayServerException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Types\PackageType;
@@ -528,12 +532,18 @@ add_action('admin_post_refresh_lockers', function () {
 add_action( 'wp_ajax_all_import', 'prefix_ajax_all_import' );
 add_action( 'wp_ajax_nopriv_all_import', 'prefix_ajax_all_import' );
 
-function prefix_ajax_all_import() {
+/**
+ * @throws SamedaySDKException
+ * @throws SamedayBadRequestException
+ * @throws SamedayServerException
+ * @throws SamedayAuthorizationException
+ */
+function prefix_ajax_all_import(): array {
     $refreshServices = (new Sameday())->refreshServices();
     $refreshPickupPoints = (new Sameday())->refreshSamedayPickupPoints();
     $refreshLockers = (new Sameday())->refreshSamedayLockers();
 
-    return array($refreshServices,$refreshPickupPoints,$refreshLockers);
+    return array($refreshServices, $refreshPickupPoints, $refreshLockers);
 }
 
 add_action('admin_post_edit_service', function() {
