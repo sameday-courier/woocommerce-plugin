@@ -7,6 +7,7 @@ use Sameday\Objects\Locker\BoxObject;
 use Sameday\Objects\Locker\LockerObject;
 use Sameday\Objects\Locker\ScheduleObject;
 use Sameday\Requests\SamedayGetLockersRequest;
+use Sameday\Responses\Traits\SamedayResponsePaginationTrait;
 use Sameday\Responses\Traits\SamedayResponseTrait;
 
 /**
@@ -14,8 +15,9 @@ use Sameday\Responses\Traits\SamedayResponseTrait;
  *
  * @package Sameday
  */
-class SamedayGetLockersResponse implements SamedayResponseInterface
+class SamedayGetLockersResponse implements SamedayPaginatedResponseInterface
 {
+    use SamedayResponsePaginationTrait;
     use SamedayResponseTrait;
 
     /**
@@ -35,12 +37,13 @@ class SamedayGetLockersResponse implements SamedayResponseInterface
         $this->rawResponse = $rawResponse;
 
         $json = json_decode($this->rawResponse->getBody(), true);
+        $this->parsePagination($this->request, $json);
         if (!$json) {
             // Empty response.
             return;
         }
 
-        foreach ($json as $locker) {
+        foreach ($json['data'] as $locker) {
             $this->lockers[] = new LockerObject(
                 $locker['lockerId'],
                 $locker['name'],
@@ -53,7 +56,7 @@ class SamedayGetLockersResponse implements SamedayResponseInterface
                 $locker['phone'],
                 $locker['email'],
                 array_map(
-                    function ($entry) {
+                    static function ($entry) {
                         return new BoxObject(
                             $entry['size'],
                             $entry['number']
@@ -62,7 +65,7 @@ class SamedayGetLockersResponse implements SamedayResponseInterface
                     $locker['availableBoxes']
                 ),
                 array_map(
-                    function ($entry) {
+                    static function ($entry) {
                         return new ScheduleObject(
                             $entry['day'],
                             $entry['openingHour'],

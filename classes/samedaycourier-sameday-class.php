@@ -192,25 +192,29 @@ class Sameday
 			SamedayCourierHelperClass::getApiUrl()
 		));
 
-		$request = new Sameday\Requests\SamedayGetLockersRequest();
-
-		try {
-			$lockers = $sameday->getLockers($request);
-		} catch (Exception $exception) {return;}
-
+		$page = 1;
 		$remoteLockers = [];
-		foreach ($lockers->getLockers() as $lockerObject) {
-			$locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), SamedayCourierHelperClass::isTesting());
-			if (!$locker) {
-				// Pickup point not found, add it.
-				SamedayCourierQueryDb::addLocker($lockerObject, SamedayCourierHelperClass::isTesting());
-			} else {
-				SamedayCourierQueryDb::updateLocker($lockerObject, $locker->id);
-			}
+		do {
+			$request = new Sameday\Requests\SamedayGetLockersRequest();
+			$request->setPage($page++);
 
-			// Save as current pickup points.
-			$remoteLockers[] = $lockerObject->getId();
-		}
+			try {
+				$lockers = $sameday->getLockers($request);
+			} catch (Exception $exception) {return;}
+
+			foreach ($lockers->getLockers() as $lockerObject) {
+				$locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), SamedayCourierHelperClass::isTesting());
+				if (!$locker) {
+					// Pickup point not found, add it.
+					SamedayCourierQueryDb::addLocker($lockerObject, SamedayCourierHelperClass::isTesting());
+				} else {
+					SamedayCourierQueryDb::updateLocker($lockerObject, $locker->id);
+				}
+
+				// Save as current pickup points.
+				$remoteLockers[] = $lockerObject->getId();
+			}
+		} while ($page < $lockers->getPages());
 
 		// Build array of local lockers.
 		$localLockers = array_map(
