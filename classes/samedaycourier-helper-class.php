@@ -150,7 +150,30 @@ class SamedayCourierHelperClass
 	 */
 	public static function convertStateCodeToName($countryCode, $stateCode): string
 	{
+		if (! isset($countryCode, $stateCode) || ('' === $countryCode) || ('' === $stateCode)) {
+			return '';
+		}
+
 		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode]);
+	}
+
+	public static function convertStateNameToCode($countryCode, $stateName): string
+	{
+		if (! isset($countryCode, $stateName) || ('' === $countryCode) || ('' === $stateName)) {
+			return '';
+		}
+
+		$states = WC()->countries->get_states()[$countryCode];
+
+		if ($states) {
+			foreach ($states as $key => $value) {
+				if (self::removeAccents($value) === self::removeAccents($stateName)) {
+					return $key;
+				}
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -340,5 +363,67 @@ class SamedayCourierHelperClass
 		$sql .= " OFFSET $calculatePage ";
 
 		return $sql;
+	}
+
+	/**
+	 * @param int $order_id
+	 *
+	 * @return void
+	 * @throws JsonException
+	 */
+	public static function updateLockerOrderPostMeta(int $order_id): void
+	{
+		$lockerFields = json_decode(
+			get_post_meta($order_id, '_sameday_shipping_locker_id', true),
+			true,
+			1024,
+			JSON_THROW_ON_ERROR
+		);
+
+		$postsMeta = get_post_meta($order_id, '', true);
+
+		$shippingInputs = [];
+		foreach ($postsMeta as $key => $post) {
+			if (strpos($key, 'shipping')) {
+				$shippingInputs[$key] = $post[0] ?? '';
+			}
+		}
+
+		$country = $shippingInputs['_shipping_country'];
+		$firstName = $shippingInputs['_shipping_first_name'];
+		$state = self::convertStateNameToCode(
+			$country,
+			$lockerFields['county']
+		);
+
+		$addressFieldsMapper = [
+			'_shipping_address_1' => $lockerFields['address'],
+			'_shipping_address_2' => $lockerFields['name'],
+			'_shipping_city' => $lockerFields['city'],
+			'_shipping_state' => $state,
+			'_shipping_postcode' => $lockerFields['postalCode'],
+			'_shipping_address_index' => sprintf(
+				'%s %s %s %s %s %s %s',
+				$firstName,
+				$lockerFields['name'],
+				$lockerFields['address'],
+				$lockerFields['city'],
+				$state,
+				$lockerFields['postalCode'],
+				$country
+			)
+		];
+
+		foreach ($addressFieldsMapper as $key => $value) {
+			update_post_meta($order_id, $key, $value, false);
+		}
+
+		if ('' === get_post_meta($order_id, '_sameday_shipping_hd_address', true)) {
+			update_post_meta(
+				$order_id, '_sameday_shipping_hd_address',
+				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
+				true
+			);
+		}
 	}
 }

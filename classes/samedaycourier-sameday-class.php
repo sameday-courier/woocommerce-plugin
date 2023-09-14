@@ -387,7 +387,7 @@ class Sameday
 		}
 
 		if ('' !== $post_meta_samedaycourier_order_id) {
-            update_post_meta($params['samedaycourier-order-id'],'_sameday_shipping_locker_id',$params['locker_id']);
+            update_post_meta($params['samedaycourier-order-id'],'_sameday_shipping_locker_id', $params['locker_id']);
 		}
        
 	    $locker = null;
@@ -397,9 +397,26 @@ class Sameday
             $locker = $post_meta_samedaycourier_order_id;
         }
 
+		/** Recipient details */
         $city =  $params['shipping']['city'];
-        $county =  SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
-        $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
+        $county =  SamedayCourierHelperClass::convertStateCodeToName(
+			$params['shipping']['country'],
+			$params['shipping']['state']
+        );
+		$address = sprintf(
+			'%s %s',
+			ltrim($params['shipping']['address_1']),
+			ltrim($params['shipping']['address_2'])
+		);
+		$name = sprintf(
+		'%s %s',
+			ltrim($params['shipping']['first_name']),
+			ltrim($params['shipping']['last_name'])
+		);
+		$phone = $params['billing']['phone'] ?? "";
+		$email = $params['billing']['email'] ?? "";
+		$postalCode = $params['shipping']['postcode'];
+		/** End of Recipient details */
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],
@@ -436,11 +453,11 @@ class Sameday
                 $city,
                 $county,
                 $address,
-                ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
-	            $params['billing']['phone'] ?? "",
-	            $params['billing']['email'] ?? "",
+	            $name,
+	            $phone,
+	            $email,
                 $companyObject,
-                $params['shipping']['postcode']
+	            $postalCode
             ),
             $params['samedaycourier-package-insurance-value'],
             $params['samedaycourier-package-repayment'],
@@ -498,7 +515,6 @@ class Sameday
             'service_code' => $service->sameday_code
         );
 
-
         // Add/update sameday metadata.
         foreach ($metas as $key => $value) {
             $shippingLine->update_meta_data($key, $value);
@@ -510,8 +526,7 @@ class Sameday
         $shippingLine->save();
         global $wpdb;
         $wpdb->update($wpdb->prefix . 'woocommerce_order_items', array('order_item_name' => $service->name), array('order_item_id' => $samedayOrderItemId));
-        
-        
+
         return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
     }
 

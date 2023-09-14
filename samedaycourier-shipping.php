@@ -758,11 +758,14 @@ function placeAdditionalFieldsForLocker() {
     }
 }
 
-function add_locker_to_order_data( $order_id ) {
-    if (isset( $_POST['locker'])) {
-        $locker = $_POST['locker'];
+/**
+ * @throws JsonException
+ */
+function add_locker_to_order_data($order_id) {
+    if ((null !== $locker = sanitize_text_field($_POST['locker'])) && '' !== $locker) {
+	    update_post_meta($order_id, '_sameday_shipping_locker_id', $locker, true);
 
-        update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker), true);
+	    SamedayCourierHelperClass::updateLockerOrderPostMeta($order_id);
     }
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data');

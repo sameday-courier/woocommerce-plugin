@@ -45,13 +45,32 @@
             lockerId: document.querySelector('#locker'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
             selectLocker: document.querySelector('#select_locker'),
+            selectCity: document.getElementById('shipping_city'),
         };
+
         const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have unique clientId
         const countryCode= selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
         const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase(); //language of the plugin
         const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase(); //sameday username
-        window['LockerPlugin'].init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
-        let pluginInstance = window['LockerPlugin'].getInstance();
+
+        let city = null;
+        if (null !== selectors.selectCity) {
+            city = selectors.selectCity.value;
+        }
+
+        const LockerPlugin = window['LockerPlugin'];
+
+        LockerPlugin.init(
+            {
+                clientId: clientId,
+                countryCode: countryCode,
+                langCode: langCode,
+                apiUsername: samedayUser,
+                city: city,
+            }
+        );
+
+        let pluginInstance = LockerPlugin.getInstance();
 
         pluginInstance.open();
 
@@ -60,7 +79,9 @@
             lockerDetails.id = message.lockerId;
             lockerDetails.name  = message.name;
             lockerDetails.address = message.address;
-          
+            lockerDetails.city = message.city;
+            lockerDetails.county = message.county;
+            lockerDetails.postalCode = message.postalCode;
 
             selectors.lockerId.value = JSON.stringify(lockerDetails);
             _setCookie("locker", JSON.stringify(lockerDetails), 30);
