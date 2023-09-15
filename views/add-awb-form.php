@@ -86,7 +86,7 @@ function samedaycourierAddAwbForm($order): string {
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
 	$lockerDetailsForm = '';
-	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), '_sameday_shipping_locker_id', true)) {
+	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER, true)) {
 		$lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
         $locker = json_decode(
 	        $lockerDetailsForm,
@@ -146,7 +146,7 @@ function samedaycourierAddAwbForm($order): string {
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", SamedayCourierHelperClass::TEXT_DOMAIN) . '</strong> </h3>      
                 <table>
                     <tbody>       
-                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" value="' . $order->get_id() . '">
+                         <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" id="samedaycourier-order-id" value="' . $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-repayment"> ' . __("Repayment", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>

@@ -17,6 +17,10 @@ class SamedayCourierHelperClass
 
 	public const OPEN_PACKAGE_OPTION_CODE = 'OPCG';
 
+	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
+
+	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
+
 	public const TOGGLE_HTML_ELEMENT = [
 		'show' => 'showElement',
 		'hide' => 'hideElement',
@@ -366,6 +370,18 @@ class SamedayCourierHelperClass
 	}
 
 	/**
+	 * @throws JsonException
+	 */
+	public static function addLockerToOrderData($orderId, $postData): void
+	{
+		if ((null !== $locker = sanitize_text_field($postData['locker'])) && '' !== $locker) {
+			update_post_meta($orderId, self::POST_META_SAMEDAY_SHIPPING_LOCKER, $locker, false);
+
+			self::updateLockerOrderPostMeta($orderId);
+		}
+	}
+
+	/**
 	 * @param int $order_id
 	 *
 	 * @return void
@@ -374,7 +390,7 @@ class SamedayCourierHelperClass
 	public static function updateLockerOrderPostMeta(int $order_id): void
 	{
 		$lockerFields = json_decode(
-			get_post_meta($order_id, '_sameday_shipping_locker_id', true),
+			get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_LOCKER, true),
 			true,
 			1024,
 			JSON_THROW_ON_ERROR
@@ -384,7 +400,7 @@ class SamedayCourierHelperClass
 
 		$shippingInputs = [];
 		foreach ($postsMeta as $key => $post) {
-			if (strpos($key, 'shipping')) {
+			if (($key !== self::POST_META_SAMEDAY_SHIPPING_LOCKER) && strpos($key, 'shipping')) {
 				$shippingInputs[$key] = $post[0] ?? '';
 			}
 		}
