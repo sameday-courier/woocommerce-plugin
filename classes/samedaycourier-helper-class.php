@@ -370,14 +370,15 @@ class SamedayCourierHelperClass
 	}
 
 	/**
-	 * @throws JsonException
+	 * @param $orderId
+	 * @param $postData
+	 *
+	 * @return void
 	 */
 	public static function addLockerToOrderData($orderId, $postData): void
 	{
 		if ((null !== $locker = sanitize_text_field($postData['locker'])) && '' !== $locker) {
 			update_post_meta($orderId, self::POST_META_SAMEDAY_SHIPPING_LOCKER, $locker, false);
-
-			self::updateLockerOrderPostMeta($orderId);
 		}
 	}
 
@@ -412,34 +413,70 @@ class SamedayCourierHelperClass
 			$lockerFields['county']
 		);
 
+		self::updateAddressFields(
+			$order_id,
+			$lockerFields['address'],
+			$lockerFields['name'],
+			$firstName,
+			$lockerFields['city'],
+			$state,
+			$lockerFields['postalCode'],
+			$country
+		);
+
+		if ('' === get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true)) {
+			update_post_meta(
+				$order_id,
+				self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
+				true
+			);
+		}
+	}
+
+	/**
+	 * @param $orderId
+	 * @param $address1
+	 * @param $address2
+	 * @param $name
+	 * @param $city
+	 * @param $state
+	 * @param $postalCode
+	 * @param $country
+	 *
+	 * @return void
+	 */
+	public static function updateAddressFields(
+		$orderId,
+		$address1,
+		$address2,
+		$name,
+		$city,
+		$state,
+		$postalCode,
+		$country
+	): void
+	{
 		$addressFieldsMapper = [
-			'_shipping_address_1' => $lockerFields['address'],
-			'_shipping_address_2' => $lockerFields['name'],
-			'_shipping_city' => $lockerFields['city'],
+			'_shipping_address_1' => $address1,
+			'_shipping_address_2' => $address2,
+			'_shipping_city' => $city,
 			'_shipping_state' => $state,
-			'_shipping_postcode' => $lockerFields['postalCode'],
+			'_shipping_postcode' => $postalCode,
 			'_shipping_address_index' => sprintf(
 				'%s %s %s %s %s %s %s',
-				$firstName,
-				$lockerFields['name'],
-				$lockerFields['address'],
-				$lockerFields['city'],
+				$name,
+				$address1,
+				$address2,
+				$city,
 				$state,
-				$lockerFields['postalCode'],
+				$postalCode,
 				$country
 			)
 		];
 
 		foreach ($addressFieldsMapper as $key => $value) {
-			update_post_meta($order_id, $key, $value, false);
-		}
-
-		if ('' === get_post_meta($order_id, '_sameday_shipping_hd_address', true)) {
-			update_post_meta(
-				$order_id, '_sameday_shipping_hd_address',
-				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
-				true
-			);
+			update_post_meta($orderId, $key, $value, false);
 		}
 	}
 }

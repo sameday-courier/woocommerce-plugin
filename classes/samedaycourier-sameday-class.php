@@ -466,27 +466,16 @@ class Sameday
 			$state = $post_meta_samedaycourier_address_hd['_shipping_state'];
 	    }
 
-	    $addressFieldsMapper = [
-		    '_shipping_address_1' => $address_1,
-		    '_shipping_address_2' => $address_2,
-		    '_shipping_city' => $city,
-		    '_shipping_state' => $state,
-		    '_shipping_postcode' => $postalCode,
-		    '_shipping_address_index' => sprintf(
-			    '%s %s %s %s %s %s %s',
-			    $name,
-			    $address_1,
-			    $address_2,
-			    $city,
-			    $state,
-			    $postalCode,
-			    $country
-		    )
-	    ];
-
-	    foreach ($addressFieldsMapper as $key => $value) {
-		    update_post_meta($params['samedaycourier-order-id'], $key, $value, false);
-	    }
+	    SamedayCourierHelperClass::updateAddressFields(
+		    $params['samedaycourier-order-id'],
+		    $address_1,
+		    $address_2,
+		    $name,
+		    $city,
+		    $state,
+		    $postalCode,
+		    $country
+	    );
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],
@@ -542,8 +531,6 @@ class Sameday
             null,
 	        $lockerId
         );
-
-		var_dump($request); die();
 
 	    $errors = null;
 	    $awb = null;
