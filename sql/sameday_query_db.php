@@ -111,7 +111,7 @@ class SamedayCourierQueryDb
 	 * @param $samedayId
 	 * @param $is_testing
 	 *
-	 * @return array|object|void|null
+	 * @return array|object|stdClass|null
 	 */
 	public static function getServiceSameday($samedayId, $is_testing)
 	{

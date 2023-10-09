@@ -347,9 +347,12 @@ class Sameday
             return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
         }
 
-        $serviceId = $params['samedaycourier-service'];
+		$service = SamedayCourierQueryDb::getServiceSameday(
+			$params['samedaycourier-service'],
+			SamedayCourierHelperClass::isTesting()
+		);
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($service->sameday_id, SamedayCourierHelperClass::isTesting());
         $serviceTaxIds = array();
 
         if (isset($params['samedaycourier-open-package-status'])) {
@@ -375,31 +378,104 @@ class Sameday
 			}
 		}
 
-		$post_meta_samedaycourier_order_id = get_post_meta($params['samedaycourier-order-id'], '_sameday_shipping_locker_id', true);
+	    /** Recipient details */
+	    $city = $params['shipping']['city'];
+	    $county = SamedayCourierHelperClass::convertStateCodeToName(
+		    $params['shipping']['country'],
+		    $params['shipping']['state']
+	    );
+	    $postalCode = $params['shipping']['postcode'];
+	    $country = $params['shipping']['country'];
+	    $address = sprintf(
+		    '%s %s',
+		    ltrim($params['shipping']['address_1']),
+		    ltrim($params['shipping']['address_2'])
+	    );
+		$address_1 = $params['shipping']['address_1'];
+		$address_2 = $params['shipping']['address_2'];
+		$state = $params['shipping']['state'];
+	    $name = sprintf(
+		    '%s %s',
+		    ltrim($params['shipping']['first_name']),
+		    ltrim($params['shipping']['last_name'])
+	    );
+	    $phone = $params['billing']['phone'] ?? "";
+	    $email = $params['billing']['email'] ?? "";
+	    /** End of Recipient details */
 
-		if (isset($params['locker_id']) && '' !== $params['locker_id']) {
-			$lockerDetailsForm = json_decode(
-				SamedayCourierHelperClass::sanitizeInput($params['locker_id']),
+		$post_meta_samedaycourier_locker = get_post_meta(
+			$params['samedaycourier-order-id'],
+			SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+			true
+		);
+
+	    $post_meta_samedaycourier_address_hd = get_post_meta(
+		    $params['samedaycourier-order-id'],
+		    SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+		    true
+	    );
+       
+	    $lockerId = null;
+        if (($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+            && ('' !== $post_meta_samedaycourier_locker)
+        ) {
+	        $locker = json_decode(
+				$post_meta_samedaycourier_locker,
 				true,
 				512,
 				JSON_THROW_ON_ERROR
-			);
-		}
+	        );
 
-		if ('' !== $post_meta_samedaycourier_order_id) {
-            update_post_meta($params['samedaycourier-order-id'],'_sameday_shipping_locker_id',$params['locker_id']);
-		}
-       
-	    $locker = null;
-        if (isset($lockerDetailsForm['id'])) {
-            $locker = $lockerDetailsForm['id'];
-        } else if ('' !== $post_meta_samedaycourier_order_id) {
-            $locker = $post_meta_samedaycourier_order_id;
+			$lockerId = $locker['lockerId'];
+
+	        $city = $locker['city'];
+	        $county = $locker['county'];
+	        $address = $locker['address'];
+			$postalCode = $locker['postalCode'];
+	        $address_1 = $address;
+	        $address_2 = $locker['name'];
+	        $state = SamedayCourierHelperClass::convertStateNameToCode($country, $locker['county']);
         }
 
-        $city =  $params['shipping']['city'];
-        $county =  SamedayCourierHelperClass::convertStateCodeToName($params['shipping']['country'], $params['shipping']['state']);
-        $address = ltrim($params['shipping']['address_1']) . ' ' . $params['shipping']['address_2'];
+	    if (
+		    ($service->sameday_code !== SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+		    && ('' !== $post_meta_samedaycourier_address_hd)
+	    ) {
+		    $post_meta_samedaycourier_address_hd = json_decode(
+			    $post_meta_samedaycourier_address_hd,
+				true,
+				512,
+				JSON_THROW_ON_ERROR
+		    );
+
+			// EAWB DATES //
+		    $city = $post_meta_samedaycourier_address_hd['_shipping_city'];
+		    $county = SamedayCourierHelperClass::convertStateCodeToName(
+			    $post_meta_samedaycourier_address_hd['_shipping_country'],
+			    $post_meta_samedaycourier_address_hd['_shipping_state']
+		    );
+		    $address = sprintf(
+			    '%s %s',
+			    $post_meta_samedaycourier_address_hd['_shipping_address_1'],
+			    $post_meta_samedaycourier_address_hd['_shipping_address_2']
+		    );
+		    $postalCode = $post_meta_samedaycourier_address_hd['_shipping_postcode'];
+		    // EAWB DATES //
+		    $address_1 = $post_meta_samedaycourier_address_hd['_shipping_address_1'];
+			$address_2 = $post_meta_samedaycourier_address_hd['_shipping_address_2'];
+			$state = $post_meta_samedaycourier_address_hd['_shipping_state'];
+	    }
+
+	    SamedayCourierHelperClass::updateAddressFields(
+		    $params['samedaycourier-order-id'],
+		    $address_1,
+		    $address_2,
+		    $name,
+		    $city,
+		    $state,
+		    $postalCode,
+		    $country
+	    );
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],
@@ -430,17 +506,17 @@ class Sameday
             null,
             new PackageType($params['samedaycourier-package-type']),
             $parcelDimensions,
-            $serviceId,
+	        $service->sameday_id,
             new AwbPaymentType($params['samedaycourier-package-awb-payment']),
             new AwbRecipientEntityObject(
                 $city,
                 $county,
                 $address,
-                ltrim($params['shipping']['first_name']) . " " . $params['shipping']['last_name'],
-	            $params['billing']['phone'] ?? "",
-	            $params['billing']['email'] ?? "",
+	            $name,
+	            $phone,
+	            $email,
                 $companyObject,
-                $params['shipping']['postcode']
+	            $postalCode
             ),
             $params['samedaycourier-package-insurance-value'],
             $params['samedaycourier-package-repayment'],
@@ -453,7 +529,7 @@ class Sameday
             '',
             '',
             null,
-            $locker
+	        $lockerId
         );
 
 	    $errors = null;
@@ -471,7 +547,9 @@ class Sameday
             $noticeMessage = SamedayCourierHelperClass::parseAwbErrors($errors);
             SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
-			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+			return wp_redirect(
+				add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
+			);
         }
 
         $awbDetails = array(
@@ -492,12 +570,10 @@ class Sameday
 			}
         }
 
-        $service = SamedayCourierQueryDb::getServiceSameday($serviceId, SamedayCourierHelperClass::isTesting());
         $metas = array(
-            'service_id' => $serviceId,
+            'service_id' => $service->sameday_id,
             'service_code' => $service->sameday_code
         );
-
 
         // Add/update sameday metadata.
         foreach ($metas as $key => $value) {
@@ -508,15 +584,22 @@ class Sameday
         // Set sameday shipping method.
         $shippingLine->set_method_id('samedaycourier');
         $shippingLine->save();
+
         global $wpdb;
-        $wpdb->update($wpdb->prefix . 'woocommerce_order_items', array('order_item_name' => $service->name), array('order_item_id' => $samedayOrderItemId));
-        
-        
-        return wp_redirect(add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+        $wpdb->update(
+			$wpdb->prefix . 'woocommerce_order_items',
+			array('order_item_name' => $service->name),
+			array('order_item_id' => $samedayOrderItemId)
+        );
+
+        return wp_redirect(
+			add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
+        );
     }
 
 	/**
 	 * @param $awb
+	 * @param $nonce
 	 *
 	 * @return bool
 	 * @throws SamedaySDKException

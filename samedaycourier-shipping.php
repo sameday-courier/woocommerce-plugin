@@ -529,22 +529,25 @@ add_action('admin_post_refresh_lockers', function () {
     return (new Sameday())->refreshSamedayLockers();
 });
 
-add_action( 'wp_ajax_all_import', 'prefix_ajax_all_import' );
-add_action( 'wp_ajax_nopriv_all_import', 'prefix_ajax_all_import' );
+add_action('wp_ajax_all_import', static function (): void {
+	try {
+		(new Sameday())->refreshServices();
+    } catch (Exception $exception) {}
+	try {
+		(new Sameday())->refreshSamedayPickupPoints();
+    } catch (Exception $exception) {}
+	try {
+		(new Sameday())->refreshSamedayLockers();
+	} catch (Exception $exception) {}
+});
 
-/**
- * @throws SamedaySDKException
- * @throws SamedayBadRequestException
- * @throws SamedayServerException
- * @throws SamedayAuthorizationException
- */
-function prefix_ajax_all_import(): array {
-    $refreshServices = (new Sameday())->refreshServices();
-    $refreshPickupPoints = (new Sameday())->refreshSamedayPickupPoints();
-    $refreshLockers = (new Sameday())->refreshSamedayLockers();
-
-    return array($refreshServices, $refreshPickupPoints, $refreshLockers);
-}
+add_action('wp_ajax_change_locker', function() {
+    if (null !== $orderId = $_POST['orderId']) {
+	    try {
+		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST);
+	    } catch (Exception $exception) {}
+    }
+});
 
 add_action('admin_post_edit_service', function() {
     return (new Sameday())->editService();
@@ -758,14 +761,22 @@ function placeAdditionalFieldsForLocker() {
     }
 }
 
-function add_locker_to_order_data( $order_id ) {
-    if (isset( $_POST['locker'])) {
-        $locker = $_POST['locker'];
-
-        update_post_meta( $order_id, '_sameday_shipping_locker_id',  sanitize_text_field($locker), true);
+///**
+// * @throws JsonException
+// */
+//function add_locker_to_order_data($order_id) {
+//    if ((null !== $locker = sanitize_text_field($_POST['locker'])) && '' !== $locker) {
+//	    update_post_meta($order_id, '_sameday_shipping_locker_id', $locker, true);
+//
+//	    SamedayCourierHelperClass::updateLockerOrderPostMeta($order_id);
+//    }
+//}
+add_action('woocommerce_checkout_update_order_meta', static function ($orderId): void {
+	    try {
+		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST);
+        } catch (Exception $exception) {}
     }
-}
-add_action( 'woocommerce_checkout_update_order_meta', 'add_locker_to_order_data');
+);
 
 /**
  ** Add external JS file for Lockers
