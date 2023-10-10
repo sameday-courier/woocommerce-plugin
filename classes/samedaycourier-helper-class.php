@@ -369,16 +369,19 @@ class SamedayCourierHelperClass
 		return $sql;
 	}
 
-	/**
-	 * @param $orderId
-	 * @param $postData
-	 *
-	 * @return void
-	 */
+    /**
+     * @param $orderId
+     * @param $postData
+     *
+     * @return void
+     * @throws JsonException
+     */
 	public static function addLockerToOrderData($orderId, $postData): void
 	{
 		if ((null !== $locker = sanitize_text_field($postData['locker'])) && '' !== $locker) {
 			update_post_meta($orderId, self::POST_META_SAMEDAY_SHIPPING_LOCKER, $locker, false);
+
+            self::updateLockerOrderPostMeta($orderId);
 		}
 	}
 
@@ -429,7 +432,7 @@ class SamedayCourierHelperClass
 				$order_id,
 				self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
 				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
-				true
+				false
 			);
 		}
 	}
