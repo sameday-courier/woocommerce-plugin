@@ -483,8 +483,10 @@ class Sameday
 	        SamedayCourierHelperClass::getApiUrl()
         ));
 
+        $weight = SamedayCourierHelperClass::convertWeight((float) $params['samedaycourier-package-weight']);
+
         $parcelDimensions[] = new ParcelDimensionsObject(
-            $params['samedaycourier-package-weight'] <= 0 ? 1 : $params['samedaycourier-package-weight'],
+            $weight <= 0 ? 1 : $weight,
             $params['samedaycourier-package-length'],
             $params['samedaycourier-package-height'],
             $params['samedaycourier-package-width']

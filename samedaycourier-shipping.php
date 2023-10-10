@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.6.1
+ * Version: 1.6.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -181,7 +181,7 @@ function samedaycourier_shipping_method() {
             private function getEstimatedCost($address, $serviceId): ?float
             {
                 $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(SamedayCourierHelperClass::isTesting());
-                $weight = WC()->cart->get_cart_contents_weight() ?: .1;
+                $weight = SamedayCourierHelperClass::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
                 $state = SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
                 $city = SamedayCourierHelperClass::removeAccents($address['city']);
 
