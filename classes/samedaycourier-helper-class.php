@@ -482,4 +482,20 @@ class SamedayCourierHelperClass
 			update_post_meta($orderId, $key, $value, false);
 		}
 	}
+
+    public static function convertWeight(float $weight): float
+    {
+        $weightUnit = get_option('woocommerce_weight_unit');
+
+        switch ($weightUnit) {
+            case 'g':
+                return ($weight / 1000);
+            case 'lbs':
+                return ($weight * 0.45);
+            case 'oz':
+                return ($weight * 0.028);
+            default:
+                return $weight;
+        }
+    }
 }
