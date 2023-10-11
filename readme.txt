@@ -180,7 +180,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.6.2 =
 
-* Add new feature. Automatic weight convertor to kg for Sameday standard unit measure.
+* Add new feature. Automatic weight converter to kg for Sameday standard unit measure.
 
 = 1.6.1 =
 
