@@ -37,10 +37,13 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE is_testing = '{$is_testing}' AND status > 0";
-		$result = $wpdb->get_results($query);
+        $query = sprintf(
+            "SELECT * FROM %s WHERE is_testing='%s' AND status > 0",
+            $wpdb->prefix . 'sameday_service',
+            $is_testing
+        );
 
-		return $result;
+        return $wpdb->get_results($query);
 	}
 
 	/**

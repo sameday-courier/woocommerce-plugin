@@ -13,6 +13,16 @@ class SamedayCourierHelperClass
 
 	public const LOCKER_NEXT_DAY_CODE = "LN";
 
+    public const ELIGIBLE_SERVICES = ['6H', '24', 'LN'];
+
+    public const CROSS_BORDER_ELIGIBLE_SERVICES = ['XB', 'XL'];
+
+    public const SAMEDAY_6H = "6H";
+
+    public const ELIGIBLE_TO_6H_SERVICE = [
+        'Bucuresti'
+    ];
+
 	public const PERSONAL_DELIVERY_OPTION_CODE = 'PDO';
 
 	public const OPEN_PACKAGE_OPTION_CODE = 'OPCG';
