@@ -13,10 +13,6 @@
  * Text Domain: sameday
  */
 
-use Sameday\Exceptions\SamedayAuthorizationException;
-use Sameday\Exceptions\SamedayBadRequestException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Exceptions\SamedayServerException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Types\PackageType;
