@@ -104,6 +104,12 @@
             let lockerCookie = null;
             if ('' !== _getCookie("locker")) {
                 lockerCookie = JSON.parse(_getCookie("locker"));
+                if (typeof lockerCookie.city === "undefined"
+                    && typeof lockerCookie.county === "undefined"
+                    && typeof lockerCookie.postalCode === "undefined"
+                ) {
+                    lockerCookie = null;
+                }
             }
 
             if (null !== lockerCookie) {
