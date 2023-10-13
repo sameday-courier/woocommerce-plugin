@@ -426,7 +426,7 @@ class Sameday
 				JSON_THROW_ON_ERROR
 	        );
 
-			$lockerId = $locker['lockerId'];
+			$lockerId = $locker['id'];
 
 	        $city = $locker['city'];
 	        $county = $locker['county'];
