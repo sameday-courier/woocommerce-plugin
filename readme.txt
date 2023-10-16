@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.6.3 =
+
+* Bug fix. Fix issue from v1.6.1 (!LockerLastMile is invalid).
+
 = 1.6.2 =
 
 * Add new feature. Automatic weight converter to kg for Sameday standard unit measure.
