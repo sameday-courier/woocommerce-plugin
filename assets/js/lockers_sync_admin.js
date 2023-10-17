@@ -63,7 +63,14 @@ function openLockers() {
                 data: {
                     'action': 'change_locker',
                     'orderId': jQuery('#samedaycourier-order-id').val(),
-                    'locker': JSON.stringify(locker),
+                    'locker': JSON.stringify({
+                        'id': locker.lockerId,
+                        'name': locker.name,
+                        'address': locker.address,
+                        'city': locker.city,
+                        'county': locker.county,
+                        'postalCode': locker.postalCode,
+                    }),
                 },
                 complete: () => {
                     pluginInstance.close();
