@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.0 =
+
+* Add new feature. Implement Cross-border services XB (For Home delivery Cross border) and XL for (Cross border Locker Services).
+
 = 1.6.3 =
 
 * Bug fix. Fix issue from v1.6.1 (!LockerLastMile is invalid).

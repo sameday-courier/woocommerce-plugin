@@ -41,12 +41,24 @@ function displayDetails(optionFistMile, optionLastMile){
 }
 function openLockers() {
     /* DOM node selectors. */
-    const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e"; // each integrator will have unique clientId
-    const countryCode= document.querySelector('#select_locker').getAttribute('data-country'); //country for which the plugin is used
-    const langCode= document.querySelector('#select_locker').getAttribute('data-country').toLowerCase(); //language of the plugin
-    const samedayUser = document.querySelector('#select_locker').getAttribute('data-username').toLowerCase(); //sameday username
+    const clientId = "b8cb2ee3-41b9-4c3d-aafe-1527b453d65e"; // each integrator will have unique clientId
+    const changeLockerButton = document.querySelector('#select_locker');
 
-    window['LockerPlugin'].init({ clientId: clientId, countryCode: countryCode, langCode: langCode, apiUsername: samedayUser });
+    let samedayUser = changeLockerButton.getAttribute('data-username'); // Sameday username
+    let countryCode= changeLockerButton.getAttribute('data-country'); // correspond to user eAWB instance
+    let langCode = countryCode.toLowerCase(); //language of the plugin
+    let destCity = changeLockerButton.getAttribute('data-dest_city');
+    let destCountry = changeLockerButton.getAttribute('data-dest_country');
+
+    const LockerData = {
+        apiUsername: samedayUser,
+        city: destCity,
+        countryCode: destCountry,
+        clientId: clientId,
+        langCode: langCode
+    }
+
+    window['LockerPlugin'].init(LockerData);
     let pluginInstance = window['LockerPlugin'].getInstance();
 
     pluginInstance.open();

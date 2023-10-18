@@ -13,6 +13,8 @@ class SamedayCourierHelperClass
 
 	public const LOCKER_NEXT_DAY_CODE = "LN";
 
+    public const LOCKER_CROSS_BORDER_CODE = "XL";
+
     public const ELIGIBLE_SERVICES = ['6H', '24', 'LN'];
 
     public const CROSS_BORDER_ELIGIBLE_SERVICES = ['XB', 'XL'];
@@ -30,6 +32,12 @@ class SamedayCourierHelperClass
 	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
 
 	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
+
+    public const CURRENCY_MAPPER = [
+        self::API_HOST_LOCALE_RO => 'RON',
+        self::API_HOST_LOCAL_BG => 'BGN',
+        self::API_HOST_LOCAL_HU => 'HUF',
+    ];
 
 	public const TOGGLE_HTML_ELEMENT = [
 		'show' => 'showElement',
@@ -268,7 +276,11 @@ class SamedayCourierHelperClass
         $allErrors = array();
         foreach ($errors as $error) {
             foreach ($error['errors'] as $message) {
-                $allErrors[] = implode('.', $error['key']) . ': ' . $message;
+                if (isset($error['key'])) {
+                    $allErrors[] = implode('.', $error['key']) . ': ' . $message;
+                } else {
+                    $allErrors[] = sprintf('%s : %s', 'Generic Error', 'Something went wrong!');
+                }
             }
         }
 
@@ -507,5 +519,16 @@ class SamedayCourierHelperClass
             default:
                 return $weight;
         }
+    }
+
+    /**
+     * @param string $samedayServiceCode
+     *
+     * @return bool
+     */
+    public static function isLockerDelivery(string $samedayServiceCode): bool
+    {
+        return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
+            || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE;
     }
 }

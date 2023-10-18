@@ -13,7 +13,7 @@
         }
     }
 
-    const init = () => {
+    const _init = () => {
         /* DOM node selectors. */
         if (is_set( () => document.getElementById("locker_name"))) {
             document.getElementById("showLockerDetails").style.display = "none";
@@ -27,7 +27,7 @@
 
         /* Map Event. */
         if (is_set(() => selectors.selectLockerMap)) {
-            selectors.selectLockerMap.addEventListener('click', openLockers);
+            selectors.selectLockerMap.addEventListener('click', _openLockers);
         } else if (is_set( () => selectors.selectLocker)) {
             /* Add select2 to lockers dropdown. */
             jQuery('select#shipping-pickup-store-select').select2();
@@ -39,18 +39,29 @@
         }
     }
     
-    const openLockers = () => {
+    const _openLockers = () => {
         /* DOM node selectors. */
         let selectors = {
             lockerId: document.querySelector('#locker'),
             inputCounty: document.querySelector('#select2-billing_state-container'),
             selectLocker: document.querySelector('#select_locker'),
-            selectCity: document.getElementById('shipping_city'),
+            shipToDifferentAddress: document.querySelector('#ship-to-different-address-checkbox'),
+            selectCity: document.getElementById('billing_city'),
+            selectCountry: document.getElementById('billing_country'),
         };
 
+        let useShippingAddress = false;
+        if (is_set(() => selectors.shipToDifferentAddress)) {
+            useShippingAddress = selectors.shipToDifferentAddress.checked;
+            if (useShippingAddress) {
+                selectors.selectCity = document.getElementById('shipping_city');
+                selectors.selectCountry = document.getElementById('shipping_country');
+            }
+        }
+
         const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";//each integrator will have unique clientId
-        const countryCode= selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
-        const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase(); //language of the plugin
+        const countryCode = selectors.selectLocker.getAttribute('data-country'); //country for which the plugin is used
+        const langCode= countryCode.toLowerCase(); //language of the plugin
         const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase(); //sameday username
 
         let city = null;
@@ -58,17 +69,29 @@
             city = selectors.selectCity.value;
         }
 
-        const LockerPlugin = window['LockerPlugin'];
+        let country = null;
+        if (null !== selectors.selectCountry) {
+            country = selectors.selectCountry.value;
+        }
 
-        LockerPlugin.init(
-            {
-                clientId: clientId,
-                countryCode: countryCode,
-                langCode: langCode,
-                apiUsername: samedayUser,
-                city: city,
-            }
-        );
+        const LockerPlugin = window['LockerPlugin'];
+        const LockerData = {
+            apiUsername: samedayUser,
+            clientId: clientId,
+            city: city,
+            countryCode: selectors.selectCountry,
+            langCode: langCode,
+            favLockerId: _getFavoriteLockerId()
+        };
+
+        LockerPlugin.init(LockerData);
+
+        if (LockerPlugin.countryCode !== country || LockerPlugin.city !== city) {
+            LockerData.countryCode = country;
+            LockerData.city = city;
+
+            LockerPlugin.reinitializePlugin(LockerData);
+        }
 
         let pluginInstance = LockerPlugin.getInstance();
 
@@ -93,14 +116,13 @@
             document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
 
             pluginInstance.close();
+
+            jQuery(document.body).trigger('update_checkout');
         });
     }
-    
 
-    function showCookie() {
-
+    const _showCookie = () => {
         if (is_set( () => document.getElementById("locker_name"))) {
-
             let lockerCookie = null;
             if ('' !== _getCookie("locker")) {
                 lockerCookie = JSON.parse(_getCookie("locker"));
@@ -136,13 +158,13 @@
             const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
 
             if (locker_map_button || locker_drop_down_field) {
-                init();
+                _init();
             }
             jQuery('.shipping-pickup-store [id]').each(function (i) {
                 jQuery('.shipping-pickup-store [id="' + this.id + '"]').slice(1).remove();
             });
 
-            showCookie();
+            _showCookie();
         }
     );
 
@@ -163,4 +185,15 @@
         });
 
         return cookie;
+    }
+
+    const _getFavoriteLockerId = () => {
+        let checkForLocker = _getCookie('locker');
+        if ('' !== checkForLocker) {
+            let locker = JSON.parse(checkForLocker);
+
+            return locker.id;
+        }
+
+        return null;
     }
