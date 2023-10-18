@@ -40,7 +40,7 @@ class SamedayGetParcelStatusHistoryResponse implements SamedayResponseInterface
      * @param SamedayGetParcelStatusHistoryRequest $request
      * @param SamedayRawResponse $rawResponse
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(SamedayGetParcelStatusHistoryRequest $request, SamedayRawResponse $rawResponse)
     {
@@ -127,15 +127,15 @@ class SamedayGetParcelStatusHistoryResponse implements SamedayResponseInterface
     private function parseExpedition(array $json)
     {
         return new ExpeditionObject(
-            $json['statusId'],
-            $json['status'],
-            $json['statusLabel'],
-            $json['statusState'],
-            new DateTime($json['statusDate']),
-            $json['county'],
-            $json['reason'],
-            $json['transitLocation'],
-            $json['expeditionDetails']
+            $json['statusId'] ?? '',
+            $json['status'] ?? '',
+            $json['statusLabel'] ?? '',
+            $json['statusState'] ?? '',
+            new DateTime($json['statusDate'] ?? ''),
+            $json['county'] ?? '',
+            $json['reason'] ?? '',
+            $json['transitLocation'] ?? '',
+            $json['expeditionDetails'] ?? ''
         );
     }
 }
