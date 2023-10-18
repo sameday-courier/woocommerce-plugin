@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.6.3
+ * Version: 1.7.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -18,7 +18,7 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\SamedayClient;
 
-if (! defined( 'ABSPATH' ) ) {
+if (! defined( 'ABSPATH')) {
     exit;
 }
 
@@ -87,25 +87,38 @@ function samedaycourier_shipping_method() {
                 $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
                 $lockerMaxItems = (int) $this->settings['locker_max_items'];
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
+                $hostCountry = $this->settings['host_country'];
 
                 $availableServices = $this->getAvailableServices();
+                if ($package['destination']['country'] !== $hostCountry) {
+                    $availableServices = $this->getAvailableCrossBorderServices();
+                }
 
 	            $cartValue = WC()->cart->get_subtotal();
 	            if (true === SamedayCourierHelperClass::isApplyFreeShippingAfterDiscount()) {
 		            $cartValue = WC()->cart->get_cart_contents_total();
 	            }
 
+                $stateName = SamedayCourierHelperClass::convertStateCodeToName(
+                    $package['destination']['country'],
+                    $package['destination']['state']
+                );
+
                 if (!empty($availableServices)) {
-                    foreach ( $availableServices as $service ) {
-                        if ($service->sameday_code === "LS") {
+                    foreach ($availableServices as $service) {
+                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H
+                            && !in_array(
+                               SamedayCourierHelperClass::removeAccents($stateName),
+                               SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
+                               true
+                            )
+                        ) {
                             continue;
                         }
 
-                        if ($service->sameday_code === "2H" && SamedayCourierHelperClass::convertStateCodeToName($package['destination']['country'], $package['destination']['state']) !== "București") {
-                            continue;
-                        }
-
-                        if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && count(WC()->cart->get_cart()) > $lockerMaxItems) {
+                        if (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+                            && count(WC()->cart->get_cart()) > $lockerMaxItems
+                        ) {
                             continue;
                         }
 
@@ -113,6 +126,7 @@ function samedaycourier_shipping_method() {
 
                         if (
 	                        '' !== $package['destination']['city']
+                            && '' !== $stateName
 	                        && '' !== $package['destination']['address']
                             && $useEstimatedCost !== 'no'
                         ) {
@@ -144,12 +158,14 @@ function samedaycourier_shipping_method() {
                             )
                         );
 
-                        if (( $service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE ) && (false === $useLockerMap)) {
+                        if ((false === $useLockerMap)
+                            && (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE))
+                        ) {
                             $this->syncLockers();
                             $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
                         }
 
-                        $this->add_rate( $rate );
+                        $this->add_rate($rate);
                     }
                 }
             }
@@ -180,6 +196,7 @@ function samedaycourier_shipping_method() {
                 $weight = SamedayCourierHelperClass::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
                 $state = SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
                 $city = SamedayCourierHelperClass::removeAccents($address['city']);
+                $currency = SamedayCourierHelperClass::CURRENCY_MAPPER[$address['country']];
 
                 $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
                 $serviceTaxIds = array();
@@ -223,7 +240,8 @@ function samedaycourier_shipping_method() {
                     0,
 	                $repaymentAmount,
                     null,
-                    $serviceTaxIds
+                    $serviceTaxIds,
+                    $currency
                 );
 
                 $sameday = new Sameday\Sameday(
@@ -241,9 +259,36 @@ function samedaycourier_shipping_method() {
                 }
             }
 
+            /**
+             * @return array|object|null
+             */
             private function getAvailableServices()
             {
-                return SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting());
+                return array_filter(
+                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
+                    static function($row) {
+                        return in_array(
+                            $row->sameday_code,
+                            SamedayCourierHelperClass::ELIGIBLE_SERVICES, true
+                        );
+                    }
+                );
+            }
+
+            /**
+             * @return array|object|null
+             */
+            private function getAvailableCrossBorderServices()
+            {
+                return array_filter(
+                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
+                    static function($row) {
+                        return in_array(
+                            $row->sameday_code,
+                            SamedayCourierHelperClass::CROSS_BORDER_ELIGIBLE_SERVICES, true
+                        );
+                    }
+                );
             }
 
             private function init(): void
@@ -717,12 +762,12 @@ function wps_locker_row_layout() {
         $lockerOptions .= $optionGroup . $options;
     }
 
-    if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE && is_checkout()) {
+    if ((SamedayCourierHelperClass::isLockerDelivery($serviceCode)) && is_checkout()) {
     ?>
         <tr class="shipping-pickup-store">
             <th><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></th>
             <td>
-                <?php if (( SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
+                <?php if ((SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
                     <button type="button" class="button alt sameday_select_locker"
                             id="select_locker"
                             data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
@@ -733,7 +778,9 @@ function wps_locker_row_layout() {
                 <?php } else { ?>
                     <label for="shipping-pickup-store-select"></label>
                     <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                        <option value="" style="font-size: 13px"> <strong> <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong> </option>
+                        <option value="" style="font-size: 13px">
+                            <strong> <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong>
+                        </option>
                         <?php echo $lockerOptions; ?>
                     </select>
                 <?php } ?>
@@ -969,7 +1016,7 @@ add_action('woocommerce_checkout_process', function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     if ($chosen_methods !== null){
         $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-        if ($serviceCode === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+        if (SamedayCourierHelperClass::isLockerDelivery($serviceCode)) {
             if ($_POST['locker'] === null || $_POST['locker'] === '') {
                 wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
             }

@@ -416,8 +416,8 @@ class Sameday
 	    );
        
 	    $lockerId = null;
-        if (($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
-            && ('' !== $post_meta_samedaycourier_locker)
+        if ('' !== $post_meta_samedaycourier_locker
+            && SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
         ) {
 	        $locker = json_decode(
 				$post_meta_samedaycourier_locker,
@@ -437,10 +437,9 @@ class Sameday
 	        $state = SamedayCourierHelperClass::convertStateNameToCode($country, $locker['county']);
         }
 
-	    if (
-		    ($service->sameday_code !== SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
-		    && ('' !== $post_meta_samedaycourier_address_hd)
-	    ) {
+	    if (('' !== $post_meta_samedaycourier_address_hd)
+            && !SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+        ) {
 		    $post_meta_samedaycourier_address_hd = json_decode(
 			    $post_meta_samedaycourier_address_hd,
 				true,
@@ -531,7 +530,8 @@ class Sameday
             '',
             '',
             null,
-	        $lockerId
+	        $lockerId,
+            SamedayCourierHelperClass::CURRENCY_MAPPER[$country]
         );
 
 	    $errors = null;
