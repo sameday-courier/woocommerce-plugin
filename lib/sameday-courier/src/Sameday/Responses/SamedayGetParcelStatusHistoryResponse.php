@@ -106,14 +106,14 @@ class SamedayGetParcelStatusHistoryResponse implements SamedayResponseInterface
     private function parseHistory(array $json)
     {
         return new HistoryObject(
-            $json['statusId'],
-            $json['status'],
-            $json['statusLabel'],
-            $json['statusState'],
-            new DateTime($json['statusDate']),
-            $json['county'],
-            $json['reason'],
-            $json['transitLocation']
+            $json['statusId'] ?? '',
+            $json['status'] ?? '',
+            $json['statusLabel'] ?? '',
+            $json['statusState'] ?? '',
+            new DateTime($json['statusDate'] ?? ''),
+            $json['county'] ?? '',
+            $json['reason'] ?? '',
+            $json['transitLocation'] ?? ''
         );
     }
 
