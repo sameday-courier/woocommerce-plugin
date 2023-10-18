@@ -521,12 +521,7 @@ class SamedayCourierHelperClass
         }
     }
 
-    /**
-     * @param string $samedayServiceCode
-     *
-     * @return bool
-     */
-    public static function isLockerDelivery(string $samedayServiceCode): bool
+    public static function isLockerDelivery($samedayServiceCode): bool
     {
         return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
             || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE;
