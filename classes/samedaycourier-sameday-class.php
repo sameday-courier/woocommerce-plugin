@@ -541,8 +541,21 @@ class Sameday
             $awb = $sameday->postAwb($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
+        }
+        catch (SamedayOtherException $exception) {
+            $error = $exception->getRawResponse()->getBody();
+            if (null !== $error && '' !== $error) {
+                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            if (null !== $parsedError = $error['error']) {
+                $errors[] = $parsedError;
+            }
         } catch (Exception $e) {
-			$errors[] = $e->getMessage();
+			$errors[] = [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
         }
 
         if (null !== $errors && null === $awb) {
@@ -733,14 +746,9 @@ class Sameday
 
     /**
      * @param $params
-     *
      * @return bool
-     * @throws SamedayAuthenticationException
-     * @throws SamedayAuthorizationException
-     * @throws SamedayNotFoundException
-     * @throws SamedayOtherException
+     * @throws JsonException
      * @throws SamedaySDKException
-     * @throws SamedayServerException
      */
     public function addNewParcel($params): bool
     {
@@ -776,8 +784,22 @@ class Sameday
 	    $parcel = null;
         try {
             $parcel = $sameday->postParcel($request);
-        } catch ( SamedayBadRequestException $e) {
+        } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
+        } catch (SamedayOtherException $exception) {
+            $error = $exception->getRawResponse()->getBody();
+            if (null !== $error && '' !== $error) {
+                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            if (null !== $parsedError = $error['error']) {
+                $errors[] = $parsedError;
+            }
+        } catch (Exception $e) {
+            $errors[] = [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
         }
 
         if (isset($errors) && null === $parcel) {
