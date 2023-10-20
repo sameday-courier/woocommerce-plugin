@@ -275,12 +275,15 @@ class SamedayCourierHelperClass
     {
         $allErrors = array();
         foreach ($errors as $error) {
-            foreach ($error['errors'] as $message) {
-                if (isset($error['key'])) {
+            if (isset($error['errors'])) {
+                foreach ($error['errors'] as $message) {
                     $allErrors[] = implode('.', $error['key']) . ': ' . $message;
-                } else {
-                    $allErrors[] = sprintf('%s : %s', 'Generic Error', 'Something went wrong!');
                 }
+            } else {
+                $allErrors[] = sprintf('%s : %s',
+                    $error['code'] ?? 'Generic Error',
+                    $error['message'] ?? 'Something went wrong'
+                );
             }
         }
 
