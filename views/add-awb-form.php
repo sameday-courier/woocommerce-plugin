@@ -120,6 +120,26 @@ function samedaycourierAddAwbForm($order): string {
     $destCity = $order->get_data()['shipping']['city'] ?? '';
     $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
+    $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
+    $currency = get_woocommerce_currency();
+    $currencyWarningMessage = '';
+    if ($destCurrency !== $currency) {
+        $message = sprintf(
+            'Be aware that the intended currency is %s but the Repayment value is expressed in %s. Please consider a conversion !!',
+            $destCurrency,
+            $currency
+        );
+        $currencyWarningMessage = "
+            <tr>
+                <span>
+                        <strong style='color: darkred'>"
+                            . __($message, SamedayCourierHelperClass::TEXT_DOMAIN) . "
+                        </strong>
+                </span>
+            </tr>
+        ";
+    }
+
     $services = '';
     $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);
 
@@ -148,13 +168,14 @@ function samedaycourierAddAwbForm($order): string {
                          <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" id="samedaycourier-order-id" value="' . $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-repayment"> ' . __("Repayment", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-repayment"> ' . sprintf("%s (%s)", __("Repayment", SamedayCourierHelperClass::TEXT_DOMAIN), $currency) .' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="text" onkeypress="return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 180px; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
                                 <span>' . __("Payment type: ", SamedayCourierHelperClass::TEXT_DOMAIN) . $payment_gateway->title . '</span>
                              </td>                             
                         </tr>
+                        '. $currencyWarningMessage . '
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-package-insurance-value"> ' . __("Insured value", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>

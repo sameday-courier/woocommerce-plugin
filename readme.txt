@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.2 =
+
+* Update Cross-border validation for repayment.
+
 = 1.7.1 =
 
 * Bug fix. Improve Caught exceptions system for awb generation in order to deal with some new edge-cases from our API.

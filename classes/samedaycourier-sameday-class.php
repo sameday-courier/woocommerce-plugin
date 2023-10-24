@@ -634,12 +634,24 @@ class Sameday
         try {
             $sameday->deleteAwb(new Sameday\Requests\SamedayDeleteAwbRequest($awb->awb_number));
             SamedayCourierQueryDb::deleteAwbAndParcels($awb);
+        } catch (SamedayOtherException $exception) {
+            $error = $exception->getRawResponse()->getBody();
+            if (null !== $error && '' !== $error) {
+                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            if (null !== $parsedError = $error['error']) {
+                $errors[] = $parsedError;
+            }
         } catch (Exception $e) {
-            $error = $e->getMessage();
+            $errors[] = [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
         }
 
-        if (isset($error)) {
-            SamedayCourierHelperClass::addFlashNotice('remove_awb_notice', $error, 'error', true);
+        if (isset($errors)) {
+            SamedayCourierHelperClass::addFlashNotice('remove_awb_notice', SamedayCourierHelperClass::parseAwbErrors($errors), 'error', true);
 
             return wp_redirect(add_query_arg('remove-awb', 'error', "post.php?post=$awb->order_id&action=edit"));
         }
