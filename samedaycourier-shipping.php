@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.1
+ * Version: 1.7.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -208,7 +208,6 @@ function samedaycourier_shipping_method() {
                         }
                     }
                 }
-
 
                 // Check if the client has to pay anything as repayment value
                 $repaymentAmount = WC()->cart->subtotal;
