@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.2
+ * Version: 1.7.3
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -87,10 +87,11 @@ function samedaycourier_shipping_method() {
                 $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
                 $lockerMaxItems = (int) $this->settings['locker_max_items'];
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
-                $hostCountry = $this->settings['host_country'];
+                $hostCountry = SamedayCourierHelperClass::getHostCountry();
+                $destinationCountry = $package['destination']['country'] ?? SamedayCourierHelperClass::API_HOST_LOCALE_RO;
 
                 $availableServices = $this->getAvailableServices();
-                if ($package['destination']['country'] !== $hostCountry) {
+                if ($destinationCountry !== $hostCountry) {
                     $availableServices = $this->getAvailableCrossBorderServices();
                 }
 
@@ -116,7 +117,7 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+                        if (SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
                             && count(WC()->cart->get_cart()) > $lockerMaxItems
                         ) {
                             continue;
@@ -159,7 +160,7 @@ function samedaycourier_shipping_method() {
                         );
 
                         if ((false === $useLockerMap)
-                            && (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE))
+                            && ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
                         ) {
                             $this->syncLockers();
                             $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());

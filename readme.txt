@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.3 =
+
+* Code refactor for shipping methods validation.
+
 = 1.7.2 =
 
 * Update Cross-border validation for repayment.
