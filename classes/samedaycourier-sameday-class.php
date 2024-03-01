@@ -541,8 +541,7 @@ class Sameday
             $awb = $sameday->postAwb($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
-        }
-        catch (SamedayOtherException $exception) {
+        } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {
                 $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
@@ -552,9 +551,13 @@ class Sameday
                 $errors[] = $parsedError;
             }
         } catch (Exception $e) {
+            $message = $e->getMessage();
+            if ('' === $message) {
+                $message = 'The request could not be processed!';
+            }
 			$errors[] = [
                 'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'message' => $message,
             ];
         }
 
@@ -782,10 +785,10 @@ class Sameday
         $request = new SamedayPostParcelRequest(
             $awb->awb_number,
             new Sameday\Objects\ParcelDimensionsObject(
-                round($params['samedaycourier-parcel-weight'], 2),
-                round($params['samedaycourier-parcel-length'], 2),
-                round($params['samedaycourier-parcel-height'],2),
-                round($params['samedaycourier-parcel-width'], 2)
+                (float) number_format((float) $params['samedaycourier-parcel-weight'], 2),
+                (float) number_format((float) $params['samedaycourier-parcel-length'], 2),
+                (float) number_format((float) $params['samedaycourier-parcel-height'],2),
+                (float) number_format((float) $params['samedaycourier-parcel-width'], 2)
             ),
             $position,
             $params['samedaycourier-parcel-observation'],
