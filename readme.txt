@@ -178,6 +178,12 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.4 =
+
+* Code refactor. Crossborder validation on shipping rates by country.
+* Code refactor. Reinitialize lockerPlugins when user change address in Checkout.
+* Bug fix. Deal with such type of exception: Uncaught TypeError: round(): Argument #1 ($num) must be of type int|float
+
 = 1.7.3 =
 
 * Code refactor for shipping methods validation.

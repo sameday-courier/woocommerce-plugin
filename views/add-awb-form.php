@@ -49,7 +49,7 @@ function samedaycourierAddAwbForm($order): string {
             $weight = (float) $_product->get_weight();
         }
 
-        $total_weight += round($weight * $qty, 2);
+        $total_weight += (float) number_format($weight * $qty, 2);
     }
     $total_weight = $total_weight ?: 1;
 
@@ -123,7 +123,9 @@ function samedaycourierAddAwbForm($order): string {
     $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
     $currency = get_woocommerce_currency();
     $currencyWarningMessage = '';
-    if ($destCurrency !== $currency) {
+    if ($destCurrency !== $currency
+        && $repayment > 0
+    ) {
         $message = sprintf(
             'Be aware that the intended currency is %s but the Repayment value is expressed in %s. Please consider a conversion !!',
             $destCurrency,

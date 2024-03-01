@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.3
+ * Version: 1.7.4
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -90,10 +90,21 @@ function samedaycourier_shipping_method() {
                 $hostCountry = SamedayCourierHelperClass::getHostCountry();
                 $destinationCountry = $package['destination']['country'] ?? SamedayCourierHelperClass::API_HOST_LOCALE_RO;
 
-                $availableServices = $this->getAvailableServices();
+                $eligibleShippingServices = SamedayCourierHelperClass::ELIGIBLE_SERVICES;
                 if ($destinationCountry !== $hostCountry) {
-                    $availableServices = $this->getAvailableCrossBorderServices();
+                    $eligibleShippingServices = SamedayCourierHelperClass::CROSS_BORDER_ELIGIBLE_SERVICES;
                 }
+
+                $availableServices = array_filter(
+                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
+                    static function($row) use ($eligibleShippingServices) {
+                        return in_array(
+                            $row->sameday_code,
+                            $eligibleShippingServices,
+                            true
+                        );
+                    }
+                );
 
 	            $cartValue = WC()->cart->get_subtotal();
 	            if (true === SamedayCourierHelperClass::isApplyFreeShippingAfterDiscount()) {
@@ -140,17 +151,17 @@ function samedaycourier_shipping_method() {
                                 }
 
                                 if ($estimatedCostExtraFee > 0) {
-                                    $price += round($price * ($estimatedCostExtraFee /100), 2);
+                                    $price += (float) number_format($price * ($estimatedCostExtraFee /100), 2);
                                 }
                             }
                         }
 
 	                    if ($service->price_free !== null && ($cartValue > $service->price_free)) {
-		                    $price = 0;
+		                    $price = .0;
 	                    }
 
                         $rate = array(
-                            'id' => $this->id . ":" . $service->sameday_id . ":" . $service->sameday_code,
+                            'id' => sprintf('%s:%s:%s', $this->id, $service->sameday_id, $service->sameday_code),
                             'label' => $service->name,
                             'cost' => $price,
                             'meta_data' => array(
@@ -199,11 +210,16 @@ function samedaycourier_shipping_method() {
                 $city = SamedayCourierHelperClass::removeAccents($address['city']);
                 $currency = SamedayCourierHelperClass::CURRENCY_MAPPER[$address['country']];
 
-                $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+                $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
+                        $serviceId,
+                        SamedayCourierHelperClass::isTesting()
+                );
                 $serviceTaxIds = array();
                 if (WC()->session->get('open_package') === 'yes') {
                     foreach ($optionalServices as $optionalService) {
-                        if ($optionalService->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE && $optionalService->getPackageType()->getType() === PackageType::PARCEL) {
+                        if ($optionalService->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE
+                            && $optionalService->getPackageType()->getType() === PackageType::PARCEL
+                        ) {
                             $serviceTaxIds[] = $optionalService->getId();
                             break;
                         }
@@ -257,38 +273,6 @@ function samedaycourier_shipping_method() {
                 } catch (Exception $exception) {
                     return null;
                 }
-            }
-
-            /**
-             * @return array|object|null
-             */
-            private function getAvailableServices()
-            {
-                return array_filter(
-                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
-                    static function($row) {
-                        return in_array(
-                            $row->sameday_code,
-                            SamedayCourierHelperClass::ELIGIBLE_SERVICES, true
-                        );
-                    }
-                );
-            }
-
-            /**
-             * @return array|object|null
-             */
-            private function getAvailableCrossBorderServices()
-            {
-                return array_filter(
-                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
-                    static function($row) {
-                        return in_array(
-                            $row->sameday_code,
-                            SamedayCourierHelperClass::CROSS_BORDER_ELIGIBLE_SERVICES, true
-                        );
-                    }
-                );
             }
 
             private function init(): void
