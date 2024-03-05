@@ -379,26 +379,43 @@ class Sameday
 		}
 
 	    /** Recipient details */
-	    $city = $params['shipping']['city'];
+        $city = $params['shipping']['city'];
+        if ('' === $city || null === $city) {
+            $city = $params['billing']['city'];
+        }
+
+        $state = $params['shipping']['state'];
+        if ('' === $state || null === $state) {
+            $state = $params['billing']['state'];
+        }
+
+        $country = $params['shipping']['country'];
+        if ('' === $country || null === $country) {
+            $country = $params['billing']['country'];
+        }
+
 	    $county = SamedayCourierHelperClass::convertStateCodeToName(
-		    $params['shipping']['country'],
-		    $params['shipping']['state']
+            $country,
+            $state
 	    );
+
 	    $postalCode = $params['shipping']['postcode'];
-	    $country = $params['shipping']['country'];
+
 	    $address = sprintf(
 		    '%s %s',
 		    ltrim($params['shipping']['address_1']),
 		    ltrim($params['shipping']['address_2'])
 	    );
+
 		$address_1 = $params['shipping']['address_1'];
 		$address_2 = $params['shipping']['address_2'];
-		$state = $params['shipping']['state'];
+
 	    $name = sprintf(
 		    '%s %s',
 		    ltrim($params['shipping']['first_name']),
 		    ltrim($params['shipping']['last_name'])
 	    );
+
 	    $phone = $params['billing']['phone'] ?? "";
 	    $email = $params['billing']['email'] ?? "";
 	    /** End of Recipient details */
@@ -428,13 +445,13 @@ class Sameday
 
 			$lockerId = $locker['id'];
 
-	        $city = $locker['city'];
-	        $county = $locker['county'];
-	        $address = $locker['address'];
-			$postalCode = $locker['postalCode'];
+	        $city = $locker['city'] ?? $city;
+	        $county = $locker['county'] ?? $county;
+	        $address = $locker['address'] ?? $address;
+			$postalCode = $locker['postalCode'] ?? $postalCode;
 	        $address_1 = $address;
 	        $address_2 = $locker['name'];
-	        $state = SamedayCourierHelperClass::convertStateNameToCode($country, $locker['county']);
+	        $state = SamedayCourierHelperClass::convertStateNameToCode($country, $county);
         }
 
 	    if (('' !== $post_meta_samedaycourier_address_hd)

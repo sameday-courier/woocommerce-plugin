@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.5 =
+
+* Code refactor. Manage issue with undefined data for shipping address.
+
 = 1.7.4 =
 
 * Code refactor. Crossborder validation on shipping rates by country.
