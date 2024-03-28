@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.5
+ * Version: 1.7.6
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -646,7 +646,7 @@ function wps_sameday_shipping_options_layout() {
         if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
             ?>
                 <tr class="shipping-pickup-store">
-                    <th><strong><?php echo __('Open package', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></th>
+                    <th></th>
                     <td>
                         <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
                             <li>
@@ -746,12 +746,11 @@ function wps_locker_row_layout() {
         $lockerOptions .= $optionGroup . $options;
     }
 
-    if ((SamedayCourierHelperClass::isLockerDelivery($serviceCode)) && is_checkout()) {
-    ?>
-        <tr class="shipping-pickup-store">
-            <th><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></th>
-            <td>
-                <?php if ((SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
+    if ((SamedayCourierHelperClass::isLockerDelivery($serviceCode)) && is_checkout()) { ?>
+        <?php if ((SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
+            <tr class="shipping-pickup-store">
+                <td><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></td>
+                <th>
                     <button type="button" class="button alt sameday_select_locker"
                             id="select_locker"
                             data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
@@ -759,22 +758,25 @@ function wps_locker_row_layout() {
                     >
                         <?php echo __('Show Locker Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                     </button>
-                <?php } else { ?>
-                    <label for="shipping-pickup-store-select"></label>
-                    <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                        <option value="" style="font-size: 13px">
-                            <strong> <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong>
-                        </option>
-                        <?php echo $lockerOptions; ?>
-                    </select>
-                <?php } ?>
-                <?php placeAdditionalFieldsForLocker(); ?>
-                <span id="showLockerDetails"></span>
-            </td>
-        </tr>
+                </th>
+            </tr>
+            <tr id="showSamedayLockerDetailsCheckoutLine">
+                <td><strong> <?= __('Ship to', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong></td>
+                <th><span id="showLockerDetails"></span></th>
+            </tr>
+        <?php } else { ?>
+            <label for="shipping-pickup-store-select"></label>
+            <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
+                <option value="" style="font-size: 13px">
+                    <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                </option>
+                <?php echo $lockerOptions; ?>
+            </select>
+        <?php } ?>
+        <?php placeAdditionalFieldsForLocker(); ?>
     <?php }
 }
-add_action( 'woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
+add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 function placeAdditionalFieldsForLocker() {
     $fields = [' ', 'locker', 'locker_name', 'locker_address'];
