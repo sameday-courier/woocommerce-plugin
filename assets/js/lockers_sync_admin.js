@@ -69,6 +69,8 @@ function openLockers() {
         lockerDetails.name  = locker.name;
         lockerDetails.address = locker.address;
 
+        pluginInstance.close();
+
         jQuery.post(
             {
                 url: ajaxurl,
@@ -83,9 +85,6 @@ function openLockers() {
                         'county': locker.county,
                         'postalCode': locker.postalCode,
                     }),
-                },
-                complete: () => {
-                    pluginInstance.close();
                 },
                 success: () => {
                     document.querySelector('#sameday_locker_name').innerHTML = locker.name + " - " + locker.address;

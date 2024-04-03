@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.7 =
+
+* Code refactor. Implement new mechanism for storing the locker option and open package option. Use session instead of form field.
+
 = 1.7.6 =
 
 * Code refactor. Rearrange the field for displaying the showing map button on the checkout page.

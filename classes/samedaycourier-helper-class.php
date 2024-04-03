@@ -223,6 +223,24 @@ class SamedayCourierHelperClass
 		return $data;
 	}
 
+    /**
+     * @param array $locker
+     *
+     * @return string
+     *
+     * @throws JsonException
+     */
+    public static function sanitizeLocker(array $locker): string
+    {
+        if (!empty( $locker)) {
+            foreach ($locker as $key => $value) {
+                $locker[$key] = self::sanitizeInput($value);
+            }
+        }
+
+        return json_encode($locker, JSON_THROW_ON_ERROR);
+    }
+
 	public static function sanitizeInput(string $input): string
 	{
 		return stripslashes(strip_tags(str_replace("'", '&#39;', $input)));
@@ -400,34 +418,49 @@ class SamedayCourierHelperClass
 
     /**
      * @param $orderId
-     * @param $postData
+     *
+     * @param $locker
      *
      * @return void
      * @throws JsonException
      */
-	public static function addLockerToOrderData($orderId, $postData): void
+	public static function addLockerToOrderData($orderId, $locker): void
 	{
-		if ((null !== $locker = sanitize_text_field($postData['locker'])) && '' !== $locker) {
-			update_post_meta($orderId, self::POST_META_SAMEDAY_SHIPPING_LOCKER, $locker, false);
+        update_post_meta(
+            $orderId,
+            self::POST_META_SAMEDAY_SHIPPING_LOCKER,
+            $locker,
+            false
+        );
 
-            self::updateLockerOrderPostMeta($orderId);
-		}
+        self::updateLockerOrderPostMeta($orderId);
 	}
 
-	/**
-	 * @param int $order_id
-	 *
-	 * @return void
-	 * @throws JsonException
-	 */
+    /**
+     * @param int $order_id
+     *
+     * @return void
+     *
+     * @throws JsonException
+     */
 	public static function updateLockerOrderPostMeta(int $order_id): void
 	{
-		$lockerFields = json_decode(
-			get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_LOCKER, true),
-			true,
-			1024,
-			JSON_THROW_ON_ERROR
-		);
+        $postMetaLocker = (string) get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_LOCKER, true);
+
+        try {
+            $lockerFields = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) { return; }
+
+        // If you don't use lockerMap but dropdown option
+        if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
+            $lockerFields = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, self::isTesting());
+
+            if (null === $lockerFields) {
+                return;
+            }
+
+            $lockerFields = (array) $lockerFields;
+        }
 
 		$postsMeta = get_post_meta($order_id, '', true);
 
