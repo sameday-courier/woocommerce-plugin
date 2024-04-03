@@ -95,9 +95,9 @@ const _openLockers = () => {
             false
         );
 
-        jQuery(document.body).trigger('update_checkout');
-
         pluginInstance.close();
+
+        jQuery(document.body).trigger('update_checkout');
     });
 }
 
