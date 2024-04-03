@@ -566,4 +566,16 @@ class SamedayCourierHelperClass
         return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
             || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE;
     }
+
+    /**
+     * @return mixed|string|null
+     */
+    public static function getChosenShippingMethodCode()
+    {
+        if (null !== $chosenShippingMethod = WC()->session->get('chosen_shipping_methods')[0] ?? null) {
+            return self::parseShippingMethodCode($chosenShippingMethod);
+        }
+
+        return null;
+    }
 }

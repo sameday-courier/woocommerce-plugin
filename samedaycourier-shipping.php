@@ -700,6 +700,8 @@ function woo_sameday_post_ajax_data(): void {
             WC()->session->set('locker', (int) $locker);
         }
 
+        opcache_reset();
+
         return;
     }
 
@@ -738,8 +740,7 @@ function checkout_repayment_tax() {
 
 // LOCKER :
 function wps_locker_row_layout() {
-    $chosen_methods = WC()->session->get('chosen_shipping_methods');
-    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    $serviceCode = SamedayCourierHelperClass::getChosenShippingMethodCode();
 
     $shipTo = null;
     if (null !== $lockerSession = WC()->session->get('locker')) {
@@ -825,12 +826,14 @@ function wps_locker_row_layout() {
 add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 add_action('woocommerce_checkout_update_order_meta', static function ($orderId): void {
-    try {
-        SamedayCourierHelperClass::addLockerToOrderData(
-            $orderId,
-            WC()->session->get('locker')
-        );
-    } catch (Exception $exception) {}
+    if (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+        try {
+            SamedayCourierHelperClass::addLockerToOrderData(
+                $orderId,
+                WC()->session->get('locker')
+            );
+        } catch (Exception $exception) {}
+    }
 
     $isOpenPackage = WC()->session->get('open_package');
     if ($isOpenPackage === 'yes') {
