@@ -1,11 +1,6 @@
-jQuery(document).on('change', '#open_package', () => {
-    let isChecked = 'no';
-    if (jQuery(this).prop('checked')) {
-        isChecked = 'yes';
-    }
-
+jQuery(document).on('change', '#sameday_open_package', (ev) => {
     doAjaxCall({
-        'open_package': isChecked
+        'open_package': ev.target.checked ? "yes" : "no"
     });
 });
 

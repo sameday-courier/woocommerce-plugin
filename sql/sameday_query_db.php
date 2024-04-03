@@ -125,13 +125,14 @@ class SamedayCourierQueryDb
 		return $wpdb->get_row($query);
 	}
 
-	/**
-	 * @param $samedayCode
-	 * @param $is_testing
-	 *
-	 * @return array|object|void|null
-	 */
-    public static function getServiceSamedayCode($samedayCode, $is_testing)
+    /**
+     * @param $samedayCode
+     *
+     * @param $is_testing
+     *
+     * @return array|object|stdClass|null
+     */
+    public static function getServiceSamedayByCode($samedayCode, $is_testing)
     {
         global $wpdb;
 
