@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.6
+ * Version: 1.7.7
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -48,6 +48,7 @@ require_once (plugin_basename('views/awb-history-table.php'));
 require_once (plugin_basename('views/add-new-parcel-form.php'));
 require_once (plugin_basename('classes/samedaycourier-persistence-data-handler.php'));
 
+// Start Shipping Method Class
 function samedaycourier_shipping_method() {
     if (! class_exists('SamedayCourier_Shipping_Method')) {
         class SamedayCourier_Shipping_Method extends WC_Shipping_Method
@@ -504,7 +505,9 @@ function samedaycourier_shipping_method() {
         }
     }
 }
+// End of Shipping Method Class
 
+// Add Module Custom Actions
 add_action('admin_init','load_lockers_sync');
 function load_lockers_sync() {
     global $pagenow;
@@ -569,7 +572,7 @@ add_action('wp_ajax_all_import', static function (): void {
 add_action('wp_ajax_change_locker', function() {
     if (null !== $orderId = $_POST['orderId']) {
 	    try {
-		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST);
+		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST['locker']);
 	    } catch (Exception $exception) {}
     }
 });
@@ -621,10 +624,16 @@ add_action('admin_post_add-new-parcel', function() {
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {
-    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    // If you are not in Checkout page don't do anything
+    if (!is_checkout()) {
+        return;
+    }
 
-    $service = SamedayCourierQueryDb::getServiceSamedayCode($serviceCode, SamedayCourierHelperClass::isTesting());
+    $service = SamedayCourierQueryDb::getServiceSamedayByCode(
+        SamedayCourierHelperClass::getChosenShippingMethodCode(),
+        SamedayCourierHelperClass::isTesting()
+    );
+
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
     if ($service) {
@@ -641,54 +650,77 @@ function wps_sameday_shipping_options_layout() {
         }
     }
 
-    if ($taxOpenPackage && is_checkout()) {
-        $isChecked = WC()->session->get('open_package') === 'yes' ? 'checked' : '';
-        if (SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes") {
-            ?>
-                <tr class="shipping-pickup-store">
-                    <th></th>
-                    <td>
-                        <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
-                            <li>
-                                <?php
-                                    woocommerce_form_field('open_package', array(
-                                        'type' => 'checkbox',
-                                        'class' => array('input-checkbox'),
-                                        'id' => 'open_package',
-                                        'label' => SamedayCourierHelperClass::getSamedaySettings()['open_package_label'],
-                                        'required' => false,
-                                    ), $isChecked);
-                                ?>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-            <?php
-        }
+    if ($taxOpenPackage
+        && SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes"
+    ) {
+        ?>
+            <tr class="shipping-pickup-store">
+                <th></th>
+                <td>
+                    <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                        <li>
+                            <?php
+                                woocommerce_form_field('open_package',
+                                [
+                                    'type' => 'checkbox',
+                                    'class' => array('input-checkbox'),
+                                    'id' => 'sameday_open_package',
+                                    'label' => SamedayCourierHelperClass::getSamedaySettings()['open_package_label'],
+                                    'required' => false,
+                                ],
+                                WC()->session->get('open_package') === 'yes'
+                                );
+                            ?>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        <?php
     }
 }
 add_action('woocommerce_review_order_after_shipping', 'wps_sameday_shipping_options_layout');
 
 // Enabling, disabling and refreshing session shipping methods data
-add_action( 'woocommerce_checkout_update_order_review', 'refresh_sameday_shiping_methods', 10, 1);
-function refresh_sameday_shiping_methods() {
+add_action( 'woocommerce_checkout_update_order_review', 'refresh_sameday_shipping_methods', 10, 1);
+function refresh_sameday_shipping_methods() {
     foreach (WC()->cart->get_shipping_packages() as $package_key => $package) {
 	    $package['package_hash'] = 'wc_ship_' . md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'));
-        WC()->session->set( 'shipping_for_package_' . $package_key, $package);
+        WC()->session->set('shipping_for_package_' . $package_key, $package);
     }
 
     WC()->cart->calculate_shipping();
 }
 
-add_action( 'wp_ajax_woo_get_ajax_data', 'woo_get_ajax_data' );
-add_action( 'wp_ajax_nopriv_woo_get_ajax_data', 'woo_get_ajax_data' );
-function woo_get_ajax_data() {
-    if (isset($_POST['open_package'])) {
-	    WC()->session->set('open_package', $_POST['open_package']);
+add_action('wp_ajax_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
+add_action('wp_ajax_nopriv_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
+/**
+ * @throws JsonException
+ */
+function woo_sameday_post_ajax_data(): void {
+    if (false === wp_verify_nonce($_POST['samedayNonce'], 'sameday-post-data')) {
+        die('Invalid Request !');
+    }
+
+    if (null !== $locker = $_POST['locker'] ?? null) {
+        if (is_array($locker)) {
+            WC()->session->set('locker', SamedayCourierHelperClass::sanitizeLocker($locker));
+        } else {
+            WC()->session->set('locker', (int) $locker);
+        }
+
+        return;
+    }
+
+    if (null !== $openPackage = $_POST['open_package'] ?? null) {
+	    WC()->session->set('open_package', SamedayCourierHelperClass::sanitizeInput($openPackage));
+
+        return;
     }
 
     if (isset($_POST['payment_method'])) {
-	    WC()->session->set('payment_method', $_POST['payment_method']);
+	    WC()->session->set('payment_method', SamedayCourierHelperClass::sanitizeInput($_POST['payment_method']));
+
+        return;
     }
 
     die();
@@ -712,38 +744,21 @@ function checkout_repayment_tax() {
     }
 }
 
-function set_open_package_option($order_id) {
-    if (isset($_POST['open_package'])) {
-        update_post_meta($order_id, '_sameday_shipping_open_package_option', sanitize_text_field($_POST['open_package']), true);
-    }
-
-    WC()->session->set('open_package', 'no');
-}
-add_action('woocommerce_checkout_update_order_meta', 'set_open_package_option');
-
 // LOCKER :
 function wps_locker_row_layout() {
-    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
+    $serviceCode = SamedayCourierHelperClass::getChosenShippingMethodCode();
 
-    $cities = SamedayCourierQueryDb::getCities(SamedayCourierHelperClass::isTesting());
-    $lockers = array();
-    foreach ($cities as $city) {
-        if (null !== $city->city) {
-            $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity($city->city, SamedayCourierHelperClass::isTesting());
-        }
-    }
+    $shipTo = null;
+    if (null !== $lockerSession = WC()->session->get('locker')) {
+        try {
+            $lockerSession = json_decode($lockerSession, false, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) {}
 
-    $lockerOptions = '';
-    foreach ($lockers as $city => $cityLockers) {
-        $optionGroup = "<optgroup label='{$city}' style='font-size: 13px;'></optgroup>";
-        $options = '';
-        foreach ($cityLockers as $locker) {
-            $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
-            $options .= '<option value="' . $locker->locker_id . '" style="font-size: 9px">' . $lockerDetails . '</option>';
-        }
-
-        $lockerOptions .= $optionGroup . $options;
+        $shipTo = sprintf(
+                '%s <br/> %s',
+            $lockerSession->name ?? '',
+            $lockerSession->address ?? ''
+        );
     }
 
     if ((SamedayCourierHelperClass::isLockerDelivery($serviceCode)) && is_checkout()) { ?>
@@ -752,64 +767,132 @@ function wps_locker_row_layout() {
                 <td><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
-                            id="select_locker"
-                            data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
-                            data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
+                        id="select_locker"
+                        data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
+                        data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
                     >
                         <?php echo __('Show Locker Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                     </button>
                 </th>
             </tr>
-            <tr id="showSamedayLockerDetailsCheckoutLine">
-                <td><strong> <?= __('Ship to', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong></td>
-                <th><span id="showLockerDetails"></span></th>
-            </tr>
+            <?php if (null !== $shipTo) { ?>
+                <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
+                    <td><strong> <?= __('Ship to', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong></td>
+                    <th><span id="showLockerDetails"><?= $shipTo ?></span></th>
+                </tr>
+            <?php } ?>
         <?php } else { ?>
-            <label for="shipping-pickup-store-select"></label>
-            <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 30px; font-size: 13px">
-                <option value="" style="font-size: 13px">
-                    <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
-                </option>
-                <?php echo $lockerOptions; ?>
-            </select>
+            <?php
+                $cities = SamedayCourierQueryDb::getCities(SamedayCourierHelperClass::isTesting());
+                $lockers = array();
+                foreach ($cities as $city) {
+                    if (null !== $city->city) {
+                        $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity(
+                            $city->city,
+                            SamedayCourierHelperClass::isTesting()
+                        );
+                    }
+                }
+
+                $lockerOptions = '';
+                foreach ($lockers as $city => $cityLockers) {
+                    $optionGroup = "<optgroup label='$city' style='font-size: 13px;'></optgroup>";
+                    $options = '';
+                    foreach ($cityLockers as $locker) {
+                        $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
+                        $isSelected = null;
+                        if ((int) WC()->session->get('locker') === (int) $locker->locker_id) {
+                            $isSelected = "selected='selected'";
+                        }
+                        $options .= sprintf(
+                            "<option value='%s' style='font-size: 9px' %s> %s </option>",
+                            $locker->locker_id,
+                            $isSelected,
+                            $lockerDetails
+                        );
+                    }
+
+                    $lockerOptions .= $optionGroup . $options;
+                }
+            ?>
+                <tr>
+                    <th><label for="shipping-pickup-store-select"></label></th>
+                    <td>
+                        <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 25px; font-size: 14px">
+                            <option value="" style="font-size: 13px">
+                                <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                            </option>
+                            <?php echo $lockerOptions; ?>
+                        </select>
+                    </td>
+                </tr>
         <?php } ?>
-        <?php placeAdditionalFieldsForLocker(); ?>
     <?php }
 }
 add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
-function placeAdditionalFieldsForLocker() {
-    $fields = [' ', 'locker', 'locker_name', 'locker_address'];
-    foreach ($fields as $field) {
-	    woocommerce_form_field($field, array(
-		    'type' => 'hidden',
-		    'class' => array('form-row form-row-wide'),
-		    'id' => $field,
-		    'required' => false,
-	    ), '');
-    }
-}
-
+// When POST Order Form
 add_action('woocommerce_checkout_update_order_meta', static function ($orderId): void {
-	    try {
-		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST);
+    if (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+        try {
+            SamedayCourierHelperClass::addLockerToOrderData(
+                $orderId,
+                WC()->session->get('locker')
+            );
         } catch (Exception $exception) {}
     }
-);
+
+    if ("yes" === WC()->session->get('open_package')) {
+        update_post_meta($orderId, '_sameday_shipping_open_package_option', 1, true);
+        // After store, remove it from Session
+        WC()->session->set('open_package', 'no');
+    }
+});
 
 /**
  ** Add external JS file for Lockers
  **/
-add_action('wp_enqueue_scripts', 'load_sameday_sync_checkout_js_scripts', 99999);
+add_action(
+    'wp_enqueue_scripts',
+    static function () {
+        global $wp;
+        if (empty($wp->query_vars['order-pay'] )
+            && !isset($wp->query_vars['order-received'])
+            && is_checkout()
+        ) {
+            wp_enqueue_script(
+                'prod-locker-plugin',
+                'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js'
+            );
+            wp_enqueue_script(
+                'helper',
+                plugin_dir_url( __FILE__ ) . 'assets/js/helper.js',
+                ['jquery'],
+                false,
+                true
+            );
+            wp_enqueue_script(
+                'lockers_script',
+                plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js',
+                ['jquery'],
+                false,
+                true
+            );
+            wp_enqueue_script(
+                'open_package_script',
+                plugin_dir_url( __FILE__ ) . 'assets/js/open_package_script.js',
+                ['jquery'],
+                false,
+                true
+            );
 
-function load_sameday_sync_checkout_js_scripts() {
-    global $wp;
-    if (empty($wp->query_vars['order-pay'] ) && !isset($wp->query_vars['order-received'])  && is_checkout()) {
-		wp_enqueue_script( 'prod-locker-plugin', 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js');
-		wp_enqueue_script( 'lockers_script', plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js', array( 'jquery' ), false, true );
-	    wp_enqueue_script( 'open_package_script', plugin_dir_url( __FILE__ ) . 'assets/js/open_package_script.js', array( 'jquery' ), false, true );
-    }
-}
+            wp_localize_script('helper', 'samedayVars', [
+                'samedayNonce' => wp_create_nonce('sameday-post-data'),
+            ]);
+        }
+    },
+    99999
+);
 
 /**
  ** Order detail styles
@@ -998,14 +1081,12 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 });
 
 // Revision order before Submit
-add_action('woocommerce_checkout_process', function () {
+add_action('woocommerce_checkout_process', static function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    if ($chosen_methods !== null){
+    if ($chosen_methods !== null) {
         $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-        if (SamedayCourierHelperClass::isLockerDelivery($serviceCode)) {
-            if ($_POST['locker'] === null || $_POST['locker'] === '') {
-                wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
-            }
+        if (SamedayCourierHelperClass::isLockerDelivery($serviceCode) && null === WC()->session->get('locker')) {
+            wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }
 });

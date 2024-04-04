@@ -16,14 +16,9 @@ const is_set = (accessor) => {
 
 const _init = () => {
     /* DOM node selectors. */
-    if (is_set( () => document.getElementById("locker_name"))) {
-        document.getElementById("showLockerDetails").style.display = "none";
-    }
-
     let selectors = {
         selectLockerMap: document.querySelector('#select_locker'),
         selectLocker: document.querySelector('#shipping-pickup-store-select'),
-        lockerId: document.querySelector('#locker'),
     };
 
     /* Map Event. */
@@ -34,8 +29,9 @@ const _init = () => {
         jQuery('select#shipping-pickup-store-select').select2();
 
         selectors.selectLocker.onchange = (event) => {
-            selectors.lockerId.value = event.target.value;
-            document.getElementById("showLockerDetails").innerHTML = '';
+            doAjaxCall({
+                'locker': event.target.value,
+            });
         }
     }
 }
@@ -43,8 +39,6 @@ const _init = () => {
 const _openLockers = () => {
     /* DOM node selectors. */
     let selectors = {
-        lockerId: document.querySelector('#locker'),
-        inputCounty: document.querySelector('#select2-billing_state-container'),
         selectLocker: document.querySelector('#select_locker'),
         shipToDifferentAddress: document.querySelector('#ship-to-different-address-checkbox'),
         selectCity: document.getElementById('billing_city'),
@@ -93,57 +87,15 @@ const _openLockers = () => {
 
     pluginInstance.open();
 
-    pluginInstance.subscribe((message) => {
-        let lockerDetails = {};
-        lockerDetails.id = message.lockerId;
-        lockerDetails.name  = message.name;
-        lockerDetails.address = message.address;
-        lockerDetails.city = message.city;
-        lockerDetails.county = message.county;
-        lockerDetails.postalCode = message.postalCode;
-
-        selectors.lockerId.value = JSON.stringify(lockerDetails);
-        _setCookie("locker", JSON.stringify(lockerDetails), 30);
-
-        document.getElementById("locker_name").value = message.name;
-        document.getElementById("locker_address").value = message.address;
-
-        document.getElementById("showLockerDetails").style.display = "block";
-        document.getElementById("showLockerDetails").innerHTML = message.name + '<br/>' +message.address;
+    pluginInstance.subscribe((locker) => {
+        doAjaxCall(
+            {
+                'locker': locker,
+            },
+        );
 
         pluginInstance.close();
-
-        jQuery(document.body).trigger('update_checkout');
     });
-}
-
-const _showCookie = () => {
-    if (is_set( () => document.getElementById("locker_name"))) {
-        let lockerCookie = null;
-        if ('' !== _getCookie("locker")) {
-            lockerCookie = JSON.parse(_getCookie("locker"));
-            if (typeof lockerCookie.city === "undefined"
-                && typeof lockerCookie.county === "undefined"
-                && typeof lockerCookie.postalCode === "undefined"
-            ) {
-                lockerCookie = null;
-            }
-        }
-
-        if (null !== lockerCookie) {
-            document.getElementById("locker").value = JSON.stringify(lockerCookie);
-            document.getElementById("locker_name").value = lockerCookie.name;
-            document.getElementById("locker_address").value = lockerCookie.address;
-
-            document.getElementById("showLockerDetails").style.display = "block";
-
-            if (is_set( () => document.querySelector('#shipping-pickup-store-select'))) {
-                document.getElementById("showLockerDetails").innerHTML = '';
-            } else {
-                document.getElementById("showLockerDetails").innerHTML = lockerCookie.name + '<br/>' + lockerCookie.address;
-            }
-        }
-    }
 }
 
 /**
@@ -156,29 +108,5 @@ jQuery(document.body).on("updated_checkout", () => {
         if (locker_map_button || locker_drop_down_field) {
             _init();
         }
-        jQuery('.shipping-pickup-store [id]').each(function (i) {
-            jQuery('.shipping-pickup-store [id="' + this.id + '"]').slice(1).remove();
-        });
-
-        _showCookie();
     }
 );
-
-const _setCookie = (key, value, days) => {
-    let d = new Date();
-    d.setTime(d.getTime() + (days*24*60*60*1000));
-    let expires = "expires=" + d.toUTCString();
-
-    document.cookie = key + "=" + value + ";" + expires + ";path=/";
-}
-
-const _getCookie = (key) => {
-    let cookie = '';
-    document.cookie.split(';').forEach(function (value) {
-        if (value.split('=')[0].trim() === key) {
-            return cookie = value.split('=')[1];
-        }
-    });
-
-    return cookie;
-}
