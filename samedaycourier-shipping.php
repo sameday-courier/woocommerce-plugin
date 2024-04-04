@@ -708,8 +708,6 @@ function woo_sameday_post_ajax_data(): void {
             WC()->session->set('locker', (int) $locker);
         }
 
-        opcache_reset();
-
         return;
     }
 

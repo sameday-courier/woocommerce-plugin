@@ -92,12 +92,9 @@ const _openLockers = () => {
             {
                 'locker': locker,
             },
-            false
         );
 
         pluginInstance.close();
-
-        jQuery(document.body).trigger('update_checkout');
     });
 }
 
