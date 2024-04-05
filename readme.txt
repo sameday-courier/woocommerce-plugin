@@ -178,9 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.7.7 =
+= 1.7.8 =
 
-* Code refactor. Implement new mechanism for storing the locker option and open package option. Use session instead of form field.
+* Bug fix. lockerLastMile issue: LockerLastMile is invalid. (From previous version 1.7.7)
+  caused by some inconsistency in the dataType for lockerLastMile.
 
 = 1.7.6 =
 

@@ -443,7 +443,7 @@ class Sameday
 				JSON_THROW_ON_ERROR
 	        );
 
-			$lockerId = $locker['id'];
+			$lockerId = $locker['id'] ?? $locker['lockerId'];
 
 	        $city = $locker['city'] ?? $city;
 	        $county = $locker['county'] ?? $county;

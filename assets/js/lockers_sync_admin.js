@@ -64,12 +64,9 @@ function openLockers() {
     pluginInstance.open();
 
     pluginInstance.subscribe((locker) => {
-        let lockerDetails = {};
-        lockerDetails.id = locker.lockerId;
-        lockerDetails.name  = locker.name;
-        lockerDetails.address = locker.address;
-
         pluginInstance.close();
+
+        let _locker = JSON.stringify(locker);
 
         jQuery.post(
             {
@@ -77,18 +74,11 @@ function openLockers() {
                 data: {
                     'action': 'change_locker',
                     'orderId': jQuery('#samedaycourier-order-id').val(),
-                    'locker': JSON.stringify({
-                        'id': locker.lockerId,
-                        'name': locker.name,
-                        'address': locker.address,
-                        'city': locker.city,
-                        'county': locker.county,
-                        'postalCode': locker.postalCode,
-                    }),
+                    'locker': _locker,
                 },
                 success: () => {
                     document.querySelector('#sameday_locker_name').innerHTML = locker.name + " - " + locker.address;
-                    document.querySelector('#locker_id').value = JSON.stringify(lockerDetails);
+                    document.querySelector('#locker_id').value = _locker;
                 },
                 error: () => {
                     alert('Something went wrong! Please try again latter!');
