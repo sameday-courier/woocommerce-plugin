@@ -427,8 +427,8 @@ function samedaycourier_shipping_method() {
 	                    'disabled' => true,
 	                    'options' => array(
 		                    SamedayCourierHelperClass::API_HOST_LOCALE_RO => __(SamedayCourierHelperClass::API_HOST_LOCALE_RO, SamedayCourierHelperClass::TEXT_DOMAIN),
-		                    SamedayCourierHelperClass::API_HOST_LOCAL_HU => __(SamedayCourierHelperClass::API_HOST_LOCAL_HU, SamedayCourierHelperClass::TEXT_DOMAIN),
-                            SamedayCourierHelperClass::API_HOST_LOCAL_BG => __(SamedayCourierHelperClass::API_HOST_LOCAL_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
+		                    SamedayCourierHelperClass::API_HOST_LOCALE_HU => __(SamedayCourierHelperClass::API_HOST_LOCALE_HU, SamedayCourierHelperClass::TEXT_DOMAIN),
+                            SamedayCourierHelperClass::API_HOST_LOCALE_BG => __(SamedayCourierHelperClass::API_HOST_LOCALE_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
 		                    'none' => '',
 	                    ),
                     ),

@@ -51,7 +51,7 @@ If every thing works, activate plugin and now the new feature are ready to use.
 1. Go to WooCommerce/Settings and choose SamedayCourier tab.
 2. Complete the form and press Save changes. If everything works well you receive a success message.
 3. After that, you are able to import the Services and Pick-up point assigned by Sameday to your account. Go to Service and press "Refresh Service". The same for pick-up points importing and (optional) for the locker list.
-4. Activate the services by changing the status from "Disabled" to "Always" or "Interval".
+4. Activate the services by changing the status from "Disabled" to "Always".
 5. Add the new SamedayCourier shipping method to your Shipping zones. Go to WooCommerce/Settings menu, open the Shipping zones tab. Choose the shipping zone for which you want to use Sameday services and press "Edit" button then press "Add shipping method" and select "SamedayCourier".
 
 After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.

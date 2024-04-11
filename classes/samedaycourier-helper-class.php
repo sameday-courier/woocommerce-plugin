@@ -3,7 +3,7 @@
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 
-if (! defined( 'ABSPATH' ) ) {
+if (! defined( 'ABSPATH' )) {
 	exit;
 }
 
@@ -15,6 +15,25 @@ class SamedayCourierHelperClass
     public const STANDARD_24_H = "24";
     public const STANDARD_CROSS_BORDER = "XB";
     public const LOCKER_CROSS_BORDER_CODE = "XL";
+    public const PUDO_CODE = "PD";
+    public const OOH_CODE = "OOH"; //Stands for Out of Home
+
+    public const OOH_SERVICES = [
+        self::LOCKER_NEXT_DAY_CODE,
+        self::PUDO_CODE
+    ];
+
+    public const NOT_IN_USE_SERVICES = [
+        '2H', 'LS', '3H', 'LH'
+    ];
+
+    public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
+
+    public const OOH_SERVICES_LABELS = [
+        self::API_HOST_LOCALE_RO => 'Ridicare personala',
+        self::API_HOST_LOCALE_BG => 'Персонален асансьор',
+        self::API_HOST_LOCALE_HU => 'Személyi lift',
+    ];
 
     public const ELIGIBLE_SERVICES = [
         self::SAMEDAY_6H,
@@ -37,10 +56,12 @@ class SamedayCourierHelperClass
 	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
 	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
 
+    public const OOH_POPUP_TITLE = "Optiunea Ridicare Personala include ambele servicii LockerNextDay, respective Pudo !";
+
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
-        self::API_HOST_LOCAL_BG => 'BGN',
-        self::API_HOST_LOCAL_HU => 'HUF',
+        self::API_HOST_LOCALE_BG => 'BGN',
+        self::API_HOST_LOCALE_HU => 'HUF',
     ];
 
 	public const TOGGLE_HTML_ELEMENT = [
@@ -52,13 +73,13 @@ class SamedayCourierHelperClass
 	public const API_DEMO = 1;
 
 	public const API_HOST_LOCALE_RO = 'RO';
-	public const API_HOST_LOCAL_HU = 'HU';
-	public const API_HOST_LOCAL_BG = 'BG';
+	public const API_HOST_LOCALE_HU = 'HU';
+	public const API_HOST_LOCALE_BG = 'BG';
 
 	public const EAWB_INSTANCES = [
 		self::API_HOST_LOCALE_RO => 'https://eawb.sameday.ro',
-		self::API_HOST_LOCAL_HU => 'https://eawb.sameday.hu',
-		self::API_HOST_LOCAL_BG => 'https://eawb.sameday.bg',
+		self::API_HOST_LOCALE_HU => 'https://eawb.sameday.hu',
+		self::API_HOST_LOCALE_BG => 'https://eawb.sameday.bg',
 	];
 
 	public const TEXT_DOMAIN = 'samedaycourier-shipping';
@@ -89,11 +110,11 @@ class SamedayCourierHelperClass
 				self::API_PROD => 'https://api.sameday.ro',
 				self::API_DEMO => 'https://sameday-api.demo.zitec.com',
 			],
-			self::API_HOST_LOCAL_HU => [
+			self::API_HOST_LOCALE_HU => [
 				self::API_PROD => 'https://api.sameday.hu',
 				self::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
 			],
-			self::API_HOST_LOCAL_BG => [
+			self::API_HOST_LOCALE_BG => [
 				self::API_PROD => 'https://api.sameday.bg',
 				self::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
 			],
@@ -381,16 +402,16 @@ class SamedayCourierHelperClass
     }
 
 	public static function buildGridQuery(
-		string $table,
+		string $tableName,
 		bool $is_testing,
 		array $filters,
-		int $per_page,
-		int $page_number
+		?int $perPage = null,
+		?int $pageNumber = null
 	): string
 	{
 		$sql = sprintf(
 			"SELECT * FROM %s WHERE is_testing='%s' ",
-			$table,
+            $tableName,
 			$is_testing
 		);
 
@@ -407,11 +428,11 @@ class SamedayCourierHelperClass
 			$sql .= $order;
 		}
 
-		$sql .= " LIMIT $per_page";
-
-		$calculatePage = ($page_number - 1) * $per_page;
-
-		$sql .= " OFFSET $calculatePage ";
+        if (null !== $perPage && null !== $pageNumber) {
+            $sql .= " LIMIT $perPage";
+            $calculatePage = ($pageNumber - 1) * $perPage;
+            $sql .= " OFFSET $calculatePage ";
+        }
 
 		return $sql;
 	}
@@ -564,7 +585,18 @@ class SamedayCourierHelperClass
     public static function isLockerDelivery($samedayServiceCode): bool
     {
         return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
-            || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE;
+            || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE
+        ;
+    }
+
+    public static function isOohDeliveryOption($samedayServiceCode): bool
+    {
+        return in_array($samedayServiceCode, self::OOH_SERVICES, true);
+    }
+
+    public static function isNotInUseService($samedayServiceCode): bool
+    {
+        return in_array($samedayServiceCode, self::NOT_IN_USE_SERVICES, true);
     }
 
     /**

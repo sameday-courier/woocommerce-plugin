@@ -261,6 +261,12 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
+        if (null === $_POST['samedaycourier-service-name']) {
+            $_POST['samedaycourier-service-name'] = SamedayCourierHelperClass::OOH_SERVICES_LABELS[
+                SamedayCourierHelperClass::getHostCountry()
+            ];
+        }
+
         $post_fields = array(
             'id' => array(
                 'required' => true,
