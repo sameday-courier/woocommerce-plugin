@@ -358,7 +358,10 @@ class Sameday
 			SamedayCourierHelperClass::isTesting()
 		);
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($service->sameday_id, SamedayCourierHelperClass::isTesting());
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
+            $service->sameday_id,
+            SamedayCourierHelperClass::isTesting()
+        );
         $serviceTaxIds = array();
 
         if (isset($params['samedaycourier-open-package-status'])) {
@@ -440,7 +443,7 @@ class Sameday
        
 	    $lockerId = null;
         if ('' !== $post_meta_samedaycourier_locker
-            && SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+            && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 	        $locker = json_decode(
 				$post_meta_samedaycourier_locker,
@@ -461,7 +464,7 @@ class Sameday
         }
 
 	    if (('' !== $post_meta_samedaycourier_address_hd)
-            && !SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+            && !SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 		    $post_meta_samedaycourier_address_hd = json_decode(
 			    $post_meta_samedaycourier_address_hd,

@@ -16,11 +16,14 @@ class SamedayCourierHelperClass
     public const STANDARD_CROSS_BORDER = "XB";
     public const LOCKER_CROSS_BORDER_CODE = "XL";
     public const PUDO_CODE = "PD";
+    // public const PUDO_CROSS_BORDER_CODE = "";
     public const OOH_CODE = "OOH"; //Stands for Out of Home
 
     public const OOH_SERVICES = [
         self::LOCKER_NEXT_DAY_CODE,
-        self::PUDO_CODE
+        self::PUDO_CODE,
+        self::LOCKER_CROSS_BORDER_CODE,
+        // self::PUDO_CROSS_BORDER_CODE,
     ];
 
     public const NOT_IN_USE_SERVICES = [
@@ -580,13 +583,6 @@ class SamedayCourierHelperClass
             default:
                 return $weight;
         }
-    }
-
-    public static function isLockerDelivery($samedayServiceCode): bool
-    {
-        return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
-            || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE
-        ;
     }
 
     public static function isOohDeliveryOption($samedayServiceCode): bool

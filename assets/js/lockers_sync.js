@@ -88,6 +88,7 @@ const _openLockers = () => {
     pluginInstance.open();
 
     pluginInstance.subscribe((locker) => {
+        locker.service = "PD";
         doAjaxCall(
             {
                 'locker': locker,
