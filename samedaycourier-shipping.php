@@ -771,7 +771,7 @@ function wps_locker_row_layout() {
                         data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
                         data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
                     >
-                        <?php echo __('Show Locker Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                        <?php echo __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                     </button>
                 </th>
             </tr>
