@@ -59,7 +59,7 @@ class SamedayCourierHelperClass
 	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
 	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
 
-    public const OOH_POPUP_TITLE = "Optiunea Ridicare Personala include ambele servicii LockerNextDay, respective Pudo !";
+    public const OOH_POPUP_TITLE = "Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo !";
 
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
@@ -585,12 +585,12 @@ class SamedayCourierHelperClass
         }
     }
 
-    public static function isOohDeliveryOption($samedayServiceCode): bool
+    public static function isOohDeliveryOption(string $samedayServiceCode): bool
     {
         return in_array($samedayServiceCode, self::OOH_SERVICES, true);
     }
 
-    public static function isNotInUseService($samedayServiceCode): bool
+    public static function isNotInUseService(string $samedayServiceCode): bool
     {
         return in_array($samedayServiceCode, self::NOT_IN_USE_SERVICES, true);
     }
