@@ -180,7 +180,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.8.0 =
 
-* Implement the new PUDO Service as OOH (Out of home) delivery option.
+* Implement PUDO Service as OOH (Out of home) delivery option.
 
 = 1.7.8 =
 
