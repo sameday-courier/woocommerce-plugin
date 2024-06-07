@@ -64,7 +64,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
         return array_chunk(
             $this->getPickupPoints(),
             $perPage
-        )[$pageNumber - 1];
+        )[$pageNumber - 1] ?? [];
     }
 
 	/** Text displayed when no pickup-points data is available */

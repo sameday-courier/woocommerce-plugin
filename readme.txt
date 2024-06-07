@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.8.0 =
+
+* Implement PUDO Service as OOH (Out of home) delivery option.
+
 = 1.7.8 =
 
 * Bug fix. lockerLastMile issue: LockerLastMile is invalid. (From previous version 1.7.7)

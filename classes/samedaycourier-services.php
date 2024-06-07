@@ -91,7 +91,7 @@ class SamedayCourierService extends WP_List_Table
         return array_chunk(
             $this->getServices(),
             $perPage
-        )[$pageNumber - 1];
+        )[$pageNumber - 1] ?? [];
     }
 
 	/**

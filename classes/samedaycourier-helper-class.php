@@ -300,16 +300,16 @@ class SamedayCourierHelperClass
         return $data;
     }
 
-	/**
-	 * @param string $shippingMethodInput
-	 *
-	 * @return mixed|string|null
-	 */
-    public static function parseShippingMethodCode(string $shippingMethodInput)
+    /**
+     * @param string $shippingMethodInput
+     *
+     * @return string
+     */
+    public static function parseShippingMethodCode(string $shippingMethodInput): string
     {
         $serviceCode = explode(":", $shippingMethodInput, 3);
 
-        return $serviceCode[2] ?? null;
+        return $serviceCode[2] ?? '';
     }
 
     /**
@@ -596,14 +596,14 @@ class SamedayCourierHelperClass
     }
 
     /**
-     * @return mixed|string|null
+     * @return string
      */
-    public static function getChosenShippingMethodCode()
+    public static function getChosenShippingMethodCode(): string
     {
         if (null !== $chosenShippingMethod = WC()->session->get('chosen_shipping_methods')[0] ?? null) {
             return self::parseShippingMethodCode($chosenShippingMethod);
         }
 
-        return null;
+        return '';
     }
 }
