@@ -119,7 +119,7 @@ function samedaycourier_shipping_method() {
 
                 if (!empty($availableServices)) {
                     foreach ($availableServices as $service) {
-                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H
+                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H_CODE
                             && !in_array(
                                SamedayCourierHelperClass::removeAccents($stateName),
                                SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
