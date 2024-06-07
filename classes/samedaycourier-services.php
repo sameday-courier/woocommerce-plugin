@@ -42,39 +42,30 @@ class SamedayCourierService extends WP_List_Table
 		$sql = SamedayCourierHelperClass::buildGridQuery(
 			$wpdb->prefix . $this->tableName,
             SamedayCourierHelperClass::isTesting(),
-			self::ACCEPTED_FILTERS,
+			self::ACCEPTED_FILTERS
 		);
 
-		$services = (array) $wpdb->get_results($sql, 'ARRAY_A');
+        $services = array_filter(
+            (array) $wpdb->get_results($sql, 'ARRAY_A'),
+            static function($service) {
+                return SamedayCourierHelperClass::isInUseServices($service['sameday_code']);
+            }
+        );
 
-        $oohService = array_values(array_filter(
-            $services,
-            static function (array $service) {
-                return $service['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE;
-            },
-            true
-        ))[0] ?? null;
-
-        if (null !== $oohService) {
-            $oohService['name'] = __(
-                SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()],
-                SamedayCourierHelperClass::TEXT_DOMAIN
-            );
-            $oohService['sameday_name'] = __(
-                SamedayCourierHelperClass::SAMEDAY_OOH_LABEL,
-                SamedayCourierHelperClass::TEXT_DOMAIN
-            );
-            $oohService['sameday_code'] = SamedayCourierHelperClass::OOH_CODE;
-
-            $services = array_merge([$oohService], $services);
+        foreach ($services as &$service) {
+            if ($service['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+                $service['name'] = __(
+                    SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()],
+                    SamedayCourierHelperClass::TEXT_DOMAIN
+                );
+                $service['sameday_name'] = __(
+                    SamedayCourierHelperClass::SAMEDAY_OOH_LABEL,
+                    SamedayCourierHelperClass::TEXT_DOMAIN
+                );
+            }
         }
 
-        return array_filter($services, static function($service) {
-            return
-                !SamedayCourierHelperClass::isOohDeliveryOption($service['sameday_code'])
-                && !SamedayCourierHelperClass::isNotInUseService($service['sameday_code'])
-            ;
-        });
+        return $services;
 	}
 
     /**

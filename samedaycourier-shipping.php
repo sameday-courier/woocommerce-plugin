@@ -93,7 +93,7 @@ function samedaycourier_shipping_method() {
 
                 $eligibleShippingServices = SamedayCourierHelperClass::ELIGIBLE_SERVICES;
                 if ($destinationCountry !== $hostCountry) {
-                    $eligibleShippingServices = SamedayCourierHelperClass::CROSS_BORDER_ELIGIBLE_SERVICES;
+                    $eligibleShippingServices = SamedayCourierHelperClass::CROSSBORDER_ELIGIBLE_SERVICES;
                 }
 
                 $availableServices = array_filter(

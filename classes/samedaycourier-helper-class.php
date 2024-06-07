@@ -11,23 +11,29 @@ class SamedayCourierHelperClass
 {
 	public const CASH_ON_DELIVERY = 'cod';
 	public const LOCKER_NEXT_DAY_CODE = "LN";
-    public const SAMEDAY_6H = "6H";
-    public const STANDARD_24_H = "24";
-    public const STANDARD_CROSS_BORDER = "XB";
-    public const LOCKER_CROSS_BORDER_CODE = "XL";
+    public const SAMEDAY_6H_CODE = "6H";
+    public const STANDARD_24H_CODE = "24";
+    public const STANDARD_CROSSBORDER_CODE = "XB";
+    public const LOCKER_CROSSBORDER_CODE = "XL";
     public const PUDO_CODE = "PD";
     // public const PUDO_CROSS_BORDER_CODE = "";
-    public const OOH_CODE = "OOH"; //Stands for Out of Home
 
     public const OOH_SERVICES = [
         self::LOCKER_NEXT_DAY_CODE,
         self::PUDO_CODE,
-        self::LOCKER_CROSS_BORDER_CODE,
-        // self::PUDO_CROSS_BORDER_CODE,
     ];
 
-    public const NOT_IN_USE_SERVICES = [
-        '2H', 'LS', '3H', 'LH'
+    public const ELIGIBLE_TO_LOCKER = [
+        self::LOCKER_NEXT_DAY_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
+    ];
+
+    public const IN_USE_SERVICES = [
+        self::SAMEDAY_6H_CODE,
+        self::STANDARD_24H_CODE,
+        self::LOCKER_NEXT_DAY_CODE,
+        self::STANDARD_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
     ];
 
     public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
@@ -39,14 +45,14 @@ class SamedayCourierHelperClass
     ];
 
     public const ELIGIBLE_SERVICES = [
-        self::SAMEDAY_6H,
-        self::STANDARD_24_H,
+        self::SAMEDAY_6H_CODE,
+        self::STANDARD_24H_CODE,
         self::LOCKER_NEXT_DAY_CODE
     ];
 
-    public const CROSS_BORDER_ELIGIBLE_SERVICES = [
-        self::STANDARD_CROSS_BORDER,
-        self::LOCKER_CROSS_BORDER_CODE
+    public const CROSSBORDER_ELIGIBLE_SERVICES = [
+        self::STANDARD_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
     ];
 
     public const ELIGIBLE_TO_6H_SERVICE = [
@@ -590,9 +596,9 @@ class SamedayCourierHelperClass
         return in_array($samedayServiceCode, self::OOH_SERVICES, true);
     }
 
-    public static function isNotInUseService(string $samedayServiceCode): bool
+    public static function isInUseServices(string $samedayServiceCode): bool
     {
-        return in_array($samedayServiceCode, self::NOT_IN_USE_SERVICES, true);
+        return in_array($samedayServiceCode, self::IN_USE_SERVICES, true);
     }
 
     /**

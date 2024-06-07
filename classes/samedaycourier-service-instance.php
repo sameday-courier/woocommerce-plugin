@@ -101,7 +101,7 @@ class SamedayCourierServiceInstance
         $service = SamedayCourierQueryDb::getService($id);
 
         $greyedOut = "";
-        $serviceName = $service->name;
+        $serviceName = $service->sameday_name;
         if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
             $greyedOut = "disabled";
             $serviceName = SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()];
