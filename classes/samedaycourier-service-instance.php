@@ -76,7 +76,7 @@ class SamedayCourierServiceInstance
         <?php }
     }
 
-    private function getStatuses()
+    private function getStatuses(): array
     {
 		return array(
 			array(
@@ -90,12 +90,22 @@ class SamedayCourierServiceInstance
 		);
 	}
 
-	/**
-	 * @param $id
-	 */
+    /**
+     * @param $id
+     *
+     * @return string|void
+     *
+     */
 	private function createServiceForm($id)
     {
         $service = SamedayCourierQueryDb::getService($id);
+
+        $greyedOut = "";
+        $serviceName = $service->sameday_name;
+        if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+            $greyedOut = "disabled";
+            $serviceName = SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()];
+        }
 
         if (! $service) {
 	        WC_Admin_Settings::add_error('No service available !');
@@ -109,7 +119,7 @@ class SamedayCourierServiceInstance
         }
 
         return
-        '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . $service->sameday_name . '</strong>
+        '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . esc_html($serviceName) . '</strong>
             <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="edit_service">
                 <table class="form-table editServiceForm">
@@ -121,7 +131,7 @@ class SamedayCourierServiceInstance
                                 <label for="samedaycourier-service-name">  '.__('Service Name', SamedayCourierHelperClass::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" id="samedaycourier-service-name" value="'.esc_html($service->name).'">
+                                <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" ' . $greyedOut . ' id="samedaycourier-service-name" value="'.esc_html($serviceName).'">
                              </td>
                         </tr>
                         <tr valign="top">
@@ -176,9 +186,12 @@ class SamedayCourierServiceInstance
 		$this->services_obj = new SamedayCourierService();
 	}
 
-	/** Singleton instance */
-	public static function get_instance() {
-		if ( ! isset( self::$instance ) ) {
+	/**
+     * Singleton instance
+     */
+	public static function get_instance(): self
+    {
+		if (!isset( self::$instance )) {
 			self::$instance = new self();
 		}
 

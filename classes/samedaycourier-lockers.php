@@ -10,6 +10,8 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class SamedayCourierLockers extends WP_List_Table
 {
+    private $tableName = 'sameday_locker';
+
 	/** Class constructor */
 	public function __construct() {
 
@@ -52,28 +54,6 @@ class SamedayCourierLockers extends WP_List_Table
 
 		return $wpdb->get_results($sql, 'ARRAY_A');
 	}
-
-	/**
-	 * Returns the count of records in the database.
-	 *
-	 * @return null|string
-	 */
-	public static function record_count(): ?string
-	{
-		global $wpdb;
-
-		$table = "{$wpdb->prefix}sameday_locker";
-		$is_testing = SamedayCourierHelperClass::isTesting();
-
-		$sql = sprintf(
-			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
-			$table,
-			$is_testing
-		);
-
-		return $wpdb->get_var($sql);
-	}
-
 
 	/** Text displayed when no lockers data is available */
 	public function no_items(): void
@@ -139,7 +119,7 @@ class SamedayCourierLockers extends WP_List_Table
 
 		$per_page     = $this->get_items_per_page( 'lockers_per_page', self::GRID_PER_PAGE_VALUE);
 		$current_page = $this->get_pagenum();
-		$total_items  = self::record_count();
+		$total_items  = SamedayCourierHelperClass::countGridRecords($this->tableName);
 
 		$this->set_pagination_args( [
 			'total_items' => $total_items, //WE have to calculate the total number of items

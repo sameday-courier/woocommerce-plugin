@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.7.8
+ * Version: 1.8.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -93,7 +93,7 @@ function samedaycourier_shipping_method() {
 
                 $eligibleShippingServices = SamedayCourierHelperClass::ELIGIBLE_SERVICES;
                 if ($destinationCountry !== $hostCountry) {
-                    $eligibleShippingServices = SamedayCourierHelperClass::CROSS_BORDER_ELIGIBLE_SERVICES;
+                    $eligibleShippingServices = SamedayCourierHelperClass::CROSSBORDER_ELIGIBLE_SERVICES;
                 }
 
                 $availableServices = array_filter(
@@ -119,7 +119,7 @@ function samedaycourier_shipping_method() {
 
                 if (!empty($availableServices)) {
                     foreach ($availableServices as $service) {
-                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H
+                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H_CODE
                             && !in_array(
                                SamedayCourierHelperClass::removeAccents($stateName),
                                SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
@@ -129,7 +129,7 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if (SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+                        if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
                             && count(WC()->cart->get_cart()) > $lockerMaxItems
                         ) {
                             continue;
@@ -427,8 +427,8 @@ function samedaycourier_shipping_method() {
 	                    'disabled' => true,
 	                    'options' => array(
 		                    SamedayCourierHelperClass::API_HOST_LOCALE_RO => __(SamedayCourierHelperClass::API_HOST_LOCALE_RO, SamedayCourierHelperClass::TEXT_DOMAIN),
-		                    SamedayCourierHelperClass::API_HOST_LOCAL_HU => __(SamedayCourierHelperClass::API_HOST_LOCAL_HU, SamedayCourierHelperClass::TEXT_DOMAIN),
-                            SamedayCourierHelperClass::API_HOST_LOCAL_BG => __(SamedayCourierHelperClass::API_HOST_LOCAL_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
+		                    SamedayCourierHelperClass::API_HOST_LOCALE_HU => __(SamedayCourierHelperClass::API_HOST_LOCALE_HU, SamedayCourierHelperClass::TEXT_DOMAIN),
+                            SamedayCourierHelperClass::API_HOST_LOCALE_BG => __(SamedayCourierHelperClass::API_HOST_LOCALE_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
 		                    'none' => '',
 	                    ),
                     ),
@@ -761,7 +761,7 @@ function wps_locker_row_layout() {
         );
     }
 
-    if ((SamedayCourierHelperClass::isLockerDelivery($serviceCode)) && is_checkout()) { ?>
+    if ((SamedayCourierHelperClass::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
         <?php if ((SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
             <tr class="shipping-pickup-store">
                 <td><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></td>
@@ -771,7 +771,7 @@ function wps_locker_row_layout() {
                         data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
                         data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
                     >
-                        <?php echo __('Show Locker Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                        <?php echo __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                     </button>
                 </th>
             </tr>
@@ -833,7 +833,7 @@ add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 // When POST Order Form
 add_action('woocommerce_checkout_update_order_meta', static function ($orderId): void {
-    if (SamedayCourierHelperClass::isLockerDelivery(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
         try {
             SamedayCourierHelperClass::addLockerToOrderData(
                 $orderId,
@@ -1085,7 +1085,7 @@ add_action('woocommerce_checkout_process', static function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     if ($chosen_methods !== null) {
         $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-        if (SamedayCourierHelperClass::isLockerDelivery($serviceCode) && null === WC()->session->get('locker')) {
+        if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && null === WC()->session->get('locker')) {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }

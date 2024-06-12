@@ -10,6 +10,11 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class SamedayCourierPickupPoints extends WP_List_Table
 {
+    /**
+     * @var string $tableName
+     */
+    private $tableName = 'sameday_pickup_point';
+
 	/** Class constructor */
 	public function __construct()
 	{
@@ -26,54 +31,41 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 	private const GRID_PER_PAGE_VALUE = 10;
 
-	/**
-	 * @param int $per_page
-	 * @param int $page_number
-	 *
-	 * @return array|object|stdClass[]|null
-	 */
-	public static function get_pickup_points(
-		int $per_page = self::GRID_PER_PAGE_VALUE,
-		int $page_number = 1
-	)
+    /**
+     * @return array|object|stdClass[]|null
+     */
+	private function getPickupPoints()
 	{
-
 		global $wpdb;
 
-		$table = "{$wpdb->prefix}sameday_pickup_point";
+		$table = $wpdb->prefix . $this->tableName;
 		$is_testing = SamedayCourierHelperClass::isTesting();
 
 		$sql = SamedayCourierHelperClass::buildGridQuery(
 			$table,
 			$is_testing,
 			self::ACCEPTED_FILTERS,
-			$per_page,
-			$page_number
 		);
 
 		return $wpdb->get_results($sql, 'ARRAY_A');
 	}
 
-	/**
-	 * Returns the count of records in the database.
-	 *
-	 * @return null|string
-	 */
-	public static function record_count(): ?string
-	{
-		global $wpdb;
-
-		$table = "{$wpdb->prefix}sameday_pickup_point";
-		$is_testing = SamedayCourierHelperClass::isTesting();
-
-		$sql = sprintf(
-			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
-			$table,
-			$is_testing
-		);
-
-		return $wpdb->get_var($sql);
-	}
+    /**
+     * @param int $perPage
+     * @param int $pageNumber
+     *
+     * @return array
+     */
+    private function buildGrid(
+        int $perPage = self::GRID_PER_PAGE_VALUE,
+        int $pageNumber = 1
+    ): array
+    {
+        return array_chunk(
+            $this->getPickupPoints(),
+            $perPage
+        )[$pageNumber - 1] ?? [];
+    }
 
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
@@ -89,7 +81,8 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	 *
 	 * @return mixed
 	 */
-	public function column_default( $item, $column_name ) {
+	public function column_default($item, $column_name)
+    {
 		switch ($column_name) {
 			case 'contactPersons':
 				return $this->parseContactPersons(unserialize($item[$column_name], ['']));
@@ -154,14 +147,14 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 		$per_page     = $this->get_items_per_page( 'pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
 		$current_page = $this->get_pagenum();
-		$total_items  = self::record_count();
+		$total_items  = count($this->getPickupPoints());
 
-		$this->set_pagination_args( [
-			'total_items' => $total_items, //WE have to calculate the total number of items
-			'per_page'    => $per_page //WE have to determine how many items to show on a page
-		] );
+		$this->set_pagination_args([
+			'total_items' => $total_items,
+			'per_page'    => $per_page,
+		]);
 
-		$this->items = self::get_pickup_points($per_page, $current_page);
+		$this->items = $this->buildGrid($per_page, $current_page);
 	}
 }
 
