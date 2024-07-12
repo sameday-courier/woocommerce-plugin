@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.7.9 =
+
+* Add new feature. Pre-complete LockerMaxItems field with default value.
+
 = 1.7.8 =
 
 * Bug fix. lockerLastMile issue: LockerLastMile is invalid. (From previous version 1.7.7)
