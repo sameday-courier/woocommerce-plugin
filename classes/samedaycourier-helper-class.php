@@ -462,17 +462,17 @@ class SamedayCourierHelperClass
             $lockerFields = (array) $lockerFields;
         }
 
-		$postsMeta = get_post_meta($order_id, '', true);
+		$postsMeta = $_POST;
 
 		$shippingInputs = [];
-		foreach ($postsMeta as $key => $post) {
-			if (($key !== self::POST_META_SAMEDAY_SHIPPING_LOCKER) && strpos($key, 'shipping')) {
-				$shippingInputs[$key] = $post[0] ?? '';
+		foreach ($postsMeta as $key => $value) {
+			if (true === (bool) strpos("_" . $key, 'shipping')) {
+				$shippingInputs[sprintf("_%s", $key)] = $value ?? '';
 			}
 		}
 
-		$country = $shippingInputs['_shipping_country'];
-		$firstName = $shippingInputs['_shipping_first_name'];
+		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
+		$firstName = $shippingInputs['shipping_first_name'] ?? $postsMeta['billing_first_name'] ?? '';
 		$state = self::convertStateNameToCode(
 			$country,
 			$lockerFields['county']
@@ -490,6 +490,7 @@ class SamedayCourierHelperClass
 		);
 
 		if ('' === get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true)) {
+            // Save HD Address
 			update_post_meta(
 				$order_id,
 				self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
@@ -543,6 +544,18 @@ class SamedayCourierHelperClass
 		foreach ($addressFieldsMapper as $key => $value) {
 			update_post_meta($orderId, $key, $value, false);
 		}
+
+        SamedayCourierQueryDb::updateWcOrderAddress(
+            $orderId,
+            [
+                'address_1' => $address1,
+                'address_2' => $address2,
+                'city' => $city,
+                'state' => $state,
+                'postcode' => $postalCode,
+                'country' => $country,
+            ]
+        );
 	}
 
     public static function convertWeight(float $weight): float

@@ -519,7 +519,7 @@ function load_lockers_sync() {
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
     }
 
-    if ($pagenow === 'post.php') {
+    if ($pagenow === 'post.php' || $pagenow === 'admin.php') {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
