@@ -491,17 +491,6 @@ class Sameday
 			$state = $post_meta_samedaycourier_address_hd['_shipping_state'];
 	    }
 
-	    SamedayCourierHelperClass::updateAddressFields(
-		    $params['samedaycourier-order-id'],
-		    $address_1,
-		    $address_2,
-		    $name,
-		    $city,
-		    $state,
-		    $postalCode,
-		    $country
-	    );
-
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],
 	        SamedayCourierHelperClass::getSamedaySettings()['password'],
@@ -619,6 +608,19 @@ class Sameday
             'service_code' => $service->sameday_code
         );
 
+        try {
+            SamedayCourierHelperClass::updateAddressFields(
+                $params['samedaycourier-order-id'],
+                $address_1,
+                $address_2,
+                $name,
+                $city,
+                $state,
+                $postalCode,
+                $country
+            );
+        } catch (Exception $exception) {}
+
         // Add/update sameday metadata.
         foreach ($metas as $key => $value) {
             $shippingLine->update_meta_data($key, $value);
@@ -629,12 +631,14 @@ class Sameday
         $shippingLine->set_method_id('samedaycourier');
         $shippingLine->save();
 
-        global $wpdb;
-        $wpdb->update(
-			$wpdb->prefix . 'woocommerce_order_items',
-			array('order_item_name' => $service->name),
-			array('order_item_id' => $samedayOrderItemId)
-        );
+        try {
+            global $wpdb;
+            $wpdb->update(
+                $wpdb->prefix . 'woocommerce_order_items',
+                array('order_item_name' => $service->name),
+                array('order_item_id' => $samedayOrderItemId)
+            );
+        } catch (Exception $exception) {}
 
         return wp_redirect(
 			add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit")

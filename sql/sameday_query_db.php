@@ -166,13 +166,27 @@ class SamedayCourierQueryDb
 	/**
 	 * @param array $service
 	 */
-	public static function updateService($service)
+	public static function updateService(array $service): void
 	{
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_service';
 		$wpdb->update($table, $service, array('id' => $service['id']));
 	}
+
+    public static function updateWcOrderAddress(int $oderId, array $address): void
+    {
+        global $wpdb;
+
+        $wpdb->update(
+            $wpdb->prefix . 'wc_order_addresses',
+            $address,
+            [
+                'order_id' => $oderId,
+                'address_type' => 'shipping'
+            ]
+        );
+    }
 
 	/**
 	 * @param \Sameday\Objects\Service\ServiceObject $serviceObject

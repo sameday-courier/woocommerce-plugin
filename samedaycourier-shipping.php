@@ -86,7 +86,6 @@ function samedaycourier_shipping_method() {
 
                 $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
-                $lockerMaxItems = (int) $this->settings['locker_max_items'];
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
                 $hostCountry = SamedayCourierHelperClass::getHostCountry();
                 $destinationCountry = $package['destination']['country'] ?? SamedayCourierHelperClass::API_HOST_LOCALE_RO;
@@ -129,10 +128,15 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-                        if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
-                            && count(WC()->cart->get_cart()) > $lockerMaxItems
-                        ) {
-                            continue;
+
+                        if (SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)) {
+	                        if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
+		                            $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+                            }
+
+                            if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
+                                continue;
+                            }
                         }
 
                         $price = $service->price;
@@ -393,16 +397,16 @@ function samedaycourier_shipping_method() {
 	                    'title' => __('Locker max. items', SamedayCourierHelperClass::TEXT_DOMAIN),
 	                    'type' => 'number',
 	                    'description' => __('The maximum amount of items accepted inside the locker', SamedayCourierHelperClass::TEXT_DOMAIN),
-	                    'default' => 1
+	                    'default' => SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS
                     ),
 
                     'lockers_map' => array(
-                        'title'   => __('Use locker map', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title'   => __('Show locker map method', SamedayCourierHelperClass::TEXT_DOMAIN),
                         'default' => 'no',
                         'type'    => 'select',
                         'options' => [
-                            'no' => __('No', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'yes' => __('Yes', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'no' => __('Drop-down list', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'yes' => __('Interactive Map', SamedayCourierHelperClass::TEXT_DOMAIN),
                         ]
                     ),
 
@@ -519,7 +523,7 @@ function load_lockers_sync() {
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
     }
 
-    if ($pagenow === 'post.php') {
+    if ($pagenow === 'post.php' || $pagenow === 'admin.php') {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
