@@ -2,8 +2,8 @@
 Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
-Requires at least: 6.0
-Tested up to: 6.6.0
+Requires at least: 6.6.0
+Tested up to: 6.6.1
 Stable tag: 9.1.2
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -71,7 +71,7 @@ delivery service.
 Sure. However, keep in mind that if you make changes to the source code of the plugin you can no longer benefit from the updates we make constantly. Because in a situation like this in case of an update your changes would be overwritten.
 
 NOTE: We encourage customers to fork our GitHub repository and contribute with their ideas
-Link to Github: https://github.com/sameday-courier/woocommerce-plugin
+Link to GitHub: https://github.com/sameday-courier/woocommerce-plugin
 
 = Are all easyBox delivery services available ? =
 
@@ -91,7 +91,7 @@ This situation may be due to the fact that the name of the locality does not mat
 2. Update services
 3. Enabling services
 4. Add shipping method to shipping zone
-5. How clients will choose one of Sameday's shipping methods
+5. How clients will choose one of Sameday shipping methods
 6. Creating an AWB
 7. Adding more parcels to the AWB
 8. Show AWB History
@@ -109,7 +109,7 @@ In order to set up the plugin, you need to provide the following information (pl
 * `Default label format` = The format of paper (e.g. A4) for creating the awbs
 * `Is testing` = If checked, the plugin will be set in development mode. This feature is intended to test services. Should not be checked on production environment
 
-    NOTE: Each environment (eg. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
+    NOTE: Each environment (e.g. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
 
 * `Use estimated cost` = The cost that it will be displayed for each of the services. Options: never (fixed price - refer to Edit Service form), always (estimated by Sameday). For extra information regard to these options, please refer to the screenshot 1
 * `Extra fee` = Extra fee, defined in percentage value, which will be applied on top of the estimated cost provided by Sameday
@@ -178,9 +178,18 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.7.9 =
+
+= 1.7.11 =
 
 * Code refactor. Compatibility with WP 6.6
+
+= 1.7.10 =
+
+* Code Refactor. "Use locker map" becomes "Show locker method".
+
+= 1.7.9 =
+
+* Add new feature. Pre-complete LockerMaxItems field with default value.
 
 = 1.7.8 =
 
