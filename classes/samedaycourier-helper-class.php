@@ -9,6 +9,7 @@ if (! defined( 'ABSPATH' ) ) {
 
 class SamedayCourierHelperClass
 {
+	public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
 	public const CASH_ON_DELIVERY = 'cod';
 	public const LOCKER_NEXT_DAY_CODE = "LN";
     public const SAMEDAY_6H = "6H";
