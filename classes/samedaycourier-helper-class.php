@@ -16,7 +16,7 @@ class SamedayCourierHelperClass
     public const STANDARD_24H_CODE = "24";
     public const STANDARD_CROSSBORDER_CODE = "XB";
     public const LOCKER_CROSSBORDER_CODE = "XL";
-    public const PUDO_CODE = "PD";
+    public const PUDO_CODE = "PP";
 
     public const OOH_TYPES = [
         0 => self::LOCKER_NEXT_DAY_CODE,
