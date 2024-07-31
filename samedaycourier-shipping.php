@@ -128,10 +128,9 @@ function samedaycourier_shipping_method() {
                             continue;
                         }
 
-
-                        if (SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)) {
+                        if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)) {
 	                        if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
-		                            $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+                                $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
                             }
 
                             if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
@@ -864,9 +863,11 @@ add_action(
             && !isset($wp->query_vars['order-received'])
             && is_checkout()
         ) {
+            // prod: https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js
+            // demo: https://cdn.sameday.ro/preprod-locker-plugin/lockerpluginsdk.js
             wp_enqueue_script(
                 'prod-locker-plugin',
-                'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js'
+                'https://cdn.sameday.ro/preprod-locker-plugin/lockerpluginsdk.js'
             );
             wp_enqueue_script(
                 'helper',

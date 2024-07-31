@@ -46,7 +46,9 @@ function samedaycourierAddAwbForm($order): string {
                     JSON_THROW_ON_ERROR
                 );
 
-                $serviceCode = $locker['service'] ?? $serviceCode;
+                if (isset($locker['oohType'])) {
+                    $serviceCode = SamedayCourierHelperClass::OOH_TYPES[$locker['oohType']] ;
+                }
             }
 
             break;
