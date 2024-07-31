@@ -1,5 +1,7 @@
 <?php
 
+use Sameday\Objects\Service\ServiceObject;
+
 if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -140,11 +142,12 @@ class SamedayCourierQueryDb
     }
 
     /**
-	 * @param \Sameday\Objects\Service\ServiceObject $service
-	 *
-	 * @param int $is_testing
-	 */
-	public static function addService(\Sameday\Objects\Service\ServiceObject $service, $is_testing)
+     * @param ServiceObject $service
+     * @param int $is_testing
+     *
+     * @return void
+     */
+	public static function addService(ServiceObject $service, int $is_testing): void
 	{
 		global $wpdb;
 
@@ -188,23 +191,28 @@ class SamedayCourierQueryDb
         );
     }
 
-	/**
-	 * @param \Sameday\Objects\Service\ServiceObject $serviceObject
-	 *
-	 * @param int $id
-	 */
-	public static function updateServiceCode(\Sameday\Objects\Service\ServiceObject $serviceObject, $id)
+    /**
+     * @param ServiceObject $serviceObject
+     * @param int $id
+     *
+     * @return void
+     */
+	public static function updateServiceCode(ServiceObject $serviceObject, int $id): void
 	{
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'sameday_service';
-
-		$service = array(
+		$updatedService = array(
 			'sameday_code' => $serviceObject->getCode(),
-            'service_optional_taxes' => !empty($serviceObject->getOptionalTaxes()) ? serialize($serviceObject->getOptionalTaxes()) : null
+            'service_optional_taxes' => !empty($serviceObject->getOptionalTaxes())
+                ? serialize($serviceObject->getOptionalTaxes())
+                : null
 		);
 
-		$wpdb->update($table, $service, array('id' => $id));
+		$wpdb->update(
+            $wpdb->prefix . 'sameday_service',
+            $updatedService,
+            array('id' => $id)
+        );
 	}
 
 	/**
