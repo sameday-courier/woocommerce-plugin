@@ -27,14 +27,30 @@ function isServiceEligibleToLockerFirstMile($serviceId) {
 function samedaycourierAddAwbForm($order): string {
     $is_testing = SamedayCourierHelperClass::isTesting();
 
-    $serviceId = null;
+    $serviceCode = null;
     foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
         if ($shippingLine->get_method_id() !== 'samedaycourier') {
             continue;
         }
 
-        $serviceId = (int) $shippingLine->get_meta('service_id');
-        if ($serviceId) {
+        if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
+            $metaLockerKey = SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER;
+            if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode)
+                && '' !== $postMetaLocker = get_post_meta($order->get_id(), $metaLockerKey, true)
+            ) {
+                $lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
+                $locker = json_decode(
+                    $lockerDetailsForm,
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+
+                if (isset($locker['oohType'])) {
+                    $serviceCode = SamedayCourierHelperClass::OOH_TYPES[$locker['oohType']] ;
+                }
+            }
+
             break;
         }
     }
@@ -142,25 +158,34 @@ function samedaycourierAddAwbForm($order): string {
         ";
     }
 
-    $services = '';
     $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);
 
 	$allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
 	$allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+    $servicesOptions = '';
     foreach ($samedayServices as $samedayService) {
         $firstMileId = isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
 
-        $checked = ($serviceId === (int) $samedayService->sameday_id) ? 'selected' : '';
+        $checked = ($serviceCode === $samedayService->sameday_code) ? 'selected' : '';
         $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
         if($firstMileId === $samedayService->sameday_id){
             $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
         }
 
         $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
-        if (SamedayCourierHelperClass::isLockerDelivery($samedayService->sameday_code)) {
+        if (SamedayCourierHelperClass::isOohDeliveryOption($samedayService->sameday_code)) {
             $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
         }
-        $services .= "<option data-fistMile= '{$allowFirstMile}' data-lastMile='{$allowLastMile}' value='{$samedayService->sameday_id}' {$checked}> {$samedayService->sameday_name} </option>";
+
+        $option = sprintf(
+            "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
+            $allowFirstMile,
+            $allowLastMile,
+            $samedayService->sameday_id,
+            $checked,
+            $samedayService->sameday_name,
+        );
+        $servicesOptions .= $option;
     }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
@@ -254,7 +279,7 @@ function samedaycourierAddAwbForm($order): string {
                             </th> 
                             <td class="forminp forminp-text">
                                 <select form="addAwbForm" name="samedaycourier-service" style="width: 180px; height: 30px;" id="samedaycourier-service">
-                                    ' . $services . '
+                                    ' . $servicesOptions . '
                                 </select>
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
@@ -271,7 +296,7 @@ function samedaycourierAddAwbForm($order): string {
                        
                             $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
-                                    <label for="samedaycourier-locker-details"> ' . __("Locker details", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
+                                    <label for="samedaycourier-locker-details"> ' . __("Location details", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
                                 $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='$lockerDetailsForm'>";

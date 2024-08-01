@@ -3,7 +3,7 @@
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 
-if (! defined( 'ABSPATH' ) ) {
+if (! defined( 'ABSPATH' )) {
 	exit;
 }
 
@@ -12,20 +12,48 @@ class SamedayCourierHelperClass
 	public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
 	public const CASH_ON_DELIVERY = 'cod';
 	public const LOCKER_NEXT_DAY_CODE = "LN";
-    public const SAMEDAY_6H = "6H";
-    public const STANDARD_24_H = "24";
-    public const STANDARD_CROSS_BORDER = "XB";
-    public const LOCKER_CROSS_BORDER_CODE = "XL";
+    public const SAMEDAY_6H_CODE = "6H";
+    public const STANDARD_24H_CODE = "24";
+    public const STANDARD_CROSSBORDER_CODE = "XB";
+    public const LOCKER_CROSSBORDER_CODE = "XL";
+    public const PUDO_CODE = "PP";
+
+    public const OOH_TYPES = [
+        0 => self::LOCKER_NEXT_DAY_CODE,
+        1 => self::PUDO_CODE,
+    ];
+
+    public const OOH_SERVICES = [
+        self::LOCKER_NEXT_DAY_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
+        self::PUDO_CODE,
+    ];
+
+    public const IN_USE_SERVICES = [
+        self::SAMEDAY_6H_CODE,
+        self::STANDARD_24H_CODE,
+        self::LOCKER_NEXT_DAY_CODE,
+        self::STANDARD_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
+    ];
+
+    public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
+
+    public const OOH_SERVICES_LABELS = [
+        self::API_HOST_LOCALE_RO => 'Ridicare personala',
+        self::API_HOST_LOCALE_BG => 'Персонален асансьор',
+        self::API_HOST_LOCALE_HU => 'Személyi lift',
+    ];
 
     public const ELIGIBLE_SERVICES = [
-        self::SAMEDAY_6H,
-        self::STANDARD_24_H,
+        self::SAMEDAY_6H_CODE,
+        self::STANDARD_24H_CODE,
         self::LOCKER_NEXT_DAY_CODE
     ];
 
-    public const CROSS_BORDER_ELIGIBLE_SERVICES = [
-        self::STANDARD_CROSS_BORDER,
-        self::LOCKER_CROSS_BORDER_CODE
+    public const CROSSBORDER_ELIGIBLE_SERVICES = [
+        self::STANDARD_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_CODE,
     ];
 
     public const ELIGIBLE_TO_6H_SERVICE = [
@@ -38,10 +66,12 @@ class SamedayCourierHelperClass
 	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
 	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
 
+    public const OOH_POPUP_TITLE = "Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo !";
+
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
-        self::API_HOST_LOCAL_BG => 'BGN',
-        self::API_HOST_LOCAL_HU => 'HUF',
+        self::API_HOST_LOCALE_BG => 'BGN',
+        self::API_HOST_LOCALE_HU => 'HUF',
     ];
 
 	public const TOGGLE_HTML_ELEMENT = [
@@ -53,13 +83,13 @@ class SamedayCourierHelperClass
 	public const API_DEMO = 1;
 
 	public const API_HOST_LOCALE_RO = 'RO';
-	public const API_HOST_LOCAL_HU = 'HU';
-	public const API_HOST_LOCAL_BG = 'BG';
+	public const API_HOST_LOCALE_HU = 'HU';
+	public const API_HOST_LOCALE_BG = 'BG';
 
 	public const EAWB_INSTANCES = [
 		self::API_HOST_LOCALE_RO => 'https://eawb.sameday.ro',
-		self::API_HOST_LOCAL_HU => 'https://eawb.sameday.hu',
-		self::API_HOST_LOCAL_BG => 'https://eawb.sameday.bg',
+		self::API_HOST_LOCALE_HU => 'https://eawb.sameday.hu',
+		self::API_HOST_LOCALE_BG => 'https://eawb.sameday.bg',
 	];
 
 	public const TEXT_DOMAIN = 'samedaycourier-shipping';
@@ -90,11 +120,11 @@ class SamedayCourierHelperClass
 				self::API_PROD => 'https://api.sameday.ro',
 				self::API_DEMO => 'https://sameday-api.demo.zitec.com',
 			],
-			self::API_HOST_LOCAL_HU => [
+			self::API_HOST_LOCALE_HU => [
 				self::API_PROD => 'https://api.sameday.hu',
 				self::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
 			],
-			self::API_HOST_LOCAL_BG => [
+			self::API_HOST_LOCALE_BG => [
 				self::API_PROD => 'https://api.sameday.bg',
 				self::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
 			],
@@ -277,16 +307,16 @@ class SamedayCourierHelperClass
         return $data;
     }
 
-	/**
-	 * @param string $shippingMethodInput
-	 *
-	 * @return mixed|string|null
-	 */
-    public static function parseShippingMethodCode(string $shippingMethodInput)
+    /**
+     * @param string $shippingMethodInput
+     *
+     * @return string
+     */
+    public static function parseShippingMethodCode(string $shippingMethodInput): string
     {
         $serviceCode = explode(":", $shippingMethodInput, 3);
 
-        return $serviceCode[2] ?? null;
+        return $serviceCode[2] ?? '';
     }
 
     /**
@@ -382,16 +412,16 @@ class SamedayCourierHelperClass
     }
 
 	public static function buildGridQuery(
-		string $table,
+		string $tableName,
 		bool $is_testing,
 		array $filters,
-		int $per_page,
-		int $page_number
+		?int $perPage = null,
+		?int $pageNumber = null
 	): string
 	{
 		$sql = sprintf(
 			"SELECT * FROM %s WHERE is_testing='%s' ",
-			$table,
+            $tableName,
 			$is_testing
 		);
 
@@ -408,11 +438,11 @@ class SamedayCourierHelperClass
 			$sql .= $order;
 		}
 
-		$sql .= " LIMIT $per_page";
-
-		$calculatePage = ($page_number - 1) * $per_page;
-
-		$sql .= " OFFSET $calculatePage ";
+        if (null !== $perPage && null !== $pageNumber) {
+            $sql .= " LIMIT $perPage";
+            $calculatePage = ($pageNumber - 1) * $perPage;
+            $sql .= " OFFSET $calculatePage ";
+        }
 
 		return $sql;
 	}
@@ -575,21 +605,25 @@ class SamedayCourierHelperClass
         }
     }
 
-    public static function isLockerDelivery($samedayServiceCode): bool
+    public static function isOohDeliveryOption(string $samedayServiceCode): bool
     {
-        return $samedayServiceCode === self::LOCKER_NEXT_DAY_CODE
-            || $samedayServiceCode === self::LOCKER_CROSS_BORDER_CODE;
+        return in_array($samedayServiceCode, self::OOH_SERVICES, true);
+    }
+
+    public static function isInUseServices(string $samedayServiceCode): bool
+    {
+        return in_array($samedayServiceCode, self::IN_USE_SERVICES, true);
     }
 
     /**
-     * @return mixed|string|null
+     * @return string
      */
-    public static function getChosenShippingMethodCode()
+    public static function getChosenShippingMethodCode(): string
     {
         if (null !== $chosenShippingMethod = WC()->session->get('chosen_shipping_methods')[0] ?? null) {
             return self::parseShippingMethodCode($chosenShippingMethod);
         }
 
-        return null;
+        return '';
     }
 }

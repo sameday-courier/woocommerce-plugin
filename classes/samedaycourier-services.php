@@ -10,7 +10,13 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class SamedayCourierService extends WP_List_Table
 {
-	/** Class constructor */
+    private $tableName = "sameday_service";
+
+    private $countRecords = 0;
+
+	/**
+     * Class constructor
+     */
 	public function __construct() {
 
 		parent::__construct( [
@@ -26,62 +32,58 @@ class SamedayCourierService extends WP_List_Table
 
 	private const GRID_PER_PAGE_VALUE = 10;
 
-	/**
-	 * @param int $per_page
-	 * @param int $page_number
-	 *
-	 * @return array
-	 */
-	public static function get_services(
-		int $per_page = self::GRID_PER_PAGE_VALUE,
-		int $page_number = 1
-	): array
+    /**
+     * @return array
+     */
+	private function getServices(): array
 	{
-
 		global $wpdb;
-
-		$is_testing = SamedayCourierHelperClass::isTesting();
-		$table = $wpdb->prefix . "sameday_service";
 
 		$sql = SamedayCourierHelperClass::buildGridQuery(
-			$table,
-			$is_testing,
-			self::ACCEPTED_FILTERS,
-			$per_page,
-			$page_number
+			$wpdb->prefix . $this->tableName,
+            SamedayCourierHelperClass::isTesting(),
+			self::ACCEPTED_FILTERS
 		);
 
+        $services = array_filter(
+            (array) $wpdb->get_results($sql, 'ARRAY_A'),
+            static function($service) {
+                return SamedayCourierHelperClass::isInUseServices($service['sameday_code']);
+            }
+        );
 
-		return $wpdb->get_results($sql, 'ARRAY_A');
+        foreach ($services as &$service) {
+            if ($service['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+                $service['name'] = __(
+                    SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()],
+                    SamedayCourierHelperClass::TEXT_DOMAIN
+                );
+                $service['sameday_name'] = __(
+                    SamedayCourierHelperClass::SAMEDAY_OOH_LABEL,
+                    SamedayCourierHelperClass::TEXT_DOMAIN
+                );
+            }
+        }
+
+        return $services;
 	}
 
-	/**
-	 * Returns the count of records in the database.
-	 *
-	 * @return null|string
-	 */
-	public static function record_count(): ?string
-	{
-		global $wpdb;
-
-		$table = "{$wpdb->prefix}sameday_service";
-		$is_testing = SamedayCourierHelperClass::isTesting();
-
-		$sql = sprintf(
-			"SELECT COUNT(*) FROM %s WHERE is_testing='%s'",
-			$table,
-			$is_testing
-		);
-
-		return $wpdb->get_var($sql);
-	}
-
-
-	/** Text displayed when no service data is available */
-	public function no_items(): void
-	{
-		__( 'No services available!', SamedayCourierHelperClass::TEXT_DOMAIN);
-	}
+    /**
+     * @param int $perPage
+     * @param int $pageNumber
+     *
+     * @return array
+     */
+    private function buildGrid(
+        int $perPage = self::GRID_PER_PAGE_VALUE,
+        int $pageNumber = 1
+    ): array
+    {
+        return array_chunk(
+            $this->getServices(),
+            $perPage
+        )[$pageNumber - 1] ?? [];
+    }
 
 	/**
 	 * @return array
@@ -91,9 +93,16 @@ class SamedayCourierService extends WP_List_Table
 		return [
 			0 => 'Disabled',
 			1 => 'Always',
-			2 => 'Interval',
 		];
 	}
+
+    /**
+     * Text displayed when no service data is available
+     */
+    public function no_items(): void
+    {
+        __( 'No services available!', SamedayCourierHelperClass::TEXT_DOMAIN);
+    }
 
 	/**
 	 * Render a column when no column specific method exist.
@@ -103,15 +112,27 @@ class SamedayCourierService extends WP_List_Table
 	 *
 	 * @return mixed
 	 */
-	public function column_default( $item, $column_name )
+	public function column_default($item, $column_name)
 	{
-		switch ($column_name)
-		{
-			case 'status':
-				return $this->getListOfStatuses()[$item[$column_name]];
-			default:
-				return $item[$column_name];
-		}
+        if ("status" === $column_name) {
+            return $this->getListOfStatuses()[$item[$column_name]];
+        }
+
+        if (("sameday_name" === $column_name)
+            && $item[$column_name] === __(
+                SamedayCourierHelperClass::SAMEDAY_OOH_LABEL,
+                SamedayCourierHelperClass::TEXT_DOMAIN
+            )
+        ) {
+            $title = SamedayCourierHelperClass::OOH_POPUP_TITLE;
+            return sprintf(
+                "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
+                $title,
+                $item[$column_name]
+            );
+        }
+
+        return $item[$column_name];
 	}
 
 	public function column_edit($item): string
@@ -164,20 +185,17 @@ class SamedayCourierService extends WP_List_Table
 	 */
 	public function prepare_items(): void
 	{
-
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'services_per_page', self::GRID_PER_PAGE_VALUE);
-		$current_page = $this->get_pagenum();
-		$total_items  = self::record_count();
+		$per_page = $this->get_items_per_page('services_per_page', self::GRID_PER_PAGE_VALUE);
 
 		$this->set_pagination_args(
 			[
-				'total_items' => $total_items, //WE have to calculate the total number of items
-				'per_page'    => $per_page //WE have to determine how many items to show on a page
+				'total_items' => count($this->getServices()),
+				'per_page'    => $per_page,
 			]
 		);
 
-		$this->items = self::get_services($per_page, $current_page);
+		$this->items = $this->buildGrid($per_page, $this->get_pagenum());
 	}
 }

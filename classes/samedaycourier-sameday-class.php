@@ -76,7 +76,6 @@ class Sameday
                 // Save as current sameday service.
                 $remoteServices[] = $serviceObject->getId();
             }
-
         } while ($page <= $services->getPages());
 
         // Build array of local services.
@@ -96,6 +95,22 @@ class Sameday
             if (!in_array($localService['sameday_id'], $remoteServices, true)) {
                 SamedayCourierQueryDb::deleteService($localService['id']);
             }
+        }
+
+        // Update PUDO Service
+        $lnService = SamedayCourierQueryDb::getServiceSamedayByCode(
+            SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE,
+            SamedayCourierHelperClass::isTesting()
+        );
+
+        $pudoService = SamedayCourierQueryDb::getServiceSamedayByCode(
+            SamedayCourierHelperClass::PUDO_CODE,
+            SamedayCourierHelperClass::isTesting()
+        );
+
+        if (null !== $lnService && null !== $pudoService) {
+            $pudoService->status = $lnService->status;
+            SamedayCourierQueryDb::updateService((array) $pudoService);
         }
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
@@ -261,6 +276,12 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
+        if (null === $_POST['samedaycourier-service-name']) {
+            $_POST['samedaycourier-service-name'] = SamedayCourierHelperClass::OOH_SERVICES_LABELS[
+                SamedayCourierHelperClass::getHostCountry()
+            ];
+        }
+
         $post_fields = array(
             'id' => array(
                 'required' => true,
@@ -300,6 +321,7 @@ class Sameday
 		}
 
         if (empty($errors)) {
+            $currentService = (array) SamedayCourierQueryDb::getService($post_fields['id']['value']);
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
                 'name' => SamedayCourierHelperClass::sanitizeInput($post_fields['name']['value']),
@@ -309,6 +331,17 @@ class Sameday
             );
 
             SamedayCourierQueryDb::updateService($service);
+
+            // Update Pudo
+            if ($currentService['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+                $pudoService = (array) SamedayCourierQueryDb::getServiceSamedayByCode(
+                    SamedayCourierHelperClass::PUDO_CODE,
+                    SamedayCourierHelperClass::getHostCountry()
+                );
+
+                $pudoService['status'] = $service['status'];
+                SamedayCourierQueryDb::updateService($pudoService);
+            }
 
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
@@ -352,7 +385,10 @@ class Sameday
 			SamedayCourierHelperClass::isTesting()
 		);
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($service->sameday_id, SamedayCourierHelperClass::isTesting());
+        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
+            $service->sameday_id,
+            SamedayCourierHelperClass::isTesting()
+        );
         $serviceTaxIds = array();
 
         if (isset($params['samedaycourier-open-package-status'])) {
@@ -434,7 +470,7 @@ class Sameday
        
 	    $lockerId = null;
         if ('' !== $post_meta_samedaycourier_locker
-            && SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+            && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 	        $locker = json_decode(
 				$post_meta_samedaycourier_locker,
@@ -455,7 +491,7 @@ class Sameday
         }
 
 	    if (('' !== $post_meta_samedaycourier_address_hd)
-            && !SamedayCourierHelperClass::isLockerDelivery($service->sameday_code)
+            && !SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 		    $post_meta_samedaycourier_address_hd = json_decode(
 			    $post_meta_samedaycourier_address_hd,
