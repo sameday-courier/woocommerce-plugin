@@ -863,11 +863,9 @@ add_action(
             && !isset($wp->query_vars['order-received'])
             && is_checkout()
         ) {
-            // prod: https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js
-            // demo: https://cdn.sameday.ro/preprod-locker-plugin/lockerpluginsdk.js
             wp_enqueue_script(
                 'prod-locker-plugin',
-                'https://cdn.sameday.ro/preprod-locker-plugin/lockerpluginsdk.js'
+                'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js'
             );
             wp_enqueue_script(
                 'helper',
