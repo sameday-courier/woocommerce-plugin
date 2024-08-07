@@ -32,9 +32,9 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	private const GRID_PER_PAGE_VALUE = 10;
 
     /**
-     * @return array|object|stdClass[]|null
+     * @return array
      */
-	private function getPickupPoints()
+	private function getPickupPoints(): array
 	{
 		global $wpdb;
 
