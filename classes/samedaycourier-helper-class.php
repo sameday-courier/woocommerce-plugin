@@ -269,7 +269,7 @@ class SamedayCourierHelperClass
             }
         }
 
-        return json_encode($locker, JSON_THROW_ON_ERROR);
+        return json_encode($locker, JSON_UNESCAPED_UNICODE);
     }
 
 	public static function sanitizeInput(string $input): string
