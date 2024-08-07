@@ -201,12 +201,18 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$updatedService = array(
-			'sameday_code' => $serviceObject->getCode(),
+        $serviceName = $serviceObject->getName();
+        if ($serviceObject->getCode() === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+            $serviceName = SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()];
+        }
+
+        $updatedService = array(
+            'sameday_code' => $serviceObject->getCode(),
+            'name' => $serviceName,
             'service_optional_taxes' => !empty($serviceObject->getOptionalTaxes())
                 ? serialize($serviceObject->getOptionalTaxes())
                 : null
-		);
+        );
 
 		$wpdb->update(
             $wpdb->prefix . 'sameday_service',
