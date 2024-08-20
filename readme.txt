@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.8.4 =
+
+* Update Sameday PHP-SDK library.
+
 = 1.8.3 =
 
 * Code refactor. Encode multibyte Unicode characters literally (default is to escape as \uXXXX) in order to deal with Cyrillic characters.
