@@ -124,7 +124,7 @@ class SamedayCourierService extends WP_List_Table
                 SamedayCourierHelperClass::TEXT_DOMAIN
             )
         ) {
-            $title = SamedayCourierHelperClass::OOH_POPUP_TITLE;
+            $title = SamedayCourierHelperClass::OOH_POPUP_TITLE[SamedayCourierHelperClass::getHostCountry()];
             return sprintf(
                 "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
                 $title,

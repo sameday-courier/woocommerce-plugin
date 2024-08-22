@@ -40,9 +40,9 @@ class SamedayCourierHelperClass
     public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
 
     public const OOH_SERVICES_LABELS = [
-        self::API_HOST_LOCALE_RO => 'Ridicare personala',
-        self::API_HOST_LOCALE_BG => 'Персонален асансьор',
-        self::API_HOST_LOCALE_HU => 'Személyi lift',
+        self::API_HOST_LOCALE_RO => 'Ridicare Sameday Point/Easybox',
+        self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox',
+        self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox',
     ];
 
     public const ELIGIBLE_SERVICES = [
@@ -66,7 +66,11 @@ class SamedayCourierHelperClass
 	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
 	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
 
-    public const OOH_POPUP_TITLE = "Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo !";
+    public const OOH_POPUP_TITLE = [
+        self::API_HOST_LOCALE_RO => 'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',
+        self::API_HOST_LOCALE_BG => 'Тази опция включва LockerNextDay и PUDO!',
+        self::API_HOST_LOCALE_HU => 'Ez az opció magában foglalja a LockerNextDay és a PUDO szolgáltatást is!',
+    ];
 
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
