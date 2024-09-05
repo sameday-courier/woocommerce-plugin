@@ -469,6 +469,7 @@ class Sameday
 	    );
        
 	    $lockerId = null;
+        $oohLastMile = null;
         if ('' !== $post_meta_samedaycourier_locker
             && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
@@ -479,7 +480,13 @@ class Sameday
 				JSON_THROW_ON_ERROR
 	        );
 
-			$lockerId = $locker['id'] ?? $locker['lockerId'];
+            if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
+                $lockerId = $locker['id'] ?? $locker['lockerId'];
+            }
+
+            if ($service->sameday_code === SamedayCourierHelperClass::PUDO_CODE) {
+                $oohLastMile = $locker['id'] ?? $locker['lockerId'];
+            }
 
 	        $city = $locker['city'] ?? $city;
 	        $county = $locker['county'] ?? $county;
@@ -573,6 +580,8 @@ class Sameday
             '',
             null,
 	        $lockerId,
+            null,
+            $oohLastMile,
             SamedayCourierHelperClass::CURRENCY_MAPPER[$country]
         );
 
