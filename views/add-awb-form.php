@@ -308,7 +308,7 @@ function samedaycourierAddAwbForm($order): string {
                                         data-dest_country="'.$destCountry.'" 
                                         class="button alt sameday_select_locker" 
                                         type="button" 
-                                        id="select_locker"> ' . __("Change locker", SamedayCourierHelperClass::TEXT_DOMAIN) . ' 
+                                        id="select_locker"> ' . __("Change location", SamedayCourierHelperClass::TEXT_DOMAIN) . ' 
                                     </button> 
                                 </td>
                             </tr>';
