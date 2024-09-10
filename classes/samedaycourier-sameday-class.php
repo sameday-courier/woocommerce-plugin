@@ -452,14 +452,32 @@ class Sameday
 		    ltrim($params['shipping']['last_name'])
 	    );
 
-        $errors = null;
         if (null || '' === $phone = $params['billing']['phone'] ?? null) {
-            $errors[] = __('Must complete phone', SamedayCourierHelperClass::TEXT_DOMAIN);
+            SamedayCourierHelperClass::addFlashNotice(
+                'add_awb_notice',
+                __('Must complete phone number!', SamedayCourierHelperClass::TEXT_DOMAIN),
+                'error',
+                true
+            );
+
+            return wp_redirect(
+                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
+            );
         }
 
         if (null || '' === $email = $params['billing']['email'] ?? null) {
-            $errors[] = __('Must complete email', SamedayCourierHelperClass::TEXT_DOMAIN);
-        };
+            SamedayCourierHelperClass::addFlashNotice(
+                'add_awb_notice',
+                __('Must complete email!', SamedayCourierHelperClass::TEXT_DOMAIN),
+                'error',
+                true
+            );
+
+            return wp_redirect(
+                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
+            );
+
+        }
 	    /** End of Recipient details */
 
 		$post_meta_samedaycourier_locker = get_post_meta(
@@ -591,6 +609,7 @@ class Sameday
             SamedayCourierHelperClass::CURRENCY_MAPPER[$country]
         );
 
+        $errors = null;
 	    $awb = null;
         try {
             // No errors, post AWB.
