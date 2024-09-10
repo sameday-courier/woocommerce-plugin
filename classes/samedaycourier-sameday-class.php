@@ -476,7 +476,6 @@ class Sameday
             return wp_redirect(
                 add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
             );
-
         }
 	    /** End of Recipient details */
 
