@@ -452,8 +452,14 @@ class Sameday
 		    ltrim($params['shipping']['last_name'])
 	    );
 
-	    $phone = $params['billing']['phone'] ?? "";
-	    $email = $params['billing']['email'] ?? "";
+        $errors = null;
+        if (null || '' === $phone = $params['billing']['phone'] ?? null) {
+            $errors[] = __('Must complete phone', SamedayCourierHelperClass::TEXT_DOMAIN);
+        }
+
+        if (null || '' === $email = $params['billing']['email'] ?? null) {
+            $errors[] = __('Must complete email', SamedayCourierHelperClass::TEXT_DOMAIN);
+        };
 	    /** End of Recipient details */
 
 		$post_meta_samedaycourier_locker = get_post_meta(
@@ -585,7 +591,6 @@ class Sameday
             SamedayCourierHelperClass::CURRENCY_MAPPER[$country]
         );
 
-	    $errors = null;
 	    $awb = null;
         try {
             // No errors, post AWB.
