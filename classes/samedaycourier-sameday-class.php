@@ -452,10 +452,19 @@ class Sameday
 		    ltrim($params['shipping']['last_name'])
 	    );
 
-        if (null || '' === $phone = $params['billing']['phone'] ?? null) {
+        $inputErrors = null;
+        if ('' === $phone = $params['billing']['phone'] ?? '') {
+            $inputErrors[] = __('Must complete phone number!', SamedayCourierHelperClass::TEXT_DOMAIN);
+        }
+
+        if ('' === $email = $params['billing']['email'] ?? '') {
+            $inputErrors[] = __('Must complete email!', SamedayCourierHelperClass::TEXT_DOMAIN);
+        }
+
+        if (!empty($inputErrors)) {
             SamedayCourierHelperClass::addFlashNotice(
                 'add_awb_notice',
-                __('Must complete phone number!', SamedayCourierHelperClass::TEXT_DOMAIN),
+                implode('<br />', $inputErrors),
                 'error',
                 true
             );
@@ -465,18 +474,6 @@ class Sameday
             );
         }
 
-        if (null || '' === $email = $params['billing']['email'] ?? null) {
-            SamedayCourierHelperClass::addFlashNotice(
-                'add_awb_notice',
-                __('Must complete email!', SamedayCourierHelperClass::TEXT_DOMAIN),
-                'error',
-                true
-            );
-
-            return wp_redirect(
-                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-            );
-        }
 	    /** End of Recipient details */
 
 		$post_meta_samedaycourier_locker = get_post_meta(
