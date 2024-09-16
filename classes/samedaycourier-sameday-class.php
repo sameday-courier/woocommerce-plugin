@@ -452,8 +452,28 @@ class Sameday
 		    ltrim($params['shipping']['last_name'])
 	    );
 
-	    $phone = $params['billing']['phone'] ?? "";
-	    $email = $params['billing']['email'] ?? "";
+        $inputErrors = null;
+        if ('' === $phone = $params['billing']['phone'] ?? '') {
+            $inputErrors[] = __('Must complete phone number!', SamedayCourierHelperClass::TEXT_DOMAIN);
+        }
+
+        if ('' === $email = $params['billing']['email'] ?? '') {
+            $inputErrors[] = __('Must complete email!', SamedayCourierHelperClass::TEXT_DOMAIN);
+        }
+
+        if (!empty($inputErrors)) {
+            SamedayCourierHelperClass::addFlashNotice(
+                'add_awb_notice',
+                implode('<br />', $inputErrors),
+                'error',
+                true
+            );
+
+            return wp_redirect(
+                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
+            );
+        }
+
 	    /** End of Recipient details */
 
 		$post_meta_samedaycourier_locker = get_post_meta(
@@ -585,7 +605,7 @@ class Sameday
             SamedayCourierHelperClass::CURRENCY_MAPPER[$country]
         );
 
-	    $errors = null;
+        $errors = null;
 	    $awb = null;
         try {
             // No errors, post AWB.
