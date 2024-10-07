@@ -343,7 +343,12 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                     </tbody>
                 </table>
-            </div>';
+            </div>
+            <script>
+                jQuery(document).ready(function() {
+                    jQuery("#samedaycourier-package-pickup-point").select2();
+                });
+            </script>';
 
     return $form;
 }
