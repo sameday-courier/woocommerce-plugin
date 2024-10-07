@@ -3,8 +3,8 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
-Tested up to: 6.6.1
-Stable tag: 1.8.6
+Tested up to: 6.6.2
+Stable tag: 1.8.7
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -177,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.8.7 =
+
+* Added select search for pickup points.
 
 = 1.8.6 =
 
