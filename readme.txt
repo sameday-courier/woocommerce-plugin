@@ -182,6 +182,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 * compatibility with checkout blocks fix
 
+= 1.8.7 =
+
+* Added select search for pickup points.
+
 = 1.8.6 =
 
 * Small improvement. Pre-validate required fields before postAWB action.
