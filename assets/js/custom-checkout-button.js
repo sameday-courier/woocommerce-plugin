@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Dynamic selector to match both patterns
 const inputSelector = "input[id*='samedaycourier:15:LN'], input[id*='samedaycourier:30:XL']";
 // Use waitForElement to dynamically add the locker button when the shipping method label is found
+waitForElement("input[id*='samedaycourier:15:LN']", function(label) {
 waitForElement(inputSelector, function(label) {
     console.log(inputSelector);
     let parent = label.closest('div');
