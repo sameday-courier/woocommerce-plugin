@@ -1136,7 +1136,6 @@ function enqueue_button_scripts(): void
 {
     if (is_checkout()) {
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
-//        wp_enqueue_script( 'lockers-sync', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
         wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
 

@@ -109,8 +109,6 @@ jQuery(document.body).on("updated_checkout", () => {
         const locker_map_button = document.getElementById('select_locker') || false;
         const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
 
-        console.log(locker_drop_down_field);
-
         if (locker_map_button || locker_drop_down_field) {
             _init();
         }

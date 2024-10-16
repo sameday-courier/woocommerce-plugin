@@ -10,7 +10,6 @@ const doAjaxCall = (params = {}, reloadCheckout = true) => {
         'url': woocommerce_params.ajax_url,
         'data': params,
         success: () => {
-            console.log(this);
             if (true === reloadCheckout) {
                 jQuery(document.body).trigger('update_checkout');
             }

@@ -82,8 +82,3 @@ waitForElement("input[id*='samedaycourier:15:LN']", function(label) {
         console.log("Parent container not found");
     }
 });
-
-
-document.addEventListener('wcBlocksCheckoutComplete', function(){
-    console.log('afterCheckoutComplete');
-});
