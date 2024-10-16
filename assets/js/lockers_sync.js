@@ -87,10 +87,9 @@ const _openLockers = () => {
     pluginInstance.open();
 
     pluginInstance.subscribe((locker) => {
-        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
-        if (shipping_address_span) {
-            shipping_address_span.innerHTML = locker.name + ' - ' + locker.address;
-        }
+        locker.address = locker.name + ' - ' + locker.address;
+        let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
+        shippingDisplay.innerHTML = locker.address;
         doAjaxCall(
             {
                 'locker': locker,
@@ -109,6 +108,8 @@ const _openLockers = () => {
 jQuery(document.body).on("updated_checkout", () => {
         const locker_map_button = document.getElementById('select_locker') || false;
         const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
+
+        console.log(locker_drop_down_field);
 
         if (locker_map_button || locker_drop_down_field) {
             _init();

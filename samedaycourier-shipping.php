@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.8.9
+ * Version: 1.8.6
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -1231,13 +1231,14 @@ function enqueue_button_scripts(): void
 {
     if (is_checkout()) {
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
+//        wp_enqueue_script( 'lockers-sync', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
         wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null,
-            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null,
+            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'],
+            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'],
             'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
         ));
     }
