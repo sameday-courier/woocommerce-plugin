@@ -84,10 +84,12 @@ const _openLockers = () => {
     }
 
     let pluginInstance = LockerPlugin.getInstance();
-
     pluginInstance.open();
 
     pluginInstance.subscribe((locker) => {
+        locker.address = locker.name + ' - ' + locker.address;
+        let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
+        shippingDisplay.innerHTML = locker.address;
         doAjaxCall(
             {
                 'locker': locker,
@@ -96,14 +98,18 @@ const _openLockers = () => {
 
         pluginInstance.close();
     });
+
 }
 
 /**
  * Initialise component after ajax complete
  */
+
 jQuery(document.body).on("updated_checkout", () => {
         const locker_map_button = document.getElementById('select_locker') || false;
         const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
+
+        console.log(locker_drop_down_field);
 
         if (locker_map_button || locker_drop_down_field) {
             _init();
