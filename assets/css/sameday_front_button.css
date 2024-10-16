@@ -1,0 +1,10 @@
+.sameday_select_locker{
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: rgb(236, 28, 33);
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+}
