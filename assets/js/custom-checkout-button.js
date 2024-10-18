@@ -18,12 +18,12 @@ function waitForElement(selector, callback, intervalTime = 100, timeout = 10000)
 function checkShippingMethod() {
     // Select the radio input with a partial ID 'samedaycourier:15:LN'
     let shippingMethod = document.querySelector("input[type='radio'][id*='samedaycourier\\:15\\:LN']");
-    let shippingMethodC = document.querySelector("input[type='radio'][id*='samedaycourier15ln']");
     let lockerButton = document.getElementById('select_locker');
 
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
-        if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
+        if (shippingMethod && shippingMethod.checked) {
+            console.log('button checked');
             lockerButton.style.display = 'block';  // Show the locker button
         } else {
             lockerButton.style.display = 'none';   // Hide the locker button
