@@ -179,5 +179,10 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 		$this->items = $this->buildGrid($per_page, $current_page);
 	}
+
+    public function sendNewPickupPoint(): void
+    {
+        var_dump($_POST);
+    }
 }
 

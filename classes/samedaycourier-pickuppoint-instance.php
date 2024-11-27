@@ -124,7 +124,7 @@ class SamedayCourierPickupPointInstance
                     <div class="form-group">
                         <label for="pickupPointDefault">Default</label>
                         <div class="form-input">
-                            <input type="checkbox" name="pickupPointDefault" id="pickupPointDefault" value="1">
+                            <input type="checkbox" name="pickupPointDefault" id="pickupPointDefault" required>
                         </div>
                     </div>
                     <div class="form-group">
