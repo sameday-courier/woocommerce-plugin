@@ -16,3 +16,20 @@ const doAjaxCall = (params = {}, reloadCheckout = true) => {
         }
     })
 }
+
+const doAjaxReturn = (params = {}, reloadCheckout = true) => {
+    // Predefined Params
+    if (null !== params.action) {
+        params.action = 'woo_sameday_post_ajax_data';
+    }
+
+    jQuery.ajax({
+        'type': 'POST',
+        'url': ajaxurl,
+        'data': params,
+        success: (result) => {
+            console.log(JSON.parse(result));
+
+        }
+    })
+}
