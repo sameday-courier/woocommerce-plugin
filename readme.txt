@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.6.2
-Stable tag: 1.8.9
+Stable tag: 1.8.8
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,13 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.8.9 =
-
-* Selector for partial ID during input check
-
 = 1.8.8 =
 
 * compatibility with checkout blocks fix
+* Selector for partial ID during input check
 
 = 1.8.7 =
 
