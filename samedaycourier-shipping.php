@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.8.7
+ * Version: 1.8.8
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -839,7 +839,26 @@ function wps_locker_row_layout() {
 add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 // When POST Order Form
-add_action('woocommerce_checkout_update_order_meta', static function ($orderId): void {
+add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
+
+    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+        try {
+            SamedayCourierHelperClass::addLockerToOrderData(
+                $order->get_id(),
+                WC()->session->get('locker')
+            );
+        } catch (Exception $exception) {}
+    }
+
+    if ("yes" === WC()->session->get('open_package')) {
+        update_post_meta($order->get_id(), '_sameday_shipping_open_package_option', 1, true);
+        // After store, remove it from Session
+        WC()->session->set('open_package', 'no');
+    }
+});
+
+add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
+
     if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
         try {
             SamedayCourierHelperClass::addLockerToOrderData(
@@ -1112,3 +1131,20 @@ add_filter('plugin_row_meta', function ($links, $pluginFileName) {
 
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
+
+function enqueue_button_scripts(): void
+{
+    if (is_checkout()) {
+        wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
+        wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
+        wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
+
+        // Localize the script with your dynamic PHP values
+        wp_localize_script( 'custom-checkout-button', 'samedayData', array(
+            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'],
+            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'],
+            'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
+        ));
+    }
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
