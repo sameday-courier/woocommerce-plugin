@@ -185,6 +185,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 1.8.8 =
 
 * compatibility with checkout blocks fix
+* Selector for partial ID during input check
 
 = 1.8.7 =
 
