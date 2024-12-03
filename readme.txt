@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.8.9 =
+
+* fix for previous version regarding locker pick
+
 = 1.8.8 =
 
 * compatibility with checkout blocks fix
