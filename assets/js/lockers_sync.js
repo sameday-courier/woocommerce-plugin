@@ -87,9 +87,12 @@ const _openLockers = () => {
     pluginInstance.open();
 
     pluginInstance.subscribe((locker) => {
-        locker.address = locker.name + ' - ' + locker.address;
-        let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
-        shippingDisplay.innerHTML = locker.address;
+        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address');
+        if(shipping_address_span){
+            locker.address = locker.name + ' - ' + locker.address;
+            let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
+            shippingDisplay.innerHTML = locker.address;
+        }
         doAjaxCall(
             {
                 'locker': locker,
