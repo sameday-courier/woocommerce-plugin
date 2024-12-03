@@ -180,7 +180,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.8.9 =
 
-* fix for previous version regarding locker pick
+* Fix for previous version regarding locker pick
 
 = 1.8.8 =
 
