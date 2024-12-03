@@ -1141,8 +1141,8 @@ function enqueue_button_scripts(): void
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'],
-            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'],
+            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null,
+            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null,
             'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
         ));
     }
