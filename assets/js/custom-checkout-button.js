@@ -21,8 +21,6 @@ function checkShippingMethod() {
     let shippingMethodC = document.querySelector("input[type='radio'][id*='samedaycourier15ln']");
     let lockerButton = document.getElementById('select_locker');
 
-    console.log(shippingMethodC);
-
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
@@ -56,8 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
      // Initial check to see if the specific shipping method is already selected
 });
 
+// Dynamic selector to match both patterns
+const inputSelector = "input[id*='samedaycourier:15:LN'], input[id*='samedaycourier:30:XL']";
 // Use waitForElement to dynamically add the locker button when the shipping method label is found
-waitForElement("input[id*='samedaycourier:15:LN']", function(label) {
+waitForElement(inputSelector, function(label) {
+    console.log(inputSelector);
     let parent = label.closest('div');
     if (parent) {
         // Create the locker button dynamically
