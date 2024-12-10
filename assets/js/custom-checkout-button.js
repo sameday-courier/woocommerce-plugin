@@ -21,8 +21,6 @@ function checkShippingMethod() {
     let shippingMethodC = document.querySelector("input[type='radio'][id*='samedaycourier15ln']");
     let lockerButton = document.getElementById('select_locker');
 
-    console.log(shippingMethodC);
-
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
