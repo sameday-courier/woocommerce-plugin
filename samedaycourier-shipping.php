@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.8.9
+ * Version: 1.8.10
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -530,6 +530,7 @@ function load_lockers_sync() {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
+        wp_enqueue_script( 'add-awb', plugin_dir_url( __FILE__ ). 'assets/js/add-awb.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
     }
 }
@@ -1039,7 +1040,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
+                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
             </p>';
 
         $_showAwb = '

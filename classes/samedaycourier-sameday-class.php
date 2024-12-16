@@ -551,14 +551,57 @@ class Sameday
 	        SamedayCourierHelperClass::getApiUrl()
         ));
 
-        $weight = SamedayCourierHelperClass::convertWeight((float) $params['samedaycourier-package-weight']);
+//        $weight = SamedayCourierHelperClass::convertWeight((float) $params['samedaycourier-package-weight']);
 
-        $parcelDimensions[] = new ParcelDimensionsObject(
-            $weight <= 0 ? 1 : $weight,
-            $params['samedaycourier-package-length'],
-            $params['samedaycourier-package-height'],
-            $params['samedaycourier-package-width']
-        );
+//        $parcelDimensions = [];
+//        foreach ($params['samedaycourier-package-weight'] as $k => $weight) {
+//            var_dump($k);
+//            $parcelDimensions[] = new ParcelDimensionsObject(
+//                $weight,
+//                $params['samedaycourier-package-length'][$k],
+//                $params['samedaycourier-package-height'][$k],
+//                $params['samedaycourier-package-width'][$k]
+//            );
+//        }
+
+        $parcelDimensions = [];
+
+        // Iterate through the inputs based on their names
+        foreach ($params as $key => $value) {
+            // Match keys that belong to package data
+            if (preg_match('/^samedaycourier-package-(weight|length|height|width)(\d+)$/', $key, $matches)) {
+                $attribute = $matches[1]; // weight, length, height, or width
+                $index = $matches[2];    // the number in the input name
+
+                // Ensure the index exists in the parcelDimensions array
+                if (!isset($parcelDimensions[$index])) {
+                    $parcelDimensions[$index] = [
+                        'weight' => null,
+                        'length' => null,
+                        'height' => null,
+                        'width' => null
+                    ];
+                }
+
+                // Assign the value to the correct attribute
+                $parcelDimensions[$index][$attribute] = $value;
+            }
+        }
+
+        // Transform the array into ParcelDimensionsObject instances
+        $parcelDimensionsObjects = [];
+        foreach ($parcelDimensions as $dimension) {
+            $parcelDimensionsObjects[] = new ParcelDimensionsObject(
+                $dimension['weight'],
+                $dimension['length'],
+                $dimension['height'],
+                $dimension['width']
+            );
+        }
+
+        // Output or use $parcelDimensionsObjects as needed
+
+//        echo '<pre>';print_r($parcelDimensionsObjects); echo '</pre>'; die();
 
         $companyObject = null;
         if ('' !== $params['shipping']['company']) {
@@ -575,7 +618,7 @@ class Sameday
             $params['samedaycourier-package-pickup-point'],
             null,
             new PackageType($params['samedaycourier-package-type']),
-            $parcelDimensions,
+            $parcelDimensionsObjects,
 	        $service->sameday_id,
             new AwbPaymentType($params['samedaycourier-package-awb-payment']),
             new AwbRecipientEntityObject(

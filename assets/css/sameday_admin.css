@@ -148,3 +148,10 @@
       transform: rotate(360deg);
     }
   }
+
+.wp-core-ui select{
+    max-width: none !important;
+}
+.select2-container{
+    margin-bottom: 5px !important;
+}
