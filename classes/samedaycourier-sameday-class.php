@@ -939,7 +939,6 @@ class Sameday
             SamedayCourierHelperClass::getSamedaySettings()['password'],
             SamedayCourierHelperClass::getApiUrl()
         ));
-        var_dump($_POST);
     }
 
 	private function isAllowed(): bool
