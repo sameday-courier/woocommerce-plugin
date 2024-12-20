@@ -33,10 +33,9 @@ document.getElementById('thickbox-form').addEventListener('submit', function(e){
             'data': jQuery(this).serializeArray()
         },
         success: function(r){
-            console.log(r);
-            // if(r['success'] === true){
-            //     window.location.reload();return true;
-            // }
+            if(r['success'] === true){
+                window.location.reload();return true;
+            }
         }
     });
 });
