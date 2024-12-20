@@ -1,5 +1,7 @@
 <?php
 
+use Sameday\Objects\CityObject;
+use Sameday\Objects\CountyObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 
@@ -102,6 +104,12 @@ class SamedayCourierHelperClass
 		'ASC',
 		'DESC',
 	];
+
+    public const DEFAULT_COUNTRIES = [
+        self::API_HOST_LOCALE_RO => ['value' => 187, 'label' => 'Romania'],
+        self::API_HOST_LOCALE_BG => ['value' => 34, 'label' => 'Bulgaria'],
+        self::API_HOST_LOCALE_HU => ['value' => 237, 'label' => 'Hungary'],
+    ];
 
 	public static function getSamedaySettings(): array
 	{
@@ -629,5 +637,57 @@ class SamedayCourierHelperClass
         }
 
         return '';
+    }
+
+    public static function getCounties(): array
+    {
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+
+        try{
+            $samedayCounties = $sameday->getCounties(new Sameday\Requests\SamedayGetCountiesRequest(null))->getCounties();
+
+        }catch(\Sameday\Exceptions\SamedayBadRequestException $exception){
+            return [];
+        }
+
+        return array_map(static function(CountyObject $county){
+            return ['id' => $county->getId(), 'name' => $county->getName()];
+        }, $samedayCounties);
+    }
+
+    public static function getCities($countyId): array {
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+        $page = 1;
+        do {
+            $request = new Sameday\Requests\SamedayGetCitiesRequest($countyId);
+            $request->setPage($page++);
+
+            try {
+                $cities = $sameday->getCities($request);
+            } catch (Exception $e) {
+                return [];
+            }
+
+            foreach ($cities->getCities() as $city) {
+
+                // Save as current sameday service.
+                $remoteCities[] = $city;
+            }
+        } while ($page <= $cities->getPages());
+
+        if(!empty($remoteCities)){
+            return array_map(static function(CityObject $city){
+                return ['id' => $city->getId(), 'name' => $city->getName()];
+            }, $remoteCities);
+        }
+        return [];
     }
 }

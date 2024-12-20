@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.8.10
+ * Version: 1.8.11
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -13,7 +13,15 @@
  * Text Domain: sameday
  */
 
+use Sameday\Exceptions\SamedayAuthenticationException;
+use Sameday\Exceptions\SamedayAuthorizationException;
+use Sameday\Exceptions\SamedayBadRequestException;
+use Sameday\Exceptions\SamedayNotFoundException;
+use Sameday\Exceptions\SamedayOtherException;
+use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Exceptions\SamedayServerException;
 use Sameday\Objects\ParcelDimensionsObject;
+use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\SamedayClient;
@@ -523,15 +531,19 @@ function load_lockers_sync() {
     if ('samedaycourier' === $section) {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/sameday_admin.js', ['jquery']);
+        wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
+        wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
     }
 
     if ($pagenow === 'post.php' || $pagenow === 'admin.php') {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
+        wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
         wp_enqueue_script( 'add-awb', plugin_dir_url( __FILE__ ). 'assets/js/add-awb.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
+        wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
     }
 }
 
@@ -582,6 +594,93 @@ add_action('wp_ajax_change_locker', function() {
 	    try {
 		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST['locker']);
 	    } catch (Exception $exception) {}
+    }
+});
+
+add_action('wp_ajax_change_counties', function() {
+    if (!isset($_POST['countyId'])) {
+        return [];
+    }
+    wp_send_json(SamedayCourierHelperClass::getCities($_POST['countyId'])); die();
+});
+
+add_action('wp_ajax_send_pickup_point', function () {
+    try {
+        if (!isset($_POST['data']) || !is_array($_POST['data'])) {
+            wp_send_json_error('Invalid data format', 400);
+            die();
+        }
+
+        // Validate each field
+        $requiredFields = ['Country', 'County', 'City', 'Address', 'Default', 'PO', 'Alias', 'Contact Name', 'Contact Phone'];
+        foreach ($requiredFields as $index => $field) {
+            if (!isset($_POST['data'][$index]['value']) || empty($_POST['data'][$index]['value'])) {
+                wp_send_json_error("Missing or invalid field: $field", 400);
+                die();
+            }
+        }
+
+        // Initialize Sameday client
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+
+        // Log client initialization
+        error_log('Sameday API initialized successfully.');
+
+        // Try posting pickup point
+        try {
+            $response = $sameday->postPickupPoint(new \Sameday\Requests\SamedayPostPickupPointRequest(
+                $_POST['data'][0]['value'], // Country
+                $_POST['data'][1]['value'], // County
+                $_POST['data'][2]['value'], // City
+                $_POST['data'][3]['value'], // Address
+                $_POST['data'][5]['value'], // PO
+                $_POST['data'][6]['value'], // Alias
+                [new \Sameday\Objects\PickupPoint\PickupPointContactPersonObject(
+                    $_POST['data'][7]['value'], // Contact Name
+                    $_POST['data'][8]['value'], // Contact Phone
+                    true
+                )],
+                (int)$_POST['data'][4]['value'], // Default
+            ));
+            wp_send_json_success($response->getPickupPointId());
+        }catch(SamedayBadRequestException $exception){
+            wp_send_json_error(implode(',', $exception->getErrors()));
+        } catch (Exception $e) {
+            error_log('Error in Sameday postPickupPoint: ' . $e->getMessage());
+            wp_send_json_error('Failed to post pickup point: ' . $e->getMessage(), 500);
+            die();
+        }
+    } catch (Throwable $e) {
+        error_log('Critical error: ' . $e->getMessage());
+        wp_send_json_error('Critical error occurred: ' . $e->getMessage(), 500);
+    }
+});
+
+add_action('wp_ajax_delete_pickup_point', function() {
+    if (!isset($_POST['data'][0]['value'])) {
+        wp_send_json_error('Invalid data format', 400);
+        die();
+    }
+    $sameday_id = $_POST['data'][0]['value'];
+
+    // Initialize Sameday client
+    $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+        SamedayCourierHelperClass::getSamedaySettings()['user'],
+        SamedayCourierHelperClass::getSamedaySettings()['password'],
+        SamedayCourierHelperClass::getApiUrl()
+    ));
+
+    try{
+        $response = $sameday->deletePickupPoint(new \Sameday\Requests\SamedayDeletePickupPointRequest($sameday_id));
+        wp_send_json_success($response);
+    }catch(Exception $e){
+        error_log('Error in Sameday deletePickupPoint: ' . $e->getMessage());
+        wp_send_json_error('Failed to delete pickup point: ' . $e->getMessage(), 500);
+        die();
     }
 });
 
@@ -1040,7 +1139,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
+                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
             </p>';
 
         $_showAwb = '

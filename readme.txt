@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.6.2
-Stable tag: 1.8.8
+Stable tag: 1.8.11
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,13 +178,18 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.8.10 =
+= 1.8.11 =
 
 * Added possibility to split into multiple parcels
+
+= 1.8.10 =
+
+* Functionality for adding and deleting pickup points
 
 = 1.8.9 =
 
 * Fix for previous version regarding locker pick
+* Selector for partial ID during input check
 
 = 1.8.8 =
 

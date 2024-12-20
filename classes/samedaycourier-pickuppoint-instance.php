@@ -17,7 +17,19 @@ class SamedayCourierPickupPointInstance
 	{
 		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );
 		add_action( 'admin_menu', [ $this, 'plugin_menu' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 	}
+
+    public function enqueue_styles() {
+        wp_enqueue_style(
+            'sameday-admin-style',
+            plugin_dir_url( __FILE__ ) . '../assets/css/sameday_admin.css',
+            [],
+            time()
+        );
+        wp_enqueue_script('sameday-admin-helper', plugin_dir_url( __FILE__ ) . '../assets/js/helper.js', ['jquery'], time(), true);
+        wp_enqueue_script('sameday-admin-script', plugin_dir_url( __FILE__ ) . '../assets/js/adminPickupPoints.js', ['jquery'], time(), true);
+    }
 
 	public static function set_screen( $status, $option, $value )
 	{
@@ -42,6 +54,7 @@ class SamedayCourierPickupPointInstance
 	 * Plugin settings page
 	 */
 	public function plugin_settings_page() {
+        add_thickbox();
 		?>
 		<div class="wrap">
 			<div id="poststuff">
@@ -52,10 +65,13 @@ class SamedayCourierPickupPointInstance
                                 <a href="<?php echo SamedayCourierHelperClass::getPathToSettingsPage(); ?>" class="button-primary">
                                     <?php echo __('Back', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                                 </a>
-								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
+								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:fit-content; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_pickup_points">
 									<input type="submit" class="button-primary" value="Refresh Pickup point">
 								</form>
+                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="thickbox button-primary">
+                                    <?php echo __('Add Pickup Point', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                                </a>
 							</div>
 							<form method="post">
 								<?php
@@ -68,6 +84,98 @@ class SamedayCourierPickupPointInstance
 				</div>
 			</div>
 		</div>
+        <div id="smd-thickbox" class="smd-modal" style="display: none">
+            <div class="smd-modal-container">
+                <form id="thickbox-form" action="" method="POST">
+                    <h3>Add Pickup Point</h3>
+                    <div class="form-group">
+                        <label for="pickupPointCountry">Country</label>
+                        <div class="form-input">
+                            <select name="pickupPointCountry" id="pickupPointCountry">
+                                <option value="<?php echo SamedayCourierHelperClass::DEFAULT_COUNTRIES[SamedayCourierHelperClass::getHostCountry()]['value']; ?>"><?php echo SamedayCourierHelperClass::DEFAULT_COUNTRIES[SamedayCourierHelperClass::getHostCountry()]['label']; ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointCounty">County</label>
+                        <div class="form-input">
+                            <select name="pickupPointCounty" id="pickupPointCounty" required data-url="">
+                                <option>Choose City</option>
+                                <?php foreach(SamedayCourierHelperClass::getCounties() as $county): ?>
+                                    <option value="<?php echo $county['id']; ?>"><?php echo $county['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointCity">City</label>
+                        <div class="form-input">
+                            <select name="pickupPointCity" id="pickupPointCity" required disabled>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointAddress">Address</label>
+                        <div class="form-input">
+                            <input type="text" name="pickupPointAddress" id="pickupPointAddress" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointDefault">Default</label>
+                        <div class="form-input">
+                            <input type="checkbox" name="pickupPointDefault" id="pickupPointDefault" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointPo">PO Number</label>
+                        <div class="form-input">
+                            <input type="number" name="pickupPointPo" id="pickupPointPo" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointAlias">Alias</label>
+                        <div class="form-input">
+                            <input type="text" name="pickupPointAlias" id="pickupPointAlias" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointFullname">Fullname</label>
+                        <div class="form-input">
+                            <input type="text" name="pickupPointFullname" id="pickupPointFullname" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointPhone">Phone Number</label>
+                        <div class="form-input">
+                            <input type="number" name="pickupPointPhone" id="pickupPointPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupPointEmail">Email</label>
+                        <div class="form-input">
+                            <input type="email" name="pickupPointEmail" id="pickupPointEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-footer">
+                        <input type="submit" value="Save" class="button-primary">
+                        <button class="button-secondary" onclick="tb_remove();">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
+            <div class="smd-modal-container">
+                <form id="form-deletePickupPoint" data-url="delete_pickup_point">
+                    <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
+                    <h3>Are you sure you want to delete this pickup point?</h3>
+                    <div class="form-footer">
+                        <input type="submit" name="submit" value="Submit">
+                        <button class="button-secondary" onclick="tb_remove();">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 		<?php
 	}
 
