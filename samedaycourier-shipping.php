@@ -610,11 +610,11 @@ add_action('wp_ajax_send_pickup_point', function () {
             die();
         }
 
-        // Validate each field
-        $requiredFields = ['Country', 'County', 'City', 'Address', 'Default', 'PO', 'Alias', 'Contact Name', 'Contact Phone'];
-        foreach ($requiredFields as $index => $field) {
-            if (!isset($_POST['data'][$index]['value']) || empty($_POST['data'][$index]['value'])) {
-                wp_send_json_error("Missing or invalid field: $field", 400);
+        // Validate each field (Ensure the 'default' field is checked)
+        $requiredFields = ['pickupPointCountry', 'pickupPointCounty', 'pickupPointCity', 'pickupPointAddress', 'default', 'pickupPointPo', 'pickupPointAlias', 'pickupPointFullname', 'pickupPointPhone'];
+        foreach ($_POST['data'] as $index => $field) {
+            if (!isset($field['value']) || empty($field['value'])) {
+                wp_send_json_error("Missing or invalid field: {$requiredFields[$index]}", 400);
                 die();
             }
         }
@@ -629,30 +629,31 @@ add_action('wp_ajax_send_pickup_point', function () {
         // Log client initialization
         error_log('Sameday API initialized successfully.');
 
-        // Try posting pickup point
-        try {
-            $response = $sameday->postPickupPoint(new \Sameday\Requests\SamedayPostPickupPointRequest(
-                $_POST['data'][0]['value'], // Country
-                $_POST['data'][1]['value'], // County
-                $_POST['data'][2]['value'], // City
-                $_POST['data'][3]['value'], // Address
-                $_POST['data'][5]['value'], // PO
-                $_POST['data'][6]['value'], // Alias
-                [new \Sameday\Objects\PickupPoint\PickupPointContactPersonObject(
-                    $_POST['data'][7]['value'], // Contact Name
-                    $_POST['data'][8]['value'], // Contact Phone
-                    true
-                )],
-                (int)$_POST['data'][4]['value'], // Default
-            ));
-            wp_send_json_success($response->getPickupPointId());
-        }catch(SamedayBadRequestException $exception){
-            wp_send_json_error(implode(',', $exception->getErrors()));
-        } catch (Exception $e) {
-            error_log('Error in Sameday postPickupPoint: ' . $e->getMessage());
-            wp_send_json_error('Failed to post pickup point: ' . $e->getMessage(), 500);
-            die();
+        // Access the 'default' field from the form data
+        $default = 0; // Default value for "unchecked"
+        foreach ($_POST['data'] as $field) {
+            if ($field['name'] === 'default') {
+                $default = (int)$field['value'];
+            }
         }
+
+        // Now you can safely use $default in your request
+        $response = $sameday->postPickupPoint(new \Sameday\Requests\SamedayPostPickupPointRequest(
+            $_POST['data'][0]['value'], // Country
+            $_POST['data'][1]['value'], // County
+            $_POST['data'][2]['value'], // City
+            $_POST['data'][3]['value'], // Address
+            $_POST['data'][4]['value'], // PO
+            $_POST['data'][5]['value'], // Alias
+            [new \Sameday\Objects\PickupPoint\PickupPointContactPersonObject(
+                $_POST['data'][6]['value'], // Contact Name
+                $_POST['data'][7]['value'], // Contact Phone
+                true
+            )],
+            $default // Default value (0 or 1)
+        ));
+
+        wp_send_json_success($response->getPickupPointId());
     } catch (Throwable $e) {
         error_log('Critical error: ' . $e->getMessage());
         wp_send_json_error('Critical error occurred: ' . $e->getMessage(), 500);
