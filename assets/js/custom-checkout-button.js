@@ -35,10 +35,7 @@ function checkShippingMethod() {
 
 // Attach event listener to all radio inputs (shipping methods)
 function addShippingMethodListeners() {
-<<<<<<< HEAD
 
-=======
->>>>>>> 154f280477b63c4784e6710567d480bda756e665
     let shippingMethods = document.querySelectorAll("input[type='radio'][name*='radio-control-']");
     shippingMethods.forEach(function (radio) {
         radio.addEventListener('change', checkShippingMethod);
