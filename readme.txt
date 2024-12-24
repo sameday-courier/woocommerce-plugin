@@ -186,7 +186,6 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 * Fix for previous version regarding locker pick
 * Selector for partial ID during input check
-* Selector for partial ID during input check
 
 = 1.8.8 =
 
