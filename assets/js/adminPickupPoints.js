@@ -29,15 +29,30 @@ if(document.getElementById('pickupPointCounty')){
 if(document.getElementById('thickbox-form')){
     document.getElementById('thickbox-form').addEventListener('submit', function(e){
         e.preventDefault();
+
+
+        let pickupPointFields = [];
+        const formData = new FormData(document.getElementById('thickbox-form'));
+        for (const [key, value] of formData) {
+            pickupPointFields[key] = value;
+        }
+
+        let objectFields = Object.assign({}, pickupPointFields);
+
+        // Send the AJAX request
         jQuery.post({
             url: ajaxurl,
             data: {
                 'action': 'send_pickup_point',
-                'data': jQuery(this).serializeArray()
+                'data': objectFields
             },
-            success: function(r){
-                if(r['success'] === true){
-                    window.location.reload();return true;
+            success: function (r) {
+                if (r['success'] === true) {
+
+                    window.location.reload();
+                    return true;
+                } else {
+                    console.log(r.data);
                 }
             }
         });
@@ -56,21 +71,16 @@ if (document.getElementById('form-deletePickupPoint')) {
         let formData = jQuery(this).serializeArray();  // Serialize the form data into an array
         console.log(sameday_id);
 
-        // Check the 'default' checkbox value, if checked set to 1, otherwise set to 0
-        var defaultChecked = document.getElementById('pickupPointDefault').checked ? 1 : 0;
-
-        // Manually add the 'default' value to formData
-        formData.push({ name: 'default', value: defaultChecked });
-
         // Send the AJAX request
         jQuery.post({
             url: ajaxurl,
             data: {
-                'action': 'send_pickup_point',
+                'action': 'delete_pickup_point',
                 'data': formData
             },
             success: function (r) {
                 if (r['success'] === true) {
+
                     window.location.reload();
                     return true;
                 } else {

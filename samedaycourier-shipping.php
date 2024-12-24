@@ -611,10 +611,10 @@ add_action('wp_ajax_send_pickup_point', function () {
         }
 
         // Validate each field (Ensure the 'default' field is checked)
-        $requiredFields = ['pickupPointCountry', 'pickupPointCounty', 'pickupPointCity', 'pickupPointAddress', 'default', 'pickupPointPo', 'pickupPointAlias', 'pickupPointFullname', 'pickupPointPhone'];
-        foreach ($_POST['data'] as $index => $field) {
-            if (!isset($field['value']) || empty($field['value'])) {
-                wp_send_json_error("Missing or invalid field: {$requiredFields[$index]}", 400);
+        $requiredFields = ['pickupPointCountry', 'pickupPointCounty', 'pickupPointCity', 'pickupPointAddress', 'pickupPointPo', 'pickupPointAlias', 'pickupPointFullname', 'pickupPointPhone'];
+        foreach ($requiredFields as $field) {
+            if (empty($_POST['data'][$field])) {
+                wp_send_json_error("Missing or invalid field: {$field}", 400);
                 die();
             }
         }
@@ -639,18 +639,18 @@ add_action('wp_ajax_send_pickup_point', function () {
 
         // Now you can safely use $default in your request
         $response = $sameday->postPickupPoint(new \Sameday\Requests\SamedayPostPickupPointRequest(
-            $_POST['data'][0]['value'], // Country
-            $_POST['data'][1]['value'], // County
-            $_POST['data'][2]['value'], // City
-            $_POST['data'][3]['value'], // Address
-            $_POST['data'][4]['value'], // PO
-            $_POST['data'][5]['value'], // Alias
+            $_POST['data']['pickupPointCountry'], // Country
+            $_POST['data']['pickupPointCounty'], // County
+            $_POST['data']['pickupPointCity'], // City
+            $_POST['data']['pickupPointAddress'], // Address
+            $_POST['data']['pickupPointPo'], // PO
+            $_POST['data']['pickupPointAlias'], // Alias
             [new \Sameday\Objects\PickupPoint\PickupPointContactPersonObject(
-                $_POST['data'][6]['value'], // Contact Name
-                $_POST['data'][7]['value'], // Contact Phone
+                $_POST['data']['pickupPointFullname'], // Contact Name
+                $_POST['data']['pickupPointPhone'], // Contact Phone
                 true
             )],
-            $default // Default value (0 or 1)
+            $POST['data']['pickupPointDefault'] ?? 0
         ));
 
         wp_send_json_success($response->getPickupPointId());
