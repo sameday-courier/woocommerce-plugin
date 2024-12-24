@@ -1,0 +1,41 @@
+#thickbox-form{
+    padding: 10px 20px;
+}
+#thickbox-form h3{
+    text-align: center;
+}
+#thickbox-form .form-group{
+    display: flex;
+    margin: 10px auto;
+}
+#thickbox-form .form-group label{
+    flex-basis: 25%;
+    text-align: right;
+    padding-right: 20px;
+    line-height: 2;
+}
+#thickbox-form .form-group .form-input,
+#thickbox-form .form-group .form-input input:not([type='checkbox']),
+#thickbox-form .form-group .form-input select{
+    width: 100%;
+    max-width: none;
+}
+input[type=checkbox], input[type=radio]{
+    width: 23px;
+    height: 23px;
+    top: 3px;
+    position: relative;
+}
+input[type=checkbox]:checked::before{
+    height: 1.7125rem;
+    width: 1.7125rem;
+}
+#thickbox-form .form-footer,
+#form-deletePickupPoint .form-footer{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+#form-deletePickupPoint h3{
+    text-align: center;
+}

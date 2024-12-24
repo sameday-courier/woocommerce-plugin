@@ -22,8 +22,8 @@ class SamedayCourierPickupPointInstance
 
     public function enqueue_styles() {
         wp_enqueue_style(
-            'sameday-admin-style',
-            plugin_dir_url( __FILE__ ) . '../assets/css/sameday_admin.css',
+            'sameday-thickboxform-style',
+            plugin_dir_url( __FILE__ ) . '../assets/css/tickbox-form.css',
             [],
             time()
         );
