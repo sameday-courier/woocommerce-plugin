@@ -922,6 +922,25 @@ class Sameday
         return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post=$awb->order_id&action=edit"));
     }
 
+
+    /**
+     * @throws SamedayOtherException
+     * @throws SamedaySDKException
+     * @throws SamedayBadRequestException
+     * @throws SamedayServerException
+     * @throws SamedayAuthenticationException
+     * @throws SamedayAuthorizationException
+     * @throws SamedayNotFoundException
+     */
+    public function addNewPickupPoint($params): void
+    {
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+    }
+
 	private function isAllowed(): bool
 	{
 		$currentUser = wp_get_current_user();
