@@ -20,10 +20,13 @@ function checkShippingMethod() {
 
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
+        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
             lockerButton.style.display = 'block';  // Show the locker button
+            shipping_address_span.style.display = 'block';
         } else {
             lockerButton.style.display = 'none';   // Hide the locker button
+            shipping_address_span.style.display = 'none';
         }
     }
 }

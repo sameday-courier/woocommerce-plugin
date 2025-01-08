@@ -91,8 +91,7 @@ const _openLockers = () => {
         if (shipping_address_span) {
             shipping_address_span.innerHTML = locker.name + ' - ' + locker.address;
             locker.address = locker.name + ' - ' + locker.address;
-            let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
-            shippingDisplay.innerHTML = locker.address;
+            shipping_address_span.innerHTML = locker.address;
         }
 
         doAjaxCall(
