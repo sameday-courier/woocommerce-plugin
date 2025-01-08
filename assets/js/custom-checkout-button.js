@@ -7,9 +7,6 @@ function waitForElement(selector, callback, intervalTime = 100, timeout = 10000)
         if (element) {
             clearInterval(interval); // Stop the interval when the element is found
             callback(element);
-        } else if (Date.now() - startTime > timeout) {
-            clearInterval(interval); // Stop the interval after a timeout to prevent infinite loops
-            console.log("Element not found within the timeout period");
         }
     }, intervalTime);
 }
@@ -28,8 +25,6 @@ function checkShippingMethod() {
         } else {
             lockerButton.style.display = 'none';   // Hide the locker button
         }
-    } else {
-        console.error('Locker button not found');
     }
 }
 
