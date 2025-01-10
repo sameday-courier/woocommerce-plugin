@@ -83,7 +83,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		__( 'No pickup-points avaliable.', SamedayCourierHelperClass::TEXT_DOMAIN);
+		__( 'No pickup-points available.', SamedayCourierHelperClass::TEXT_DOMAIN);
 	}
 
 	/**
@@ -102,13 +102,6 @@ class SamedayCourierPickupPoints extends WP_List_Table
 			case 'default_pickup_point':
 				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
-                // Add delete link
-                $delete_url = add_query_arg([
-                    'action' => 'delete_pickup_point',
-                    'pickup_point_id' => $item['sameday_id'], // Replace with the correct ID field
-                    '_wpnonce' => wp_create_nonce('delete_pickup_point_' . $item['sameday_id']),
-                ], admin_url('admin.php'));
-
                 return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="button-secondary delete-pickup-point thickbox" data-id="' . $item['sameday_id'] . '">Delete</a>';
 			default:
 				return $item[$column_name];

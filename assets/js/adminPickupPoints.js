@@ -1,5 +1,5 @@
 if(document.getElementById('pickupPointCounty')){
-    document.getElementById('pickupPointCounty').addEventListener('change', function(event){
+    document.getElementById('pickupPointCounty').addEventListener('change', (event) => {
         let cityHtmlElement = document.getElementById('pickupPointCity');
         jQuery.post(
             {
@@ -26,18 +26,25 @@ if(document.getElementById('pickupPointCounty')){
     });
 }
 
-if(document.getElementById('thickbox-form')){
-    document.getElementById('thickbox-form').addEventListener('submit', function(e){
-        e.preventDefault();
+if (document.getElementById('thickbox-form')) {
+    document.getElementById('thickbox-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
         jQuery.post({
             url: ajaxurl,
             data: {
                 'action': 'send_pickup_point',
-                'data': jQuery(this).serializeArray()
+                'data': data,
             },
-            success: function(r){
-                if(r['success'] === true){
-                    window.location.reload();return true;
+            success: (response) => {
+                if (response['success'] === true) {
+                    window.location.reload();
                 }
             }
         });
@@ -53,28 +60,23 @@ if (document.getElementById('form-deletePickupPoint')) {
     document.getElementById('form-deletePickupPoint').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        let formData = jQuery(this).serializeArray();  // Serialize the form data into an array
-        console.log(sameday_id);
-
-        // Check the 'default' checkbox value, if checked set to 1, otherwise set to 0
-        var defaultChecked = document.getElementById('pickupPointDefault').checked ? 1 : 0;
-
-        // Manually add the 'default' value to formData
-        formData.push({ name: 'default', value: defaultChecked });
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
 
         // Send the AJAX request
         jQuery.post({
             url: ajaxurl,
             data: {
-                'action': 'send_pickup_point',
-                'data': formData
+                'action': 'delete_pickup_point',
+                'data': data
             },
             success: function (r) {
                 if (r['success'] === true) {
                     window.location.reload();
                     return true;
-                } else {
-                    console.log(r.data); // Log the response data for debugging
                 }
             }
         });

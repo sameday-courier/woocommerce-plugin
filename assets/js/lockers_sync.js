@@ -90,10 +90,10 @@ const _openLockers = () => {
         const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
         if (shipping_address_span) {
             shipping_address_span.innerHTML = locker.name + ' - ' + locker.address;
+            locker.address = locker.name + ' - ' + locker.address;
+            shipping_address_span.innerHTML = locker.address;
         }
-        locker.address = locker.name + ' - ' + locker.address;
-        let shippingDisplay = document.querySelector('.wc-block-components-shipping-address');
-        shippingDisplay.innerHTML = locker.address;
+
         doAjaxCall(
             {
                 'locker': locker,

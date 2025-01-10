@@ -7,9 +7,6 @@ function waitForElement(selector, callback, intervalTime = 100, timeout = 10000)
         if (element) {
             clearInterval(interval); // Stop the interval when the element is found
             callback(element);
-        } else if (Date.now() - startTime > timeout) {
-            clearInterval(interval); // Stop the interval after a timeout to prevent infinite loops
-            console.log("Element not found within the timeout period");
         }
     }, intervalTime);
 }
@@ -23,13 +20,14 @@ function checkShippingMethod() {
 
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
+        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
             lockerButton.style.display = 'block';  // Show the locker button
+            shipping_address_span.style.display = 'block';
         } else {
             lockerButton.style.display = 'none';   // Hide the locker button
+            shipping_address_span.style.display = 'none';
         }
-    } else {
-        console.error('Locker button not found');
     }
 }
 
@@ -57,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
 const inputSelector = "input[id*='samedaycourier:15:LN'], input[id*='samedaycourier:30:XL']";
 // Use waitForElement to dynamically add the locker button when the shipping method label is found
 waitForElement(inputSelector, function(label) {
-    console.log(inputSelector);
     let parent = label.closest('div');
     if (parent) {
         // Create the locker button dynamically
