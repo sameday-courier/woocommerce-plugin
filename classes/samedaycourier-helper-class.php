@@ -1,5 +1,6 @@
 <?php
 
+use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\CityObject;
 use Sameday\Objects\CountyObject;
 use Sameday\Objects\Types\AwbPaymentType;
@@ -271,13 +272,12 @@ class SamedayCourierHelperClass
      *
      * @return string
      *
-     * @throws JsonException
      */
     public static function sanitizeLocker(array $locker): string
     {
         if (!empty( $locker)) {
             foreach ($locker as $key => $value) {
-                $locker[$key] = self::sanitizeInput($value);
+                $locker[$key] = str_replace("\"", "", self::sanitizeInput($value));
             }
         }
 
@@ -566,6 +566,8 @@ class SamedayCourierHelperClass
 		$country
 	): void
 	{
+        $address1 = str_replace("\"", "", SamedayCourierHelperClass::sanitizeInput($address1));
+        $address2 = str_replace("\"", "", SamedayCourierHelperClass::sanitizeInput($address2));
 		$addressFieldsMapper = [
 			'_shipping_address_1' => $address1,
 			'_shipping_address_2' => $address2,
@@ -639,18 +641,26 @@ class SamedayCourierHelperClass
         return '';
     }
 
+    /**
+     * @return array
+     */
     public static function getCounties(): array
     {
-        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            SamedayCourierHelperClass::getSamedaySettings()['user'],
-            SamedayCourierHelperClass::getSamedaySettings()['password'],
-            SamedayCourierHelperClass::getApiUrl()
-        ));
+        try {
+            $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+                SamedayCourierHelperClass::getSamedaySettings()['user'],
+                SamedayCourierHelperClass::getSamedaySettings()['password'],
+                SamedayCourierHelperClass::getApiUrl()
+            ));
+        } catch (SamedaySDKException|Exception $exception) {
+            return [];
+        }
 
         try{
-            $samedayCounties = $sameday->getCounties(new Sameday\Requests\SamedayGetCountiesRequest(null))->getCounties();
-
-        }catch(\Sameday\Exceptions\SamedayBadRequestException $exception){
+            $samedayCounties = $sameday->getCounties(new Sameday\Requests\SamedayGetCountiesRequest(null))
+                ->getCounties()
+            ;
+        } catch (Exception $e) {
             return [];
         }
 
@@ -659,12 +669,22 @@ class SamedayCourierHelperClass
         }, $samedayCounties);
     }
 
+    /**
+     * @param $countyId
+     *
+     * @return array
+     */
     public static function getCities($countyId): array {
-        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            SamedayCourierHelperClass::getSamedaySettings()['user'],
-            SamedayCourierHelperClass::getSamedaySettings()['password'],
-            SamedayCourierHelperClass::getApiUrl()
-        ));
+        try {
+            $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+                SamedayCourierHelperClass::getSamedaySettings()['user'],
+                SamedayCourierHelperClass::getSamedaySettings()['password'],
+                SamedayCourierHelperClass::getApiUrl()
+            ));
+        } catch (Exception $exception) {
+            return [];
+        }
+
         $page = 1;
         do {
             $request = new Sameday\Requests\SamedayGetCitiesRequest($countyId);
@@ -677,7 +697,6 @@ class SamedayCourierHelperClass
             }
 
             foreach ($cities->getCities() as $city) {
-
                 // Save as current sameday service.
                 $remoteCities[] = $city;
             }
@@ -685,9 +704,13 @@ class SamedayCourierHelperClass
 
         if(!empty($remoteCities)){
             return array_map(static function(CityObject $city){
-                return ['id' => $city->getId(), 'name' => $city->getName()];
+                return [
+                    'id' => $city->getId(),
+                    'name' => $city->getName()
+                ];
             }, $remoteCities);
         }
+
         return [];
     }
 }

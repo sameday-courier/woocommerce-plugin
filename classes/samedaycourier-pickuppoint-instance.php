@@ -88,6 +88,7 @@ class SamedayCourierPickupPointInstance
             <div class="smd-modal-container">
                 <form id="thickbox-form" action="" method="POST">
                     <h3>Add Pickup Point</h3>
+                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('add-pickup-point'); ?>">
                     <div class="form-group">
                         <label for="pickupPointCountry">Country</label>
                         <div class="form-input">
@@ -128,9 +129,9 @@ class SamedayCourierPickupPointInstance
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointPo">PO Number</label>
+                        <label for="pickupPointPostalCode">Postal Code</label>
                         <div class="form-input">
-                            <input type="number" name="pickupPointPo" id="pickupPointPo" required>
+                            <input type="number" name="pickupPointPostalCode" id="pickupPointPostalCode" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -140,15 +141,15 @@ class SamedayCourierPickupPointInstance
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointFullname">Fullname</label>
+                        <label for="pickupPointContactPersonName">Contact Person Name</label>
                         <div class="form-input">
-                            <input type="text" name="pickupPointFullname" id="pickupPointFullname" required>
+                            <input type="text" name="pickupPointContactPersonName" id="pickupPointContactPersonName" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointPhone">Phone Number</label>
+                        <label for="pickupPointContactPersonPhone">Contact Person Phone</label>
                         <div class="form-input">
-                            <input type="number" name="pickupPointPhone" id="pickupPointPhone" required>
+                            <input type="number" name="pickupPointContactPersonPhone" id="pickupPointContactPersonPhone" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -166,7 +167,8 @@ class SamedayCourierPickupPointInstance
         </div>
         <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
             <div class="smd-modal-container">
-                <form id="form-deletePickupPoint" data-url="delete_pickup_point">
+                <form id="form-deletePickupPoint" data-url="delete-pickup-point">
+                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete-pickup-point'); ?>">
                     <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
                     <h3>Are you sure you want to delete this pickup point?</h3>
                     <div class="form-footer">
