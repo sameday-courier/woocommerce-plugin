@@ -12,6 +12,6 @@ jobs:
       - name: Trigger tests repo
         uses: peter-evans/repository-dispatch@v1
         with:
-          token: ${{ secrets.REPO_B_TOKEN }}
-          repository: owner/repo_B
+          token: "${{ secrets.PAT_TOKEN_ALL }}"
+          repository: adriangavanescu/wordpress-automation
           event-type: trigger-tests
