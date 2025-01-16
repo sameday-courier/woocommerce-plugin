@@ -1,5 +1,5 @@
 === SamedayCourier Shipping ===
-Contributors: (samedaycourier)
+Contributors: (samedaycourier).
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
