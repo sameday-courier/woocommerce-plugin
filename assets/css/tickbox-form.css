@@ -1,14 +1,14 @@
-#thickbox-form{
+#thickbox-form {
     padding: 10px 20px;
 }
-#thickbox-form h3{
+#thickbox-form h3 {
     text-align: center;
 }
-#thickbox-form .form-group{
+#thickbox-form .form-group {
     display: flex;
     margin: 10px auto;
 }
-#thickbox-form .form-group label{
+#thickbox-form .form-group label {
     flex-basis: 25%;
     text-align: right;
     padding-right: 20px;
@@ -20,22 +20,22 @@
     width: 100%;
     max-width: none;
 }
-input[type=checkbox], input[type=radio]{
+#thickbox-form input[type=checkbox], input[type=radio] {
     width: 23px;
     height: 23px;
     top: 3px;
     position: relative;
 }
-input[type=checkbox]:checked::before{
+#thickbox-form input[type=checkbox]:checked::before {
     height: 1.7125rem;
     width: 1.7125rem;
 }
 #thickbox-form .form-footer,
-#form-deletePickupPoint .form-footer{
+#form-deletePickupPoint .form-footer {
     display: flex;
     justify-content: center;
     gap: 10px;
 }
-#form-deletePickupPoint h3{
+#form-deletePickupPoint h3 {
     text-align: center;
 }
