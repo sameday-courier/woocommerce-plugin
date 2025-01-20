@@ -20,13 +20,13 @@
     width: 100%;
     max-width: none;
 }
-input[type=checkbox], input[type=radio]{
+#thickbox-form input[type=checkbox], input[type=radio]{
     width: 23px;
     height: 23px;
     top: 3px;
     position: relative;
 }
-input[type=checkbox]:checked::before{
+#thickbox-form input[type=checkbox]:checked::before{
     height: 1.7125rem;
     width: 1.7125rem;
 }
