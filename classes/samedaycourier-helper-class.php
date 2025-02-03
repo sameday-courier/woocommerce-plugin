@@ -277,7 +277,7 @@ class SamedayCourierHelperClass
     {
         if (!empty( $locker)) {
             foreach ($locker as $key => $value) {
-                $locker[$key] = str_replace("\"", "", self::sanitizeInput($value));
+                $locker[$key] = self::sanitizeInput($value);
             }
         }
 
