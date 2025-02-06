@@ -599,5 +599,39 @@ class SamedayCourierQueryDb
 
 		$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 	}
+
+    public static function addCity(\Sameday\Objects\CityObject $cityObject)
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . 'sameday_cities';
+
+        $data = array(
+            'city_id' => $cityObject->getId(),
+            'city_name' => $cityObject->getName(),
+            'county_id' => $cityObject->getCounty()->getId(),
+        );
+
+        $format = array('%d','%s', '%d');
+
+        $wpdb->insert($table, $data, $format);
+    }
+
+    public static function updateCity(array $cityObject)
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . 'sameday_cities';
+        $wpdb->update($table, $cityObject, array('city_id' => $cityObject['id']));
+    }
+
+    public static function getCitySameday($cityId)
+    {
+        global $wpdb;
+
+        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE city_id = '{$cityId}'";
+
+        return $wpdb->get_row($query);
+    }
 }
 

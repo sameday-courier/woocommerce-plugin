@@ -443,7 +443,7 @@ function samedaycourier_shipping_method(): void
                             SamedayCourierHelperClass::API_HOST_LOCALE_BG => __(SamedayCourierHelperClass::API_HOST_LOCALE_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
 		                    'none' => '',
 	                    ),
-                    ),
+                    )
                 );
 
                 // Show on checkout:
@@ -510,7 +510,8 @@ function samedaycourier_shipping_method(): void
                 $buttons = '<a class="button-primary" id="import_all"> '. __('Import all') . ' </a> 
                             <a href="' . $serviceUrl . '" class="button-primary"> '. __('Services') .' </a> 
                             <a href="' . $pickupPointUrl . '" class="button-primary"> '. __('Pickup-point') .' </a> 
-                            <a href="' . $lockerUrl . '" class="button-primary"> '. __('Lockers') .' </a>';
+                            <a href="' . $lockerUrl . '" class="button-primary"> '. __('Lockers') .' </a>
+                            <button id="import_cities" class="button-primary">Import Cities</button>';
 
                 echo parent::admin_options() . $buttons;
             }
@@ -583,6 +584,13 @@ add_action('wp_ajax_all_import', static function (): void {
 	try {
 		(new Sameday())->refreshSamedayLockers();
 	} catch (Exception $exception) {}
+});
+
+add_action('wp_ajax_import_cities', function (): void {
+    try {
+        var_dump('hey'); die();
+        (new Sameday())->importCities();
+    } catch(Exception $exception){}
 });
 
 add_action('wp_ajax_change_locker', function() {
@@ -1270,3 +1278,26 @@ function enqueue_button_scripts(): void
     }
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
+
+add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
+function customize_shipping_city_field($fields) {
+    if(isset($fields['billing']['billing_city'])){
+        var_dump('reached');
+        $fields['billing']['billing_city'] = array(
+            'type' => 'select',
+            'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+            'required' => true,
+            'input_class' => array('input-text'),
+            'options' => array(
+                ''             => __('Alege un oras', 'woocommerce'),
+                'Bucharest'    => 'Bucharest',
+                'Cluj-Napoca'  => 'Cluj-Napoca',
+                'Timisoara'    => 'Timisoara',
+                'Iasi'         => 'Iasi',
+                'Constanta'    => 'Constanta'
+            )
+        );
+
+        return $fields;
+    }
+}

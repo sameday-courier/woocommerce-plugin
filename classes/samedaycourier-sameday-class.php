@@ -14,6 +14,7 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
+use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
@@ -114,6 +115,36 @@ class Sameday
         }
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+    }
+
+    public function importCities(){
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+
+        $page = 1;
+        do{
+            $request = new SamedayGetCitiesRequest();
+            $request->setPage($page++);
+            try {
+                $cities = $sameday->getCities($request);
+            }catch(Exception $e){
+                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_cities');
+            }
+
+            foreach ($cities->getCities() as $cityObject) {
+                $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
+                if (! $city) {
+                    // City not found, add it.
+                    SamedayCourierQueryDb::addCity($cityObject);
+                } else {
+                    SamedayCourierQueryDb::updateCity($cityObject);
+                }
+            }
+        }while($page <= $cities->getPages());
+
     }
 
 	/**
