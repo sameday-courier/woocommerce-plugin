@@ -240,7 +240,7 @@ function samedaycourierAddAwbForm($order): string {
                                 <label for="samedaycourier-package-weight"> ' . __("Package Dimensions", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" style="width: 20%;">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-weight1" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . __("Package Weight", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-weight1" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . __("Package Weight", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
                              </td>
                              <td class="forminp forminp-text">
                                 <input type="number" form="addAwbForm" name="samedaycourier-package-length1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . __("Package Length", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
