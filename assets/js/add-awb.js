@@ -33,10 +33,29 @@
 
                         packageDimensionInput.parentNode.insertBefore(clonedPackageDimensionInput, packageDimensionInput.nextSibling);
                         renumberInputs();
+                        checkPackageLength();
+
+
+                        document.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (input) {
+                            input.addEventListener('change', function () {
+                                let weight = 0;
+                                document.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (item) {
+                                    weight += parseFloat(item.value) || 0;
+                                });
+                                let weightInput = document.getElementById("sameday-package-weight");
+                                weightInput.value = "Calculated Weight: " + weight + " kg";
+                            });
+                        });
                     }
                 });
             }
         };
+
+        function checkPackageLength(){
+            let packageWeightClass = document.querySelectorAll(".samedaycourier-package-weight-class");
+            let packageLength = document.getElementById("samedaycourier-package-length");
+            packageLength.value = packageWeightClass.length;
+        }
 
         document.addEventListener('click', function (e) {
             if (document.querySelectorAll('.deleteParcelButton').length > 1) {
@@ -45,6 +64,7 @@
                     if (tableRow) {
                         tableRow.remove(); // Remove the <tr>
                         renumberInputs();
+                        checkPackageLength();
                     }
                 }
             }
