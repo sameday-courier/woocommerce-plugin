@@ -83,7 +83,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		__( 'No pickup-points available.', SamedayCourierHelperClass::TEXT_DOMAIN);
+		__( 'No pickup-points avaliable.', SamedayCourierHelperClass::TEXT_DOMAIN);
 	}
 
 	/**

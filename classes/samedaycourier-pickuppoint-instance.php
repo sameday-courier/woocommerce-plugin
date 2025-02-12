@@ -54,7 +54,6 @@ class SamedayCourierPickupPointInstance
 	 * Plugin settings page
 	 */
 	public function plugin_settings_page() {
-        add_thickbox();
 		?>
 		<div class="wrap">
 			<div id="poststuff">
