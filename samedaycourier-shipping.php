@@ -443,6 +443,17 @@ function samedaycourier_shipping_method(): void
                             SamedayCourierHelperClass::API_HOST_LOCALE_BG => __(SamedayCourierHelperClass::API_HOST_LOCALE_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
 		                    'none' => '',
 	                    ),
+                    ),
+
+                    'use_nomenclator' => array(
+                        'title' => __('Use Nomenclator', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'type' => 'select',
+                        'description' => __('Use the imported cities during checkout for faster processing', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'default' => 'no',
+                        'options' => [
+                            'no' => __('No', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'yes' => __('Yes', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        ]
                     )
                 );
 
@@ -589,9 +600,13 @@ add_action('wp_ajax_all_import', static function (): void {
 
 add_action('wp_ajax_import_cities', function (): void {
     try {
-        var_dump('hey'); die();
         (new Sameday())->importCities();
     } catch(Exception $exception){}
+});
+
+add_action('wp_ajax_getCities', function () {
+    $countyCode = (isset($_POST['countyCode'])) ? $_POST['countyCode'] : null;
+    echo json_encode(SamedayCourierQueryDb::getCityByCounty($countyCode)); die();
 });
 
 add_action('wp_ajax_change_locker', function() {
@@ -1269,6 +1284,12 @@ function enqueue_button_scripts(): void
         wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
         wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
+        wp_enqueue_script('county-city-handle', plugins_url( 'assets/js/county-city-handle.js', __FILE__ ), array('jquery'));
+
+        wp_localize_script('county-city-handle', 'ajax_object', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('custom_ajax_nonce')
+        ));
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
@@ -1282,23 +1303,26 @@ add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
 
 add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
 function customize_shipping_city_field($fields) {
-    if(isset($fields['billing']['billing_city'])){
-        var_dump('reached');
-        $fields['billing']['billing_city'] = array(
-            'type' => 'select',
-            'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-            'required' => true,
-            'input_class' => array('input-text'),
-            'options' => array(
-                ''             => __('Alege un oras', 'woocommerce'),
-                'Bucharest'    => 'Bucharest',
-                'Cluj-Napoca'  => 'Cluj-Napoca',
-                'Timisoara'    => 'Timisoara',
-                'Iasi'         => 'Iasi',
-                'Constanta'    => 'Constanta'
-            )
-        );
+    if(SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'){
+        if(isset($fields['billing']['billing_city'])){
+            $fields['billing']['billing_city'] = array(
+                'type' => 'select',
+                'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+                'required' => true,
+                'input_class' => array('input-text'),
+                'options' => array(
+                    ''             => __('Alege un oras', 'woocommerce'),
+                    'Bucharest'    => 'Bucharest',
+                    'Cluj-Napoca'  => 'Cluj-Napoca',
+                    'Timisoara'    => 'Timisoara',
+                    'Iasi'         => 'Iasi',
+                    'Constanta'    => 'Constanta'
+                )
+            );
 
-        return $fields;
+            return $fields;
+        }
     }
+    return $fields;
+
 }

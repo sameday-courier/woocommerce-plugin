@@ -30,7 +30,6 @@ function importAllFct() {
         }
     );
 }
-console.log('adasd');
 function importCities() {
     document.body.insertAdjacentHTML("beforeend", "<div class='loading' id='loadingImport'>Loading&#8230;</div>");
     jQuery.post(

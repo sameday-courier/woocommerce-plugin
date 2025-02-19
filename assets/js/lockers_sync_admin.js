@@ -9,9 +9,11 @@ function init() {
     let selectors = {
         selectLockerMap: document.querySelector('#select_locker')
     };
-    
-    selectors.selectLockerMap.addEventListener('click', openLockers);
-    changeServices();
+    if(selectors.selectLockerMap){
+        selectors.selectLockerMap.addEventListener('click', openLockers);
+        changeServices();
+    }
+
 }      
 
 

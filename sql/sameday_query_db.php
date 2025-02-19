@@ -600,30 +600,49 @@ class SamedayCourierQueryDb
 		$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 	}
 
-    public static function addCity(\Sameday\Objects\CityObject $cityObject)
+    public static function addCity($cityObject): void
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . 'sameday_cities';
+
+        // Check if city already exists
+        if (self::getCitySameday($cityObject->getId()) !== null) {
+            return; // City already exists, no need to insert
+        }
+
+        // Ensure county object exists before accessing it
+        $countyCode = $cityObject->getCounty() ? $cityObject->getCounty()->getCode() : null;
+
+        $data = array(
+            'city_id' => $cityObject->getId(),
+            'city_name' => $cityObject->getName(),
+            'county_code' => $countyCode,
+        );
+
+        $format = array('%d', '%s', $countyCode !== null ? '%s' : 'NULL');
+
+        $wpdb->insert($table, $data, $format);
+    }
+
+
+    public static function updateCity($cityObject): void
     {
         global $wpdb;
 
         $table = $wpdb->prefix . 'sameday_cities';
 
         $data = array(
-            'city_id' => $cityObject->getId(),
             'city_name' => $cityObject->getName(),
-            'county_id' => $cityObject->getCounty()->getId(),
+            'county_code' => $cityObject->getCounty()->getCode(),
         );
 
-        $format = array('%d','%s', '%d');
+        $where = array('city_id' => $cityObject->getId());
 
-        $wpdb->insert($table, $data, $format);
+        $wpdb->update($table, $data, $where, array('%s', '%s'), array('%d'));
     }
 
-    public static function updateCity(array $cityObject)
-    {
-        global $wpdb;
 
-        $table = $wpdb->prefix . 'sameday_cities';
-        $wpdb->update($table, $cityObject, array('city_id' => $cityObject['id']));
-    }
 
     public static function getCitySameday($cityId)
     {
@@ -632,6 +651,14 @@ class SamedayCourierQueryDb
         $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE city_id = '{$cityId}'";
 
         return $wpdb->get_row($query);
+    }
+    public function getCityByCounty($countyCode)
+    {
+        global $wpdb;
+
+        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE county_code = '{$countyCode}'";
+
+        return $wpdb->get_results($query, ARRAY_A);
     }
 }
 

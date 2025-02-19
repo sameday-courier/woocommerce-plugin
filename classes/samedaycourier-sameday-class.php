@@ -127,16 +127,17 @@ class Sameday
         $page = 1;
         do{
             $request = new SamedayGetCitiesRequest();
+            $request->setCountPerPage(1000);
             $request->setPage($page++);
             try {
                 $cities = $sameday->getCities($request);
             }catch(Exception $e){
                 return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_cities');
             }
-
             foreach ($cities->getCities() as $cityObject) {
+//                var_dump($cityObject->getCounty()->getCode()); die();
                 $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
-                if (! $city) {
+                if ($city === null) {
                     // City not found, add it.
                     SamedayCourierQueryDb::addCity($cityObject);
                 } else {
