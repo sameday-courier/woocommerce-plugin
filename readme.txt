@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.9.1 =
+
+* Modificare de test !!
+
 = 1.9.0 =
 
 * Fixed locker pick bug on classic checkout
