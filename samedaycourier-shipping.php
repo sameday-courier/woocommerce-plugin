@@ -1185,7 +1185,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
+                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
             </p>';
 
         $_showAwb = '

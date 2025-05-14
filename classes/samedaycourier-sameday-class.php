@@ -500,7 +500,6 @@ class Sameday
                 'error',
                 true
             );
-
             return wp_redirect(
                 add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
             );
@@ -687,6 +686,20 @@ class Sameday
             $awb = $sameday->postAwb($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
+            if ($errors !== '') {
+                try {
+                    $errorMessages = json_decode($e->getRawResponse()->getBody())->errors->errors;
+                    $errors[] = [
+                        'key' => ['Validation Failed', ''],
+                        'errors' => $errorMessages
+                    ];
+                } catch(JsonException $exception) {
+                    $errors[] = [
+                        'key' => 'JSON Validation Failed',
+                        'errors' => $exception->getMessage()
+                    ];
+                }
+            }
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {
@@ -710,7 +723,6 @@ class Sameday
         if (null !== $errors && null === $awb) {
             $noticeMessage = SamedayCourierHelperClass::parseAwbErrors($errors);
             SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
-
 			return wp_redirect(
 				add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
 			);
