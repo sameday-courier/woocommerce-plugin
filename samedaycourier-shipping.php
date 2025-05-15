@@ -1303,26 +1303,21 @@ add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
 
 add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
 function customize_shipping_city_field($fields) {
-    if(SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'){
-        if(isset($fields['billing']['billing_city'])){
-            $fields['billing']['billing_city'] = array(
-                'type' => 'select',
-                'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-                'required' => true,
-                'input_class' => array('input-text'),
-                'options' => array(
-                    ''             => __('Alege un oras', 'woocommerce'),
-                    'Bucharest'    => 'Bucharest',
-                    'Cluj-Napoca'  => 'Cluj-Napoca',
-                    'Timisoara'    => 'Timisoara',
-                    'Iasi'         => 'Iasi',
-                    'Constanta'    => 'Constanta'
-                )
-            );
+    if (null !== $fields['billing']['billing_city']
+        && SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'
+    ) {
+        $fields['billing']['billing_city'] = array(
+            'type' => 'select',
+            'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+            'required' => true,
+            'input_class' => array('input-text'),
+            'options' => array(
+                '' => __('Alege un oras', 'woocommerce'),
+            )
+        );
 
-            return $fields;
-        }
+        return $fields;
     }
-    return $fields;
 
+    return $fields;
 }
