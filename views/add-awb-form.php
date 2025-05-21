@@ -190,11 +190,9 @@ function samedaycourierAddAwbForm($order): string {
 
     $order = wc_get_order();
     $total_weight = 0;
-
-    foreach ($order->get_items() as $item_id => $item) {
-        $product = $item->get_product();
-        if ($product) {
-            $total_weight += ($product->get_weight() * $item->get_quantity());
+    foreach ($order->get_items() as $item) {
+        if (false !== $product = $item->get_product()) {
+            $total_weight += (((float) $product->get_weight()) * ((float) $item->get_quantity()));
         }
     }
 
