@@ -1,5 +1,6 @@
 <?php
 
+use Sameday\Objects\CityObject;
 use Sameday\Objects\Service\ServiceObject;
 
 if (! defined( 'ABSPATH' ) ) {
@@ -57,10 +58,9 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE is_testing = '{$is_testing}'";
-		$result = $wpdb->get_results($query);
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing'";
 
-		return $result;
+		return $wpdb->get_results($query);
 	}
 
     /**
@@ -72,9 +72,9 @@ class SamedayCourierQueryDb
     {
         global $wpdb;
 
-        $query = "SELECT sameday_code FROM {$wpdb->prefix}sameday_service WHERE is_testing = '{$is_testing}' AND service_optional_taxes IS NOT NULL";
+        $query = "SELECT sameday_code FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing' AND service_optional_taxes IS NOT NULL";
 
-        return array_map(function ($services) {
+        return array_map(static function ($services) {
                 return $services->sameday_code;
             }, $wpdb->get_results($query)
         );
@@ -90,7 +90,7 @@ class SamedayCourierQueryDb
     {
         global $wpdb;
 
-        $query = "SELECT service_optional_taxes FROM {$wpdb->prefix}sameday_service WHERE is_testing = '{$is_testing}' AND sameday_id = '{$samedayServiceId}' ";
+        $query = "SELECT service_optional_taxes FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing' AND sameday_id = '$samedayServiceId' ";
         /** @var \Sameday\Objects\Service\OptionalTaxObject[]|false $result */
         $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes);
 
@@ -106,10 +106,9 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE id = '{$id}'";
-		$result = $wpdb->get_row($query);
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE id = '$id'";
 
-		return $result;
+		return $wpdb->get_row($query);
 	}
 
 	/**
@@ -122,7 +121,7 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE sameday_id = '{$samedayId}'  AND is_testing = '{$is_testing}'";
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_service WHERE sameday_id = '$samedayId'  AND is_testing = '$is_testing'";
 
 		return $wpdb->get_row($query);
 	}
@@ -138,7 +137,7 @@ class SamedayCourierQueryDb
     {
         global $wpdb;
 
-        return $wpdb->get_row("SELECT * FROM {$wpdb->prefix}sameday_service WHERE sameday_code = '{$samedayCode}'  AND is_testing = '{$is_testing}'");
+        return $wpdb->get_row("SELECT * FROM {$wpdb->prefix}sameday_service WHERE sameday_code = '$samedayCode'  AND is_testing = '$is_testing'");
     }
 
     /**
@@ -242,9 +241,8 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing = '{$is_testing}'";
-		$result = $wpdb->get_results($query);
 
-		return $result;
+		return $wpdb->get_results($query);
 	}
 
 	/**
@@ -257,9 +255,8 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE id = '{$id}'";
-		$result = $wpdb->get_row($query);
 
-		return $result;
+		return $wpdb->get_row($query);
 	}
 
 	/**
@@ -273,9 +270,8 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE sameday_id='{$samedayId}'  AND is_testing = '{$is_testing}'";
-		$result = $wpdb->get_row($query);
 
-		return $result;
+		return $wpdb->get_row($query);
 	}
 
     /**
@@ -319,9 +315,8 @@ class SamedayCourierQueryDb
         global $wpdb;
 
         $query = "SELECT * FROM {$wpdb->prefix}sameday_locker WHERE city='{$city}' AND is_testing = '{$is_testing}'";
-        $result = $wpdb->get_results($query);
 
-        return $result;
+        return $wpdb->get_results($query);
     }
 
 	/**
@@ -481,9 +476,8 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$query = "SELECT * FROM {$wpdb->prefix}sameday_awb WHERE order_id = '{$orderId}'";
-		$result = $wpdb->get_row($query);
 
-		return $result;
+		return $wpdb->get_row($query);
 	}
 
 	/**
@@ -600,7 +594,7 @@ class SamedayCourierQueryDb
 		$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 	}
 
-    public static function addCity($cityObject): void
+    public static function addCity( CityObject $cityObject): void
     {
         global $wpdb;
 
@@ -618,6 +612,7 @@ class SamedayCourierQueryDb
             'city_id' => $cityObject->getId(),
             'city_name' => $cityObject->getName(),
             'county_code' => $countyCode,
+	        'postal_code' => $cityObject->getPostalCode(),
         );
 
         $format = array('%d', '%s', $countyCode !== null ? '%s' : 'NULL');
@@ -660,5 +655,42 @@ class SamedayCourierQueryDb
 
         return $wpdb->get_results($query, ARRAY_A);
     }
+
+	/**
+	 * @param string $tableName
+	 *
+	 * @return bool
+	 */
+	public static function checkIfTableExists(string $tableName): bool
+	{
+		global $wpdb;
+
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				"SHOW TABLES LIKE %s",
+					sprintf('%s%s', $wpdb->prefix, str_replace($wpdb->prefix, '', $tableName)
+				)
+			)
+		);
+	}
+
+	public static function createSamedayCitiesTable(): void
+	{
+		global $wpdb;
+
+		$citiesTable = $wpdb->prefix . 'sameday_cities';
+		$collate = $wpdb->get_charset_collate();
+
+		$createCitiesTable = "CREATE TABLE IF NOT EXISTS $citiesTable (
+	        id INT(11) NOT NULL AUTO_INCREMENT,
+	        city_id INT(11),
+	        city_name VARCHAR(255),
+	        county_code VARCHAR(255),
+	        postal_code VARCHAR(255),
+	        PRIMARY KEY (id)
+	    ) $collate;";
+
+		$wpdb->query($createCitiesTable);
+	}
 }
 

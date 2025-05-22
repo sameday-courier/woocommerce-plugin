@@ -178,13 +178,12 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.9.3 =
+= 1.10.0 =
 
+* Import Sameday nomenclature for cities and counties in order to use them in Checkout Form
 * Resolved error message for pickup point validation
-
-= 1.9.2 =
-
-* Added nomenclator feature
+* Generate AWB with many parcels
+* Validate PostalCode in AWB Form
 
 = 1.9.1 =
 

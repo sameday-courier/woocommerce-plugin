@@ -117,7 +117,18 @@ class Sameday
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
     }
 
-    public function importCities(){
+	/**
+	 * @return void
+	 *
+	 * @throws SamedaySDKException
+	 */
+    public function importCities(): void
+    {
+		// Ensure sameday_cities is generated otherwise create it
+		if (false === SamedayCourierQueryDb::checkIfTableExists('sameday_cities')) {
+			SamedayCourierQueryDb::createSamedayCitiesTable();
+		}
+
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
             SamedayCourierHelperClass::getSamedaySettings()['user'],
             SamedayCourierHelperClass::getSamedaySettings()['password'],
@@ -125,27 +136,24 @@ class Sameday
         ));
 
         $page = 1;
-        do{
+        do {
             $request = new SamedayGetCitiesRequest();
             $request->setCountPerPage(1000);
             $request->setPage($page++);
             try {
                 $cities = $sameday->getCities($request);
-            }catch(Exception $e){
-                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_cities');
+            } catch(Exception) {
+                throw new \RuntimeException(sprintf('Could not load cities: %s', $request->getCountPerPage()));
             }
             foreach ($cities->getCities() as $cityObject) {
-//                var_dump($cityObject->getCounty()->getCode()); die();
                 $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
                 if ($city === null) {
-                    // City not found, add it.
                     SamedayCourierQueryDb::addCity($cityObject);
                 } else {
                     SamedayCourierQueryDb::updateCity($cityObject);
                 }
             }
-        }while($page <= $cities->getPages());
-
+        } while ($page <= $cities->getPages());
     }
 
 	/**
@@ -582,21 +590,7 @@ class Sameday
 	        SamedayCourierHelperClass::getApiUrl()
         ));
 
-//        $weight = SamedayCourierHelperClass::convertWeight((float) $params['samedaycourier-package-weight']);
-
-//        $parcelDimensions = [];
-//        foreach ($params['samedaycourier-package-weight'] as $k => $weight) {
-//            var_dump($k);
-//            $parcelDimensions[] = new ParcelDimensionsObject(
-//                $weight,
-//                $params['samedaycourier-package-length'][$k],
-//                $params['samedaycourier-package-height'][$k],
-//                $params['samedaycourier-package-width'][$k]
-//            );
-//        }
-
         $parcelDimensions = [];
-
         // Iterate through the inputs based on their names
         foreach ($params as $key => $value) {
             // Match keys that belong to package data
@@ -629,10 +623,6 @@ class Sameday
                 $dimension['width']
             );
         }
-
-        // Output or use $parcelDimensionsObjects as needed
-
-//        echo '<pre>';print_r($parcelDimensionsObjects); echo '</pre>'; die();
 
         $companyObject = null;
         if ('' !== $params['shipping']['company']) {

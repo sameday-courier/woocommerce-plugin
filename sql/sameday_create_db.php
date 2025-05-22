@@ -83,6 +83,7 @@ function samedaycourier_create_db() {
         city_id INT(11),
         city_name VARCHAR(255),
         county_code VARCHAR(255),
+        postal_code VARCHAR(255),
         PRIMARY KEY (id)
     ) $charset_collate;";
 

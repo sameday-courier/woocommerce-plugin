@@ -598,10 +598,12 @@ add_action('wp_ajax_all_import', static function (): void {
 	} catch (Exception $exception) {}
 });
 
-add_action('wp_ajax_import_cities', function (): void {
+add_action('wp_ajax_import_cities', static function (): void {
     try {
         (new Sameday())->importCities();
-    } catch(Exception $exception){}
+    } catch(Exception $exception) {
+	    throw new \RuntimeException($exception->getMessage());
+    }
 });
 
 add_action('wp_ajax_getCities', function () {
@@ -677,7 +679,7 @@ add_action('wp_ajax_send_pickup_point', static function () {
                 $formData['pickupPointContactPersonPhone'],
                 true
             )],
-            (bool) $formData['default'] ?? false
+	        (bool) $formData['default']
         ));
 
         wp_send_json_success($response->getPickupPointId());

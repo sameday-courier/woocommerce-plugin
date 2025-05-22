@@ -31,12 +31,28 @@ function importAllFct() {
     );
 }
 function importCities() {
-    document.body.insertAdjacentHTML("beforeend", "<div class='loading' id='loadingImport'>Loading&#8230;</div>");
     jQuery.post(
-        ajaxurl,
-        {'action': 'import_cities'},
-        () => {
-            document.querySelector("#loadingImport").remove();
+        {
+            url: ajaxurl,
+            data: {
+                'action': 'import_cities',
+            },
+            success: () => {
+                jQuery('#wpbody-content').prepend(
+                    '<div class="notice success is-dismissible"> Cities imported with success ! </div>'
+                );
+            },
+            beforeSend: function(){
+                document.body.insertAdjacentHTML("beforeend", "<div class='loading' id='loadingImport'>Loading&#8230;</div>");
+            },
+            complete: () => {
+                document.querySelector("#loadingImport").remove();
+            },
+            error: (error) => {
+                jQuery('#wpbody-content').prepend(
+                    '<div class="notice error is-dismissible"> ' + error.responseText + ' </div>'
+                );
+            },
         }
     );
 }
