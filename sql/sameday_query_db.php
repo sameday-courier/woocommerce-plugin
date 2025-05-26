@@ -137,7 +137,10 @@ class SamedayCourierQueryDb
     {
         global $wpdb;
 
-        return $wpdb->get_row("SELECT * FROM {$wpdb->prefix}sameday_service WHERE sameday_code = '$samedayCode'  AND is_testing = '$is_testing'");
+        return $wpdb->get_row("SELECT * FROM {$wpdb->prefix}sameday_service 
+         	WHERE sameday_code = '$samedayCode'  
+           	AND is_testing = '$is_testing'"
+        );
     }
 
     /**

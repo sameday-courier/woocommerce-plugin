@@ -315,7 +315,7 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
-        if (null === $_POST['samedaycourier-service-name']) {
+        if (null === $_POST['samedaycourier-service-name'] ?? null) {
             $_POST['samedaycourier-service-name'] = SamedayCourierHelperClass::OOH_SERVICES_LABELS[
                 SamedayCourierHelperClass::getHostCountry()
             ];
@@ -371,11 +371,11 @@ class Sameday
 
             SamedayCourierQueryDb::updateService($service);
 
-            // Update Pudo
+            // Update PUDO
             if ($currentService['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
                 $pudoService = (array) SamedayCourierQueryDb::getServiceSamedayByCode(
                     SamedayCourierHelperClass::PUDO_CODE,
-                    SamedayCourierHelperClass::getHostCountry()
+	                SamedayCourierHelperClass::isTesting()
                 );
 
                 $pudoService['status'] = $service['status'];
