@@ -610,12 +610,12 @@ add_action('wp_ajax_getCities', static function () {
     $countyCode = $_POST['countyCode'] ?? null;
 
 	try {
-		$cities = json_encode(SamedayCourierQueryDb::getCitiesByCounty($countyCode),JSON_THROW_ON_ERROR);
+		$cities = SamedayCourierQueryDb::getCitiesByCounty($countyCode);
 	} catch (JsonException $e) {
 		$cities = [];
 	}
 
-    echo $cities;
+	wp_send_json($cities);
 });
 
 add_action('wp_ajax_change_locker', function() {
@@ -1191,7 +1191,6 @@ add_action('admin_head', function () {
 add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ) {
     add_thickbox();
     if ($_GET['action'] === 'edit') {
-
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
                 <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
@@ -1312,18 +1311,31 @@ add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
 
 add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
 function customize_shipping_city_field($fields) {
-    if (null !== $fields['billing']['billing_city']
-        && SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'
+    if ( null !== $fields['billing']['billing_city']
+         && null !== $fields['shipping']['shipping_city']
+         && SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'
     ) {
         $fields['billing']['billing_city'] = array(
             'type' => 'select',
             'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
             'required' => true,
-            'input_class' => array('input-text'),
-            'options' => array(
-                '' => __('Alege un oras', 'woocommerce'),
-            )
+            'class' => ['form-row-wide', 'select2-city'],
+            'input-class' => 'select2-city-input',
+	        'options' => [
+		        '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
+            ]
         );
+
+	    $fields['shipping']['shipping_city'] = array(
+		    'type' => 'select',
+		    'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+		    'required' => true,
+		    'class' => ['form-row-wide', 'select2-city'],
+		    'input-class' => 'select2-city-input',
+		    'options' => [
+			    '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
+		    ]
+	    );
 
         return $fields;
     }
