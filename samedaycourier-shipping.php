@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.9.3
+ * Version: 1.10.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -589,13 +589,27 @@ add_action('admin_post_refresh_lockers', function () {
 add_action('wp_ajax_all_import', static function (): void {
 	try {
 		(new Sameday())->refreshServices();
-    } catch (Exception $exception) {}
+    } catch (Exception $exception) {
+		throw new \RuntimeException($exception->getMessage());
+    }
+
 	try {
 		(new Sameday())->refreshSamedayPickupPoints();
-    } catch (Exception $exception) {}
+    } catch (Exception $exception) {
+		throw new \RuntimeException($exception->getMessage());
+    }
+
 	try {
 		(new Sameday())->refreshSamedayLockers();
-	} catch (Exception $exception) {}
+	} catch (Exception $exception) {
+		throw new \RuntimeException($exception->getMessage());
+    }
+
+	try {
+		(new Sameday())->importCities();
+	} catch(Exception $exception) {
+		throw new \RuntimeException($exception->getMessage());
+	}
 });
 
 add_action('wp_ajax_import_cities', static function (): void {
