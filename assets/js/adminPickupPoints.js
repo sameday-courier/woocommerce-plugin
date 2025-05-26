@@ -53,7 +53,6 @@ if (document.getElementById('thickbox-form')) {
 jQuery('body').on('click', '.delete-pickup-point', function(e){
     e.preventDefault();
     let sameday_id = jQuery(this).attr('data-id');
-    console.log(sameday_id);
     jQuery('#form-deletePickupPoint #input-deletePickupPoint').attr('value', sameday_id);
 });
 if (document.getElementById('form-deletePickupPoint')) {
