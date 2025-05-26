@@ -647,6 +647,21 @@ class SamedayCourierHelperClass
         return '';
     }
 
+	/**
+	 * @param string $postalCode
+	 * @param string $countyCode
+	 *
+	 * @return bool
+	 */
+	public static function validatePostalCode(string $postalCode, string $countyCode): bool
+	{
+		if (null === $code = SamedayCourierQueryDb::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
+			return false;
+		}
+
+		return $postalCode[0] === $code[0];
+	}
+
     /**
      * @return array
      */
@@ -654,9 +669,9 @@ class SamedayCourierHelperClass
     {
         try {
             $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-                SamedayCourierHelperClass::getSamedaySettings()['user'],
-                SamedayCourierHelperClass::getSamedaySettings()['password'],
-                SamedayCourierHelperClass::getApiUrl()
+                self::getSamedaySettings()['user'],
+                self::getSamedaySettings()['password'],
+                self::getApiUrl()
             ));
         } catch (SamedaySDKException|Exception $exception) {
             return [];
@@ -683,15 +698,16 @@ class SamedayCourierHelperClass
     public static function getCities($countyId): array {
         try {
             $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-                SamedayCourierHelperClass::getSamedaySettings()['user'],
-                SamedayCourierHelperClass::getSamedaySettings()['password'],
-                SamedayCourierHelperClass::getApiUrl()
+                self::getSamedaySettings()['user'],
+	            self::getSamedaySettings()['password'],
+	            self::getApiUrl()
             ));
         } catch (Exception $exception) {
             return [];
         }
 
         $page = 1;
+	    $remoteCities = [];
         do {
             $request = new Sameday\Requests\SamedayGetCitiesRequest($countyId);
             $request->setPage($page++);

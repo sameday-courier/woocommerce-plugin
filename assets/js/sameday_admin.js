@@ -39,18 +39,21 @@ function importCities() {
             },
             success: () => {
                 jQuery('#wpbody-content').prepend(
-                    '<div class="notice success is-dismissible"> Cities imported with success ! </div>'
+                    '<div class="notice notice-success is-dismissible" role="alert">' +
+                        '<p>Cities imported with success !</p>' +
+                    '</div>'
                 );
             },
-            beforeSend: function(){
+            beforeSend: () => {
                 document.body.insertAdjacentHTML("beforeend", "<div class='loading' id='loadingImport'>Loading&#8230;</div>");
             },
             complete: () => {
                 document.querySelector("#loadingImport").remove();
+                jQuery(window).scrollTop(0);
             },
             error: (error) => {
                 jQuery('#wpbody-content').prepend(
-                    '<div class="notice error is-dismissible"> ' + error.responseText + ' </div>'
+                    '<div class="notice error is-dismissible"><p>' + error.responseText + '</p></div>'
                 );
             },
         }

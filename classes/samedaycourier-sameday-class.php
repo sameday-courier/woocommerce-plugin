@@ -124,7 +124,6 @@ class Sameday
 	 */
     public function importCities(): void
     {
-		// Ensure sameday_cities is generated otherwise create it
 		if (false === SamedayCourierQueryDb::checkIfTableExists('sameday_cities')) {
 			SamedayCourierQueryDb::createSamedayCitiesTable();
 		}
@@ -142,15 +141,15 @@ class Sameday
             $request->setPage($page++);
             try {
                 $cities = $sameday->getCities($request);
-            } catch(Exception) {
-                throw new \RuntimeException(sprintf('Could not load cities: %s', $request->getCountPerPage()));
+            } catch(Exception $exception) {
+                throw new RuntimeException(sprintf('Could not load cities: %s', $request->getCountPerPage()));
             }
             foreach ($cities->getCities() as $cityObject) {
                 $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
                 if ($city === null) {
-                    SamedayCourierQueryDb::addCity($cityObject);
+                    SamedayCourierQueryDb::addCity($cityObject, SamedayCourierHelperClass::getHostCountry());
                 } else {
-                    SamedayCourierQueryDb::updateCity($cityObject);
+                    SamedayCourierQueryDb::updateCity($cityObject, SamedayCourierHelperClass::getHostCountry());
                 }
             }
         } while ($page <= $cities->getPages());
@@ -161,7 +160,7 @@ class Sameday
 	 */
 	public function refreshSamedayPickupPoints(): bool
     {
-        if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings())) {
             wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
         }
 
@@ -475,7 +474,13 @@ class Sameday
             $state
 	    );
 
-	    $postalCode = $params['shipping']['postcode'];
+	    $postalCode = null;
+		if (SamedayCourierHelperClass::validatePostalCode(
+			$params['shipping']['postcode'],
+			SamedayCourierHelperClass::convertStateNameToCode($country, $state)
+		)) {
+			$postalCode = $params['shipping']['postcode'];
+		}
 
 	    $address = sprintf(
 		    '%s %s',
@@ -514,7 +519,6 @@ class Sameday
         }
 
 	    /** End of Recipient details */
-
 		$post_meta_samedaycourier_locker = get_post_meta(
 			$params['samedaycourier-order-id'],
 			SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
@@ -566,7 +570,6 @@ class Sameday
 				JSON_THROW_ON_ERROR
 		    );
 
-			// EAWB DATES //
 		    $city = $post_meta_samedaycourier_address_hd['_shipping_city'];
 		    $county = SamedayCourierHelperClass::convertStateCodeToName(
 			    $post_meta_samedaycourier_address_hd['_shipping_country'],
@@ -578,7 +581,7 @@ class Sameday
 			    $post_meta_samedaycourier_address_hd['_shipping_address_2']
 		    );
 		    $postalCode = $post_meta_samedaycourier_address_hd['_shipping_postcode'];
-		    // EAWB DATES //
+
 		    $address_1 = $post_meta_samedaycourier_address_hd['_shipping_address_1'];
 			$address_2 = $post_meta_samedaycourier_address_hd['_shipping_address_2'];
 			$state = $post_meta_samedaycourier_address_hd['_shipping_state'];
@@ -678,12 +681,14 @@ class Sameday
             $errors = $e->getErrors();
             if ($errors !== '') {
                 try {
-                    $errorMessages = json_decode($e->getRawResponse()->getBody())->errors->errors;
+                    $errorMessages = json_decode(
+						$e->getRawResponse()->getBody(), false, 512,JSON_THROW_ON_ERROR
+                    )->errors->errors;
                     $errors[] = [
                         'key' => ['Validation Failed', ''],
                         'errors' => $errorMessages
                     ];
-                } catch(JsonException $exception) {
+                } catch (JsonException $exception) {
                     $errors[] = [
                         'key' => 'JSON Validation Failed',
                         'errors' => $exception->getMessage()
@@ -713,6 +718,7 @@ class Sameday
         if (null !== $errors && null === $awb) {
             $noticeMessage = SamedayCourierHelperClass::parseAwbErrors($errors);
             SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+
 			return wp_redirect(
 				add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
 			);

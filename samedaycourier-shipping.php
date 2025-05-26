@@ -606,9 +606,16 @@ add_action('wp_ajax_import_cities', static function (): void {
     }
 });
 
-add_action('wp_ajax_getCities', function () {
-    $countyCode = (isset($_POST['countyCode'])) ? $_POST['countyCode'] : null;
-    echo json_encode(SamedayCourierQueryDb::getCityByCounty($countyCode)); die();
+add_action('wp_ajax_getCities', static function () {
+    $countyCode = $_POST['countyCode'] ?? null;
+
+	try {
+		$cities = json_encode(SamedayCourierQueryDb::getCitiesByCounty($countyCode),JSON_THROW_ON_ERROR);
+	} catch (JsonException $e) {
+		$cities = [];
+	}
+
+    echo $cities;
 });
 
 add_action('wp_ajax_change_locker', function() {

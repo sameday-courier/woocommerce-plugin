@@ -594,7 +594,13 @@ class SamedayCourierQueryDb
 		$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 	}
 
-    public static function addCity( CityObject $cityObject): void
+	/**
+	 * @param CityObject $cityObject
+	 * @param string $countryCode
+	 *
+	 * @return void
+	 */
+    public static function addCity(CityObject $cityObject, string $countryCode): void
     {
         global $wpdb;
 
@@ -608,20 +614,26 @@ class SamedayCourierQueryDb
         // Ensure county object exists before accessing it
         $countyCode = $cityObject->getCounty() ? $cityObject->getCounty()->getCode() : null;
 
-        $data = array(
-            'city_id' => $cityObject->getId(),
-            'city_name' => $cityObject->getName(),
-            'county_code' => $countyCode,
+        $data = [
+	        'city_id' => $cityObject->getId(),
+	        'city_name' => $cityObject->getName(),
+	        'county_code' => $countyCode,
 	        'postal_code' => $cityObject->getPostalCode(),
-        );
+	        'country_code' => $countryCode,
+        ];
 
-        $format = array('%d', '%s', $countyCode !== null ? '%s' : 'NULL');
+        $format = array('%d', '%s', $countyCode !== null ? '%s' : 'NULL', '%s', '%s');
 
         $wpdb->insert($table, $data, $format);
     }
 
-
-    public static function updateCity($cityObject): void
+	/**
+	 * @param CityObject $cityObject
+	 * @param $countryCode
+	 *
+	 * @return void
+	 */
+    public static function updateCity(CityObject $cityObject, $countryCode): void
     {
         global $wpdb;
 
@@ -630,14 +642,19 @@ class SamedayCourierQueryDb
         $data = array(
             'city_name' => $cityObject->getName(),
             'county_code' => $cityObject->getCounty()->getCode(),
+	        'postal_code' => $cityObject->getPostalCode(),
+	        'country_code' => $countryCode,
         );
 
         $where = array('city_id' => $cityObject->getId());
 
-        $wpdb->update($table, $data, $where, array('%s', '%s'), array('%d'));
+	    // Ensure county object exists before accessing it
+	    $countyCode = $cityObject->getCounty() ? $cityObject->getCounty()->getCode() : null;
+
+	    $format = array('%s', '%s', $countyCode !== null ? '%s' : 'NULL', '%s');
+
+        $wpdb->update($table, $data, $where, $format, ['%d']);
     }
-
-
 
     public static function getCitySameday($cityId)
     {
@@ -647,11 +664,12 @@ class SamedayCourierQueryDb
 
         return $wpdb->get_row($query);
     }
-    public function getCityByCounty($countyCode)
+
+    public static function getCitiesByCounty($countyCode)
     {
         global $wpdb;
 
-        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE county_code = '{$countyCode}'";
+        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE county_code = '$countyCode'";
 
         return $wpdb->get_results($query, ARRAY_A);
     }
@@ -674,6 +692,23 @@ class SamedayCourierQueryDb
 		);
 	}
 
+	/**
+	 * @param string $countyCode
+	 * @param string $countryCode
+	 *
+	 * @return string|null
+	 */
+	public static function getPostalForSpecificCounty(string $countyCode, string $countryCode): ?string
+	{
+		global $wpdb;
+
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_cities 
+         	WHERE county_code = '$countyCode' AND country_code='$countryCode' LIMIT 1"
+		;
+
+		return $wpdb->get_results($query, ARRAY_A)[0]['postal_code'] ?? null;
+	}
+
 	public static function createSamedayCitiesTable(): void
 	{
 		global $wpdb;
@@ -686,7 +721,8 @@ class SamedayCourierQueryDb
 	        city_id INT(11),
 	        city_name VARCHAR(255),
 	        county_code VARCHAR(255),
-	        postal_code VARCHAR(255),
+	        postal_code VARCHAR(10),
+	        country_code VARCHAR(10),
 	        PRIMARY KEY (id)
 	    ) $collate;";
 
