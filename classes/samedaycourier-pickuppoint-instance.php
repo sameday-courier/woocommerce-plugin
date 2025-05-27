@@ -20,7 +20,12 @@ class SamedayCourierPickupPointInstance
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 	}
 
-    public function enqueue_styles() {
+	/**
+	 * @return void
+	 */
+    public function enqueue_styles(): void
+    {
+	    add_thickbox();
         wp_enqueue_style(
             'sameday-thickboxform-style',
             plugin_dir_url( __FILE__ ) . '../assets/css/tickbox-form.css',
@@ -54,7 +59,6 @@ class SamedayCourierPickupPointInstance
 	 * Plugin settings page
 	 */
 	public function plugin_settings_page() {
-        add_thickbox();
 		?>
 		<div class="wrap">
 			<div id="poststuff">
@@ -69,7 +73,7 @@ class SamedayCourierPickupPointInstance
 									<input type="hidden" name="action" value="refresh_pickup_points">
 									<input type="submit" class="button-primary" value="Refresh Pickup point">
 								</form>
-                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="thickbox button-primary">
+                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="button-primary button-samll thickbox">
                                     <?php echo __('Add Pickup Point', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                                 </a>
 							</div>
@@ -84,7 +88,7 @@ class SamedayCourierPickupPointInstance
 				</div>
 			</div>
 		</div>
-        <div id="smd-thickbox" class="smd-modal" style="display: none">
+        <div id="smd-thickbox" class="smd-modal" style="display: none;">
             <div class="smd-modal-container">
                 <form id="thickbox-form" action="" method="POST">
                     <h3>Add Pickup Point</h3>
@@ -202,7 +206,7 @@ class SamedayCourierPickupPointInstance
 	/** Singleton instance */
 	public static function get_instance(): self
     {
-		if ( ! isset( self::$instance ) ) {
+		if (!isset( self::$instance ) ) {
 			self::$instance = new self();
 		}
 

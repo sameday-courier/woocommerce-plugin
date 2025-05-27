@@ -14,6 +14,7 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
+use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
@@ -117,11 +118,49 @@ class Sameday
     }
 
 	/**
+	 * @return void
+	 *
+	 * @throws SamedaySDKException
+	 */
+    public function importCities(): void
+    {
+		if (false === SamedayCourierQueryDb::checkIfTableExists('sameday_cities')) {
+			SamedayCourierQueryDb::createSamedayCitiesTable();
+		}
+
+        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            SamedayCourierHelperClass::getSamedaySettings()['user'],
+            SamedayCourierHelperClass::getSamedaySettings()['password'],
+            SamedayCourierHelperClass::getApiUrl()
+        ));
+
+        $page = 1;
+        do {
+            $request = new SamedayGetCitiesRequest();
+            $request->setCountPerPage(1000);
+            $request->setPage($page++);
+            try {
+                $cities = $sameday->getCities($request);
+            } catch(Exception $exception) {
+                throw new RuntimeException(sprintf('Could not load cities: %s', $request->getCountPerPage()));
+            }
+            foreach ($cities->getCities() as $cityObject) {
+                $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
+                if ($city === null) {
+                    SamedayCourierQueryDb::addCity($cityObject, SamedayCourierHelperClass::getHostCountry());
+                } else {
+                    SamedayCourierQueryDb::updateCity($cityObject, SamedayCourierHelperClass::getHostCountry());
+                }
+            }
+        } while ($page <= $cities->getPages());
+    }
+
+	/**
 	 * @throws SamedaySDKException
 	 */
 	public function refreshSamedayPickupPoints(): bool
     {
-        if (empty(SamedayCourierHelperClass::getSamedaySettings()) ) {
+        if (empty(SamedayCourierHelperClass::getSamedaySettings())) {
             wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
         }
 
@@ -276,7 +315,7 @@ class Sameday
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
         }
 
-        if (null === $_POST['samedaycourier-service-name']) {
+        if (null === $_POST['samedaycourier-service-name'] ?? null) {
             $_POST['samedaycourier-service-name'] = SamedayCourierHelperClass::OOH_SERVICES_LABELS[
                 SamedayCourierHelperClass::getHostCountry()
             ];
@@ -332,11 +371,11 @@ class Sameday
 
             SamedayCourierQueryDb::updateService($service);
 
-            // Update Pudo
+            // Update PUDO
             if ($currentService['sameday_code'] === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
                 $pudoService = (array) SamedayCourierQueryDb::getServiceSamedayByCode(
                     SamedayCourierHelperClass::PUDO_CODE,
-                    SamedayCourierHelperClass::getHostCountry()
+	                SamedayCourierHelperClass::isTesting()
                 );
 
                 $pudoService['status'] = $service['status'];
@@ -430,12 +469,18 @@ class Sameday
             $country = $params['billing']['country'];
         }
 
+	    $postalCode = $params['shipping']['postcode'];
+	    if ('' === $postalCode || null === $postalCode) {
+		    $postalCode = $params['billing']['postcode'];
+	    }
+	    if (false === SamedayCourierHelperClass::validatePostalCode($postalCode, $state)) {
+		    $postalCode = null;
+	    }
+
 	    $county = SamedayCourierHelperClass::convertStateCodeToName(
             $country,
             $state
 	    );
-
-	    $postalCode = $params['shipping']['postcode'];
 
 	    $address = sprintf(
 		    '%s %s',
@@ -468,14 +513,12 @@ class Sameday
                 'error',
                 true
             );
-
             return wp_redirect(
                 add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
             );
         }
 
 	    /** End of Recipient details */
-
 		$post_meta_samedaycourier_locker = get_post_meta(
 			$params['samedaycourier-order-id'],
 			SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
@@ -527,7 +570,6 @@ class Sameday
 				JSON_THROW_ON_ERROR
 		    );
 
-			// EAWB DATES //
 		    $city = $post_meta_samedaycourier_address_hd['_shipping_city'];
 		    $county = SamedayCourierHelperClass::convertStateCodeToName(
 			    $post_meta_samedaycourier_address_hd['_shipping_country'],
@@ -539,7 +581,7 @@ class Sameday
 			    $post_meta_samedaycourier_address_hd['_shipping_address_2']
 		    );
 		    $postalCode = $post_meta_samedaycourier_address_hd['_shipping_postcode'];
-		    // EAWB DATES //
+
 		    $address_1 = $post_meta_samedaycourier_address_hd['_shipping_address_1'];
 			$address_2 = $post_meta_samedaycourier_address_hd['_shipping_address_2'];
 			$state = $post_meta_samedaycourier_address_hd['_shipping_state'];
@@ -551,14 +593,39 @@ class Sameday
 	        SamedayCourierHelperClass::getApiUrl()
         ));
 
-        $weight = SamedayCourierHelperClass::convertWeight((float) $params['samedaycourier-package-weight']);
+        $parcelDimensions = [];
+        // Iterate through the inputs based on their names
+        foreach ($params as $key => $value) {
+            // Match keys that belong to package data
+            if (preg_match('/^samedaycourier-package-(weight|length|height|width)(\d+)$/', $key, $matches)) {
+                $attribute = $matches[1]; // weight, length, height, or width
+                $index = $matches[2];    // the number in the input name
 
-        $parcelDimensions[] = new ParcelDimensionsObject(
-            $weight <= 0 ? 1 : $weight,
-            $params['samedaycourier-package-length'],
-            $params['samedaycourier-package-height'],
-            $params['samedaycourier-package-width']
-        );
+                // Ensure the index exists in the parcelDimensions array
+                if (!isset($parcelDimensions[$index])) {
+                    $parcelDimensions[$index] = [
+                        'weight' => null,
+                        'length' => null,
+                        'height' => null,
+                        'width' => null
+                    ];
+                }
+
+                // Assign the value to the correct attribute
+                $parcelDimensions[$index][$attribute] = $value;
+            }
+        }
+
+        // Transform the array into ParcelDimensionsObject instances
+        $parcelDimensionsObjects = [];
+        foreach ($parcelDimensions as $dimension) {
+            $parcelDimensionsObjects[] = new ParcelDimensionsObject(
+                $dimension['weight'],
+                $dimension['length'],
+                $dimension['height'],
+                $dimension['width']
+            );
+        }
 
         $companyObject = null;
         if ('' !== $params['shipping']['company']) {
@@ -575,7 +642,7 @@ class Sameday
             $params['samedaycourier-package-pickup-point'],
             null,
             new PackageType($params['samedaycourier-package-type']),
-            $parcelDimensions,
+            $parcelDimensionsObjects,
 	        $service->sameday_id,
             new AwbPaymentType($params['samedaycourier-package-awb-payment']),
             new AwbRecipientEntityObject(
@@ -612,6 +679,24 @@ class Sameday
             $awb = $sameday->postAwb($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
+            if ($errors !== '') {
+                try {
+					$rawResponse = $e->getRawResponse()->getBody();
+                    $errorMessages = json_decode($rawResponse, false, 512,JSON_THROW_ON_ERROR)
+	                    ->errors
+	                    ->errors
+                    ;
+                    $errors[] = [
+                        'key' => ['Validation Failed', ''],
+                        'errors' => $errorMessages
+                    ];
+                } catch (JsonException $exception) {
+                    $errors[] = [
+                        'key' => 'JSON Validation Failed',
+                        'errors' => $exception->getMessage()
+                    ];
+                }
+            }
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {

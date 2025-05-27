@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.6.2
-Stable tag: 1.9.1
+Stable tag: 1.10.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,6 +178,13 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.10.0 =
+
+* Import Sameday nomenclature for cities and counties in order to use them in Checkout Form
+* Resolved error message for pickup point validation
+* Generate AWB with many parcels
+* Validate PostalCode in AWB Form
+
 = 1.9.1 =
 
 * Minor interface fix
@@ -194,7 +201,6 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 1.8.9 =
 
 * Fix for previous version regarding locker pick
-* Selector for partial ID during input check
 * Selector for partial ID during input check
 
 = 1.8.8 =

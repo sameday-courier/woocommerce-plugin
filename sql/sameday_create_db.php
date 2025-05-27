@@ -14,6 +14,7 @@ function samedaycourier_create_db() {
 	$service = $wpdb->prefix . 'sameday_service';
 	$packageTable = $wpdb->prefix . 'sameday_package';
 	$lockerTable = $wpdb->prefix . 'sameday_locker';
+    $citiesTable = $wpdb->prefix . 'sameday_cities';
 
 	$createAwbTable = "CREATE TABLE IF NOT EXISTS $awbTable (
 		id INT(11) NOT NULL AUTO_INCREMENT,
@@ -77,21 +78,31 @@ function samedaycourier_create_db() {
         PRIMARY KEY (id)
 	) $charset_collate;";
 
+    $createCitiesTable = "CREATE TABLE IF NOT EXISTS $citiesTable (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        city_id INT(11),
+        city_name VARCHAR(255),
+        county_code VARCHAR(255),
+        postal_code VARCHAR(10),
+        country_code VARCHAR(10),
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+
     $tablesToCreate = array(
-        $createAwbTable, $createPickUpPointTable, $createServiceTable, $createPackageTable, $createLockerTable
+        $createAwbTable, $createPickUpPointTable, $createServiceTable, $createPackageTable, $createLockerTable, $createCitiesTable
     );
 
     $tablesToAlter = array();
 
     $servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
 
-    if (! isset($servicesRows->sameday_code)) {
-        $alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '' ;";
+    if (!isset($servicesRows->sameday_code)) {
+        $alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '';";
 
         $tablesToAlter[] = $alterServiceTable;
     }
 
-    if (! isset($servicesRows->service_optional_taxes)) {
+    if (!isset($servicesRows->service_optional_taxes)) {
         $alterServiceTable = "ALTER TABLE $service ADD `service_optional_taxes` TEXT DEFAULT NULL ;";
 
         $tablesToAlter[] = $alterServiceTable;
