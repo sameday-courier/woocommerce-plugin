@@ -681,9 +681,11 @@ class Sameday
             $errors = $e->getErrors();
             if ($errors !== '') {
                 try {
-                    $errorMessages = json_decode(
-						$e->getRawResponse()->getBody(), false, 512,JSON_THROW_ON_ERROR
-                    )->errors->errors;
+					$rawResponse = $e->getRawResponse()->getBody();
+                    $errorMessages = json_decode($rawResponse, false, 512,JSON_THROW_ON_ERROR)
+	                    ->errors
+	                    ->errors
+                    ;
                     $errors[] = [
                         'key' => ['Validation Failed', ''],
                         'errors' => $errorMessages

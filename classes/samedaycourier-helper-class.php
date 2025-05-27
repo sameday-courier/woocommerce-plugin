@@ -659,6 +659,10 @@ class SamedayCourierHelperClass
 			return false;
 		}
 
+		if (mb_strlen($code) !== mb_strlen($postalCode)) {
+			return false;
+		}
+
 		return $postalCode[0] === $code[0];
 	}
 
