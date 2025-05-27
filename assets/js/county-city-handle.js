@@ -4,7 +4,7 @@ jQuery(document).ready(function(){
     });
 
     jQuery('#shipping_state').on('change', (element) => {
-        updateCities(jQuery('#billing_city'), element.target.value);
+        updateCities(jQuery('#shipping_city'), element.target.value);
     });
 
     const updateCities = (selector, countyCode) => {

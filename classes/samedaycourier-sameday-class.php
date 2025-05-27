@@ -469,18 +469,18 @@ class Sameday
             $country = $params['billing']['country'];
         }
 
+	    $postalCode = $params['shipping']['postcode'];
+	    if ('' === $postalCode || null === $postalCode) {
+		    $postalCode = $params['billing']['postcode'];
+	    }
+	    if (false === SamedayCourierHelperClass::validatePostalCode($postalCode, $state)) {
+		    $postalCode = null;
+	    }
+
 	    $county = SamedayCourierHelperClass::convertStateCodeToName(
             $country,
             $state
 	    );
-
-	    $postalCode = null;
-		if (SamedayCourierHelperClass::validatePostalCode(
-			$params['shipping']['postcode'],
-			SamedayCourierHelperClass::convertStateNameToCode($country, $state)
-		)) {
-			$postalCode = $params['shipping']['postcode'];
-		}
 
 	    $address = sprintf(
 		    '%s %s',
