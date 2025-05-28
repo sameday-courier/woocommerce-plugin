@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.10.1 =
+
+* Set use_nomenclator default as false in order to avoid issue.
+
 = 1.10.0 =
 
 * Import Sameday nomenclature for cities and counties in order to use them in Checkout Form

@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.0
+ * Version: 1.10.1
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -1327,7 +1327,7 @@ add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
 function customize_shipping_city_field($fields) {
     if ( null !== $fields['billing']['billing_city']
          && null !== $fields['shipping']['shipping_city']
-         && SamedayCourierHelperClass::getSamedaySettings()['use_nomenclator'] === 'yes'
+         && SamedayCourierHelperClass::isUseSamedayNomenclator()
     ) {
         $fields['billing']['billing_city'] = array(
             'type' => 'select',

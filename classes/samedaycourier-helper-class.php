@@ -151,7 +151,17 @@ class SamedayCourierHelperClass
 	{
 		$discountFreeShipping = self::getSamedaySettings()['discount_free_shipping'] ?? null;
 
-		return ! ( null === $discountFreeShipping || 'no' === $discountFreeShipping );
+		return ! (null === $discountFreeShipping || 'no' === $discountFreeShipping);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function isUseSamedayNomenclator(): bool
+	{
+		$useSamedayNomenclator = self::getSamedaySettings()['use_nomenclator'] ?? null;
+
+		return ! (null === $useSamedayNomenclator || 'no' === $useSamedayNomenclator);
 	}
 
 	/**
@@ -163,12 +173,6 @@ class SamedayCourierHelperClass
 
 		return ($isTesting === 'yes' || $isTesting === '1') ? 1 : 0;
 	}
-
-    public static function useNomenclator(): int
-    {
-        $useNomenclator = self::getSamedaySettings()['use_nomenclator'] ?? null;
-        return ($useNomenclator === 'yes' || $useNomenclator === '1') ? 1 : 0;
-    }
 
 	/**
 	 * @return string
