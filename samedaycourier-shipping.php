@@ -959,7 +959,7 @@ function wps_locker_row_layout() {
             <?php } ?>
         <?php } else { ?>
             <?php
-                $cities = SamedayCourierQueryDb::getCities(SamedayCourierHelperClass::isTesting());
+                $cities = SamedayCourierQueryDb::getCitiesWithLockers(SamedayCourierHelperClass::isTesting());
                 $lockers = array();
                 foreach ($cities as $city) {
                     if (null !== $city->city) {
@@ -1027,7 +1027,6 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
 });
 
 add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
-
     if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
         try {
             SamedayCourierHelperClass::addLockerToOrderData(
@@ -1300,59 +1299,88 @@ add_filter('plugin_row_meta', function ($links, $pluginFileName) {
 register_activation_hook( __FILE__, 'samedaycourier_create_db' );
 register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
 
-function enqueue_button_scripts(): void
-{
-    if (is_checkout()) {
-        wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
-        wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
-        wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
-        wp_enqueue_script('county-city-handle', plugins_url( 'assets/js/county-city-handle.js', __FILE__ ), array('jquery'));
+add_action('wp_enqueue_scripts',  static function () {
+	if (!is_checkout()) {
+		return;
+	}
 
-        wp_localize_script('county-city-handle', 'ajax_object', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('custom_ajax_nonce')
-        ));
+	wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
+	wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
+	wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
+	wp_enqueue_script('county-city-handle', plugins_url( 'assets/js/county-city-handle.js', __FILE__ ), array('jquery'));
 
-        // Localize the script with your dynamic PHP values
-        wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null,
-            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null,
-            'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
-        ));
-    }
-}
-add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts' );
+	wp_localize_script('county-city-handle', 'ajax_object', array(
+		'ajax_url' => admin_url('admin-ajax.php'),
+		'nonce'    => wp_create_nonce('custom_ajax_nonce')
+	));
 
-add_filter('woocommerce_checkout_fields', 'customize_shipping_city_field');
-function customize_shipping_city_field($fields) {
-    if ( null !== $fields['billing']['billing_city']
-         && null !== $fields['shipping']['shipping_city']
-         && SamedayCourierHelperClass::isUseSamedayNomenclator()
-    ) {
-        $fields['billing']['billing_city'] = array(
-            'type' => 'select',
-            'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-            'required' => true,
-            'class' => ['form-row-wide', 'select2-city'],
-            'input-class' => 'select2-city-input',
-	        'options' => [
-		        '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
-            ]
-        );
+	// Localize the script with your dynamic PHP values
+	wp_localize_script( 'custom-checkout-button', 'samedayData', array(
+		'username' => SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null,
+		'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null,
+		'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
+	));
 
-	    $fields['shipping']['shipping_city'] = array(
-		    'type' => 'select',
-		    'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-		    'required' => true,
-		    'class' => ['form-row-wide', 'select2-city'],
-		    'input-class' => 'select2-city-input',
-		    'options' => [
-			    '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
-		    ]
+    if (SamedayCourierHelperClass::isWoocommerceUsingBlockTheme()) {
+	    if (!file_exists($script_path = plugin_dir_path(__FILE__) . 'assets/js/checkout-block-extension.js')) {
+		    return;
+	    }
+
+	    wp_register_script(
+		    'samedaycourier-checkout-extension',
+		    plugin_dir_url(__FILE__) . 'assets/js/checkout-block-extension.js',
+		    array(
+			    'wp-blocks',
+			    'wp-element',
+			    'wp-components',
+			    'wp-i18n',
+			    'wc-blocks-registry'
+		    ),
+		    filemtime($script_path),
+		    true
 	    );
 
-        return $fields;
-    }
+	    wp_localize_script(
+		    'samedaycourier-checkout-extension',
+		    'samedayCourierData',
+		    array(
+			    'cities' => SamedayCourierQueryDb::getCities()
+		    )
+	    );
 
-    return $fields;
-}
+	    wp_enqueue_script('samedaycourier-checkout-extension');
+    } else {
+	    add_filter('woocommerce_checkout_fields', static function ($fields) {
+		    if ( null !== $fields['billing']['billing_city']
+		         && null !== $fields['shipping']['shipping_city']
+		         && SamedayCourierHelperClass::isUseSamedayNomenclator()
+		    ) {
+			    $fields['billing']['billing_city'] = array(
+				    'type' => 'select',
+				    'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+				    'required' => true,
+				    'class' => ['form-row-wide', 'select2-city'],
+				    'input-class' => 'select2-city-input',
+				    'options' => [
+					    '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
+				    ]
+			    );
+
+			    $fields['shipping']['shipping_city'] = array(
+				    'type' => 'select',
+				    'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
+				    'required' => true,
+				    'class' => ['form-row-wide', 'select2-city'],
+				    'input-class' => 'select2-city-input',
+				    'options' => [
+					    '' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
+				    ]
+			    );
+
+			    return $fields;
+		    }
+
+		    return $fields;
+        });
+    }
+});

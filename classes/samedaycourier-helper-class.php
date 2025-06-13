@@ -732,7 +732,7 @@ class SamedayCourierHelperClass
             }
         } while ($page <= $cities->getPages());
 
-        if(!empty($remoteCities)){
+        if (!empty($remoteCities)) {
             return array_map(static function(CityObject $city){
                 return [
                     'id' => $city->getId(),
@@ -743,4 +743,18 @@ class SamedayCourierHelperClass
 
         return [];
     }
+
+	/**
+	 * @return bool
+	 */
+	public static function isWoocommerceUsingBlockTheme(): bool
+	{
+		if (class_exists('WC_Blocks_Utils')
+		    && method_exists('WC_Blocks_Utils', 'has_block_in_page')
+		) {
+			return \WC_Blocks_Utils::has_block_in_page(wc_get_page_id('checkout'), 'woocommerce/checkout');
+		}
+
+		return false;
+	}
 }
