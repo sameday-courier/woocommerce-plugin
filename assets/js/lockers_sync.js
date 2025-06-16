@@ -80,8 +80,6 @@ const _openLockers = () => {
 
     LockerPlugin.init(LockerData);
 
-    console.log(LockerData);
-
     if (LockerPlugin.options.countryCode !== country || LockerPlugin.options.city !== city) {
         LockerPlugin.reinitializePlugin(LockerData);
     }
