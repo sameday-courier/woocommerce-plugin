@@ -55,7 +55,8 @@ const _openLockers = () => {
     }
 
     const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";
-    const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase();
+    const langCode= document.getElementById('shipping_country').value.toLowerCase();
+    // const langCode = selectors.selectLocker.getAttribute('data-country').toLowerCase();
     const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
 
     let city = null;
@@ -78,6 +79,8 @@ const _openLockers = () => {
     };
 
     LockerPlugin.init(LockerData);
+
+    console.log(LockerData);
 
     if (LockerPlugin.options.countryCode !== country || LockerPlugin.options.city !== city) {
         LockerPlugin.reinitializePlugin(LockerData);

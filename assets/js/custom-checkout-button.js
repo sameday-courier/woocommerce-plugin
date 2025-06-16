@@ -89,3 +89,9 @@ waitForElement(inputSelector, function(label) {
     }
 
 });
+
+    jQuery('#billing_country').on('change', function() {
+        let selectedValue = jQuery(this).val();
+        jQuery('#shipping_country').val(selectedValue).trigger('change');
+        console.log(jQuery('#shipping_country').val());
+    });
