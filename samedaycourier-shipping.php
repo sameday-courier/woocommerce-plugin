@@ -1333,7 +1333,8 @@ add_action('wp_enqueue_scripts',  static function () {
 			    'wp-element',
 			    'wp-components',
 			    'wp-i18n',
-			    'wc-blocks-registry'
+			    'wc-blocks-registry',
+                'jquery',
 		    ),
 		    filemtime($script_path),
 		    true
@@ -1347,7 +1348,7 @@ add_action('wp_enqueue_scripts',  static function () {
 		    )
 	    );
 
-	    wp_enqueue_script('samedaycourier-checkout-extension');
+	    wp_enqueue_script('samedaycourier-checkout-extension', ['jquery']);
     } else {
 	    add_filter('woocommerce_checkout_fields', static function ($fields) {
 		    if ( null !== $fields['billing']['billing_city']

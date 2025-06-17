@@ -1,3 +1,6 @@
+/**
+ * Constants for field types
+ */
 const FIELD_TYPE_OF_BILLING = 'billing';
 const FIELD_TYPE_OF_SHIPPING = 'shipping';
 
@@ -11,24 +14,28 @@ const applyCheckoutFilter = () => {
     const samedayCityFieldBlock = 'samedaycourier-city-block-';
 
     document.querySelectorAll('[id$="state"]').forEach((stateField) => {
-        if (null === stateField) {
+        if (!stateField) {
             return;
         }
 
-        let cityField;
-        if (true === stateField.id.toLowerCase().includes(FIELD_TYPE_OF_BILLING)) {
-            cityField = getCityField(FIELD_TYPE_OF_BILLING);
-        } else {
-            cityField = getCityField(FIELD_TYPE_OF_SHIPPING);
+        const fieldType = stateField.id.toLowerCase().includes(FIELD_TYPE_OF_BILLING) 
+            ? FIELD_TYPE_OF_BILLING 
+            : FIELD_TYPE_OF_SHIPPING;
+
+        const cityField = getCityField(fieldType);
+        if (!cityField) {
+            return;
         }
 
-        let cityFieldBlock = document.getElementById(samedayCityFieldBlock + cityField.id);
-        if (null === cityFieldBlock) {
-            let cityTextElement = cityField.parentNode;
-            const cityDropdownElement = stateField.parentNode.parentNode.parentNode.cloneNode(true);
-            cityDropdownElement.id = samedayCityFieldBlock + cityField.id;
+        const cityFieldBlockId = samedayCityFieldBlock + cityField.id;
+        const cityFieldBlock = document.getElementById(cityFieldBlockId);
 
-            implementDropDownField(cityTextElement, cityDropdownElement, cityField.id, stateField.id);
+        if (!cityFieldBlock) {
+            const cityTextElement = cityField.parentNode;
+            const cityDropdownElement = stateField.parentNode.parentNode.parentNode.cloneNode(true);
+            cityDropdownElement.id = cityFieldBlockId;
+
+            implementDropDownField(cityTextElement, cityDropdownElement, cityField.id, stateField.id, cityField.value);
 
             stateField.addEventListener('change', (event) => {
                 populateCityField(document.getElementById(cityField.id), event.target);
@@ -37,16 +44,26 @@ const applyCheckoutFilter = () => {
     });
 }
 
-const implementDropDownField = (textElement, dropDownElement, cityId, stateId) => {
+const implementDropDownField = (textElement, dropDownElement, cityId, stateId, cityValue) => {
     Array.from(dropDownElement.querySelectorAll('div, select, label')).forEach((element) => {
         if (element.id === stateId) {
             element.id = cityId;
 
-            populateCityField(element, document.getElementById(stateId));
+            const state = document.getElementById(stateId);
+
+            populateCityField(element, state, cityValue);
+
+            element.addEventListener('change', () => {
+                const checkoutForm = document.querySelector('form.checkout');
+                if (checkoutForm) {
+                    checkoutForm.dispatchEvent(new Event('change', { bubbles: true }));
+                    console.log('Ai modificat formularul');
+                }
+            });
         }
 
         if (element.tagName.toLowerCase() === 'label') {
-            element.innerHTML = 'City';
+            element.textContent = 'City';
             element.setAttribute('for', cityId);
         }
     });
@@ -54,18 +71,22 @@ const implementDropDownField = (textElement, dropDownElement, cityId, stateId) =
     textElement.replaceWith(dropDownElement);
 }
 
-const populateCityField = (cityField, stateField) => {
-    cityField.innerHTML = '';
+const populateCityField = (cityField, stateField, cityFieldValue) => {
+    cityField.textContent = '';
     cityField.appendChild(createOptionElement('', 'Choose city ...'));
     samedayCourierData.cities.filter(city => city.county_code === stateField.value).forEach((city) => {
-        cityField.appendChild(createOptionElement(city.city_name, city.city_name));
+        cityField.appendChild(createOptionElement(city.city_name, city.city_name, cityFieldValue));
     });
 }
 
-const createOptionElement = (value, text) => {
-    let option = document.createElement('option');
+const createOptionElement = (value, text, cityFieldValue) => {
+    const option = document.createElement('option');
     option.value = value;
-    option.innerHTML = text;
+    option.setAttribute('data-alternate-values', `[${value}]`);
+    if (value === cityFieldValue) {
+        option.setAttribute('selected', true);
+    }
+    option.textContent = text;
 
     return option;
 }
