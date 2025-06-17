@@ -1304,10 +1304,9 @@ add_action('wp_enqueue_scripts',  static function () {
 		return;
 	}
 
-	wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
 	wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
-	wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
-	wp_enqueue_script('county-city-handle', plugins_url( 'assets/js/county-city-handle.js', __FILE__ ), array('jquery'));
+	wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), ['jquery'], time(), true );
+	wp_enqueue_script('county-city-handle', plugins_url( 'assets/js/county-city-handle.js', __FILE__ ), ['jquery']);
 
 	wp_localize_script('county-city-handle', 'ajax_object', array(
 		'ajax_url' => admin_url('admin-ajax.php'),

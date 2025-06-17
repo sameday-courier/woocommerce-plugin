@@ -1,3 +1,6 @@
+const FIELD_TYPE_OF_BILLING = 'billing';
+const FIELD_TYPE_OF_SHIPPING = 'shipping';
+
 document.addEventListener('DOMContentLoaded', ()=> {
     setInterval(()=> {
         applyCheckoutFilter();
@@ -5,32 +8,21 @@ document.addEventListener('DOMContentLoaded', ()=> {
 });
 
 const applyCheckoutFilter = () => {
-    const shippingCityId = 'shipping-city';
-    const billingCityId = 'billing-city';
-    const shippingStateId = 'shipping-state';
-    const billingStateId = 'billing-state';
-
-    const shippingStateField = document.getElementById(shippingStateId);
-    const shippingCityField = document.getElementById(shippingCityId);
-
-    const billingStateField = document.getElementById(billingStateId);
-    const billingCityField = document.getElementById(billingCityId);
-
     const samedayCityFieldBlock = 'samedaycourier-city-block-';
 
-    [shippingStateField, billingStateField].forEach((stateField) => {
+    document.querySelectorAll('[id$="state"]').forEach((stateField) => {
         if (null === stateField) {
             return;
         }
 
         let cityField;
-        if (stateField.id === billingStateId) {
-            cityField = billingCityField;
+        if (true === stateField.id.toLowerCase().includes(FIELD_TYPE_OF_BILLING)) {
+            cityField = getCityField(FIELD_TYPE_OF_BILLING);
         } else {
-            cityField = shippingCityField;
+            cityField = getCityField(FIELD_TYPE_OF_SHIPPING);
         }
 
-        const cityFieldBlock = document.getElementById(samedayCityFieldBlock + cityField.id);
+        let cityFieldBlock = document.getElementById(samedayCityFieldBlock + cityField.id);
         if (null === cityFieldBlock) {
             let cityTextElement = cityField.parentNode;
             const cityDropdownElement = stateField.parentNode.parentNode.parentNode.cloneNode(true);
@@ -76,4 +68,8 @@ const createOptionElement = (value, text) => {
     option.innerHTML = text;
 
     return option;
+}
+
+const getCityField = (type) => {
+    return Array.from(document.querySelectorAll(`[id^=${type}]`)).find(element => element.id.includes('city'));
 }
