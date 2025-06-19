@@ -72,9 +72,17 @@ const _openLockers = () => {
     }
 
     let samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
-    let city = selectors.selectCity.value;
-    let country = selectors.selectCountry.value;
+    let city;
+    if (undefined !== selectors.selectCity) {
+        city = selectors.selectCity.value
+    }
 
+    let country;
+    let langCode;
+    if (undefined !== selectors.selectCountry) {
+        country = selectors.selectCountry.value;
+        langCode = country.toLowerCase();
+    }
 
     const LockerPlugin = window['LockerPlugin'];
     const LockerData = {
@@ -82,7 +90,7 @@ const _openLockers = () => {
         clientId: CLIENT_ID,
         city: city,
         countryCode: country,
-        langCode: country.toLowerCase(),
+        langCode: langCode,
     };
 
     LockerPlugin.init(LockerData);
