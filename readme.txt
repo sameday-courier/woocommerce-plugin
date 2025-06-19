@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.6.2
-Stable tag: 1.10.1
+Stable tag: 1.10.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -177,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.10.2 =
+
+* Set language option for SamedayCourier Interactive Map in accord with destination country for checkout page.
 
 = 1.10.1 =
 

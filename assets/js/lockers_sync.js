@@ -1,9 +1,16 @@
 /**
- * Component: Sync and select lockers
+ * Component: Sync and select lockers in Checkout Form
  * ------------------------------------------------------------------------------
  *
  * @namespace selectLocker
  */
+
+/**
+ * Constants for field types
+ */
+const FIELD_TYPE_OF_BILLING = 'billing';
+const FIELD_TYPE_OF_SHIPPING = 'shipping';
+const CLIENT_ID="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";
 
 // Validate if element is defined and is not null
 const is_set = (accessor) => {
@@ -12,6 +19,18 @@ const is_set = (accessor) => {
     } catch (e) {
         return false
     }
+}
+
+/**
+ * @param fieldName
+ * @param type
+ *
+ * @returns HTML|undefined
+ */
+const getFieldByType = (fieldName, type) => {
+    return Array.from(document.querySelectorAll('input, select, checkbox', `[id^=${type}]`))
+        .find(element => element.id.includes(fieldName)
+    );
 }
 
 const _init = () => {
@@ -41,37 +60,38 @@ const _openLockers = () => {
     let selectors = {
         selectLocker: document.querySelector('#select_locker'),
         shipToDifferentAddress: document.querySelector('#ship-to-different-address-checkbox'),
-        selectCity: document.getElementById('billing_city'),
-        selectCountry: document.getElementById('billing_country'),
+        selectCity: getFieldByType('city', FIELD_TYPE_OF_BILLING),
+        selectCountry: getFieldByType('country', FIELD_TYPE_OF_BILLING),
     };
 
     let useShippingAddress = false;
     if (is_set(() => selectors.shipToDifferentAddress)) {
         useShippingAddress = selectors.shipToDifferentAddress.checked;
         if (useShippingAddress) {
-            selectors.selectCity = document.getElementById('shipping_city');
-            selectors.selectCountry = document.getElementById('shipping_country');
+            selectors.selectCity = getFieldByType('city', FIELD_TYPE_OF_SHIPPING);
+            selectors.selectCountry = getFieldByType('country', FIELD_TYPE_OF_SHIPPING);
         }
     }
 
-    const clientId="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";
-    const langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase();
-    const samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
+
+    let samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
+    let langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase();
 
     let city = null;
-    if (null !== selectors.selectCity) {
+    if (undefined !== selectors.selectCity) {
         city = selectors.selectCity.value;
     }
 
     let country = null;
-    if (null !== selectors.selectCountry) {
+    if (undefined !== selectors.selectCountry) {
         country = selectors.selectCountry.value;
+        langCode = country.toLowerCase();
     }
 
     const LockerPlugin = window['LockerPlugin'];
     const LockerData = {
         apiUsername: samedayUser,
-        clientId: clientId,
+        clientId: CLIENT_ID,
         city: city,
         countryCode: country,
         langCode: langCode,
@@ -108,7 +128,6 @@ const _openLockers = () => {
 /**
  * Initialise component after ajax complete
  */
-
 jQuery(document.body).on("updated_checkout", () => {
         const locker_map_button = document.getElementById('select_locker') || false;
         const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
