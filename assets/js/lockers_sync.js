@@ -28,7 +28,7 @@ const is_set = (accessor) => {
  * @returns HTML|undefined
  */
 const getFieldByType = (fieldName, type) => {
-    return Array.from(document.querySelectorAll('input, select, checkbox', `[id^=${type}]`))
+    return Array.from(document.querySelectorAll(`input[id*=${type}], select[id*=${type}]`))
         .find(element => element.id.includes(fieldName)
     );
 }
@@ -58,35 +58,23 @@ const _init = () => {
 const _openLockers = () => {
     /* DOM node selectors. */
     let selectors = {
-        selectLocker: document.querySelector('#select_locker'),
-        shipToDifferentAddress: document.querySelector('#ship-to-different-address-checkbox'),
-        selectCity: getFieldByType('city', FIELD_TYPE_OF_BILLING),
-        selectCountry: getFieldByType('country', FIELD_TYPE_OF_BILLING),
+        selectLocker: document.getElementById('select_locker'),
+        selectCity: getFieldByType('city', FIELD_TYPE_OF_SHIPPING),
+        selectCountry: getFieldByType('country', FIELD_TYPE_OF_SHIPPING),
     };
 
-    let useShippingAddress = false;
-    if (is_set(() => selectors.shipToDifferentAddress)) {
-        useShippingAddress = selectors.shipToDifferentAddress.checked;
-        if (useShippingAddress) {
-            selectors.selectCity = getFieldByType('city', FIELD_TYPE_OF_SHIPPING);
-            selectors.selectCountry = getFieldByType('country', FIELD_TYPE_OF_SHIPPING);
-        }
+    if (undefined === selectors.selectCity) {
+        selectors.selectCity = getFieldByType('city', FIELD_TYPE_OF_BILLING);
     }
 
+    if (undefined === selectors.selectCountry) {
+        selectors.selectCountry = getFieldByType('country', FIELD_TYPE_OF_BILLING);
+    }
 
     let samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
-    let langCode= selectors.selectLocker.getAttribute('data-country').toLowerCase();
+    let city = selectors.selectCity.value;
+    let country = selectors.selectCountry.value;
 
-    let city = null;
-    if (undefined !== selectors.selectCity) {
-        city = selectors.selectCity.value;
-    }
-
-    let country = null;
-    if (undefined !== selectors.selectCountry) {
-        country = selectors.selectCountry.value;
-        langCode = country.toLowerCase();
-    }
 
     const LockerPlugin = window['LockerPlugin'];
     const LockerData = {
@@ -94,7 +82,7 @@ const _openLockers = () => {
         clientId: CLIENT_ID,
         city: city,
         countryCode: country,
-        langCode: langCode,
+        langCode: country.toLowerCase(),
     };
 
     LockerPlugin.init(LockerData);
