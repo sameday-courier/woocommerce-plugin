@@ -1,6 +1,8 @@
 <?php
 
 use Sameday\Objects\CityObject;
+use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
+use Sameday\Objects\ParcelStatusHistory\SummaryObject;
 use Sameday\Objects\Service\ServiceObject;
 
 if (! defined( 'ABSPATH' ) ) {
@@ -280,9 +282,9 @@ class SamedayCourierQueryDb
     /**
      * @param $is_testing
      *
-     * @return array|object|void|null
+     * @return array|object|null
      */
-	public static function getCities($is_testing)
+	public static function getCitiesWithLockers($is_testing)
     {
         global $wpdb;
 
@@ -292,6 +294,27 @@ class SamedayCourierQueryDb
 
         return $wpdb->get_results($query);
     }
+
+	/**
+	 * @return array
+	 */
+	public static function getCities(): array
+	{
+		global $wpdb;
+
+		$cacheKey = 'sameday_cities';
+
+		$cities = get_transient($cacheKey);
+
+		if (false === $cities) {
+			$query = "SELECT city_name, county_code, country_code FROM {$wpdb->prefix}sameday_cities";
+			$cities = $wpdb->get_results($query, ARRAY_A);
+
+			set_transient($cacheKey, $cities, 31556926);
+		}
+
+		return $cities;
+	}
 
     /**
      * @param $is_testing
@@ -467,6 +490,7 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sameday_locker';
+
 		$wpdb->delete($table, array('id' => $id));
 	}
 
@@ -514,17 +538,17 @@ class SamedayCourierQueryDb
 	/**
 	 * @param $orderId
 	 * @param $awbParcel
-	 * @param \Sameday\Objects\ParcelStatusHistory\SummaryObject $summary
+	 * @param SummaryObject $summary
 	 * @param array $history
-	 * @param \Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
+	 * @param ExpeditionObject $expedition
 	 */
 	public static function refreshPackageHistory(
 			$orderId,
 			$awbParcel,
-			\Sameday\Objects\ParcelStatusHistory\SummaryObject $summary,
+			SummaryObject $summary,
 			array $history,
-			\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
-		)
+			ExpeditionObject $expedition
+		): void
 	{
 		global $wpdb;
 
