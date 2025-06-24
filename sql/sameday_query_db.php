@@ -277,12 +277,12 @@ class SamedayCourierQueryDb
 		return $wpdb->get_row($query);
 	}
 
-    /**
-     * @param $is_testing
-     *
-     * @return array|object|void|null
-     */
-	public static function getCities($is_testing)
+	/**
+	 * @param $is_testing
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public static function getCitiesWithLockers($is_testing)
     {
         global $wpdb;
 
@@ -292,6 +292,57 @@ class SamedayCourierQueryDb
 
         return $wpdb->get_results($query);
     }
+
+	/**
+	 * @return array
+	 */
+	public static function getCities(): array
+	{
+		global $wpdb;
+
+		$cacheKey = 'sameday_cities';
+
+		$cities = get_transient($cacheKey);
+
+		if (false === $cities) {
+			$cities = [];
+			foreach (SamedayCourierHelperClass::DEFAULT_COUNTRIES as $countryKey => $value) {
+				$query = "SELECT city_name, county_code FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryKey'";
+				$cities[$countryKey] = $wpdb->get_results(
+					$query,
+					ARRAY_A
+				);
+			}
+
+			set_transient($cacheKey, $cities, 31556926);
+		}
+
+		return $cities;
+	}
+
+	public static function isCountryHasCities($countryCode): bool
+	{
+		global $wpdb;
+
+		$cacheKey = 'sameday_country_has_cities_' . $countryCode;
+
+		$cities = get_transient($cacheKey);
+
+		if (false === $cities) {
+			$cities = $wpdb->get_results(
+				"SELECT city_name FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryCode' LIMIT 1",
+				ARRAY_A
+			);
+
+			set_transient($cacheKey, $cities, 31556926);
+		}
+
+		if (empty($cities)) {
+			return false;
+		}
+
+		return true;
+	}
 
     /**
      * @param $is_testing

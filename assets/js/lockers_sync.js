@@ -6,10 +6,10 @@
  */
 
 /**
- * Constants for field types
+ * CLIENT_ID
+ *
+ * @type {string}
  */
-const FIELD_TYPE_OF_BILLING = 'billing';
-const FIELD_TYPE_OF_SHIPPING = 'shipping';
 const CLIENT_ID="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";
 
 // Validate if element is defined and is not null
@@ -19,18 +19,6 @@ const is_set = (accessor) => {
     } catch (e) {
         return false
     }
-}
-
-/**
- * @param fieldName
- * @param type
- *
- * @returns HTML|undefined
- */
-const getFieldByType = (fieldName, type) => {
-    return Array.from(document.querySelectorAll(`input[id*=${type}], select[id*=${type}]`))
-        .find(element => element.id.includes(fieldName)
-    );
 }
 
 const _init = () => {
