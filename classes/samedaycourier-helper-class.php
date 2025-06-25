@@ -235,7 +235,7 @@ class SamedayCourierHelperClass
 			return '';
 		}
 
-		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode]);
+		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode] ?? '');
 	}
 
 	public static function convertStateNameToCode($countryCode, $stateName): string

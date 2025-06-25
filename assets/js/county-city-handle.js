@@ -18,19 +18,16 @@ jQuery(document).ready(() => {
 
     const updateCities = (cityField, stateCode, countryCode) => {
         let cities = samedayCourierData.cities[countryCode].filter(city => city.county_code === stateCode);
-
         if (cities.length > 0) {
             if (undefined !== citySelectElement && citySelectElement.length > 0) {
-                populateCityField(cities, citySelectElement, cityField.value);
+                populateCityField(cities, citySelectElement, cityField);
             } else {
                 citySelectElement = document.createElement("select");
                 citySelectElement.setAttribute("id", cityField.getAttribute('id'));
                 citySelectElement.setAttribute("name", cityField.getAttribute('id'));
                 citySelectElement.setAttribute("class", "form-row-wide select2-city city_select");
 
-                populateCityField(cities, citySelectElement, cityField.value);
-
-                cityField.replaceWith(citySelectElement);
+                populateCityField(cities, citySelectElement, cityField);
             }
         } else {
             if (undefined !== citySelectElement && citySelectElement.length > 0) {
@@ -51,11 +48,13 @@ jQuery(document).ready(() => {
         return option;
     }
 
-    const populateCityField = (cities, citySelectElement, currentCity) => {
+    const populateCityField = (cities, citySelectElement, cityField) => {
         citySelectElement.textContent = "";
         citySelectElement.appendChild(createOptionElement("", "Choose a city"));
         cities.forEach((city) => {
-            citySelectElement.appendChild(createOptionElement(city.city_name, city.city_name, currentCity));
+            citySelectElement.appendChild(createOptionElement(city.city_name, city.city_name, cityField.value));
         });
+
+        cityField.replaceWith(citySelectElement);
     }
 });

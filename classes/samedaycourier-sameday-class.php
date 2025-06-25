@@ -138,11 +138,7 @@ class Sameday
 		}
 
 	    foreach ($cities as $samedayCity) {
-		    if (null === SamedayCourierQueryDb::getCitySameday($samedayCity->city_id)) {
-			    SamedayCourierQueryDb::addCity($samedayCity, $samedayCity->country_code);
-		    } else {
-			    SamedayCourierQueryDb::updateCity($samedayCity, $samedayCity->country_code);
-		    }
+		    SamedayCourierQueryDb::addCity($samedayCity);
 	    }
 
 		delete_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);

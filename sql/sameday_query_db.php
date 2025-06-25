@@ -643,59 +643,38 @@ class SamedayCourierQueryDb
 
 	/**
 	 * @param stdClass $cityObject
-	 * @param string $countryCode
 	 *
 	 * @return void
 	 */
-    public static function addCity(stdClass $cityObject, string $countryCode): void
+    public static function addCity(stdClass $cityObject): void
     {
         global $wpdb;
 
         $table = $wpdb->prefix . 'sameday_cities';
 
-        // Check if city already exists
-        if (self::getCitySameday($cityObject->city_id) !== null) {
-            return; // City already exists, no need to insert
-        }
+		if ($cityObject->country_code === 'BG') {
+			$cityObject->county_code = 'BG-' . $cityObject->county_code;
+		}
 
         $data = [
 	        'city_id' => $cityObject->city_id,
 	        'city_name' => $cityObject->city_name,
 	        'county_code' => $cityObject->county_code,
 	        'postal_code' => $cityObject->postal_code,
-	        'country_code' => $countryCode,
+	        'country_code' => $cityObject->country_code,
         ];
 
         $format = array('%d', '%s', '%s', '%s', '%s');
 
-        $wpdb->insert($table, $data, $format);
-    }
+	    if (self::getCitySameday($cityObject->city_id) === null) {
+		    $wpdb->insert($table, $data, $format);
 
-	/**
-	 * @param stdClass $cityObject
-	 * @param string $countryCode
-	 *
-	 * @return void
-	 */
-    public static function updateCity(stdClass $cityObject, string $countryCode): void
-    {
-        global $wpdb;
+			return;
+	    }
 
-        $table = $wpdb->prefix . 'sameday_cities';
+	    $where = array('city_id' => $cityObject->city_id);
 
-	    $data = [
-		    'city_id' => $cityObject->city_id,
-		    'city_name' => $cityObject->city_name,
-		    'county_code' => $cityObject->county_code,
-		    'postal_code' => $cityObject->postal_code,
-		    'country_code' => $countryCode,
-	    ];
-
-	    $format = array('%d', '%s', '%s', '%s', '%s');
-
-        $where = array('city_id' => $cityObject->city_id);
-
-        $wpdb->update($table, $data, $where, $format, ['%d']);
+	    $wpdb->update($table, $data, $where, $format, ['%d']);
     }
 
 	/**
