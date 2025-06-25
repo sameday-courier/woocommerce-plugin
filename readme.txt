@@ -181,6 +181,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 1.10.3 =
 
 * Improvement of SamedayCourier cities nomenclature feature in order to works fine with all Sameday coverage area (RO, BG, HU).
+* Code refactor
 
 = 1.10.2 =
 

@@ -1,6 +1,6 @@
 <?php
 
-use Sameday\Objects\CityObject;
+use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 
 if (! defined( 'ABSPATH' ) ) {
@@ -17,18 +17,16 @@ class SamedayCourierQueryDb
 	 *
 	 * @return int|null
 	 */
-	public static function getDefaultPickupPointId($is_testing)
+	public static function getDefaultPickupPointId($is_testing): ?int
 	{
 		global $wpdb;
 
-		$query = "SELECT sameday_id FROM {$wpdb->prefix}sameday_pickup_point WHERE default_pickup_point = 1 AND is_testing = '{$is_testing}'";
+		$query = "SELECT sameday_id FROM {$wpdb->prefix}sameday_pickup_point 
+              WHERE default_pickup_point = 1 AND is_testing = '$is_testing'"
+		;
 		$result = $wpdb->get_row($query);
 
-		if (empty($result)) {
-			return null;
-		}
-
-		return $result->sameday_id;
+		return $result->sameday_id ?? null;
 	}
 
 	/**
@@ -64,37 +62,21 @@ class SamedayCourierQueryDb
 	}
 
     /**
-     * @param $is_testing
-     *
-     * @return array|object|null
-     */
-    public static function getServicesWithOptionalTaxes($is_testing)
-    {
-        global $wpdb;
-
-        $query = "SELECT sameday_code FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing' AND service_optional_taxes IS NOT NULL";
-
-        return array_map(static function ($services) {
-                return $services->sameday_code;
-            }, $wpdb->get_results($query)
-        );
-    }
-
-    /**
      * @param int $samedayServiceId
      * @param bool $is_testing
      *
-     * @return \Sameday\Objects\Service\OptionalTaxObject[]
+     * @return OptionalTaxObject[]
      */
     public static function getServiceIdOptionalTaxes($samedayServiceId, $is_testing)
     {
         global $wpdb;
 
         $query = "SELECT service_optional_taxes FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing' AND sameday_id = '$samedayServiceId' ";
-        /** @var \Sameday\Objects\Service\OptionalTaxObject[]|false $result */
-        $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes);
 
-        return is_array($result) ? $result : array();
+		/** @var OptionalTaxObject[]|false $result */
+        $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes, ARRAY_A);
+
+        return is_array($result) ? $result : [];
     }
 
 	/**
@@ -296,25 +278,36 @@ class SamedayCourierQueryDb
 	/**
 	 * @return array
 	 */
+	public static function getCachedCities(): array
+	{
+		$cities = get_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
+
+		if (false === $cities) {
+			set_transient(
+				SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
+				self::getCities(),
+				31556926
+			);
+		}
+
+		return $cities;
+	}
+
+	/**
+	 * @return array
+	 */
 	public static function getCities(): array
 	{
 		global $wpdb;
 
-		$cacheKey = 'sameday_cities';
+		$cities = [];
+		foreach (SamedayCourierHelperClass::DEFAULT_COUNTRIES as $countryKey => $value) {
+			$query = "SELECT city_name, county_code FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryKey'";
 
-		$cities = get_transient($cacheKey);
-
-		if (false === $cities) {
-			$cities = [];
-			foreach (SamedayCourierHelperClass::DEFAULT_COUNTRIES as $countryKey => $value) {
-				$query = "SELECT city_name, county_code FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryKey'";
-				$cities[$countryKey] = $wpdb->get_results(
-					$query,
-					ARRAY_A
-				);
-			}
-
-			set_transient($cacheKey, $cities, 31556926);
+			$cities[$countryKey] = $wpdb->get_results(
+				$query,
+				ARRAY_A
+			);
 		}
 
 		return $cities;
@@ -649,83 +642,74 @@ class SamedayCourierQueryDb
 	}
 
 	/**
-	 * @param CityObject $cityObject
+	 * @param stdClass $cityObject
 	 * @param string $countryCode
 	 *
 	 * @return void
 	 */
-    public static function addCity(CityObject $cityObject, string $countryCode): void
+    public static function addCity(stdClass $cityObject, string $countryCode): void
     {
         global $wpdb;
 
         $table = $wpdb->prefix . 'sameday_cities';
 
         // Check if city already exists
-        if (self::getCitySameday($cityObject->getId()) !== null) {
+        if (self::getCitySameday($cityObject->city_id) !== null) {
             return; // City already exists, no need to insert
         }
 
-        // Ensure county object exists before accessing it
-        $countyCode = $cityObject->getCounty() ? $cityObject->getCounty()->getCode() : null;
-
         $data = [
-	        'city_id' => $cityObject->getId(),
-	        'city_name' => $cityObject->getName(),
-	        'county_code' => $countyCode,
-	        'postal_code' => $cityObject->getPostalCode(),
+	        'city_id' => $cityObject->city_id,
+	        'city_name' => $cityObject->city_name,
+	        'county_code' => $cityObject->county_code,
+	        'postal_code' => $cityObject->postal_code,
 	        'country_code' => $countryCode,
         ];
 
-        $format = array('%d', '%s', $countyCode !== null ? '%s' : 'NULL', '%s', '%s');
+        $format = array('%d', '%s', '%s', '%s', '%s');
 
         $wpdb->insert($table, $data, $format);
     }
 
 	/**
-	 * @param CityObject $cityObject
-	 * @param $countryCode
+	 * @param stdClass $cityObject
+	 * @param string $countryCode
 	 *
 	 * @return void
 	 */
-    public static function updateCity(CityObject $cityObject, $countryCode): void
+    public static function updateCity(stdClass $cityObject, string $countryCode): void
     {
         global $wpdb;
 
         $table = $wpdb->prefix . 'sameday_cities';
 
-        $data = array(
-            'city_name' => $cityObject->getName(),
-            'county_code' => $cityObject->getCounty()->getCode(),
-	        'postal_code' => $cityObject->getPostalCode(),
-	        'country_code' => $countryCode,
-        );
+	    $data = [
+		    'city_id' => $cityObject->city_id,
+		    'city_name' => $cityObject->city_name,
+		    'county_code' => $cityObject->county_code,
+		    'postal_code' => $cityObject->postal_code,
+		    'country_code' => $countryCode,
+	    ];
 
-        $where = array('city_id' => $cityObject->getId());
+	    $format = array('%d', '%s', '%s', '%s', '%s');
 
-	    // Ensure county object exists before accessing it
-	    $countyCode = $cityObject->getCounty() ? $cityObject->getCounty()->getCode() : null;
-
-	    $format = array('%s', '%s', $countyCode !== null ? '%s' : 'NULL', '%s');
+        $where = array('city_id' => $cityObject->city_id);
 
         $wpdb->update($table, $data, $where, $format, ['%d']);
     }
 
-    public static function getCitySameday($cityId)
+	/**
+	 * @param $cityId
+	 *
+	 * @return array|object|stdClass|null
+	 */
+    public static function getCitySameday($cityId): ?stdClass
     {
         global $wpdb;
 
-        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE city_id = '{$cityId}'";
+        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE city_id = '$cityId'";
 
         return $wpdb->get_row($query);
-    }
-
-    public static function getCitiesByCounty($countyCode)
-    {
-        global $wpdb;
-
-        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE county_code = '$countyCode'";
-
-        return $wpdb->get_results($query, ARRAY_A);
     }
 
 	/**

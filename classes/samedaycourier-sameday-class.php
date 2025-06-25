@@ -7,6 +7,8 @@ use Sameday\Exceptions\SamedayNotFoundException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Exceptions\SamedayServerException;
+use Sameday\Objects\CityObject;
+use Sameday\Objects\CountryObject;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
@@ -14,7 +16,6 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
@@ -119,8 +120,6 @@ class Sameday
 
 	/**
 	 * @return void
-	 *
-	 * @throws SamedaySDKException
 	 */
     public function importCities(): void
     {
@@ -128,31 +127,30 @@ class Sameday
 			SamedayCourierQueryDb::createSamedayCitiesTable();
 		}
 
-        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            SamedayCourierHelperClass::getSamedaySettings()['user'],
-            SamedayCourierHelperClass::getSamedaySettings()['password'],
-            SamedayCourierHelperClass::getApiUrl()
-        ));
+		if (!file_exists($file = plugin_dir_path( __FILE__ ) . 'cities.json')) {
+			return;
+		}
 
-        $page = 1;
-        do {
-            $request = new SamedayGetCitiesRequest();
-            $request->setCountPerPage(1000);
-            $request->setPage($page++);
-            try {
-                $cities = $sameday->getCities($request);
-            } catch(Exception $exception) {
-                throw new RuntimeException(sprintf('Could not load cities: %s', $request->getCountPerPage()));
-            }
-            foreach ($cities->getCities() as $cityObject) {
-                $city = SamedayCourierQueryDb::getCitySameday($cityObject->getId());
-                if ($city === null) {
-                    SamedayCourierQueryDb::addCity($cityObject, SamedayCourierHelperClass::getHostCountry());
-                } else {
-                    SamedayCourierQueryDb::updateCity($cityObject, SamedayCourierHelperClass::getHostCountry());
-                }
-            }
-        } while ($page <= $cities->getPages());
+		try {
+			$cities = json_decode(file_get_contents($file), false, 512, JSON_THROW_ON_ERROR);
+		} catch (JsonException $exception) {
+			return;
+		}
+
+	    foreach ($cities as $samedayCity) {
+		    if (null === SamedayCourierQueryDb::getCitySameday($samedayCity->city_id)) {
+			    SamedayCourierQueryDb::addCity($samedayCity, $samedayCity->country_code);
+		    } else {
+			    SamedayCourierQueryDb::updateCity($samedayCity, $samedayCity->country_code);
+		    }
+	    }
+
+		delete_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
+
+		set_transient(
+			SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
+			SamedayCourierQueryDb::getCities()
+		);
     }
 
 	/**

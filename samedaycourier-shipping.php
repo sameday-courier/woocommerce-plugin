@@ -620,19 +620,7 @@ add_action('wp_ajax_import_cities', static function (): void {
     }
 });
 
-add_action('wp_ajax_getCities', static function () {
-    $countyCode = $_POST['countyCode'] ?? null;
-
-	try {
-		$cities = SamedayCourierQueryDb::getCitiesByCounty($countyCode);
-	} catch (JsonException $e) {
-		$cities = [];
-	}
-
-	wp_send_json($cities);
-});
-
-add_action('wp_ajax_change_locker', function() {
+add_action('wp_ajax_change_locker', static function() {
     if (null !== $orderId = $_POST['orderId']) {
 	    try {
 		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST['locker']);
@@ -640,7 +628,7 @@ add_action('wp_ajax_change_locker', function() {
     }
 });
 
-add_action('wp_ajax_change_counties', function() {
+add_action('wp_ajax_change_counties', static function() {
     if (!isset($_POST['countyId'])) {
         return [];
     }
@@ -1314,7 +1302,7 @@ function enqueue_button_scripts(): void
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',
                 [
-		            'cities' => SamedayCourierQueryDb::getCities(),
+		            'cities' => SamedayCourierQueryDb::getCachedCities(),
                 ]
             );
         }
@@ -1328,45 +1316,3 @@ function enqueue_button_scripts(): void
     }
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
-
-//add_filter('woocommerce_checkout_fields', static function ($fields) {
-//	if (null !== $fields['billing']['billing_city']
-//        && null !== $fields['shipping']['shipping_city']
-//        && SamedayCourierHelperClass::isUseSamedayNomenclator()
-//	) {
-//        if (null === $country = $fields['shipping']['shipping_state']['country'] ?? null) {
-//            return $fields;
-//        }
-//
-//        if (false === SamedayCourierQueryDb::isCountryHasCities($country)) {
-//            return $fields;
-//        }
-//
-//		$fields['billing']['billing_city'] = array(
-//			'type' => 'select',
-//			'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-//			'required' => true,
-//			'class' => ['form-row-wide', 'select2-city'],
-//			'input-class' => 'select2-city-input',
-//			'options' => [
-//				'' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
-//			],
-//		);
-//
-//		$fields['shipping']['shipping_city'] = array(
-//			'type' => 'select',
-//			'label' => __('City', SamedayCourierHelperClass::TEXT_DOMAIN),
-//			'required' => true,
-//			'class' => ['form-row-wide', 'select2-city'],
-//			'input-class' => 'select2-city-input',
-//			'options' => [
-//				'' => __('Choose city', SamedayCourierHelperClass::TEXT_DOMAIN),
-//			],
-//			'default' => 'Galati'
-//		);
-//
-//		return $fields;
-//	}
-//
-//	return $fields;
-//});

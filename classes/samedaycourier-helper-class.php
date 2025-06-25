@@ -12,6 +12,7 @@ if (! defined( 'ABSPATH' )) {
 
 class SamedayCourierHelperClass
 {
+	public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
 	public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
 	public const CASH_ON_DELIVERY = 'cod';
 	public const LOCKER_NEXT_DAY_CODE = "LN";
