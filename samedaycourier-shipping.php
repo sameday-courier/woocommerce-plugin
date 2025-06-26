@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.5
+ * Version: 1.10.6
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -1297,7 +1297,10 @@ function enqueue_button_scripts(): void
         if (SamedayCourierHelperClass::isUseSamedayNomenclator()) {
 	        wp_enqueue_script('county-city-handle',
                 plugins_url( 'assets/js/county-city-handle.js', __FILE__ ),
-                ['jquery']
+                [
+                    'jquery',
+                    'select2'
+                ]
             );
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',

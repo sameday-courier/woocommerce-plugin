@@ -17,7 +17,7 @@ jQuery(document).ready(() => {
     });
 
     const updateCities = (cityField, stateCode, countryCode) => {
-        let cities = samedayCourierData.cities[countryCode].filter(city => city.county_code === stateCode);
+        let cities = samedayCourierData.cities[countryCode]?.filter(city => city.county_code === stateCode) ?? [];
         if (cities.length > 0) {
             if (undefined !== citySelectElement && citySelectElement.length > 0) {
                 populateCityField(cities, citySelectElement, cityField);
@@ -31,6 +31,10 @@ jQuery(document).ready(() => {
             }
         } else {
             if (undefined !== citySelectElement && citySelectElement.length > 0) {
+                if ($(citySelectElement).data('select2')) {
+                    $(citySelectElement).select2('destroy');
+                }
+
                 citySelectElement.replaceWith(cityField);
             }
         }
@@ -56,5 +60,7 @@ jQuery(document).ready(() => {
         });
 
         cityField.replaceWith(citySelectElement);
+
+        $(citySelectElement).select2();
     }
 });
