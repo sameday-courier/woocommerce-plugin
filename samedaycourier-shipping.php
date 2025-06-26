@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.4
+ * Version: 1.10.5
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -410,7 +410,7 @@ function samedaycourier_shipping_method(): void
 
                     'lockers_map' => array(
                         'title'   => __('Show locker map method', SamedayCourierHelperClass::TEXT_DOMAIN),
-                        'default' => 'no',
+                        'default' => 'yes',
                         'type'    => 'select',
                         'options' => [
                             'no' => __('Drop-down list', SamedayCourierHelperClass::TEXT_DOMAIN),

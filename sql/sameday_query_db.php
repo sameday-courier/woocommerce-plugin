@@ -324,30 +324,6 @@ class SamedayCourierQueryDb
 		return $cities;
 	}
 
-	public static function isCountryHasCities($countryCode): bool
-	{
-		global $wpdb;
-
-		$cacheKey = 'sameday_country_has_cities_' . $countryCode;
-
-		$cities = get_transient($cacheKey);
-
-		if (false === $cities) {
-			$cities = $wpdb->get_results(
-				"SELECT city_name FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryCode' LIMIT 1",
-				ARRAY_A
-			);
-
-			set_transient($cacheKey, $cities, 31556926);
-		}
-
-		if (empty($cities)) {
-			return false;
-		}
-
-		return true;
-	}
-
     /**
      * @param $is_testing
      *
