@@ -1,4 +1,4 @@
-name: Auto Release with Optional Manual Tag & Safe Tag Check
+name: Auto Release With Optional Manual Tag
 
 on:
   push:
@@ -10,78 +10,91 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Get latest Git tag
+      - name: Set up Git
+        run: |
+          git config user.name "Soptareanu Alex"
+          git config user.email "alexandru.soptareanu@sameday.ro"
+
+      - name: Get latest tag
         id: get_latest_tag
         run: |
-          latest=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "tag=$latest" >> $GITHUB_OUTPUT
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "tag=$tag" >> $GITHUB_OUTPUT
 
-      - name: Read commit message
-        id: get_commit
+      - name: Get latest commit message
+        id: get_commit_message
         run: |
           msg=$(git log -1 --pretty=%B)
+          echo "message=$msg"
           echo "message=$msg" >> $GITHUB_OUTPUT
 
-      - name: Detect tag in commit message
-        id: detect_tag
+      - name: Check for manual tag in message
+        id: check_manual_tag
         run: |
-          message="${{ steps.get_commit.outputs.message }}"
-          if echo "$message" | grep -Eo "=v[0-9]+\.[0-9]+\.[0-9]+=" > /dev/null; then
-            tag=$(echo "$message" | grep -Eo "=v[0-9]+\.[0-9]+\.[0-9]+=" | head -n1 | tr -d '=')
-            echo "manual=true" >> $GITHUB_OUTPUT
-            echo "tag=$tag" >> $GITHUB_OUTPUT
+          message="${{ steps.get_commit_message.outputs.message }}"
+          if echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" > /dev/null; then
+            tag=$(echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" | head -n1 | tr -d '=')
+            echo "manual_tag_found=true" >> $GITHUB_OUTPUT
+            echo "new_tag=$tag" >> $GITHUB_OUTPUT
           else
-            echo "manual=false" >> $GITHUB_OUTPUT
+            echo "manual_tag_found=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Bump patch if no manual tag
+      - name: Calculate next minor tag if manual not found
         id: bump_tag
-        if: steps.detect_tag.outputs.manual == 'false'
+        if: steps.check_manual_tag.outputs.manual_tag_found == 'false'
         run: |
-          version="${{ steps.get_latest_tag.outputs.tag#v }}"
+          version="${{ steps.get_latest_tag.outputs.tag }}"
+          version=${version#v}
           IFS='.' read -r major minor patch <<< "$version"
-          patch=$((patch + 1))
-          new_tag="v$major.$minor.$patch"
-          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+          minor=$((minor + 1))
+          patch=0
+          echo "new_tag=v$major.$minor.$patch" >> $GITHUB_OUTPUT
 
       - name: Set final tag value
-        id: final_tag
+        id: set_tag
         run: |
-          if [ "${{ steps.detect_tag.outputs.manual }}" == "true" ]; then
-            echo "tag=${{ steps.detect_tag.outputs.tag }}" >> $GITHUB_OUTPUT
+          if [ "${{ steps.check_manual_tag.outputs.manual_tag_found }}" == "true" ]; then
+            echo "tag=${{ steps.check_manual_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
           else
             echo "tag=${{ steps.bump_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Check if tag already exists
+        id: check_tag
         run: |
-          tag_to_create="${{ steps.final_tag.outputs.tag }}"
-          if git rev-parse "$tag_to_create" >/dev/null 2>&1; then
-            echo "::error ::Tag $tag_to_create already exists. Aborting release."
-            exit 1
+          if git rev-parse "${{ steps.set_tag.outputs.tag }}" >/dev/null 2>&1; then
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+            echo "Tag ${{ steps.set_tag.outputs.tag }} already exists, skipping tag creation"
+          else
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Git tag
-        run: |
-          git tag ${{ steps.final_tag.outputs.tag }}
-          git push origin ${{ steps.final_tag.outputs.tag }}
 
-      - name: Create GitHub release
+      - name: Create new Git tag
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        run: |
+          git tag ${{ steps.set_tag.outputs.tag }}
+          git push origin ${{ steps.set_tag.outputs.tag }} || {
+            echo "Failed to push tag to remote repository"
+            exit 1
+          }
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.final_tag.outputs.tag }}
+          tag_name: ${{ steps.set_tag.outputs.tag }}
           generate_release_notes: true
           body: |
-            💬 **Commit message:**
-            ${{ steps.get_commit.outputs.message }}
+            💬 **Commit message**:
+            ${{ steps.get_commit_message.outputs.message }}
 
             ---
-
-            📝 _Below are the release notes generated by GitHub:_
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
