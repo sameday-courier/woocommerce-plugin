@@ -1,0 +1,83 @@
+name: Auto Release With Optional Manual Tag
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ca să avem acces la tag-uri existente
+
+      - name: Set up Git
+        run: |
+          git config user.name "alexandru.soptareanu"
+          git config user.email "alexandru.soptareanu@sameday.ro"
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
+      - name: Get latest commit message
+        id: get_commit_message
+        run: |
+          msg=$(git log -1 --pretty=%B)
+          echo "message=$msg"
+          echo "message=$msg" >> $GITHUB_OUTPUT
+
+      - name: Check for manual tag in message
+        id: check_manual_tag
+        run: |
+          message="${{ steps.get_commit_message.outputs.message }}"
+          if echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" > /dev/null; then
+            tag=$(echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" | head -n1 | tr -d '=')
+            echo "manual_tag_found=true" >> $GITHUB_OUTPUT
+            echo "new_tag=$tag" >> $GITHUB_OUTPUT
+          else
+            echo "manual_tag_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Calculate next minor tag if manual not found
+        id: bump_tag
+        if: steps.check_manual_tag.outputs.manual_tag_found == 'false'
+        run: |
+          version="${{ steps.get_latest_tag.outputs.tag#v }}"
+          IFS='.' read -r major minor patch <<< "$version"
+          minor=$((minor + 1))
+          patch=0
+          echo "new_tag=v$major.$minor.$patch" >> $GITHUB_OUTPUT
+
+      - name: Set final tag value
+        id: set_tag
+        run: |
+          if [ "${{ steps.check_manual_tag.outputs.manual_tag_found }}" == "true" ]; then
+            echo "tag=${{ steps.check_manual_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ steps.bump_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create new Git tag
+        run: |
+          git tag ${{ steps.set_tag.outputs.tag }}
+          git push origin ${{ steps.set_tag.outputs.tag }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.set_tag.outputs.tag }}
+          generate_release_notes: true
+          body: |
+            💬 **Commit message**:
+            ${{ steps.get_commit_message.outputs.message }}
+
+            ---
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
