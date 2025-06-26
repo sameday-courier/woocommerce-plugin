@@ -2,6 +2,8 @@
 
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
+use Sameday\Objects\Types\PackageType;
+use Sameday\Objects\Types\CostType;
 
 if (! defined( 'ABSPATH' ) ) {
 	exit;
@@ -67,14 +69,23 @@ class SamedayCourierQueryDb
      *
      * @return OptionalTaxObject[]
      */
-    public static function getServiceIdOptionalTaxes($samedayServiceId, $is_testing)
+    public static function getServiceIdOptionalTaxes(int $samedayServiceId, bool $is_testing): array
     {
         global $wpdb;
 
-        $query = "SELECT service_optional_taxes FROM {$wpdb->prefix}sameday_service WHERE is_testing = '$is_testing' AND sameday_id = '$samedayServiceId' ";
+        $query = "SELECT service_optional_taxes 
+			FROM {$wpdb->prefix}sameday_service 
+			WHERE is_testing = '$is_testing' 
+		  	AND sameday_id = '$samedayServiceId'"
+        ;
 
 		/** @var OptionalTaxObject[]|false $result */
-        $result = unserialize($wpdb->get_results($query)[0]->service_optional_taxes, ARRAY_A);
+        $result = unserialize(
+			$wpdb->get_results($query)[0]->service_optional_taxes,
+			[
+				'allowed_classes' => [OptionalTaxObject::class, PackageType::class, CostType::class]
+			]
+        );
 
         return is_array($result) ? $result : [];
     }
