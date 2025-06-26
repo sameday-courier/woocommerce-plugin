@@ -1,4 +1,4 @@
-name: Auto Release With Optional Manual Tag
+name: Generate new Release
 
 on:
   push:
@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Git
         run: |
@@ -26,44 +24,22 @@ jobs:
           tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "tag=$tag" >> $GITHUB_OUTPUT
 
-      - name: Get latest commit message
-        id: get_commit_message
+      - name: Extract version from plugin file
+        id: extract_version
         run: |
-          msg=$(git log -1 --pretty=%B)
-          echo "message=$msg"
-          echo "message=$msg" >> $GITHUB_OUTPUT
+          version=$(grep -oP "Version: \K[0-9]+\.[0-9]+\.[0-9]+" samedaycourier-shipping.php)
+          echo "plugin_version_raw=$version" >> $GITHUB_OUTPUT
+          echo "plugin_version=v$version" >> $GITHUB_OUTPUT
 
-      - name: Check for manual tag in message
-        id: check_manual_tag
+      - name: Set tag from plugin version
+        id: set_plugin_tag
         run: |
-          message="${{ steps.get_commit_message.outputs.message }}"
-          if echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" > /dev/null; then
-            tag=$(echo "$message" | grep -oE "=v[0-9]+\.[0-9]+\.[0-9]+=" | head -n1 | tr -d '=')
-            echo "manual_tag_found=true" >> $GITHUB_OUTPUT
-            echo "new_tag=$tag" >> $GITHUB_OUTPUT
-          else
-            echo "manual_tag_found=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Calculate next minor tag if manual not found
-        id: bump_tag
-        if: steps.check_manual_tag.outputs.manual_tag_found == 'false'
-        run: |
-          version="${{ steps.get_latest_tag.outputs.tag }}"
-          version=${version#v}
-          IFS='.' read -r major minor patch <<< "$version"
-          minor=$((minor + 1))
-          patch=0
-          echo "new_tag=v$major.$minor.$patch" >> $GITHUB_OUTPUT
+          echo "new_tag=${{ steps.extract_version.outputs.plugin_version }}" >> $GITHUB_OUTPUT
 
       - name: Set final tag value
         id: set_tag
         run: |
-          if [ "${{ steps.check_manual_tag.outputs.manual_tag_found }}" == "true" ]; then
-            echo "tag=${{ steps.check_manual_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${{ steps.bump_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
-          fi
+          echo "tag=${{ steps.set_plugin_tag.outputs.new_tag }}" >> $GITHUB_OUTPUT
 
       - name: Check if tag already exists
         id: check_tag
@@ -74,7 +50,6 @@ jobs:
           else
             echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
-
 
       - name: Create new Git tag
         if: steps.check_tag.outputs.tag_exists == 'false'
@@ -90,6 +65,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.set_tag.outputs.tag }}
+          name: ${{ steps.extract_version.outputs.plugin_version_raw }}
           generate_release_notes: true
           body: |
             💬 **Commit message**:
