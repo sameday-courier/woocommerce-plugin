@@ -177,7 +177,7 @@
     width: 100%;
     max-width: none;
 }
-input[type=checkbox], input[type=radio]{
+#TB_ajaxContent input[type=checkbox], input[type=radio]{
     width: 23px;
     height: 23px;
     top: 3px;
