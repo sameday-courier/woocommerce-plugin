@@ -8,3 +8,20 @@
     cursor: pointer;
     margin-top: 10px;
 }
+
+#placeOrderError {
+    background-color: rgb(236, 28, 33); /* red background */
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    display: inline-block;
+    transition: 200ms;
+}
+
+#placeOrderError.show {
+    opacity: 1;
+}

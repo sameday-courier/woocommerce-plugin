@@ -98,6 +98,16 @@ const _openLockers = () => {
             shipping_address_span.innerHTML = locker.address;
         }
 
+        const _setCookie = (key, value, days) => {
+            let d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            let expires = "expires=" + d.toUTCString();
+
+            document.cookie = key + "=" + value + ";" + expires + ";path=/";
+        }
+
+        _setCookie('locker', JSON.stringify(locker), 365);
+
         doAjaxCall(
             {
                 'locker': locker,
