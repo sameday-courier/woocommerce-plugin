@@ -93,7 +93,6 @@ waitForElement(inputSelector, function(label) {
 });
 
 waitForElement('.wc-block-components-checkout-place-order-button', function($target){
-    console.log(document.querySelector(inputSelector));
     $target.addEventListener('click', function(e){
         const _getCookie = (key) => {
             let cookie = '';
