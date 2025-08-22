@@ -24,7 +24,7 @@ function checkShippingMethod() {
     if (lockerButton) {
         const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
-            lockerButton.style.display = 'block';  // Show the locker button
+            lockerButton.style.display = 'inline-block';  // Show the locker button
             shipping_address_span.style.display = 'block';
         } else {
             lockerButton.style.display = 'none';   // Hide the locker button
@@ -69,7 +69,10 @@ waitForElement(inputSelector, function(label) {
                 ${samedayData.buttonText}
             </button>
         `;
+        let buttonHTMLError = '<div id="placeOrderError">Alege Locker</div>';
+
         parent.insertAdjacentHTML('beforeend', buttonHTML);
+        parent.insertAdjacentHTML('beforeend', buttonHTMLError);
 
         // Check if LockerPlugin is available before adding the event listener
         if (typeof window['LockerPlugin'] !== 'undefined') {
@@ -87,4 +90,34 @@ waitForElement(inputSelector, function(label) {
         console.log("Parent container not found");
     }
 
+});
+
+waitForElement('.wc-block-components-checkout-place-order-button', function($target){
+    console.log(document.querySelector(inputSelector));
+    $target.addEventListener('click', function(e){
+        const _getCookie = (key) => {
+            let cookie = '';
+            document.cookie.split(';').forEach(function (value) {
+                if (value.split('=')[0].trim() === key) {
+                    return cookie = value.split('=')[1];
+                }
+            });
+
+            return cookie;
+        }
+
+        let lockerData = _getCookie('locker');
+        if(!lockerData.length && (jQuery('input[id*="samedaycourier:15:LN"]:checked').length || jQuery('input[id*="samedaycourier:30:XL"]:checked').length)){
+            e.preventDefault();
+            e.stopPropagation();
+            jQuery('#placeOrderError').addClass('show');
+            document.getElementById('select_locker').scrollIntoView({
+                behavior: 'smooth',   // 👈 smooth animation
+                block: 'center'       // align element to center of viewport
+            });
+            setTimeout(function(){
+                jQuery('#placeOrderError').removeClass('show');
+            }, 3000);
+        }
+    });
 });
