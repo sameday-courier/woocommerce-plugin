@@ -20,7 +20,15 @@ function isServiceEligibleToLockerFirstMile($serviceId) {
 
 	return false;
 }
+function parseJsonSafely($jsonString, $assoc = true) {
+    $result = json_decode($jsonString, $assoc);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        return $result;
+    }
 
+    $fixedJson = fixJsonQuotes($jsonString);
+    return json_decode($fixedJson, $assoc);
+}
 /**
  * @throws JsonException
  */
@@ -38,13 +46,21 @@ function samedaycourierAddAwbForm($order): string {
             if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode)
                 && '' !== $postMetaLocker = get_post_meta($order->get_id(), $metaLockerKey, true)
             ) {
+//                var_dump($metaLockerKey);exit;
                 $lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
-                $locker = json_decode(
-                    $lockerDetailsForm,
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR
-                );
+                var_dump($postMetaLocker); exit;
+
+                if (!empty($lockerDetailsForm) && is_string($lockerDetailsForm)) {
+                    try {
+                        $locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
+                    } catch (JsonException $e) {
+                        error_log('Invalid JSON in lockerDetailsForm: ' . $lockerDetailsForm);
+                        $locker = [];
+                    }
+                } else {
+                    $locker = [];
+                }
+
 
                 if (isset($locker['oohType'])) {
                     $serviceCode = SamedayCourierHelperClass::OOH_TYPES[$locker['oohType']] ;
