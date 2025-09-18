@@ -23,6 +23,12 @@ function checkShippingMethod() {
     // Ensure both the shipping method and button exist before proceeding
     if (lockerButton) {
         const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
+        let lockerData = _getCookie('locker');
+        if(lockerData !== '' || lockerData !== undefined){
+            lockerData = JSON.parse(lockerData);
+            shipping_address_span.innerText = lockerData.address;
+        }
+
         if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
             lockerButton.style.display = 'inline-block';  // Show the locker button
             shipping_address_span.style.display = 'block';
@@ -93,16 +99,6 @@ waitForElement(inputSelector, function(label) {
 
 waitForElement('.wc-block-components-checkout-place-order-button', function($target){
     $target.addEventListener('click', function(e){
-        const _getCookie = (key) => {
-            let cookie = '';
-            document.cookie.split(';').forEach(function (value) {
-                if (value.split('=')[0].trim() === key) {
-                    return cookie = value.split('=')[1];
-                }
-            });
-
-            return cookie;
-        }
 
         let lockerData = _getCookie('locker');
         if(!lockerData.length
@@ -122,3 +118,15 @@ waitForElement('.wc-block-components-checkout-place-order-button', function($tar
         }
     });
 });
+
+
+const _getCookie = (key) => {
+    let cookie = '';
+    document.cookie.split(';').forEach(function (value) {
+        if (value.split('=')[0].trim() === key) {
+            return cookie = value.split('=')[1];
+        }
+    });
+
+    return cookie;
+}
