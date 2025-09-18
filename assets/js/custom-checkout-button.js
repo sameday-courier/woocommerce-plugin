@@ -69,15 +69,14 @@ waitForElement(inputSelector, function(label) {
                 ${samedayData.buttonText}
             </button>
         `;
-        let buttonHTMLError = '<div id="placeOrderError">Alege Locker</div>';
+        let buttonHTMLError = '<div id="placeOrderError">Please choose an easybox</div>';
 
         parent.insertAdjacentHTML('beforeend', buttonHTML);
         parent.insertAdjacentHTML('beforeend', buttonHTMLError);
 
-        // Check if LockerPlugin is available before adding the event listener
         if (typeof window['LockerPlugin'] !== 'undefined') {
             document.getElementById('select_locker').addEventListener('click', function() {
-                _openLockers();// Make sure LockerPlugin is initialized
+                _openLockers();
             });
         } else {
             console.error("LockerPlugin is undefined or not loaded yet.");
@@ -106,7 +105,10 @@ waitForElement('.wc-block-components-checkout-place-order-button', function($tar
         }
 
         let lockerData = _getCookie('locker');
-        if(!lockerData.length && (jQuery('input[id*="samedaycourier:15:LN"]:checked').length || jQuery('input[id*="samedaycourier:30:XL"]:checked').length)){
+        if(!lockerData.length
+            && (jQuery('input[id*="samedaycourier:15:LN"]:checked').length
+                || jQuery('input[id*="samedaycourier:30:XL"]:checked').length)
+        ) {
             e.preventDefault();
             e.stopPropagation();
             jQuery('#placeOrderError').addClass('show');
@@ -116,7 +118,7 @@ waitForElement('.wc-block-components-checkout-place-order-button', function($tar
             });
             setTimeout(function(){
                 jQuery('#placeOrderError').removeClass('show');
-            }, 2000);
+            }, 3000);
         }
     });
 });
