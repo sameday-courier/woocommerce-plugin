@@ -1,12 +1,18 @@
-.sameday_select_locker{
+.sameday_select_locker {
+    background: linear-gradient(90deg,#ed2224,#b21f24);
+    color: white;
+    padding: 5px 10px;
     border: none;
-    padding: 10px 20px;
     border-radius: 5px;
-    background: rgb(236, 28, 33);
-    color: rgb(255, 255, 255);
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: bolder;
     cursor: pointer;
-    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.sameday_select_locker:hover {
+    background: linear-gradient(135deg, #d50b15, #8f3614);
+    color: white;
 }
 
 #placeOrderError {
