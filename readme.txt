@@ -180,11 +180,11 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.10.9 =
 
-* Bug fix. Adjust styling to avoid inesthetic conflict with Discount module for Woocommerce
+* Added escaping rule for checkout addresses with double quoting for correct evaluation in order page
 
 = 1.10.8 =
 
-* Added escaping rule for checkout addresses with double quoting for correct evaluation in order page
+* Bug fix. Adjust styling to avoid inesthetic conflict with Discount module for Woocommerce
 
 = 1.10.7 =
 
