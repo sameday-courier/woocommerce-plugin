@@ -111,12 +111,12 @@ waitForElement('.wc-block-components-checkout-place-order-button', function($tar
             e.stopPropagation();
             jQuery('#placeOrderError').addClass('show');
             document.getElementById('select_locker').scrollIntoView({
-                behavior: 'smooth',   // 👈 smooth animation
-                block: 'center'       // align element to center of viewport
+                behavior: 'smooth',
+                block: 'center',
             });
             setTimeout(function(){
                 jQuery('#placeOrderError').removeClass('show');
-            }, 3000);
+            }, 2000);
         }
     });
 });
