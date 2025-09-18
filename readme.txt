@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.6.2
-Stable tag: 1.10.7
+Stable tag: 1.10.8
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,9 +178,13 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.10.8 =
+
+* Bug fix. Adjust styling to avoid inesthetic conflict with Discount module for Woocommerce
+
 = 1.10.7 =
 
-* Added missing validation for locker option before placing order
+* Added missing validation for locker option before placing order to works with block themes.
 
 = 1.10.6 =
 
