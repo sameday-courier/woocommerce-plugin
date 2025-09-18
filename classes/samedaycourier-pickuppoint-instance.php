@@ -77,6 +77,7 @@ class SamedayCourierPickupPointInstance
                                     <?php echo __('Add Pickup Point', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
                                 </a>
 							</div>
+                            <form method="post"></form>
 							<form method="post">
 								<?php
 								$this->pickuppoints_obj->prepare_items();
