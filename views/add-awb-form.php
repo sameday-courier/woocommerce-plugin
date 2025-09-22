@@ -20,20 +20,32 @@ function isServiceEligibleToLockerFirstMile($serviceId) {
 
 	return false;
 }
-function parseJsonSafely($jsonString, $assoc = true) {
-    $result = json_decode($jsonString, $assoc);
-    if (json_last_error() === JSON_ERROR_NONE) {
-        return $result;
-    }
 
-    $fixedJson = fixJsonQuotes($jsonString);
-    return json_decode($fixedJson, $assoc);
-}
 /**
  * @throws JsonException
  */
 function samedaycourierAddAwbForm($order): string {
     $is_testing = SamedayCourierHelperClass::isTesting();
+
+	$postMetaLocker = get_post_meta(
+		$order->get_id(),
+		SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+		true
+	);
+
+	$locker = null;
+	$lockerDetailsForm = null;
+	if (is_int($postMetaLocker)) {
+		$locker = $postMetaLocker;
+	} else if (is_string($postMetaLocker)) {
+		$lockerDetailsForm = SamedayCourierHelperClass::fixJson(
+			SamedayCourierHelperClass::sanitizeInput($postMetaLocker)
+		);
+
+		try {
+			$locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
+		} catch (JsonException $e) {}
+	}
 
     $serviceCode = null;
     foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
@@ -42,26 +54,7 @@ function samedaycourierAddAwbForm($order): string {
         }
 
         if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
-            $metaLockerKey = SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER;
-            if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode)
-                && '' !== $postMetaLocker = get_post_meta($order->get_id(), $metaLockerKey, true)
-            ) {
-//                var_dump($metaLockerKey);exit;
-                $lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
-                var_dump($postMetaLocker); exit;
-
-                if (!empty($lockerDetailsForm) && is_string($lockerDetailsForm)) {
-                    try {
-                        $locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
-                    } catch (JsonException $e) {
-                        error_log('Invalid JSON in lockerDetailsForm: ' . $lockerDetailsForm);
-                        $locker = [];
-                    }
-                } else {
-                    $locker = [];
-                }
-
-
+            if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
                 if (isset($locker['oohType'])) {
                     $serviceCode = SamedayCourierHelperClass::OOH_TYPES[$locker['oohType']] ;
                 }
@@ -111,19 +104,7 @@ function samedaycourierAddAwbForm($order): string {
         $repayment = 0;
     }
 
-	$locker = null;
     $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
-
-	$lockerDetailsForm = '';
-	if ('' !== $postMetaLocker = get_post_meta($order->get_id(), SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER, true)) {
-		$lockerDetailsForm = SamedayCourierHelperClass::sanitizeInput($postMetaLocker);
-        $locker = json_decode(
-	        $lockerDetailsForm,
-			true,
-			512,
-			JSON_THROW_ON_ERROR
-        );
-	}
 
 	$lockerName = null;
 	$lockerAddress = null;
@@ -131,6 +112,14 @@ function samedaycourierAddAwbForm($order): string {
 	if (is_int($locker)) {
 		// Get locker from local import
 		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
+		$lockerDetailsForm = json_encode([
+			'lockerId' => $localLockerSameday->locker_id,
+			'name' => $localLockerSameday->name,
+			'address' => $localLockerSameday->address,
+			'city' => $localLockerSameday->city,
+			'countyId' => $localLockerSameday->county,
+			'postalCode' => $localLockerSameday->postal_code,
+		]);
 		if (null !== $localLockerSameday) {
 			$lockerName = $localLockerSameday->name;
 			$lockerAddress = $localLockerSameday->address;
@@ -202,14 +191,6 @@ function samedaycourierAddAwbForm($order): string {
             $samedayService->sameday_name,
         );
         $servicesOptions .= $option;
-    }
-
-    $order = wc_get_order();
-    $total_weight = 0;
-    foreach ($order->get_items() as $item) {
-        if (false !== $product = $item->get_product()) {
-            $total_weight += (((float) $product->get_weight()) * ((float) $item->get_quantity()));
-        }
     }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
@@ -323,7 +304,7 @@ function samedaycourierAddAwbForm($order): string {
                                     <label for="samedaycourier-locker-details"> ' . __("Location details", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
-                                $form .= "<input type='hidden' form='addAwbForm' id='locker_id' name='locker_id' value='$lockerDetailsForm'>";
+                                $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
                                 $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
                                     <button class="button-primary" 
                                         data-username="'.$username.'" 

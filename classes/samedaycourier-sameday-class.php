@@ -7,8 +7,6 @@ use Sameday\Exceptions\SamedayNotFoundException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Exceptions\SamedayServerException;
-use Sameday\Objects\CityObject;
-use Sameday\Objects\CountryObject;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
@@ -512,13 +510,6 @@ class Sameday
             );
         }
 
-	    /** End of Recipient details */
-		$post_meta_samedaycourier_locker = get_post_meta(
-			$params['samedaycourier-order-id'],
-			SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
-			true
-		);
-
 	    $post_meta_samedaycourier_address_hd = get_post_meta(
 		    $params['samedaycourier-order-id'],
 		    SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
@@ -527,11 +518,11 @@ class Sameday
        
 	    $lockerId = null;
         $oohLastMile = null;
-        if ('' !== $post_meta_samedaycourier_locker
+        if ('' !== ($locker = (string) $params['locker'] ?? '')
             && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 	        $locker = json_decode(
-				$post_meta_samedaycourier_locker,
+		        $locker,
 				true,
 				512,
 				JSON_THROW_ON_ERROR

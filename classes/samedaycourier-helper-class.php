@@ -295,9 +295,32 @@ class SamedayCourierHelperClass
         return json_encode($locker, JSON_UNESCAPED_UNICODE);
     }
 
+	/**
+	 * @param string $input
+	 *
+	 * @return string
+	 */
 	public static function sanitizeInput(string $input): string
 	{
 		return stripslashes(strip_tags(str_replace("'", '&#39;', $input)));
+	}
+
+	/**
+	 * @param string $jsonString
+	 *
+	 * @return string
+	 */
+	public static function fixJson(string $jsonString): string
+	{
+		$pattern = '/(":\s*")([^"]*(?:"[^"]*)*?)("(?=\s*[,}\]]))/';
+
+		return preg_replace_callback(
+			$pattern,
+			static function($matches) {
+				return $matches[1] . str_replace('"', '\"', $matches[2]) . $matches[3];
+			},
+			$jsonString
+		);
 	}
 
 	/**

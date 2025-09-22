@@ -93,9 +93,7 @@ const _openLockers = () => {
     pluginInstance.subscribe((locker) => {
         const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
         if (shipping_address_span) {
-            shipping_address_span.innerHTML = locker.name + ' - ' + locker.address.replace(/"/g, '');
-            locker.address = locker.name + ' - ' + locker.address.replace(/"/g, '');
-            shipping_address_span.innerHTML = locker.address.replace(/"/g, '');
+            shipping_address_span.innerHTML = locker.name + ' - ' + locker.address;
         }
 
         const _setCookie = (key, value, days) => {
