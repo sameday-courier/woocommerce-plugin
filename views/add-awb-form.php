@@ -142,7 +142,7 @@ function samedaycourierAddAwbForm($order): string {
     $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
     $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
-    $currency = get_woocommerce_currency();
+    $currency = $order->currency;
     $currencyWarningMessage = '';
     if ($destCurrency !== $currency
         && $repayment > 0
