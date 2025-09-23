@@ -17,10 +17,6 @@ class SamedayCourierPickupPoints extends WP_List_Table
      * @var string $tableName
      */
     private $tableName = 'sameday_pickup_point';
-    /**
-     * @var mixed|null
-     */
-    private mixed $client;
 
     /** Class constructor */
 	public function __construct()
@@ -38,52 +34,10 @@ class SamedayCourierPickupPoints extends WP_List_Table
 
 	private const GRID_PER_PAGE_VALUE = 10;
 
-    /**
-     * @return SamedayPostPickupPointResponse
-     */
-
-    public function postPickupPoint(SamedayPostPickupPointRequest $request): SamedayPostPickupPointResponse
-    {
-        return new SamedayPostPickupPointResponse($request, $this->client->sendRequest($request->buildRequest()));
-    }
-
-	private function getPickupPoints(): array
-	{
-		global $wpdb;
-
-		$table = $wpdb->prefix . $this->tableName;
-		$is_testing = SamedayCourierHelperClass::isTesting();
-
-		$sql = SamedayCourierHelperClass::buildGridQuery(
-			$table,
-			$is_testing,
-			self::ACCEPTED_FILTERS,
-		);
-
-		return $wpdb->get_results($sql, 'ARRAY_A');
-	}
-
-    /**
-     * @param int $perPage
-     * @param int $pageNumber
-     *
-     * @return array
-     */
-    private function buildGrid(
-        int $perPage = self::GRID_PER_PAGE_VALUE,
-        int $pageNumber = 1
-    ): array
-    {
-        return array_chunk(
-            $this->getPickupPoints(),
-            $perPage
-        )[$pageNumber - 1] ?? [];
-    }
-
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		__( 'No pickup-points avaliable.', SamedayCourierHelperClass::TEXT_DOMAIN);
+		__( 'No pickup-points available.', SamedayCourierHelperClass::TEXT_DOMAIN);
 	}
 
 	/**
@@ -155,25 +109,6 @@ class SamedayCourierPickupPoints extends WP_List_Table
 		);
 	}
 
-	/**
-	 * Handles data query and filter, sorting, and pagination.
-	 */
-//	public function prepare_items(): void
-//	{
-//		$this->_column_headers = $this->get_column_info();
-//
-//		$per_page     = $this->get_items_per_page( 'pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
-//		$current_page = $this->get_pagenum();
-//		$total_items  = count($this->getPickupPoints());
-//
-//		$this->set_pagination_args([
-//			'total_items' => $total_items,
-//			'per_page'    => $per_page,
-//		]);
-//
-//		$this->items = $this->buildGrid($per_page, $current_page);
-//	}
-
     public function prepare_items(): void
     {
         $this->_column_headers = $this->get_column_info();
@@ -182,7 +117,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
         $search_params = $this->get_search_params();
 
         // Get filtered data
-        $filtered_data = $this->get_pickup_points_data($search_params);
+        $filtered_data = $this->getPickupPoints($search_params);
 
         $per_page     = $this->get_items_per_page( 'pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
         $current_page = $this->get_pagenum();
@@ -199,7 +134,8 @@ class SamedayCourierPickupPoints extends WP_List_Table
     }
 
     // Add search parameter handling
-    public function get_search_params() {
+    public function get_search_params(): array
+    {
         return [
             'search_sameday_id' => sanitize_text_field($_GET['search_sameday_id'] ?? ''),
             'search_sameday_alias' => sanitize_text_field($_GET['search_sameday_alias'] ?? ''),
@@ -212,21 +148,17 @@ class SamedayCourierPickupPoints extends WP_List_Table
     }
 
     // Update data query to accept search filters
-    private function get_pickup_points_data($search_params = []) {
+    private function getPickupPoints($search_params = [])
+    {
             global $wpdb;
-
-            $table = $wpdb->prefix . $this->tableName;
-            $is_testing = SamedayCourierHelperClass::isTesting();
 
             // Start with base query
             $where_conditions = [];
             $query_params = [];
 
             // Add testing condition
-            if ($is_testing !== null) {
-                $where_conditions[] = "is_testing = %d";
-                $query_params[] = $is_testing ? 1 : 0;
-            }
+		    $where_conditions[] = "is_testing = %d";
+		    $query_params[] = SamedayCourierHelperClass::isTesting();
 
             // Add search conditions
             if (!empty($search_params['search_sameday_id'])) {
@@ -268,7 +200,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
             }
 
             // Build final query
-            $sql = "SELECT * FROM $table";
+            $sql = "SELECT * FROM " . $wpdb->prefix . $this->tableName;
             if (!empty($where_conditions)) {
                 $sql .= " WHERE " . implode(' AND ', $where_conditions);
             }
@@ -302,7 +234,7 @@ class SamedayCourierPickupPoints extends WP_List_Table
                         searchRow.classList.add('search-row');
 
                         const headers = headerRow.querySelectorAll('th');
-                        headers.forEach((header, index) => {
+                        headers.forEach((header) => {
                             const td = document.createElement('td');
                             const columnKey = header.id;
 
