@@ -55,8 +55,8 @@ function samedaycourierAddAwbForm($order): string {
 
         if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
             if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
-                if (isset($locker['oohType'])) {
-                    $serviceCode = SamedayCourierHelperClass::OOH_TYPES[$locker['oohType']] ;
+                if (isset($locker['oohType']) && $locker['oohType'] === '1') {
+	                $serviceCode = SamedayCourierHelperClass::OOH_TYPES['1'] ;
                 }
             }
 
