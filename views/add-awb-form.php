@@ -142,13 +142,14 @@ function samedaycourierAddAwbForm($order): string {
     $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
     $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
-    $currency = $order->currency;
+    $currency = $order->get_currency() ?? get_woocommerce_currency();
     $currencyWarningMessage = '';
     if ($destCurrency !== $currency
         && $repayment > 0
     ) {
         $message = sprintf(
-            'Be aware that the intended currency is %s but the Repayment value is expressed in %s. Please consider a conversion !!',
+            'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
+             Please consider a conversion !!',
             $destCurrency,
             $currency
         );
