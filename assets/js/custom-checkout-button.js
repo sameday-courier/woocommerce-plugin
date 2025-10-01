@@ -13,28 +13,27 @@ function waitForElement(selector, callback, intervalTime = 100, timeout = 10000)
     }, intervalTime);
 }
 
-// Function to check if the shipping method is selected
 function checkShippingMethod() {
-    // Select the radio input with a partial ID 'samedaycourier:15:LN'
-    let shippingMethod = document.querySelector("input[type='radio'][id*='samedaycourier\\:15\\:LN']");
-    let shippingMethodC = document.querySelector("input[type='radio'][id*='samedaycourier15ln']");
-    let lockerButton = document.getElementById('select_locker');
-
-    // Ensure both the shipping method and button exist before proceeding
-    if (lockerButton) {
-        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
-        let lockerData = _getCookie('locker');
-        if(lockerData !== '' || lockerData !== undefined){
-            lockerData = JSON.parse(lockerData);
-            shipping_address_span.innerText = lockerData.address;
-        }
-
-        if ((shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked)) {
-            lockerButton.style.display = 'inline-block';  // Show the locker button
-            shipping_address_span.style.display = 'block';
+    const shippingMethod = document.querySelector("input[type='radio'][id*='samedaycourier:15:LN']");
+    const shippingMethodC = document.querySelector("input[type='radio'][id*='samedaycourier15ln']");
+    const lockerButton = document.getElementById('select_locker');
+    const shippingAddressSpan = document.querySelector('.wc-block-components-shipping-address');
+    if (!lockerButton) {
+        return;
+    }
+    let lockerData = null;
+    const lockerCookie = typeof _getCookie === 'function' ? _getCookie('locker') : null;
+    if (typeof lockerCookie === 'string' && lockerCookie.trim() !== '') {
+        lockerData = JSON.parse(lockerCookie);
+    }
+    const methodChecked = (shippingMethod && shippingMethod.checked) || (shippingMethodC && shippingMethodC.checked);
+    lockerButton.style.display = methodChecked ? 'inline-block' : 'none';
+    if (shippingAddressSpan) {
+        if (lockerData && lockerData.address) {
+            shippingAddressSpan.innerText = lockerData.address;
+            shippingAddressSpan.style.display = methodChecked ? 'block' : 'none';
         } else {
-            lockerButton.style.display = 'none';   // Hide the locker button
-            shipping_address_span.style.display = 'none';
+            shippingAddressSpan.style.display = 'none';
         }
     }
 }
