@@ -1,6 +1,6 @@
 jQuery(document).ready(() => {
     const $ = jQuery;
-    let citySelectElement;
+    let citySelectElements = {};
 
     [FIELD_TYPE_OF_BILLING, FIELD_TYPE_OF_SHIPPING].forEach((fieldType) => {
         let formElements = {
@@ -11,31 +11,31 @@ jQuery(document).ready(() => {
 
         if (undefined !== formElements.state && formElements.state.length > 0) {
             formElements.state.on('change', (event) => {
-                updateCities(formElements.city[0], event.target.value, formElements.country.val());
+                updateCities(formElements.city[0], event.target.value, formElements.country.val(), fieldType);
             });
         }
     });
 
-    const updateCities = (cityField, stateCode, countryCode) => {
+    const updateCities = (cityField, stateCode, countryCode, fieldType) => {
         let cities = samedayCourierData.cities[countryCode]?.filter(city => city.county_code === stateCode) ?? [];
         if (cities.length > 0) {
-            if (undefined !== citySelectElement && citySelectElement.length > 0) {
-                populateCityField(cities, citySelectElement, cityField);
+            if (undefined !== citySelectElements[fieldType] && citySelectElements[fieldType].length > 0) {
+                populateCityField(cities, citySelectElements[fieldType], cityField);
             } else {
-                citySelectElement = document.createElement("select");
-                citySelectElement.setAttribute("id", cityField.getAttribute('id'));
-                citySelectElement.setAttribute("name", cityField.getAttribute('id'));
-                citySelectElement.setAttribute("class", "form-row-wide select2-city city_select");
+                citySelectElements[fieldType] = document.createElement("select");
+                citySelectElements[fieldType].setAttribute("id", cityField.getAttribute('id'));
+                citySelectElements[fieldType].setAttribute("name", cityField.getAttribute('id'));
+                citySelectElements[fieldType].setAttribute("class", "form-row-wide select2-city city_select");
 
-                populateCityField(cities, citySelectElement, cityField);
+                populateCityField(cities, citySelectElements[fieldType], cityField);
             }
         } else {
-            if (undefined !== citySelectElement && citySelectElement.length > 0) {
-                if ($(citySelectElement).data('select2')) {
-                    $(citySelectElement).select2('destroy');
+            if (undefined !== citySelectElements[fieldType] && citySelectElements[fieldType].length > 0) {
+                if ($(citySelectElements[fieldType]).data('select2')) {
+                    $(citySelectElements[fieldType]).select2('destroy');
                 }
 
-                citySelectElement.replaceWith(cityField);
+                citySelectElements[fieldType].replaceWith(cityField);
             }
         }
     }
@@ -60,7 +60,6 @@ jQuery(document).ready(() => {
         });
 
         cityField.replaceWith(citySelectElement);
-
         $(citySelectElement).select2();
     }
 });
