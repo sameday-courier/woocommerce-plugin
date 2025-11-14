@@ -9,7 +9,7 @@
 
 <p> Using this plug-in is free. However, the service offered by our company is based on a contract. The terms and conditions of the contract are negotiated individually. After signing the contract, the client will receive a set of credentials (username and password). With these credentials, the customer will be able to use the Sameday Courier delivery service. </p>
 
-For further information, contact us at software@sameday.ro !
+If your are facing some issues when working with our solution our you want to leave us a feedback, please don't hesitate to contact us at plugineasybox@sameday.ro !
  <hr> 
 <strong> Features: </strong> 
 
