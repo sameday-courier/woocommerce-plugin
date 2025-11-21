@@ -68,6 +68,7 @@ function samedaycourierCreateAwbHistoryTable($packages) {
         $historyRows = '';
         foreach ($packageHistory as $history) {
             $historyRows .= '
+                <tr>
                     <td> '.$history->getName().' </td>
                     <td> '.$history->getLabel().'</td>
                     <td> '.$history->getState().' </td>
@@ -75,6 +76,7 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     <td> '.$history->getCounty().' </td>
                     <td> '.$history->getTransitLocation().' </td>
                     <td> '.$history->getReason().' </td>
+                </tr>
             ';
         }
         $packageRows .= '
