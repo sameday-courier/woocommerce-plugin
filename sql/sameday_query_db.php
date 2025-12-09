@@ -293,12 +293,18 @@ class SamedayCourierQueryDb
 	{
 		$cities = get_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
 
-		if (false === $cities) {
-			set_transient(
-				SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
+		if (empty($cities)) {
+			$cities = array_intersect_key(
 				self::getCities(),
-				31556926
+				WC()->countries->get_allowed_countries()
 			);
+			if (!empty($cities)) {
+				set_transient(
+					SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
+					$cities,
+					31556926
+				);
+			}
 		}
 
 		return $cities;
