@@ -9,7 +9,7 @@
 
 <p> Using this plug-in is free. However, the service offered by our company is based on a contract. The terms and conditions of the contract are negotiated individually. After signing the contract, the client will receive a set of credentials (username and password). With these credentials, the customer will be able to use the Sameday Courier delivery service. </p>
 
-If your are facing some issues when working with our solution our you want to leave us a feedback, please don't hesitate to contact us at plugineasybox@sameday.ro !
+If you are facing some issues when working with our solution our you want to leave us a feedback, please don't hesitate to contact us at plugineasybox@sameday.ro !
  <hr> 
 <strong> Features: </strong> 
 
@@ -35,14 +35,14 @@ If your are facing some issues when working with our solution our you want to le
 <strong> Usage </strong>
 
 <p> In order to be able to use this plug-in, be sure you have at least 3.6.4 Wordpress Version and the latest WooCommerce version installed.
-    Open your Wordpress admin dashboard and go to Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin.
+    Open your WordPress admin dashboard and go to Plugins/Installed Plugins menu. Press Add new button and then press Upload Plugin.
     Drag&drop the .zip folder you download for and install plugin. If every things works, activate plugin and now the new feature are ready to use.
  </p> 
   <hr> 
  <strong> Settup your Plugin </strong>
  <p>
     Go to WooCommerce/Settings and choose SamedayCourier tab. Complete the form and press Save changes.
-    If every things works well you recive a success message. After that, you are able to import the services and pick-up point assinged by Sameday 
+    If every things works well you receive a success message. After that, you are able to import the services and pick-up point assinged by Sameday 
     to your account. Go to Service and press "Refresh Service". The same for pick-up points importing.
     In the checkout page of your store, your clients are able to see and choose one of the Sameday service.
     If a customer chooses the order to be shipped with Sameday, you will be able to see this in the order list and will be displayed a button "Generate awb".
