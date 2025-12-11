@@ -135,11 +135,15 @@ class Sameday
 			return;
 		}
 
-	    foreach ($cities as $samedayCity) {
-		    SamedayCourierQueryDb::addCity($samedayCity);
-	    }
+        // Remove all previews unnecessary stored data
+        SamedayCourierQueryDb::truncateSamedayCityTable();
+        delete_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
 
-		delete_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
+	    foreach ($cities as $samedayCity) {
+            if (array_key_exists($samedayCity->country_code, WC()->countries->get_shipping_countries())) {
+                SamedayCourierQueryDb::addCity($samedayCity);
+            }
+	    }
 
 		set_transient(
 			SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,

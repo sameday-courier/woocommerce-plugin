@@ -3,8 +3,8 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
-Tested up to: 6.6.2
-Stable tag: 1.10.14
+Tested up to: 6.9.0
+Stable tag: 1.10.15
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -177,6 +177,12 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.10.15 =
+
+* Add new feature. Plugin import Nomenclature of Sameday Cities and Countries only for your countries you want to ship
+(check your Woocommerce Shipping location(s) setting).
+* Bub fixed. Resolve issue caused by uncaught TypeError: SamedayCourierQueryDb::getCachedCities()
 
 = 1.10.14 =
 
