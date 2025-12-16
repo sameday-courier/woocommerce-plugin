@@ -1322,15 +1322,9 @@ add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
 
 
 function validate_cart_weight_before_order() {
-    // Define your maximum allowed weight (in the units set in WooCommerce)
-    $max_allowed_weight = 1500; // kg or lbs depending on your WooCommerce settings
-
-    // Get the total weight of all items in the cart
+    $max_allowed_weight = SamedayCourierHelperClass::MAX_WEIGHT;
     $total_weight = WC()->cart->get_cart_contents_weight();
-
-    // Check if the total weight exceeds the allowed limit
     if ($total_weight > $max_allowed_weight) {
-        // Add an error notice that prevents order placement
         wc_add_notice(
             sprintf(
                 __('Warning: Your package weight (%.2f kg) exceeds the maximum allowed weight of %.2f kg. Contact owner for tailored solution.'),

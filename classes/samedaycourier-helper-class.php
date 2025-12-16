@@ -21,6 +21,7 @@ class SamedayCourierHelperClass
     public const STANDARD_CROSSBORDER_CODE = "XB";
     public const LOCKER_CROSSBORDER_CODE = "XL";
     public const PUDO_CODE = "PP";
+    public const MAX_WEIGHT = 1500;
 
     public const OOH_TYPES = [
         0 => self::LOCKER_NEXT_DAY_CODE,
