@@ -291,12 +291,11 @@ class SamedayCourierQueryDb
 	 */
 	public static function getCachedCities(): array
 	{
-		$cities = get_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES);
-
-		if (false === $cities) {
+		if (false === $cities = get_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
+            $cities = self::getCities();
 			set_transient(
 				SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
-				self::getCities(),
+                $cities,
 				31556926
 			);
 		}
@@ -628,6 +627,17 @@ class SamedayCourierQueryDb
 		$wpdb->update($table, $updateColumns, array('order_id' => $orderId));
 	}
 
+    /**
+     * @return void
+     */
+    public static function truncateSamedayCityTable(): void
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . 'sameday_cities';
+
+        $wpdb->query("TRUNCATE TABLE {$table}");
+    }
+
 	/**
 	 * @param stdClass $cityObject
 	 *
@@ -653,29 +663,7 @@ class SamedayCourierQueryDb
 
         $format = array('%d', '%s', '%s', '%s', '%s');
 
-	    if (self::getCitySameday($cityObject->city_id) === null) {
-		    $wpdb->insert($table, $data, $format);
-
-			return;
-	    }
-
-	    $where = array('city_id' => $cityObject->city_id);
-
-	    $wpdb->update($table, $data, $where, $format, ['%d']);
-    }
-
-	/**
-	 * @param $cityId
-	 *
-	 * @return array|object|stdClass|null
-	 */
-    public static function getCitySameday($cityId): ?stdClass
-    {
-        global $wpdb;
-
-        $query = "SELECT * FROM {$wpdb->prefix}sameday_cities WHERE city_id = '$cityId'";
-
-        return $wpdb->get_row($query);
+        $wpdb->insert($table, $data, $format);
     }
 
 	/**
