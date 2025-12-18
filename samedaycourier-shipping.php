@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.15
+ * Version: 1.10.16
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -1319,3 +1319,32 @@ function enqueue_button_scripts(): void
     }
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
+
+
+function validate_cart_weight_before_order() {
+    $max_allowed_weight_kg = SamedayCourierHelperClass::MAX_WEIGHT;
+    $store_weight_unit = get_option('woocommerce_weight_unit', 'kg');
+    $total_weight_store_unit = WC()->cart->get_cart_contents_weight();
+    $total_weight_kg = SamedayCourierHelperClass::convertWeight($total_weight_store_unit);
+    
+    if ($total_weight_kg > $max_allowed_weight_kg) {
+        $max_allowed_weight_store_unit = wc_get_weight($max_allowed_weight_kg, $store_weight_unit, 'kg');
+        $unit_label = $store_weight_unit;
+        if (class_exists('\Automattic\WooCommerce\Utilities\I18nUtil')) {
+            $unit_label = \Automattic\WooCommerce\Utilities\I18nUtil::get_weight_unit_label($store_weight_unit);
+        }
+        
+        wc_add_notice(
+            sprintf(
+                __('Warning: Your package weight (%.2f %s) exceeds the maximum allowed weight of %.2f %s. Contact owner for tailored solution.', SamedayCourierHelperClass::TEXT_DOMAIN),
+                $total_weight_store_unit,
+                $unit_label,
+                $max_allowed_weight_store_unit,
+                $unit_label
+            ),
+            'error'
+        );
+    }
+}
+add_action('woocommerce_checkout_process', 'validate_cart_weight_before_order');
+add_action('woocommerce_store_api_checkout_update_order_meta', 'validate_cart_weight_before_order');
