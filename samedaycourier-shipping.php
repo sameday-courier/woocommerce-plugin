@@ -1325,7 +1325,8 @@ function validate_cart_weight_before_order() {
     $max_allowed_weight_kg = SamedayCourierHelperClass::MAX_WEIGHT;
     $store_weight_unit = get_option('woocommerce_weight_unit', 'kg');
     $total_weight_store_unit = WC()->cart->get_cart_contents_weight();
-    $total_weight_kg = wc_get_weight($total_weight_store_unit, 'kg', $store_weight_unit);
+    $total_weight_kg = SamedayCourierHelperClass::convertWeight($total_weight_store_unit);
+    
     if ($total_weight_kg > $max_allowed_weight_kg) {
         $max_allowed_weight_store_unit = wc_get_weight($max_allowed_weight_kg, $store_weight_unit, 'kg');
         $unit_label = $store_weight_unit;
