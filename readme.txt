@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.9.0
-Stable tag: 1.10.15
+Stable tag: 1.10.16
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -177,6 +177,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 1.10.16 =
+
+* Add new feature. For bulgarian clients: show in the checkout both EUR/BGN currencies.
 
 = 1.10.15 =
 
