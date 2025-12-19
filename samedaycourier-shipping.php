@@ -1353,7 +1353,7 @@ add_filter('woocommerce_cart_shipping_method_full_label', static function ($labe
             $method->label,
             $method->cost,
             get_woocommerce_currency_symbol($store_currency),
-            "(≈ $estimated_price $estimated_currency)"
+            sprintf("(≈ %s %s)", $estimated_price, get_woocommerce_currency_symbol($estimated_currency))
         );
     }
 
