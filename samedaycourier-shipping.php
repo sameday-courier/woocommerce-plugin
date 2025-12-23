@@ -168,7 +168,7 @@ function samedaycourier_shipping_method(): void
                                     if (($storeCurrency !== $estimatedCurrency)) {
                                         // If your Store Currency is EURO
                                         if ($storeCurrency === SamedayCourierHelperClass::EURO_CURRENCY) {
-                                            $price = SamedayCourierHelperClass::convertBGNtoEUR($estimatedCost->getCost());
+                                            $price = SamedayCourierHelperClass::convertBGNtoEUR($price);
                                             $estimatedPrice = $estimatedCost->getCost();
                                         }
 
