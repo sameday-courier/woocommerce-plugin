@@ -82,6 +82,8 @@ class SamedayCourierHelperClass
         self::API_HOST_LOCALE_HU => 'HUF',
     ];
 
+    public const EURO_CURRENCY = "EUR";
+
 	public const TOGGLE_HTML_ELEMENT = [
 		'show' => 'showElement',
 		'hide' => 'hideElement',
@@ -728,6 +730,26 @@ class SamedayCourierHelperClass
         return array_map(static function(CountyObject $county){
             return ['id' => $county->getId(), 'name' => $county->getName()];
         }, $samedayCounties);
+    }
+
+    /**
+     * @param float $amount
+     *
+     * @return string
+     */
+    public static function convertBGNtoEUR(float $amount): string
+    {
+        return number_format(($amount * 0.511292), 2, '.', '');
+    }
+
+    /**
+     * @param float $amount
+     *
+     * @return string
+     */
+    public static function convertEURtoBGN(float $amount): string
+    {
+        return number_format(($amount * 1.95583), 2, '.', '');
     }
 
     /**
