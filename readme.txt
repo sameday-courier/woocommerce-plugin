@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.9.0
-Stable tag: 1.10.16
+Stable tag: 1.10.17
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,9 +178,13 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.10.17 =
+
+* Add new feature. Convert extra fee tax to both EUR/BGN currency for Bulgarian clients.
+
 = 1.10.16 =
 
-* Add new feature. For bulgarian clients: show in the checkout both EUR/BGN currencies.
+* Add new feature. For Bulgarian clients: show in the checkout both EUR/BGN currencies.
 
 = 1.10.15 =
 

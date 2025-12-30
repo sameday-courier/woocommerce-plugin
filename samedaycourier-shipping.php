@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.16
+ * Version: 1.10.17
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -53,6 +53,7 @@ require_once (plugin_basename('views/add-awb-form.php'));
 require_once (plugin_basename('views/awb-history-table.php'));
 require_once (plugin_basename('views/add-new-parcel-form.php'));
 require_once (plugin_basename('classes/samedaycourier-persistence-data-handler.php'));
+require_once (plugin_basename('classes/samedaycourier-bgn-currency-convertor.php'));
 
 // Start Shipping Method Class
 function samedaycourier_shipping_method(): void
@@ -160,27 +161,29 @@ function samedaycourier_shipping_method(): void
 
                             if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
                                 if (($useEstimatedCost === 'yes') || ($useEstimatedCost === 'btfp' && $service->price < $estimatedCost)) {
-                                    $price = $estimatedCost->getCost();
+                                    $estimatedPrice = $estimatedCost->getCost();
+
+                                    if ($estimatedCostExtraFee > 0) {
+                                        $estimatedPrice += (float) number_format($price * ($estimatedCostExtraFee /100), 2, '.', '');
+                                    }
+                                    $price = $estimatedPrice;
 
                                     // Business logic for Bulgaria Currency Rules
                                     $storeCurrency = get_woocommerce_currency();
                                     $estimatedCurrency = $estimatedCost->getCurrency();
                                     if (($storeCurrency !== $estimatedCurrency)) {
-                                        // If your Store Currency is EURO
-                                        if ($storeCurrency === SamedayCourierHelperClass::EURO_CURRENCY) {
-                                            $price = SamedayCourierHelperClass::convertBGNtoEUR($price);
-                                            $estimatedPrice = $estimatedCost->getCost();
-                                        }
-
-                                        if ($storeCurrency === SamedayCourierHelperClass::CURRENCY_MAPPER[SamedayCourierHelperClass::API_HOST_LOCALE_BG]) {
-                                            $price = SamedayCourierHelperClass::convertEURtoBGN($price);
-                                            $estimatedPrice = $estimatedCost->getCost();
-                                        }
+                                        try {
+                                            $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
+                                            $price = $bgnCurrencyConverter->convert();
+                                            $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
+                                                $service->name,
+                                                $price,
+                                                $storeCurrency,
+                                                $estimatedPrice,
+                                                $estimatedCurrency
+                                            );
+                                        } catch (Exception $exception) {}
                                     }
-                                }
-
-                                if ($estimatedCostExtraFee > 0) {
-                                    $price += (float) number_format($price * ($estimatedCostExtraFee /100), 2);
                                 }
                             }
                         }
@@ -199,10 +202,8 @@ function samedaycourier_shipping_method(): void
                             )
                         );
 
-                        if (isset($estimatedPrice, $estimatedCurrency, $storeCurrency)) {
-                            $rate['meta_data']['estimated_currency'] = $estimatedCurrency;
-                            $rate['meta_data']['estimated_price'] = $estimatedPrice;
-                            $rate['meta_data']['store_currency'] = $storeCurrency;
+                        if (isset($currencyConversionLabel)) {
+                            $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
                         }
 
                         if ((false === $useLockerMap)
@@ -1343,19 +1344,5 @@ function enqueue_button_scripts(): void
 add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
 
 add_filter('woocommerce_cart_shipping_method_full_label', static function ($label, $method) {
-    $estimated_price = $method->get_meta_data()['estimated_price'] ?? null;
-    $store_currency = $method->get_meta_data()['store_currency'] ?? null;
-    $estimated_currency = $method->get_meta_data()['estimated_currency'] ?? null;
-
-    if (null !== $estimated_price && null !== $estimated_currency && null !== $store_currency) {
-        return sprintf(
-            '%s: <span class="woocommerce-Price-amount amount"><bdi>%s&nbsp;<span class="woocommerce-Price-currencySymbol">%s</span> <span style="font-size: smaller"> %s </span></bdi></span>',
-            $method->label,
-            $method->cost,
-            get_woocommerce_currency_symbol($store_currency),
-            sprintf("(≈ %s %s)", $estimated_price, get_woocommerce_currency_symbol($estimated_currency))
-        );
-    }
-
-    return $label;
+    return $method->get_meta_data()['currency_conversion_label'] ?? $label;
 }, 10, 2);
