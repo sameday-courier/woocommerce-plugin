@@ -181,11 +181,11 @@ function samedaycourier_shipping_method(): void
                                         $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
                                         $price = $bgnCurrencyConverter->convert();
                                         $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
-                                                $service->name,
-                                                $price,
-                                                $storeCurrency,
-                                                $estimatedPrice,
-                                                $estimatedCurrency
+                                            $service->name,
+                                            $price,
+                                            $storeCurrency,
+                                            $estimatedPrice,
+                                            $estimatedCurrency
                                         );
                                     } catch (Exception $exception) {}
                                 }
@@ -198,13 +198,13 @@ function samedaycourier_shipping_method(): void
                     }
 
                     $rate = array(
-                            'id' => sprintf('%s:%s:%s', $this->id, $service->sameday_id, $service->sameday_code),
-                            'label' => $service->name,
-                            'cost' => $price,
-                            'meta_data' => array(
-                                    'service_id' => $service->sameday_id,
-                                    'service_code' => $service->sameday_code
-                            )
+                        'id' => sprintf('%s:%s:%s', $this->id, $service->sameday_id, $service->sameday_code),
+                        'label' => $service->name,
+                        'cost' => $price,
+                        'meta_data' => array(
+                            'service_id' => $service->sameday_id,
+                            'service_code' => $service->sameday_code
+                        )
                     );
 
                     if (isset($currencyConversionLabel)) {
