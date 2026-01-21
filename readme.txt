@@ -180,7 +180,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 1.10.18 =
 
-* Legacy code refactor.
+* Code refactor for fix issue with "btfp" estimation rule.
 
 = 1.10.17 =
 
