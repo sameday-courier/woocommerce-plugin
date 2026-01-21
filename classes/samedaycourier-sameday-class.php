@@ -522,7 +522,7 @@ class Sameday
        
 	    $lockerId = null;
         $oohLastMile = null;
-        if ('' !== ($locker = (string) $params['locker'] ?? '')
+        if ('' !== ($locker = $params['locker'] ?? '')
             && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
 	        $locker = json_decode(
