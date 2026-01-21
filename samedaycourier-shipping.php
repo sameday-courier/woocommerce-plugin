@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.10.17
+ * Version: 1.10.18
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -127,94 +127,98 @@ function samedaycourier_shipping_method(): void
                     $package['destination']['state']
                 );
 
-                if (!empty($availableServices)) {
-                    foreach ($availableServices as $service) {
-                        if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H_CODE
+                if (empty($availableServices)) {
+                    return;
+                }
+
+                foreach ($availableServices as $service) {
+                    if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H_CODE
                             && !in_array(
-                               SamedayCourierHelperClass::removeAccents($stateName),
-                               SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
-                               true
+                                SamedayCourierHelperClass::removeAccents($stateName),
+                                SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
+                                true
                             )
-                        ) {
+                    ) {
+                        continue;
+                    }
+
+                    if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)) {
+                        if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
+                            $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+                        }
+
+                        if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
                             continue;
                         }
+                    }
 
-                        if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)) {
-	                        if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
-                                $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
-                            }
+                    $price = $service->price;
 
-                            if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
-                                continue;
-                            }
-                        }
-
-                        $price = $service->price;
-
-                        if (
-	                        '' !== $package['destination']['city']
+                    if (
+                            '' !== $package['destination']['city']
                             && '' !== $stateName
-	                        && '' !== $package['destination']['address']
+                            && '' !== $package['destination']['address']
                             && $useEstimatedCost !== 'no'
-                        ) {
-                            $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
+                    ) {
+                        $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
+                        if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
+                            $estimatedPrice = $estimatedCost->getCost();
+                            $estimatedCurrency = $estimatedCost->getCurrency();
+                            if (($useEstimatedCost === 'yes')
+                                    || ($useEstimatedCost === 'btfp' && $service->price < $estimatedPrice)
+                            ) {
+                                if ($estimatedCostExtraFee > 0) {
+                                    $estimatedPrice += (float) number_format($price * ($estimatedCostExtraFee /100), 2, '.', '');
+                                }
+                                $price = $estimatedPrice;
 
-                            if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
-                                if (($useEstimatedCost === 'yes') || ($useEstimatedCost === 'btfp' && $service->price < $estimatedCost)) {
-                                    $estimatedPrice = $estimatedCost->getCost();
-
-                                    if ($estimatedCostExtraFee > 0) {
-                                        $estimatedPrice += (float) number_format($price * ($estimatedCostExtraFee /100), 2, '.', '');
-                                    }
-                                    $price = $estimatedPrice;
-
-                                    // Business logic for Bulgaria Currency Rules
-                                    $storeCurrency = get_woocommerce_currency();
-                                    $estimatedCurrency = $estimatedCost->getCurrency();
-                                    if (($storeCurrency !== $estimatedCurrency)) {
-                                        try {
-                                            $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
-                                            $price = $bgnCurrencyConverter->convert();
-                                            $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
+                                // Business logic for Bulgaria Currency Rules
+                                $storeCurrency = get_woocommerce_currency();
+                                if (($storeCurrency !== $estimatedCurrency)
+                                        && (SamedayCourierHelperClass::getHostCountry() === SamedayCourierHelperClass::API_HOST_LOCALE_BG)
+                                ) {
+                                    try {
+                                        $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
+                                        $price = $bgnCurrencyConverter->convert();
+                                        $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
                                                 $service->name,
                                                 $price,
                                                 $storeCurrency,
                                                 $estimatedPrice,
                                                 $estimatedCurrency
-                                            );
-                                        } catch (Exception $exception) {}
-                                    }
+                                        );
+                                    } catch (Exception $exception) {}
                                 }
                             }
                         }
+                    }
 
-	                    if ($service->price_free !== null && ($cartValue > $service->price_free)) {
-		                    $price = .0;
-	                    }
+                    if ($service->price_free !== null && ($cartValue > $service->price_free)) {
+                        $price = .0;
+                    }
 
-                        $rate = array(
+                    $rate = array(
                             'id' => sprintf('%s:%s:%s', $this->id, $service->sameday_id, $service->sameday_code),
                             'label' => $service->name,
                             'cost' => $price,
                             'meta_data' => array(
-                                'service_id' => $service->sameday_id,
-                                'service_code' => $service->sameday_code
+                                    'service_id' => $service->sameday_id,
+                                    'service_code' => $service->sameday_code
                             )
-                        );
+                    );
 
-                        if (isset($currencyConversionLabel)) {
-                            $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
-                        }
-
-                        if ((false === $useLockerMap)
-                            && ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
-                        ) {
-                            $this->syncLockers();
-                            $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
-                        }
-
-                        $this->add_rate($rate);
+                    if (isset($currencyConversionLabel)) {
+                        $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
                     }
+
+                    if ((false === $useLockerMap)
+                            && ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+                    ) {
+                        $this->syncLockers();
+                        $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
+                    }
+
+                    $this->add_rate($rate);
                 }
             }
 

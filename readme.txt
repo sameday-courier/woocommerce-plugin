@@ -178,6 +178,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 1.10.18 =
+
+* Legacy code refactor.
+
 = 1.10.17 =
 
 * Add new feature. Convert extra fee tax to both EUR/BGN currency for Bulgarian clients.
