@@ -2,54 +2,7 @@ jQuery(document).ready(() => {
     const $ = jQuery;
     let citySelectElements = {};
     let originalCityFields = {};
-
-    const bindHandlers = () => {
-        [FIELD_TYPE_OF_BILLING, FIELD_TYPE_OF_SHIPPING].forEach((fieldType) => {
-            let formElements = {
-                country: $(getFieldByType('country', fieldType)),
-                state: $(getFieldByType('state', fieldType)),
-                city: $(getFieldByType('city', fieldType)),
-            };
-
-            if (formElements.city.length === 0) {
-                return;
-            }
-
-            // Keep a copy of the original city input (for fallback)
-            if (!originalCityFields[fieldType]) {
-                originalCityFields[fieldType] = formElements.city[0].cloneNode(true);
-            }
-
-            if (formElements.state.length > 0) {
-                formElements.state.off('change.samedayCities');
-                formElements.state.on('change.samedayCities', (event) => {
-                    updateCities(getFieldByType('city', fieldType), event.target.value, formElements.country.val(), fieldType);
-                });
-            }
-
-            // For countries without states, keep city as input
-            if (formElements.country.length > 0) {
-                formElements.country.off('change.samedayCities');
-                formElements.country.on('change.samedayCities', () => {
-                    const stateCode = formElements.state.length > 0 ? formElements.state.val() : '';
-                    if (!stateCode) {
-                        restoreCityInput(fieldType);
-                        return;
-                    }
-
-                    updateCities(getFieldByType('city', fieldType), stateCode, formElements.country.val(), fieldType);
-                });
-            }
-
-            // Initial (also useful after updated_checkout)
-            const initialState = formElements.state.length > 0 ? formElements.state.val() : '';
-            if (initialState) {
-                updateCities(getFieldByType('city', fieldType), initialState, formElements.country.val(), fieldType);
-            } else {
-                restoreCityInput(fieldType);
-            }
-        });
-    };
+    let lastAppliedKey = {};
 
     const restoreCityInput = (fieldType) => {
         const currentCityField = getFieldByType('city', fieldType);
@@ -59,7 +12,6 @@ jQuery(document).ready(() => {
             $(selectEl).select2('destroy');
         }
 
-        // If current field is a select (tracked or not), replace it with the original input
         if (currentCityField && currentCityField.tagName && currentCityField.tagName.toLowerCase() === 'select') {
             let restoredField = originalCityFields[fieldType];
             if (!restoredField) {
@@ -78,6 +30,18 @@ jQuery(document).ready(() => {
             return;
         }
 
+        const key = `${countryCode}:${stateCode}`;
+        if (
+            lastAppliedKey[fieldType] === key &&
+            cityField.tagName &&
+            cityField.tagName.toLowerCase() === 'select'
+        ) {
+            if (!$(cityField).data('select2')) {
+                $(cityField).select2();
+            }
+            return;
+        }
+
         let cities = samedayCourierData?.cities?.[countryCode]?.filter(city => city.county_code === stateCode) ?? [];
 
         if (cities.length > 0) {
@@ -93,6 +57,7 @@ jQuery(document).ready(() => {
             }
 
             populateCityField(cities, citySelectElements[fieldType], cityField);
+            lastAppliedKey[fieldType] = key;
         } else {
             restoreCityInput(fieldType);
         }
@@ -124,14 +89,64 @@ jQuery(document).ready(() => {
             cityField.replaceWith(citySelectElement);
         }
 
-        // Re-init select2 safely
         if ($(citySelectElement).data('select2')) {
             $(citySelectElement).select2('destroy');
         }
         $(citySelectElement).select2();
     }
 
-    // Classic checkout can rebuild fields via AJAX
-    bindHandlers();
-    jQuery(document.body).on('updated_checkout', bindHandlers);
+    jQuery(document.body).on('updated_checkout', () => {
+        [FIELD_TYPE_OF_BILLING, FIELD_TYPE_OF_SHIPPING].forEach((fieldType) => {
+            let formElements = {
+                country: $(getFieldByType('country', fieldType)),
+                state: $(getFieldByType('state', fieldType)),
+                city: $(getFieldByType('city', fieldType)),
+            };
+
+            if (formElements.city.length === 0) {
+                return;
+            }
+
+            if (!originalCityFields[fieldType]) {
+                originalCityFields[fieldType] = formElements.city[0].cloneNode(true);
+            }
+
+            if (formElements.state.length > 0) {
+                formElements.state.off('change.samedayCities');
+                formElements.state.on('change.samedayCities', (event) => {
+                    updateCities(getFieldByType('city', fieldType), event.target.value, formElements.country.val(), fieldType);
+                });
+            }
+
+            if (formElements.country.length > 0) {
+                formElements.country.off('change.samedayCities');
+                formElements.country.on('change.samedayCities', () => {
+                    const stateCode = formElements.state.length > 0 ? formElements.state.val() : '';
+                    if (!stateCode) {
+                        restoreCityInput(fieldType);
+                        return;
+                    }
+
+                    updateCities(getFieldByType('city', fieldType), stateCode, formElements.country.val(), fieldType);
+                });
+            }
+
+            // Initial (also useful after updated_checkout)
+            const initialState = formElements.state.length > 0 ? formElements.state.val() : '';
+            if (initialState) {
+                const currentCityField = getFieldByType('city', fieldType);
+                const countryCode = formElements.country.val();
+                const key = `${countryCode}:${initialState}`;
+
+                const isAlreadySelect = currentCityField && currentCityField.tagName && currentCityField.tagName.toLowerCase() === 'select';
+                if (!(isAlreadySelect && lastAppliedKey[fieldType] === key)) {
+                    updateCities(currentCityField, initialState, countryCode, fieldType);
+                } else if (!$(currentCityField).data('select2')) {
+                    $(currentCityField).select2();
+                }
+            } else {
+                restoreCityInput(fieldType);
+            }
+        });
+    });
 });
