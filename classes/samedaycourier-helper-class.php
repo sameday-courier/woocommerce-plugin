@@ -525,10 +525,10 @@ class SamedayCourierHelperClass
 	public static function updateLockerOrderPostMeta(int $order_id): void
 	{
 		$postMetaLocker = self::fixJson(
-			SamedayCourierHelperClass::sanitizeInput(
+			self::sanitizeInput(
 				(string) get_post_meta(
 					$order_id,
-					SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+					self::POST_META_SAMEDAY_SHIPPING_LOCKER,
 					true
 				)
 			)
