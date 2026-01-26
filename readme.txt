@@ -181,6 +181,8 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 1.11.0 =
 
 * Code refactor. Fix some corner-case caused by Sameday Cities Nomenclature applied for some particular scenario.
+* Add fallback for cases that checkout is completed only with billing data.
+This is used for switching between Sameday services before complete AWB order.
 
 = 1.10.18 =
 
