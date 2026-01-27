@@ -23,6 +23,12 @@ use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Responses\SamedayPostAwbEstimationResponse;
 use Sameday\SamedayClient;
+use SamedayCourier\Shipping\BgnCurrencyConverter;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkClient;
+use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
+use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
+use SamedayCourier\Shipping\Woo\Admin\Grid\Service\ServiceInstance;
 
 if (! defined( 'ABSPATH')) {
     exit;
@@ -31,29 +37,20 @@ if (! defined( 'ABSPATH')) {
 /**
  * Check if WooCommerce plugin is enabled
  */
-if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), '')) {
+if (!in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), '')) {
     exit;
 }
 
-require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
-require_once (plugin_basename('lib/sameday-courier/src/Sameday/autoload.php'));
-require_once (plugin_basename('classes/samedaycourier-api.php'));
-require_once (plugin_basename('classes/samedaycourier-helper-class.php'));
-require_once (plugin_basename('classes/samedaycourier-sameday-class.php'));
-require_once (plugin_basename('sql/sameday_create_db.php'));
-require_once (plugin_basename('sql/sameday_drop_db.php'));
-require_once (plugin_basename('sql/sameday_query_db.php'));
-require_once (plugin_basename('classes/samedaycourier-services.php'));
-require_once (plugin_basename('classes/samedaycourier-service-instance.php'));
-require_once (plugin_basename('classes/samedaycourier-pickuppoints.php'));
-require_once (plugin_basename('classes/samedaycourier-pickuppoint-instance.php'));
-require_once (plugin_basename('classes/samedaycourier-lockers.php'));
-require_once (plugin_basename('classes/samedaycourier-locker-instance.php'));
-require_once (plugin_basename('views/add-awb-form.php'));
-require_once (plugin_basename('views/awb-history-table.php'));
-require_once (plugin_basename('views/add-new-parcel-form.php'));
-require_once (plugin_basename('classes/samedaycourier-persistence-data-handler.php'));
-require_once (plugin_basename('classes/samedaycourier-bgn-currency-convertor.php'));
+if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    add_action('admin_notices', static function () {
+        echo '<div class="notice notice-error"><p>';
+        echo 'SamedayCourier Shipping was not installed because autoloader is missing.';
+        echo '</p></div>';
+    });
+    return;
+}
+
+require_once __DIR__ . '/vendor/autoload.php';
 
 // Start Shipping Method Class
 function samedaycourier_shipping_method(): void
@@ -71,10 +68,10 @@ function samedaycourier_shipping_method(): void
                 parent::__construct($instance_id);
 
                 $this->id = 'samedaycourier';
-                $this->method_title = __('SamedayCourier', SamedayCourierHelperClass::TEXT_DOMAIN);
+                $this->method_title = __('SamedayCourier', Helper::TEXT_DOMAIN);
                 $this->method_description = __(
                     'Custom Shipping Method for SamedayCourier',
-                    SamedayCourierHelperClass::TEXT_DOMAIN
+                    Helper::TEXT_DOMAIN
                 );
 
                 $this->supports = array(
@@ -98,16 +95,16 @@ function samedaycourier_shipping_method(): void
                 $useEstimatedCost = $this->settings['estimated_cost'];
                 $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
                 $useLockerMap = $this->settings['lockers_map'] === 'yes';
-                $hostCountry = SamedayCourierHelperClass::getHostCountry();
-                $destinationCountry = $package['destination']['country'] ?? SamedayCourierHelperClass::API_HOST_LOCALE_RO;
+                $hostCountry = Helper::getHostCountry();
+                $destinationCountry = $package['destination']['country'] ?? Helper::API_HOST_LOCALE_RO;
 
-                $eligibleShippingServices = SamedayCourierHelperClass::ELIGIBLE_SERVICES;
+                $eligibleShippingServices = Helper::ELIGIBLE_SERVICES;
                 if ($destinationCountry !== $hostCountry) {
-                    $eligibleShippingServices = SamedayCourierHelperClass::CROSSBORDER_ELIGIBLE_SERVICES;
+                    $eligibleShippingServices = Helper::CROSSBORDER_ELIGIBLE_SERVICES;
                 }
 
                 $availableServices = array_filter(
-                    SamedayCourierQueryDb::getAvailableServices(SamedayCourierHelperClass::isTesting()),
+                    SamedayCourierQueryDb::getAvailableServices(Helper::isTesting()),
                     static function($row) use ($eligibleShippingServices) {
                         return in_array(
                             $row->sameday_code,
@@ -118,11 +115,11 @@ function samedaycourier_shipping_method(): void
                 );
 
 	            $cartValue = WC()->cart->get_subtotal();
-	            if (true === SamedayCourierHelperClass::isApplyFreeShippingAfterDiscount()) {
+	            if (true === Helper::isApplyFreeShippingAfterDiscount()) {
 		            $cartValue = WC()->cart->get_cart_contents_total();
 	            }
 
-                $stateName = SamedayCourierHelperClass::convertStateCodeToName(
+                $stateName = Helper::convertStateCodeToName(
                     $package['destination']['country'],
                     $package['destination']['state']
                 );
@@ -132,19 +129,19 @@ function samedaycourier_shipping_method(): void
                 }
 
                 foreach ($availableServices as $service) {
-                    if ($service->sameday_code === SamedayCourierHelperClass::SAMEDAY_6H_CODE
+                    if ($service->sameday_code === Helper::SAMEDAY_6H_CODE
                             && !in_array(
-                                SamedayCourierHelperClass::removeAccents($stateName),
-                                SamedayCourierHelperClass::ELIGIBLE_TO_6H_SERVICE,
+                                Helper::removeAccents($stateName),
+                                Helper::ELIGIBLE_TO_6H_SERVICE,
                                 true
                             )
                     ) {
                         continue;
                     }
 
-                    if (SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)) {
+                    if (Helper::isOohDeliveryOption($service->sameday_code)) {
                         if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
-                            $lockerMaxItems = SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+                            $lockerMaxItems = Helper::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
                         }
 
                         if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
@@ -175,7 +172,7 @@ function samedaycourier_shipping_method(): void
                                 // Business logic for Bulgaria Currency Rules
                                 $storeCurrency = get_woocommerce_currency();
                                 if (($storeCurrency !== $estimatedCurrency)
-                                        && (SamedayCourierHelperClass::getHostCountry() === SamedayCourierHelperClass::API_HOST_LOCALE_BG)
+                                        && (Helper::getHostCountry() === Helper::API_HOST_LOCALE_BG)
                                 ) {
                                     try {
                                         $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
@@ -212,10 +209,10 @@ function samedaycourier_shipping_method(): void
                     }
 
                     if ((false === $useLockerMap)
-                            && ($service->sameday_code === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE)
+                            && ($service->sameday_code === Helper::LOCKER_NEXT_DAY_CODE)
                     ) {
                         $this->syncLockers();
-                        $rate['lockers'] = SamedayCourierQueryDb::getLockers(SamedayCourierHelperClass::isTesting());
+                        $rate['lockers'] = SamedayCourierQueryDb::getLockers(Helper::isTesting());
                     }
 
                     $this->add_rate($rate);
@@ -244,20 +241,20 @@ function samedaycourier_shipping_method(): void
              */
             private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
             {
-                $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(SamedayCourierHelperClass::isTesting());
-                $weight = SamedayCourierHelperClass::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
-                $state = SamedayCourierHelperClass::convertStateCodeToName($address['country'], $address['state']);
-                $city = SamedayCourierHelperClass::removeAccents($address['city']);
-                $currency = SamedayCourierHelperClass::CURRENCY_MAPPER[$address['country']];
+                $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(Helper::isTesting());
+                $weight = Helper::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
+                $state = Helper::convertStateCodeToName($address['country'], $address['state']);
+                $city = Helper::removeAccents($address['city']);
+                $currency = Helper::CURRENCY_MAPPER[$address['country']];
 
                 $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
                         $serviceId,
-                        SamedayCourierHelperClass::isTesting()
+                        Helper::isTesting()
                 );
                 $serviceTaxIds = array();
                 if (WC()->session->get('open_package') === 'yes') {
                     foreach ($optionalServices as $optionalService) {
-                        if ($optionalService->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE
+                        if ($optionalService->getCode() === Helper::OPEN_PACKAGE_OPTION_CODE
                             && $optionalService->getPackageType()->getType() === PackageType::PARCEL
                         ) {
                             $serviceTaxIds[] = $optionalService->getId();
@@ -269,7 +266,7 @@ function samedaycourier_shipping_method(): void
                 // Check if the client has to pay anything as repayment value
                 $repaymentAmount = WC()->cart->subtotal;
 	            $paymentMethod = WC()->session->get('payment_method');
-	            if (isset($paymentMethod) && ($paymentMethod !== SamedayCourierHelperClass::CASH_ON_DELIVERY)) {
+	            if (isset($paymentMethod) && ($paymentMethod !== Helper::CASH_ON_DELIVERY)) {
 		            $repaymentAmount = 0;
                 }
 
@@ -301,10 +298,10 @@ function samedaycourier_shipping_method(): void
                 );
 
                 $sameday = new Sameday\Sameday(
-                    SamedayCourierApi::initClient(
+                    SdkClient::initClient(
                         $this->settings['user'],
                         $this->settings['password'],
-                        SamedayCourierHelperClass::getApiUrl()
+                        Helper::getApiUrl()
                     )
                 );
 
@@ -319,174 +316,174 @@ function samedaycourier_shipping_method(): void
             {
                 $this->form_fields = array(
                     'enabled' => array(
-                        'title' => __('Enable', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Enable', Helper::TEXT_DOMAIN),
                         'type' => 'checkbox',
-                        'description' => __('Enable this shipping.', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Enable this shipping.', Helper::TEXT_DOMAIN),
                         'default' => 'yes'
                     ),
 
                     'title' => array(
-                        'title' => __('Title', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Title', Helper::TEXT_DOMAIN),
                         'type' => 'text',
-                        'description' => __('Title to be display on site', SamedayCourierHelperClass::TEXT_DOMAIN),
-                        'default' => __('SamedayCourier Shipping', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        'description' => __('Title to be display on site', Helper::TEXT_DOMAIN),
+                        'default' => __('SamedayCourier Shipping', Helper::TEXT_DOMAIN)
                     ),
 
                     'user' => array(
-                        'title' => __('Username', SamedayCourierHelperClass::TEXT_DOMAIN) . ' *',
+                        'title' => __('Username', Helper::TEXT_DOMAIN) . ' *',
                         'type' => 'text',
-                        'description' => __('Username', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Username', Helper::TEXT_DOMAIN),
                         'default' => __('')
                     ),
 
                     'password' => array(
-                        'title' => __('Password', SamedayCourierHelperClass::TEXT_DOMAIN) . ' *',
+                        'title' => __('Password', Helper::TEXT_DOMAIN) . ' *',
                         'type' => 'password',
-                        'description' => __('Password', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Password', Helper::TEXT_DOMAIN),
                         'default' => __('')
                     ),
 
                     'default_label_format' => array(
-                        'title'   => __('Default label format', SamedayCourierHelperClass::TEXT_DOMAIN) . ' *',
+                        'title'   => __('Default label format', Helper::TEXT_DOMAIN) . ' *',
                         'default' => 'A4',
                         'type'    => 'select',
                         'options' => [
-                            'A4' => __(Sameday\Objects\Types\AwbPdfType::A4, SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'A6' => __(Sameday\Objects\Types\AwbPdfType::A6, SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'A4' => __(Sameday\Objects\Types\AwbPdfType::A4, Helper::TEXT_DOMAIN),
+                            'A6' => __(Sameday\Objects\Types\AwbPdfType::A6, Helper::TEXT_DOMAIN),
                         ],
-                        'description' => __('Awb paper format', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        'description' => __('Awb paper format', Helper::TEXT_DOMAIN)
                     ),
 
                     'estimated_cost' => array(
-                        'title'   => __('Use estimated cost', SamedayCourierHelperClass::TEXT_DOMAIN) . ' *',
+                        'title'   => __('Use estimated cost', Helper::TEXT_DOMAIN) . ' *',
                         'default' => 'no',
                         'type'    => 'select',
                         'options' => [
-                            'no' => __('Never', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'yes' => __('Always', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'btfp' => __('If its cost is bigger than fixed price', SamedayCourierHelperClass::TEXT_DOMAIN)
+                            'no' => __('Never', Helper::TEXT_DOMAIN),
+                            'yes' => __('Always', Helper::TEXT_DOMAIN),
+                            'btfp' => __('If its cost is bigger than fixed price', Helper::TEXT_DOMAIN)
                         ],
                         'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
                             Never* You choose to display only the fixed price that you set for each service<br/>
                             Always* You choose to display only the price estimated by SamedayCourier API<br/>
                             If its cost is bigger than fixed price* You choose to display the cost estimated by 
                             SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
-                        ', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        ', Helper::TEXT_DOMAIN)
                     ),
 
                     'estimated_cost_extra_fee' => array(
-                        'title' => __('Extra fee', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Extra fee', Helper::TEXT_DOMAIN),
                         'type' => 'number',
                         'css' => 'width:100px;',
-                        'description' => __('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0', Helper::TEXT_DOMAIN),
                         'custom_attributes' => array(
                             'min' => 0,
                             'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
-                            'data-placeholder' => __('Extra fee', SamedayCourierHelperClass::TEXT_DOMAIN)
+                            'data-placeholder' => __('Extra fee', Helper::TEXT_DOMAIN)
                         ),
                         'default' => 0
                     ),
 
                     'repayment_tax_label' => array(
-                        'title' => __('Repayment tax label', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Repayment tax label', Helper::TEXT_DOMAIN),
                         'type' => 'text',
-                        'description' => __('Label for repayment tax. This appear in checkout page.', SamedayCourierHelperClass::TEXT_DOMAIN),
-                        'default' => __('', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        'description' => __('Label for repayment tax. This appear in checkout page.', Helper::TEXT_DOMAIN),
+                        'default' => __('', Helper::TEXT_DOMAIN)
                     ),
 
                     'repayment_tax' => array(
-                        'title' => __('Repayment tax', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Repayment tax', Helper::TEXT_DOMAIN),
                         'type' => 'number',
-                        'description' => __('Add extra fee on checkout.', SamedayCourierHelperClass::TEXT_DOMAIN),
-                        'default' => __('', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        'description' => __('Add extra fee on checkout.', Helper::TEXT_DOMAIN),
+                        'default' => __('', Helper::TEXT_DOMAIN)
                     ),
 
 
                     'open_package_status' => array(
-                        'title' => __('Open package status', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Open package status', Helper::TEXT_DOMAIN),
                         'type' => 'checkbox',
-                        'description' => __('Enable this option if you want to offer your customers the opening of the package at delivery time.', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Enable this option if you want to offer your customers the opening of the package at delivery time.', Helper::TEXT_DOMAIN),
                         'default' => 'no'
                     ),
 
                     'discount_free_shipping' => array(
-                        'title' => __('Free shipping after discount', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Free shipping after discount', Helper::TEXT_DOMAIN),
                         'type' => 'checkbox',
                         'description' => __(
                             'Enable this option if you want to apply free shipping to be calculated after discount.
                             Otherwise the free shipping will be apply without taking into account the applied discount.
                             This field is relevant if you choose free delivery price option.',
-                            SamedayCourierHelperClass::TEXT_DOMAIN
+                     Helper::TEXT_DOMAIN
                         ),
                         'default' => 'no'
                     ),
 
                     'open_package_label' => array(
-                        'title' => __('Open package label', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Open package label', Helper::TEXT_DOMAIN),
                         'type' => 'text',
-                        'description' => __('This appear in checkout page', SamedayCourierHelperClass::TEXT_DOMAIN),
-                        'default' => __('', SamedayCourierHelperClass::TEXT_DOMAIN)
+                        'description' => __('This appear in checkout page', Helper::TEXT_DOMAIN),
+                        'default' => __('', Helper::TEXT_DOMAIN)
                     ),
 
                     'locker_max_items' => array(
-	                    'title' => __('Locker max. items', SamedayCourierHelperClass::TEXT_DOMAIN),
+	                    'title' => __('Locker max. items', Helper::TEXT_DOMAIN),
 	                    'type' => 'number',
-	                    'description' => __('The maximum amount of items accepted inside the locker', SamedayCourierHelperClass::TEXT_DOMAIN),
-	                    'default' => SamedayCourierHelperClass::DEFAULT_VALUE_LOCKER_MAX_ITEMS
+	                    'description' => __('The maximum amount of items accepted inside the locker', Helper::TEXT_DOMAIN),
+	                    'default' => Helper::DEFAULT_VALUE_LOCKER_MAX_ITEMS
                     ),
 
                     'lockers_map' => array(
-                        'title'   => __('Show locker map method', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title'   => __('Show locker map method', Helper::TEXT_DOMAIN),
                         'default' => 'yes',
                         'type'    => 'select',
                         'options' => [
-                            'no' => __('Drop-down list', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'yes' => __('Interactive Map', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'no' => __('Drop-down list', Helper::TEXT_DOMAIN),
+                            'yes' => __('Interactive Map', Helper::TEXT_DOMAIN),
                         ]
                     ),
 
                     'is_testing' => array(
-	                    'title' => __('Env. Mode', SamedayCourierHelperClass::TEXT_DOMAIN),
+	                    'title' => __('Env. Mode', Helper::TEXT_DOMAIN),
 	                    'type' => 'select',
-	                    'description' => __('The value of this field will be appear automatically after you complete the authentication', SamedayCourierHelperClass::TEXT_DOMAIN),
+	                    'description' => __('The value of this field will be appear automatically after you complete the authentication', Helper::TEXT_DOMAIN),
 	                    'default' => 2,
 	                    'disabled' => true,
                         'options' => array(
-                            SamedayCourierHelperClass::API_PROD => __('Prod', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            SamedayCourierHelperClass::API_DEMO => __('Demo', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            Helper::API_PROD => __('Prod', Helper::TEXT_DOMAIN),
+                            Helper::API_DEMO => __('Demo', Helper::TEXT_DOMAIN),
                             2 => '',
                         ),
                     ),
 
                     'host_country' => array(
-	                    'title' => __('Env. Host Country', SamedayCourierHelperClass::TEXT_DOMAIN),
+	                    'title' => __('Env. Host Country', Helper::TEXT_DOMAIN),
 	                    'type' => 'select',
-	                    'description' => __('The value of this field will be appear automatically after you complete the authentication', SamedayCourierHelperClass::TEXT_DOMAIN),
+	                    'description' => __('The value of this field will be appear automatically after you complete the authentication', Helper::TEXT_DOMAIN),
 	                    'default' => 'none',
 	                    'disabled' => true,
 	                    'options' => array(
-		                    SamedayCourierHelperClass::API_HOST_LOCALE_RO => __(SamedayCourierHelperClass::API_HOST_LOCALE_RO, SamedayCourierHelperClass::TEXT_DOMAIN),
-		                    SamedayCourierHelperClass::API_HOST_LOCALE_HU => __(SamedayCourierHelperClass::API_HOST_LOCALE_HU, SamedayCourierHelperClass::TEXT_DOMAIN),
-                            SamedayCourierHelperClass::API_HOST_LOCALE_BG => __(SamedayCourierHelperClass::API_HOST_LOCALE_BG, SamedayCourierHelperClass::TEXT_DOMAIN),
+                            Helper::API_HOST_LOCALE_RO => __(Helper::API_HOST_LOCALE_RO, Helper::TEXT_DOMAIN),
+                            Helper::API_HOST_LOCALE_HU => __(Helper::API_HOST_LOCALE_HU, Helper::TEXT_DOMAIN),
+                            Helper::API_HOST_LOCALE_BG => __(Helper::API_HOST_LOCALE_BG, Helper::TEXT_DOMAIN),
 		                    'none' => '',
 	                    ),
                     ),
 
                     'use_nomenclator' => array(
-                        'title' => __('Use Nomenclator', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'title' => __('Use Nomenclator', Helper::TEXT_DOMAIN),
                         'type' => 'select',
-                        'description' => __('Use the imported cities during checkout for faster processing', SamedayCourierHelperClass::TEXT_DOMAIN),
+                        'description' => __('Use the imported cities during checkout for faster processing', Helper::TEXT_DOMAIN),
                         'default' => 'no',
                         'options' => [
-                            'no' => __('No', SamedayCourierHelperClass::TEXT_DOMAIN),
-                            'yes' => __('Yes', SamedayCourierHelperClass::TEXT_DOMAIN),
+                            'no' => __('No', Helper::TEXT_DOMAIN),
+                            'yes' => __('Yes', Helper::TEXT_DOMAIN),
                         ]
                     )
                 );
 
                 // Show on checkout:
                 $this->enabled = $this->settings['enabled'] ?? 'yes';
-                $this->title = $this->settings['title'] ?? __('SamedayCourier', SamedayCourierHelperClass::TEXT_DOMAIN);
+                $this->title = $this->settings['title'] ?? __('SamedayCourier', Helper::TEXT_DOMAIN);
 
                 $this->init_settings();
 
@@ -498,14 +495,14 @@ function samedaycourier_shipping_method(): void
                 $post_data = $this->get_post_data();
 
                 $isLogged = false;
-                $envModes = SamedayCourierHelperClass::getEnvModes();
+                $envModes = Helper::getEnvModes();
                 foreach ($envModes as $hostCountry => $envModesByHosts) {
 	                if ($isLogged === true) {
                         break;
                     }
 
 	                foreach ($envModesByHosts as $apiUrl) {
-		                $sameday = SamedayCourierApi::initClient(
+		                $sameday = SdkClient::initClient(
 			                $post_data['woocommerce_samedaycourier_user'],
 			                $post_data['woocommerce_samedaycourier_password'],
 			                $apiUrl
@@ -513,7 +510,7 @@ function samedaycourier_shipping_method(): void
 
 		                try {
 			                if ($sameday->login()) {
-				                $isTesting = (int) (SamedayCourierHelperClass::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
+				                $isTesting = (int) (Helper::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
 				                $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
 				                $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
 				                $isLogged = true;
@@ -595,10 +592,10 @@ function add_samedaycourier_shipping_method($methods) {
 add_filter('woocommerce_shipping_methods', 'add_samedaycourier_shipping_method');
 
 // Plugin settings.
-add_action('plugins_loaded', function () {
-    SamedayCourierServiceInstance::get_instance();
-    SamedayCourierPickupPointInstance::get_instance();
-    SamedayCourierLockerInstance::get_instance();
+add_action('plugins_loaded', static function () {
+    ServiceInstance::get_instance();
+    PickupPointInstance::get_instance();
+    LockerInstance::get_instance();
 });
 
 add_action('admin_post_refresh_services', function () {
@@ -650,7 +647,7 @@ add_action('wp_ajax_import_cities', static function (): void {
 add_action('wp_ajax_change_locker', static function() {
     if (null !== $orderId = $_POST['orderId']) {
 	    try {
-		    SamedayCourierHelperClass::addLockerToOrderData($orderId, $_POST['locker']);
+		    Helper::addLockerToOrderData($orderId, $_POST['locker']);
 	    } catch (Exception $exception) {}
     }
 });
@@ -659,7 +656,7 @@ add_action('wp_ajax_change_counties', static function() {
     if (!isset($_POST['countyId'])) {
         return [];
     }
-    wp_send_json(SamedayCourierHelperClass::getCities($_POST['countyId'])); die();
+    wp_send_json(Helper::getCities($_POST['countyId'])); die();
 });
 
 add_action('wp_ajax_send_pickup_point', static function () {
@@ -692,9 +689,9 @@ add_action('wp_ajax_send_pickup_point', static function () {
 
     try {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            SamedayCourierHelperClass::getSamedaySettings()['user'],
-            SamedayCourierHelperClass::getSamedaySettings()['password'],
-            SamedayCourierHelperClass::getApiUrl()
+            Helper::getSamedaySettings()['user'],
+            Helper::getSamedaySettings()['password'],
+            Helper::getApiUrl()
         ));
     } catch (SamedaySDKException|Exception $exception) {
 
@@ -720,12 +717,12 @@ add_action('wp_ajax_send_pickup_point', static function () {
 
         wp_send_json_success($response->getPickupPointId());
     } catch (SamedayBadRequestException $e) {
-        $noticeMessage = SamedayCourierHelperClass::parseAwbErrors($e->getErrors());
-        SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+        $noticeMessage = Helper::parseAwbErrors($e->getErrors());
+        Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
     } catch (Exception $e) {
-        SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
     }
@@ -747,12 +744,12 @@ add_action('wp_ajax_delete_pickup_point', static function() {
 
     try {
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            SamedayCourierHelperClass::getSamedaySettings()['user'],
-            SamedayCourierHelperClass::getSamedaySettings()['password'],
-            SamedayCourierHelperClass::getApiUrl()
+            Helper::getSamedaySettings()['user'],
+            Helper::getSamedaySettings()['password'],
+            Helper::getApiUrl()
         ));
     } catch (SamedaySDKException|Exception $e) {
-        SamedayCourierHelperClass::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
     }
@@ -770,12 +767,12 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
 });
 
-add_action('admin_post_edit_service', function() {
+add_action('admin_post_edit_service', static function() {
     return (new Sameday())->editService();
 });
 
-add_action('admin_post_add_awb', function () {
-    $postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
+add_action('admin_post_add_awb', static function () {
+    $postFields = Helper::sanitizeInputs($_POST);
     $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
     if (empty($orderDetails)) {
         return wp_redirect(admin_url() . '/index.php');
@@ -783,7 +780,11 @@ add_action('admin_post_add_awb', function () {
 
     $data = array_merge($postFields, $orderDetails->get_data());
     
-    return (new Sameday())->postAwb($data);
+    try {
+        return (new Sameday())->postAwb($data);
+    } catch (Exception $e) {
+        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+    };
 });
 
 add_action('admin_post_remove-awb', function () {
@@ -807,7 +808,7 @@ add_action('admin_post_show-awb-pdf', function (){
 });
 
 add_action('admin_post_add-new-parcel', function() {
-    $postFields = SamedayCourierHelperClass::sanitizeInputs($_POST);
+    $postFields = Helper::sanitizeInputs($_POST);
     if (empty($postFields)) {
         return wp_redirect(admin_url() . '/index.php');
     }
@@ -823,8 +824,8 @@ function wps_sameday_shipping_options_layout() {
     }
 
     $service = SamedayCourierQueryDb::getServiceSamedayByCode(
-        SamedayCourierHelperClass::getChosenShippingMethodCode(),
-        SamedayCourierHelperClass::isTesting()
+        Helper::getChosenShippingMethodCode(),
+        Helper::isTesting()
     );
 
     /** @var OptionalTaxObject[] $optionalTaxes */
@@ -838,13 +839,13 @@ function wps_sameday_shipping_options_layout() {
 
     $taxOpenPackage = 0;
     foreach ($optionalTaxes as $optionalTax) {
-        if ($optionalTax->getCode() === SamedayCourierHelperClass::OPEN_PACKAGE_OPTION_CODE) {
+        if ($optionalTax->getCode() === Helper::OPEN_PACKAGE_OPTION_CODE) {
             $taxOpenPackage = $optionalTax->getId();
         }
     }
 
     if ($taxOpenPackage
-        && SamedayCourierHelperClass::getSamedaySettings()['open_package_status'] === "yes"
+        && Helper::getSamedaySettings()['open_package_status'] === "yes"
     ) {
         ?>
             <tr class="shipping-pickup-store">
@@ -858,7 +859,7 @@ function wps_sameday_shipping_options_layout() {
                                     'type' => 'checkbox',
                                     'class' => array('input-checkbox'),
                                     'id' => 'sameday_open_package',
-                                    'label' => SamedayCourierHelperClass::getSamedaySettings()['open_package_label'],
+                                    'label' => Helper::getSamedaySettings()['open_package_label'],
                                     'required' => false,
                                 ],
                                 WC()->session->get('open_package') === 'yes'
@@ -894,7 +895,7 @@ function woo_sameday_post_ajax_data(): void {
 
     if (null !== $locker = $_POST['locker'] ?? null) {
         if (is_array($locker)) {
-            WC()->session->set('locker', SamedayCourierHelperClass::sanitizeLocker($locker));
+            WC()->session->set('locker', Helper::sanitizeLocker($locker));
         } else {
             WC()->session->set('locker', (int) $locker);
         }
@@ -903,13 +904,13 @@ function woo_sameday_post_ajax_data(): void {
     }
 
     if (null !== $openPackage = $_POST['open_package'] ?? null) {
-	    WC()->session->set('open_package', SamedayCourierHelperClass::sanitizeInput($openPackage));
+	    WC()->session->set('open_package', Helper::sanitizeInput($openPackage));
 
         return;
     }
 
     if (isset($_POST['payment_method'])) {
-	    WC()->session->set('payment_method', SamedayCourierHelperClass::sanitizeInput($_POST['payment_method']));
+	    WC()->session->set('payment_method', Helper::sanitizeInput($_POST['payment_method']));
 
         return;
     }
@@ -925,19 +926,19 @@ function checkout_repayment_tax() {
 		return;
     }
 
-	$repayment_tax = (int) (SamedayCourierHelperClass::getSamedaySettings()['repayment_tax'] ?? null);
+	$repayment_tax = (int) (Helper::getSamedaySettings()['repayment_tax'] ?? null);
 
     if ($repayment_tax > 0
-        && SamedayCourierHelperClass::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
+        && Helper::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
     ) {
-        $repayment_tax_label = SamedayCourierHelperClass::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', SamedayCourierHelperClass::TEXT_DOMAIN);
+        $repayment_tax_label = Helper::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', Helper::TEXT_DOMAIN);
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
 
 // LOCKER :
 function wps_locker_row_layout() {
-    $serviceCode = SamedayCourierHelperClass::getChosenShippingMethodCode();
+    $serviceCode = Helper::getChosenShippingMethodCode();
 
     $shipTo = null;
     if (null !== $lockerSession = WC()->session->get('locker')) {
@@ -952,35 +953,35 @@ function wps_locker_row_layout() {
         );
     }
 
-    if ((SamedayCourierHelperClass::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
-        <?php if ((SamedayCourierHelperClass::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
+    if ((Helper::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
+        <?php if ((Helper::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
             <tr class="shipping-pickup-store">
-                <td><strong><?php echo __('Sameday Locker', SamedayCourierHelperClass::TEXT_DOMAIN) ?></strong></td>
+                <td><strong><?php echo __('Sameday Locker', Helper::TEXT_DOMAIN) ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
-                        data-username='<?php echo SamedayCourierHelperClass::getSamedaySettings()['user']; ?>'
-                        data-country='<?php echo SamedayCourierHelperClass::getSamedaySettings()['host_country']; ?>'
+                        data-username='<?php echo Helper::getSamedaySettings()['user']; ?>'
+                        data-country='<?php echo Helper::getSamedaySettings()['host_country']; ?>'
                     >
-                        <?php echo __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                        <?php echo __('Show Locations Map', Helper::TEXT_DOMAIN) ?>
                     </button>
                 </th>
             </tr>
             <?php if (null !== $shipTo) { ?>
                 <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
-                    <td><strong> <?= __('Ship to', SamedayCourierHelperClass::TEXT_DOMAIN) ?> </strong></td>
+                    <td><strong> <?= __('Ship to', Helper::TEXT_DOMAIN) ?> </strong></td>
                     <th><span id="showLockerDetails"><?= $shipTo ?></span></th>
                 </tr>
             <?php } ?>
         <?php } else { ?>
             <?php
-                $cities = SamedayCourierQueryDb::getCitiesWithLockers(SamedayCourierHelperClass::isTesting());
+                $cities = SamedayCourierQueryDb::getCitiesWithLockers(Helper::isTesting());
                 $lockers = array();
                 foreach ($cities as $city) {
                     if (null !== $city->city) {
                         $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity(
                             $city->city,
-                            SamedayCourierHelperClass::isTesting()
+                            Helper::isTesting()
                         );
                     }
                 }
@@ -1011,7 +1012,7 @@ function wps_locker_row_layout() {
                     <td>
                         <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 25px; font-size: 14px">
                             <option value="" style="font-size: 13px">
-                                <?= __('Select easyBox', SamedayCourierHelperClass::TEXT_DOMAIN) ?>
+                                <?= __('Select easyBox', Helper::TEXT_DOMAIN) ?>
                             </option>
                             <?php echo $lockerOptions; ?>
                         </select>
@@ -1025,9 +1026,9 @@ add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 // When POST Order Form
 add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
 
-    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+    if (Helper::isOohDeliveryOption(Helper::getChosenShippingMethodCode())) {
         try {
-            SamedayCourierHelperClass::addLockerToOrderData(
+            Helper::addLockerToOrderData(
                 $order->get_id(),
                 WC()->session->get('locker')
             );
@@ -1043,9 +1044,9 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
 
 add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
 
-    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+    if (Helper::isOohDeliveryOption(Helper::getChosenShippingMethodCode())) {
         try {
-            SamedayCourierHelperClass::addLockerToOrderData(
+            Helper::addLockerToOrderData(
                 $orderId,
                 WC()->session->get('locker')
             );
@@ -1164,37 +1165,37 @@ add_action('wp_head', 'wps_locker_style');
 add_action('admin_head', function () {
     if (isset($_GET["add-awb"])){
         if ($_GET["add-awb"] === "error") {
-            SamedayCourierHelperClass::showFlashNotice('add_awb_notice');
+            Helper::showFlashNotice('add_awb_notice');
         }
 
         if ($_GET["add-awb"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully generated !", SamedayCourierHelperClass::TEXT_DOMAIN), true);
+            Helper::printFlashNotice('success', __("Awb was successfully generated !", Helper::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["remove-awb"])) {
         if ($_GET["remove-awb"] === "error") {
-            SamedayCourierHelperClass::showFlashNotice('remove_awb_notice');
+            Helper::showFlashNotice('remove_awb_notice');
         }
 
         if ($_GET["remove-awb"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("Awb was successfully removed !", SamedayCourierHelperClass::TEXT_DOMAIN), true);
+            Helper::printFlashNotice('success', __("Awb was successfully removed !", Helper::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["show-awb"])) {
         if ($_GET["show-awb"] === "error") {
-            SamedayCourierHelperClass::printFlashNotice('error', __("Awb invalid !", SamedayCourierHelperClass::TEXT_DOMAIN), true);
+            Helper::printFlashNotice('error', __("Awb invalid !", Helper::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["add-new-parcel"])) {
         if ($_GET["add-new-parcel"] === "error") {
-            SamedayCourierHelperClass::showFlashNotice('add_new_parcel_notice');
+            Helper::showFlashNotice('add_new_parcel_notice');
         }
 
         if ($_GET["add-new-parcel"] === "success") {
-            SamedayCourierHelperClass::printFlashNotice('success', __("New parcel has been added to this awb!", SamedayCourierHelperClass::TEXT_DOMAIN) , true);
+            Helper::printFlashNotice('success', __("New parcel has been added to this awb!", Helper::TEXT_DOMAIN) , true);
         }
     }
 
@@ -1229,7 +1230,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                 <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
                 <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="showAsPdf" formtarget="_blank" class="button-primary button-samll">'.  __('Show as pdf', SamedayCourierHelperClass::TEXT_DOMAIN) . ' </button>
+                <button type="submit" form="showAsPdf" formtarget="_blank" class="button-primary button-samll">'.  __('Show as pdf', Helper::TEXT_DOMAIN) . ' </button>
             </p>';
 
         $_removeAwb = '
@@ -1243,7 +1244,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                     ' . $_generateAwb . '
                 </div>';
 
-        $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->get_id());
+        $shipping_method_sameday = Helper::getShippingMethodSameday($order->get_id());
 
         $newParcelModal = '';
         $historyModal = '';
@@ -1271,7 +1272,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
             $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($order->get_id()));
             $redirectToEawbSite = sprintf(
                     '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-	            SamedayCourierHelperClass::EAWB_INSTANCES[SamedayCourierHelperClass::getHostCountry()],
+                    Helper::EAWB_INSTANCES[Helper::getHostCountry()],
 	            $awb->awb_number
             );
 
@@ -1292,8 +1293,8 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
 add_action('woocommerce_checkout_process', static function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     if ($chosen_methods !== null) {
-        $serviceCode = SamedayCourierHelperClass::parseShippingMethodCode($chosen_methods[0]);
-        if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && null === WC()->session->get('locker')) {
+        $serviceCode = Helper::parseShippingMethodCode($chosen_methods[0]);
+        if (Helper::isOohDeliveryOption($serviceCode) && null === WC()->session->get('locker')) {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }
@@ -1321,7 +1322,7 @@ function enqueue_button_scripts(): void
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
         wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
 
-        if (SamedayCourierHelperClass::isUseSamedayNomenclator()) {
+        if (Helper::isUseSamedayNomenclator()) {
 	        wp_enqueue_script('county-city-handle',
                 plugins_url( 'assets/js/county-city-handle.js', __FILE__ ),
                 [
@@ -1339,9 +1340,9 @@ function enqueue_button_scripts(): void
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null,
-            'country'  => SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null,
-            'buttonText' => __('Show Locations Map', SamedayCourierHelperClass::TEXT_DOMAIN),
+            'username' => Helper::getSamedaySettings()['user'] ?? null,
+            'country'  => Helper::getSamedaySettings()['host_country'] ?? null,
+            'buttonText' => __('Show Locations Map', Helper::TEXT_DOMAIN),
         ));
     }
 }

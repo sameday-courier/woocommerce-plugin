@@ -1,5 +1,7 @@
 <?php
 
+use SamedayCourier\Shipping\Utils\Helper;
+
 if (! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -10,10 +12,10 @@ if (! defined( 'ABSPATH' ) ) {
  * @return false|mixed
  */
 function isServiceEligibleToLockerFirstMile($serviceId) {
-    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, SamedayCourierHelperClass::isTesting());
+    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, Helper::isTesting());
      
     foreach ($optionalServices as $optionalService) {
-        if ($optionalService->getCode() === SamedayCourierHelperClass::PERSONAL_DELIVERY_OPTION_CODE) {
+        if ($optionalService->getCode() === Helper::PERSONAL_DELIVERY_OPTION_CODE) {
             return $serviceId;
         }
     }
@@ -25,11 +27,11 @@ function isServiceEligibleToLockerFirstMile($serviceId) {
  * @throws JsonException
  */
 function samedaycourierAddAwbForm($order): string {
-    $is_testing = SamedayCourierHelperClass::isTesting();
+    $is_testing = Helper::isTesting();
 
 	$postMetaLocker = get_post_meta(
 		$order->get_id(),
-		SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+		Helper::POST_META_SAMEDAY_SHIPPING_LOCKER,
 		true
 	);
 
@@ -38,8 +40,8 @@ function samedaycourierAddAwbForm($order): string {
 	if (is_int($postMetaLocker)) {
 		$locker = $postMetaLocker;
 	} else if (is_string($postMetaLocker)) {
-		$lockerDetailsForm = SamedayCourierHelperClass::fixJson(
-			SamedayCourierHelperClass::sanitizeInput($postMetaLocker)
+		$lockerDetailsForm = Helper::fixJson(
+			Helper::sanitizeInput($postMetaLocker)
 		);
 
 		try {
@@ -54,9 +56,9 @@ function samedaycourierAddAwbForm($order): string {
         }
 
         if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
-            if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
+            if (Helper::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
                 if (isset($locker['oohType']) && $locker['oohType'] === '1') {
-	                $serviceCode = SamedayCourierHelperClass::OOH_TYPES['1'] ;
+	                $serviceCode = Helper::OOH_TYPES['1'] ;
                 }
             }
 
@@ -86,13 +88,13 @@ function samedaycourierAddAwbForm($order): string {
     }
 
     $packageTypeOptions = '';
-    $packagesType = SamedayCourierHelperClass::getPackageTypeOptions();
+    $packagesType = Helper::getPackageTypeOptions();
     foreach ($packagesType as $packageType) {
         $packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
     }
 
     $awbPaymentTypeOptions = '';
-    $awbPaymentsType = SamedayCourierHelperClass::getAwbPaymentTypeOptions();
+    $awbPaymentsType = Helper::getAwbPaymentTypeOptions();
     foreach ($awbPaymentsType as $awbPaymentType) {
         $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
     }
@@ -100,7 +102,7 @@ function samedaycourierAddAwbForm($order): string {
     $payment_gateway = wc_get_payment_gateway_by_order($order);
     $repayment = $order->get_total();
 
-    if ($payment_gateway->id !== SamedayCourierHelperClass::CASH_ON_DELIVERY) {
+    if ($payment_gateway->id !== Helper::CASH_ON_DELIVERY) {
         $repayment = 0;
     }
 
@@ -136,12 +138,12 @@ function samedaycourierAddAwbForm($order): string {
 		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
 	}
 
-    $username = SamedayCourierHelperClass::getSamedaySettings()['user'] ?? null;
-    $hostCountry = SamedayCourierHelperClass::getSamedaySettings()['host_country'] ?? null;
+    $username = Helper::getSamedaySettings()['user'] ?? null;
+    $hostCountry = Helper::getSamedaySettings()['host_country'] ?? null;
     $destCity = $order->get_data()['shipping']['city'] ?? '';
     $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
-    $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
+    $destCurrency = Helper::CURRENCY_MAPPER[$destCountry];
     $currency = $order->get_currency() ?? get_woocommerce_currency();
     $currencyWarningMessage = '';
     if ($destCurrency !== $currency
@@ -157,7 +159,7 @@ function samedaycourierAddAwbForm($order): string {
             <tr>
                 <span>
                         <strong style='color: darkred'>"
-                            . __($message, SamedayCourierHelperClass::TEXT_DOMAIN) . "
+                            . __($message, Helper::TEXT_DOMAIN) . "
                         </strong>
                 </span>
             </tr>
@@ -166,21 +168,21 @@ function samedaycourierAddAwbForm($order): string {
 
     $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);
 
-	$allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
-	$allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+	$allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
+	$allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
     $servicesOptions = '';
     foreach ($samedayServices as $samedayService) {
         $firstMileId = isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
 
         $checked = ($serviceCode === $samedayService->sameday_code) ? 'selected' : '';
-        $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
+        $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
         if($firstMileId === $samedayService->sameday_id){
-            $allowFirstMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
+            $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['show'];
         }
 
-        $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['hide'];
-        if (SamedayCourierHelperClass::isOohDeliveryOption($samedayService->sameday_code)) {
-            $allowLastMile = SamedayCourierHelperClass::TOGGLE_HTML_ELEMENT['show'];
+        $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
+        if (Helper::isOohDeliveryOption($samedayService->sameday_code)) {
+            $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['show'];
         }
 
         $option = sprintf(
@@ -195,24 +197,24 @@ function samedaycourierAddAwbForm($order): string {
     }
 
     $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
-                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", SamedayCourierHelperClass::TEXT_DOMAIN) . '</strong> </h3>      
+                <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", Helper::TEXT_DOMAIN) . '</strong> </h3>      
                 <table>
                     <tbody>       
                          <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" id="samedaycourier-order-id" value="' . $order->get_id() . '">
                          <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-repayment"> ' . sprintf("%s (%s)", __("Repayment", SamedayCourierHelperClass::TEXT_DOMAIN), $currency) .' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-repayment"> ' . sprintf("%s (%s)", __("Repayment", Helper::TEXT_DOMAIN), $currency) .' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="text" onkeypress="return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 100%; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
-                                <span>' . __("Payment type: ", SamedayCourierHelperClass::TEXT_DOMAIN) . $payment_gateway->title . '</span>
+                                <span>' . __("Payment type: ", Helper::TEXT_DOMAIN) . $payment_gateway->title . '</span>
                              </td>     
                              
                         </tr>
                         '. $currencyWarningMessage . '
                         <tr valign="middle" colspan="4">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-insurance-value"> ' . __("Insured value", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-insurance-value"> ' . __("Insured value", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" step="0.1" style="width: 100%; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
@@ -220,9 +222,9 @@ function samedaycourierAddAwbForm($order): string {
                              
                         </tr>
                         <tr>
-                            <th><label>' . __("Parcels", SamedayCourierHelperClass::TEXT_DOMAIN) . '</label></th>
+                            <th><label>' . __("Parcels", Helper::TEXT_DOMAIN) . '</label></th>
                             <td class="forminp forminp-text">
-                                <input readonly type="number" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" value="' . __("1", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input readonly type="number" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" value="' . __("1", Helper::TEXT_DOMAIN) . '">
                             </td>
                              <td class="forminp forminp-text">
                                 <input readonly type="text" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . get_option('woocommerce_weight_unit') . '">
@@ -233,25 +235,25 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle" class="rowPackageDimension">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-weight"> ' . __("Package Dimensions", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-weight"> ' . __("Package Dimensions", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" style="width: 20%;">
-                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-weight1" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . __("Package Weight", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-weight1" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . __("Package Weight", Helper::TEXT_DOMAIN) . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-length1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . __("Package Length", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-length1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . __("Package Length", Helper::TEXT_DOMAIN) . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-height1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-height" placeholder="' . __("Package Height", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-height1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-height" placeholder="' . __("Package Height", Helper::TEXT_DOMAIN) . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-width1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . __("Package Width", SamedayCourierHelperClass::TEXT_DOMAIN) . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-width1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . __("Package Width", Helper::TEXT_DOMAIN) . '">
                              </td>
                              <td><button class="deleteParcelButton">✖</button></td>
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-pickup-point"> ' . __("Pickup-point", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-pickup-point"> ' . __("Pickup-point", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 100%; height: 30px;" id="samedaycourier-package-pickup-point" >
@@ -261,7 +263,7 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-type"> ' . __("Package type", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-type"> ' . __("Package type", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm" name="samedaycourier-package-type" style="width: 100%; height: 30px;" id="samedaycourier-package-type">
@@ -271,7 +273,7 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-awb-payment"> ' . __("Awb payment", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-package-awb-payment"> ' . __("Awb payment", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 100%; height: 30px;" id="samedaycourier-package-awb-payment">
@@ -281,7 +283,7 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-service"> ' . __("Service", SamedayCourierHelperClass::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-service"> ' . __("Service", Helper::TEXT_DOMAIN) . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm" name="samedaycourier-service" style="width: 100%; height: 30px;" id="samedaycourier-service">
@@ -291,18 +293,18 @@ function samedaycourierAddAwbForm($order): string {
                              </td>
                         </tr> ';
                             $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
-                                <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker", SamedayCourierHelperClass::TEXT_DOMAIN) . '</label>
+                                <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker", Helper::TEXT_DOMAIN) . '</label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile">
-                                <span style="display:block;width:100%">' . __("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.", SamedayCourierHelperClass::TEXT_DOMAIN) . '</span>
-                                <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map", SamedayCourierHelperClass::TEXT_DOMAIN) . '</a></span>
-                                <span class="custom_tooltip"> ' . __("Show locker dimensions", SamedayCourierHelperClass::TEXT_DOMAIN) . '    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
+                                <span style="display:block;width:100%">' . __("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.", Helper::TEXT_DOMAIN) . '</span>
+                                <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map", Helper::TEXT_DOMAIN) . '</a></span>
+                                <span class="custom_tooltip"> ' . __("Show locker dimensions", Helper::TEXT_DOMAIN) . '    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
                                 <tr></td>';
                        
                             $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
-                                    <label for="samedaycourier-locker-details"> ' . __("Location details", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
+                                    <label for="samedaycourier-locker-details"> ' . __("Location details", Helper::TEXT_DOMAIN) . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
                                 $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
@@ -314,14 +316,14 @@ function samedaycourierAddAwbForm($order): string {
                                         data-dest_country="'.$destCountry.'" 
                                         class="button alt sameday_select_locker" 
                                         type="button" 
-                                        id="select_locker"> ' . __("Change location", SamedayCourierHelperClass::TEXT_DOMAIN) . ' 
+                                        id="select_locker"> ' . __("Change location", Helper::TEXT_DOMAIN) . ' 
                                     </button> 
                                 </td>
                             </tr>';
                         
                         $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-open-package-status"> ' . __("Open package", SamedayCourierHelperClass::TEXT_DOMAIN) . '</label>
+                                <label for="samedaycourier-open-package-status"> ' . __("Open package", Helper::TEXT_DOMAIN) . '</label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="checkbox" form="addAwbForm" name="samedaycourier-open-package-status" id="samedaycourier-open-package-status" '.$openPackage.'>
@@ -329,7 +331,7 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-package-observation"> ' . __("Observation", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
+                                <label for="samedaycourier-package-observation"> ' . __("Observation", Helper::TEXT_DOMAIN) . ' </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
                                 <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 100%; height: 100px;" id="samedaycourier-package-observation" ></textarea>
@@ -337,15 +339,15 @@ function samedaycourierAddAwbForm($order): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-client-reference"> ' . __("Client Reference", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </label>
+                                <label for="samedaycourier-client-reference"> ' . __("Client Reference", Helper::TEXT_DOMAIN) . ' </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="text" form="addAwbForm" name="samedaycourier-client-reference" style="width: 100%; height: 30px;" id="samedaycourier-client-reference" value="' . $order->get_id() . '">
-                             	<span>' . __("By default this field is complete with Order ID", SamedayCourierHelperClass::TEXT_DOMAIN) . '</span>
+                             	<span>' . __("By default this field is complete with Order ID", Helper::TEXT_DOMAIN) . '</span>
                              </td>
                         </tr>                  
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb", SamedayCourierHelperClass::TEXT_DOMAIN) . ' </button> </th>
+                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb", Helper::TEXT_DOMAIN) . ' </button> </th>
                         </tr>
                     </tbody>
                 </table>

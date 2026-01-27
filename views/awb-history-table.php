@@ -1,11 +1,13 @@
 <?php
 
+use SamedayCourier\Shipping\Utils\Helper;
+
 if (! defined( 'ABSPATH' ) ) {
     exit;
 }
 
 function samedaycourierCreateAwbHistoryTable($packages) {
-    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", SamedayCourierHelperClass::TEXT_DOMAIN) . '</strong> </h3>';
+    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", Helper::TEXT_DOMAIN) . '</strong> </h3>';
 
     $style = '<style>
                 .packages {
@@ -59,7 +61,7 @@ function samedaycourierCreateAwbHistoryTable($packages) {
 
     $packageRows = '';
     if (empty($packages)) {
-        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", SamedayCourierHelperClass::TEXT_DOMAIN) .'</td></tr>';
+        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", Helper::TEXT_DOMAIN) .'</td></tr>';
     }
 
     foreach ($packages as $package) {
@@ -93,13 +95,13 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     <td colspan="7">
                         <table class="history" id="history-'.$summary->getParcelAwbNumber().'" style="width: 100%; display: none; text-align: center">
                           <tr>
-                            <th style="width: 15%">' . __("Status", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                            <th style="width: 20%">' . __("Label", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                            <th style="width: 15%">' . __("State", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                            <th style="width: 15%">' . __("Date", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                            <th style="width: 10%">' . __("County", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>	
-                            <th style="width: 15%">' . __("Translation", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>		
-                            <th style="width: 10%">' . __("Reason", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>		    
+                            <th style="width: 15%">' . __("Status", Helper::TEXT_DOMAIN) . '</th>
+                            <th style="width: 20%">' . __("Label", Helper::TEXT_DOMAIN) . '</th>
+                            <th style="width: 15%">' . __("State", Helper::TEXT_DOMAIN) . '</th>
+                            <th style="width: 15%">' . __("Date", Helper::TEXT_DOMAIN) . '</th>
+                            <th style="width: 10%">' . __("County", Helper::TEXT_DOMAIN) . '</th>	
+                            <th style="width: 15%">' . __("Translation", Helper::TEXT_DOMAIN) . '</th>		
+                            <th style="width: 10%">' . __("Reason", Helper::TEXT_DOMAIN) . '</th>		    
                           </tr>
                           '.$historyRows.' 
                         </table>
@@ -111,12 +113,12 @@ function samedaycourierCreateAwbHistoryTable($packages) {
     $return .= '<table class="packages" style="width: 100%">
                   <tr>
                     <th></th>
-                    <th>' . __("Parcel number", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Parcel weight", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Delivered", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Delivery attempts", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Is picked up", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Picked up at", SamedayCourierHelperClass::TEXT_DOMAIN) . '</th>				    
+                    <th>' . __("Parcel number", Helper::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Parcel weight", Helper::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Delivered", Helper::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Delivery attempts", Helper::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Is picked up", Helper::TEXT_DOMAIN) . '</th>
+                    <th>' . __("Picked up at", Helper::TEXT_DOMAIN) . '</th>				    
                   </tr>
                   '.$packageRows.'		  
                 </table>';

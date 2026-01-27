@@ -1,0 +1,12 @@
+{
+    "name": "samedaycourier/samedaycourier-shipping",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "SamedayCourier\\Shipping\\": "classes/"
+        }
+    },
+    "require": {
+        "sameday-courier/php-sdk": "^v2.4.1"
+    }
+}

@@ -4,6 +4,7 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Objects\Types\CostType;
+use SamedayCourier\Shipping\Utils\Helper;
 
 if (! defined( 'ABSPATH' ) ) {
 	exit;
@@ -197,8 +198,8 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
         $serviceName = $serviceObject->getName();
-        if ($serviceObject->getCode() === SamedayCourierHelperClass::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = SamedayCourierHelperClass::OOH_SERVICES_LABELS[SamedayCourierHelperClass::getHostCountry()];
+        if ($serviceObject->getCode() === Helper::LOCKER_NEXT_DAY_CODE) {
+            $serviceName = Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()];
         }
 
         $updatedService = array(
@@ -291,10 +292,10 @@ class SamedayCourierQueryDb
 	 */
 	public static function getCachedCities(): array
 	{
-		if (false === $cities = get_transient(SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
+		if (false === $cities = get_transient(Helper::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
             $cities = self::getCities();
 			set_transient(
-				SamedayCourierHelperClass::TRANSIENT_CACHE_KEY_FOR_CITIES,
+				Helper::TRANSIENT_CACHE_KEY_FOR_CITIES,
                 $cities,
 				31556926
 			);
@@ -311,7 +312,7 @@ class SamedayCourierQueryDb
 		global $wpdb;
 
 		$cities = [];
-		foreach (SamedayCourierHelperClass::DEFAULT_COUNTRIES as $countryKey => $value) {
+		foreach (Helper::DEFAULT_COUNTRIES as $countryKey => $value) {
 			$query = "SELECT city_name, county_code FROM {$wpdb->prefix}sameday_cities WHERE country_code='$countryKey'";
 
 			$cities[$countryKey] = $wpdb->get_results(
