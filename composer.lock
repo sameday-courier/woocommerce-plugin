@@ -1,0 +1,75 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "ab2770a005b2579f4354b43eec6e67f6",
+    "packages": [
+        {
+            "name": "sameday-courier/php-sdk",
+            "version": "v2.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sameday-courier/php-sdk.git",
+                "reference": "0bd6a827239a37c654b53cfc8c9c9e7192907bb8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sameday-courier/php-sdk/zipball/0bd6a827239a37c654b53cfc8c9c9e7192907bb8",
+                "reference": "0bd6a827239a37c654b53cfc8c9c9e7192907bb8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^5.6|^7.0|^8.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "guzzlehttp/guzzle": "~5.0",
+                "phpunit/phpunit": "~5.4|>=9.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Sameday\\": "src/Sameday/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sameday Courier",
+                    "homepage": "https://github.com/sameday-courier/php-sdk/contributors"
+                }
+            ],
+            "description": "Sameday Courier SDK for PHP",
+            "homepage": "https://github.com/sameday-courier/php-sdk",
+            "keywords": [
+                "courier",
+                "sameday",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/sameday-courier/php-sdk/issues",
+                "source": "https://github.com/sameday-courier/php-sdk/tree/v2.4.1"
+            },
+            "time": "2024-11-01T17:03:40+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}
