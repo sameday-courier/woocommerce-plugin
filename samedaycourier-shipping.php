@@ -22,9 +22,11 @@ use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Responses\SamedayPostAwbEstimationResponse;
+use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\BgnCurrencyConverter;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkClient;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
@@ -598,39 +600,43 @@ add_action('plugins_loaded', static function () {
     LockerInstance::get_instance();
 });
 
-add_action('admin_post_refresh_services', function () {
-    return (new Sameday())->refreshServices();
+add_action('admin_post_refresh_services', static function () {
+    try {
+        return (new ApiRequestsHandler())->refreshServices();
+    } catch (Exception $exception) { return $exception->getMessage(); }
 });
 
-add_action('admin_post_refresh_pickup_points', function () {
-    return (new Sameday())->refreshSamedayPickupPoints();
+add_action('admin_post_refresh_pickup_points', static function () {
+
 });
 
-add_action('admin_post_refresh_lockers', function () {
-    return (new Sameday())->refreshSamedayLockers();
+add_action('admin_post_refresh_lockers', static function () {
+    try {
+        return (new ApiRequestsHandler())->refreshSamedayLockers();
+    } catch (Exception $exception) { return $exception->getMessage(); }
 });
 
 add_action('wp_ajax_all_import', static function (): void {
 	try {
-		(new Sameday())->refreshServices();
+		(new ApiRequestsHandler())->refreshServices();
     } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
 
 	try {
-		(new Sameday())->refreshSamedayPickupPoints();
+		(new ApiRequestsHandler())->refreshSamedayPickupPoints();
     } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
 
 	try {
-		(new Sameday())->refreshSamedayLockers();
+		(new ApiRequestsHandler())->refreshSamedayLockers();
 	} catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
 
 	try {
-		(new Sameday())->importCities();
+		(new ApiRequestsHandler())->importCities();
 	} catch(Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
 	}
@@ -638,7 +644,7 @@ add_action('wp_ajax_all_import', static function (): void {
 
 add_action('wp_ajax_import_cities', static function (): void {
     try {
-        (new Sameday())->importCities();
+        (new ApiRequestsHandler())->importCities();
     } catch(Exception $exception) {
 	    throw new \RuntimeException($exception->getMessage());
     }
@@ -688,11 +694,7 @@ add_action('wp_ajax_send_pickup_point', static function () {
     }
 
     try {
-        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
     } catch (SamedaySDKException|Exception $exception) {
 
         wp_send_json_error($exception->getMessage(), 500);
@@ -743,11 +745,7 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     }
 
     try {
-        $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-            Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
     } catch (SamedaySDKException|Exception $e) {
         Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
@@ -768,7 +766,7 @@ add_action('wp_ajax_delete_pickup_point', static function() {
 });
 
 add_action('admin_post_edit_service', static function() {
-    return (new Sameday())->editService();
+    return (new ApiRequestsHandler())->editService();
 });
 
 add_action('admin_post_add_awb', static function () {
@@ -781,30 +779,42 @@ add_action('admin_post_add_awb', static function () {
     $data = array_merge($postFields, $orderDetails->get_data());
     
     try {
-        return (new Sameday())->postAwb($data);
+        return (new ApiRequestsHandler())->postAwb($data);
     } catch (Exception $e) {
         Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
     };
 });
 
-add_action('admin_post_remove-awb', function () {
+add_action('admin_post_remove-awb', static function () {
     $awb = SamedayCourierQueryDb::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
     $nonce = $_POST['_wpnonce'];
     if (empty($awb)) {
         return wp_redirect(admin_url() . '/index.php');
     }
 
-    return (new Sameday())->removeAwb($awb, $nonce);
+    try {
+        return (new ApiRequestsHandler())->removeAwb($awb, $nonce);
+    } catch (Exception $e) {
+        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+
+        return wp_redirect(admin_url() . '/index.php');
+    }
 });
 
-add_action('admin_post_show-awb-pdf', function (){
+add_action('admin_post_show-awb-pdf', static function (){
     $orderId = (int) sanitize_key($_POST['order-id']);
 	$nonce = $_POST['_wpnonce'];
     if (!isset($orderId)) {
         return wp_redirect(admin_url() . '/index.php');
     }
 
-    return (new Sameday())->showAwbAsPdf($orderId, $nonce);
+    try {
+        return (new ApiRequestsHandler())->showAwbAsPdf($orderId, $nonce);
+    } catch (Exception $exception) {
+        Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
+
+        return wp_redirect(admin_url() . '/index.php');
+    }
 });
 
 add_action('admin_post_add-new-parcel', function() {
@@ -813,7 +823,13 @@ add_action('admin_post_add-new-parcel', function() {
         return wp_redirect(admin_url() . '/index.php');
     }
 
-    return (new Sameday())->addNewParcel($postFields);
+    try {
+        return (new ApiRequestsHandler())->addNewParcel($postFields);
+    } catch (Exception $exception) {
+        Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
+
+        return wp_redirect(admin_url() . '/index.php');
+    }
 });
 
 // Open Package :
@@ -1183,10 +1199,8 @@ add_action('admin_head', function () {
         }
     }
 
-    if (isset($_GET["show-awb"])) {
-        if ($_GET["show-awb"] === "error") {
-            Helper::printFlashNotice('error', __("Awb invalid !", Helper::TEXT_DOMAIN), true);
-        }
+    if (isset($_GET["show-awb"]) && $_GET["show-awb"] === "error") {
+        Helper::printFlashNotice('error', __("Awb invalid !", Helper::TEXT_DOMAIN), true);
     }
 
     if (isset($_GET["add-new-parcel"])) {
@@ -1217,7 +1231,7 @@ add_action('admin_head', function () {
           </form>';
 });
 
-add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $order ) {
+add_action( 'woocommerce_admin_order_data_after_shipping_address', static function ( $order ) {
     add_thickbox();
     if ($_GET['action'] === 'edit') {
         $_generateAwb = '
@@ -1256,7 +1270,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                     ' . $_showAwb . $_removeAwb  .'
                 </div>';
 
-            $sameday = new Sameday();
+            $sameday = new ApiRequestsHandler();
             $awbHistoryTable = $sameday->showAwbHistory($order->get_id());
 
             $addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
