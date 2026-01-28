@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 6.9.0
-Stable tag: 1.10.19
+Stable tag: 1.11.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,9 +178,11 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 1.10.19 =
+= 1.11.0 =
 
-* Code refactor.
+* Code refactor. Fix some corner-case caused by Sameday Cities Nomenclature applied for some particular scenario.
+* Add fallback for cases that checkout is completed only with billing data.
+This is used for switching between Sameday services before complete AWB order.
 
 = 1.10.18 =
 

@@ -525,10 +525,10 @@ class SamedayCourierHelperClass
 	public static function updateLockerOrderPostMeta(int $order_id): void
 	{
 		$postMetaLocker = self::fixJson(
-			SamedayCourierHelperClass::sanitizeInput(
+			self::sanitizeInput(
 				(string) get_post_meta(
 					$order_id,
-					SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+					self::POST_META_SAMEDAY_SHIPPING_LOCKER,
 					true
 				)
 			)
@@ -553,6 +553,9 @@ class SamedayCourierHelperClass
 
 		$shippingInputs = [];
 		foreach ($postsMeta as $key => $value) {
+            if (true === (bool) strpos("_" . $key, 'billing')) {
+                $shippingInputs[sprintf("_%s", $key)] = $value ?? '';
+            }
 			if (true === (bool) strpos("_" . $key, 'shipping')) {
 				$shippingInputs[sprintf("_%s", $key)] = $value ?? '';
 			}
@@ -576,7 +579,7 @@ class SamedayCourierHelperClass
 			$country
 		);
 
-		if ('' === get_post_meta($order_id, self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true)) {
+		if ('' === self::getPostMetaSamedayShippingHDAddress($order_id)) {
             // Save HD Address
 			update_post_meta(
 				$order_id,
@@ -586,6 +589,83 @@ class SamedayCourierHelperClass
 			);
 		}
 	}
+
+    /**
+     * @param int $orderId
+     *
+     * @return string
+     */
+    public static function getPostMetaSamedayShippingHDAddress(int $orderId): string
+    {
+        return get_post_meta(
+            $orderId,
+            self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+            true
+        );
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return ?array
+     */
+    public static function parsePostMetaSamedaycourierAddressHd(int $orderId): ?array
+    {
+        if ('' === $postMeta = self::getPostMetaSamedayShippingHDAddress($orderId)) {
+            return null;
+        }
+
+        try {
+            $postMeta = json_decode(
+                $postMeta,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (JsonException $exception) {
+            return null;
+        }
+
+        $fieldsMapping = [
+            'first_name',
+            'last_name',
+            'city',
+            'state',
+            'country',
+            'postcode',
+            'address_1',
+            'address_2',
+            'phone',
+            'email',
+            'method',
+        ];
+
+        $requiredFields = [
+            'city',
+            'state',
+            'country',
+            'postcode',
+            'address_1',
+            'address_2',
+        ];
+
+        $fields = [];
+        foreach ($fieldsMapping as $field) {
+            $fieldValue = $postMeta[sprintf("_shipping_%s", $field)]
+                ?? ($postMeta[sprintf("_billing_%s", $field)] ?? null)
+            ;
+
+            $fields[$field] = $fieldValue;
+        }
+
+        foreach ($requiredFields as $field) {
+            if (null === $fields[$field]) {
+                $fields = null;
+            }
+        }
+
+        return $fields;
+    }
 
 	/**
 	 * @param $orderId
@@ -610,8 +690,8 @@ class SamedayCourierHelperClass
 		$country
 	): void
 	{
-        $address1 = str_replace("\"", "", SamedayCourierHelperClass::sanitizeInput($address1));
-        $address2 = str_replace("\"", "", SamedayCourierHelperClass::sanitizeInput($address2));
+        $address1 = str_replace("\"", "", self::sanitizeInput($address1));
+        $address2 = str_replace("\"", "", self::sanitizeInput($address2));
 		$addressFieldsMapper = [
 			'_shipping_address_1' => $address1,
 			'_shipping_address_2' => $address2,
@@ -730,26 +810,6 @@ class SamedayCourierHelperClass
         return array_map(static function(CountyObject $county){
             return ['id' => $county->getId(), 'name' => $county->getName()];
         }, $samedayCounties);
-    }
-
-    /**
-     * @param float $amount
-     *
-     * @return string
-     */
-    public static function convertBGNtoEUR(float $amount): string
-    {
-        return number_format(($amount * 0.511292), 2, '.', '');
-    }
-
-    /**
-     * @param float $amount
-     *
-     * @return string
-     */
-    public static function convertEURtoBGN(float $amount): string
-    {
-        return number_format(($amount * 1.95583), 2, '.', '');
     }
 
     /**
