@@ -1,19 +1,22 @@
 <?php
 
+namespace SamedayCourier\Shipping\Infrastructure\Sql;
+
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Objects\Types\CostType;
 use SamedayCourier\Shipping\Utils\Helper;
+use stdClass;
 
 if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Class SamedayCourierQueryDb
+ * Class QueryHandler
  */
-class SamedayCourierQueryDb
+class QueryHandler
 {
 	/**
 	 * @param $is_testing
@@ -91,11 +94,10 @@ class SamedayCourierQueryDb
         return is_array($result) ? $result : [];
     }
 
-	/**
-	 * @param $id
-	 *
-	 * @return array|object|void|null
-	 */
+    /**
+     * @param $id
+     * @return array|object|stdClass|null
+     */
 	public static function getService($id)
 	{
 		global $wpdb;
@@ -105,12 +107,11 @@ class SamedayCourierQueryDb
 		return $wpdb->get_row($query);
 	}
 
-	/**
-	 * @param $samedayId
-	 * @param $is_testing
-	 *
-	 * @return array|object|stdClass|null
-	 */
+    /**
+     * @param $samedayId
+     * @param $is_testing
+     * @return array|object|stdClass|null
+     */
 	public static function getServiceSameday($samedayId, $is_testing)
 	{
 		global $wpdb;
@@ -220,7 +221,7 @@ class SamedayCourierQueryDb
 	/**
 	 * @param int $id
 	 */
-	public static function deleteService($id)
+	public static function deleteService(int $id): void
 	{
 		global $wpdb;
 
@@ -237,16 +238,15 @@ class SamedayCourierQueryDb
 	{
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing = '{$is_testing}'";
+		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE is_testing = '$is_testing'";
 
 		return $wpdb->get_results($query);
 	}
 
-	/**
-	 * @param $id
-	 *
-	 * @return array|object|void|null
-	 */
+    /**
+     * @param $id
+     * @return array|object|stdClass|null
+     */
 	public static function getPickupPoint($id)
 	{
 		global $wpdb;

@@ -17,9 +17,13 @@ use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
+use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Service\OptionalTaxObject;
+use Sameday\Objects\Types\AwbPaymentType;
+use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
+use Sameday\Requests\SamedayPostAwbEstimationRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Responses\SamedayPostAwbEstimationResponse;
 use Sameday\Sameday;
@@ -27,6 +31,7 @@ use Sameday\SamedayClient;
 use SamedayCourier\Shipping\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
@@ -106,7 +111,7 @@ function samedaycourier_shipping_method(): void
                 }
 
                 $availableServices = array_filter(
-                    SamedayCourierQueryDb::getAvailableServices(Helper::isTesting()),
+                    QueryHandler::getAvailableServices(Helper::isTesting()),
                     static function($row) use ($eligibleShippingServices) {
                         return in_array(
                             $row->sameday_code,
@@ -214,7 +219,7 @@ function samedaycourier_shipping_method(): void
                             && ($service->sameday_code === Helper::LOCKER_NEXT_DAY_CODE)
                     ) {
                         $this->syncLockers();
-                        $rate['lockers'] = SamedayCourierQueryDb::getLockers(Helper::isTesting());
+                        $rate['lockers'] = QueryHandler::getLockers(Helper::isTesting());
                     }
 
                     $this->add_rate($rate);
@@ -243,13 +248,13 @@ function samedaycourier_shipping_method(): void
              */
             private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
             {
-                $pickupPointId = SamedayCourierQueryDb::getDefaultPickupPointId(Helper::isTesting());
+                $pickupPointId = QueryHandler::getDefaultPickupPointId(Helper::isTesting());
                 $weight = Helper::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
                 $state = Helper::convertStateCodeToName($address['country'], $address['state']);
                 $city = Helper::removeAccents($address['city']);
                 $currency = Helper::CURRENCY_MAPPER[$address['country']];
 
-                $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
+                $optionalServices = QueryHandler::getServiceIdOptionalTaxes(
                         $serviceId,
                         Helper::isTesting()
                 );
@@ -272,18 +277,18 @@ function samedaycourier_shipping_method(): void
 		            $repaymentAmount = 0;
                 }
 
-                $estimateCostRequest = new Sameday\Requests\SamedayPostAwbEstimationRequest(
+                $estimateCostRequest = new SamedayPostAwbEstimationRequest(
                     $pickupPointId,
                     null,
-                    new Sameday\Objects\Types\PackageType(
-                        Sameday\Objects\Types\PackageType::PARCEL
+                    new PackageType(
+                        PackageType::PARCEL
                     ),
                     [new ParcelDimensionsObject($weight)],
                     $serviceId,
-                    new Sameday\Objects\Types\AwbPaymentType(
-                        Sameday\Objects\Types\AwbPaymentType::CLIENT
+                    new AwbPaymentType(
+                        AwbPaymentType::CLIENT
                     ),
-                    new Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject(
+                    new AwbRecipientEntityObject(
                         ucwords(strtolower($city)) !== 'Bucuresti' ? $city : 'Sector 1',
                         $state,
                         ltrim($address['address']) !== '' ? ltrim($address['address']) : '123',
@@ -299,13 +304,7 @@ function samedaycourier_shipping_method(): void
                     $currency
                 );
 
-                $sameday = new Sameday\Sameday(
-                    SdkClient::initClient(
-                        $this->settings['user'],
-                        $this->settings['password'],
-                        Helper::getApiUrl()
-                    )
-                );
+                $sameday = new Sameday(SdkInitiator::init());
 
                 try {
 	                return $sameday->postAwbEstimation($estimateCostRequest);
@@ -350,8 +349,8 @@ function samedaycourier_shipping_method(): void
                         'default' => 'A4',
                         'type'    => 'select',
                         'options' => [
-                            'A4' => __(Sameday\Objects\Types\AwbPdfType::A4, Helper::TEXT_DOMAIN),
-                            'A6' => __(Sameday\Objects\Types\AwbPdfType::A6, Helper::TEXT_DOMAIN),
+                            'A4' => __(AwbPdfType::A4, Helper::TEXT_DOMAIN),
+                            'A6' => __(AwbPdfType::A6, Helper::TEXT_DOMAIN),
                         ],
                         'description' => __('Awb paper format', Helper::TEXT_DOMAIN)
                     ),
@@ -504,7 +503,7 @@ function samedaycourier_shipping_method(): void
                     }
 
 	                foreach ($envModesByHosts as $apiUrl) {
-		                $sameday = SdkClient::initClient(
+		                $sameday = SdkInitiator::init(
 			                $post_data['woocommerce_samedaycourier_user'],
 			                $post_data['woocommerce_samedaycourier_password'],
 			                $apiUrl
@@ -602,12 +601,14 @@ add_action('plugins_loaded', static function () {
 
 add_action('admin_post_refresh_services', static function () {
     try {
-        return (new ApiRequestsHandler())->refreshServices();
+        return (new ApiRequestsHandler())->refreshSamedayServices();
     } catch (Exception $exception) { return $exception->getMessage(); }
 });
 
 add_action('admin_post_refresh_pickup_points', static function () {
-
+    try {
+        return (new ApiRequestsHandler())->refreshSamedayPickupPoints();
+    } catch (Exception $exception) { return $exception->getMessage(); }
 });
 
 add_action('admin_post_refresh_lockers', static function () {
@@ -618,7 +619,7 @@ add_action('admin_post_refresh_lockers', static function () {
 
 add_action('wp_ajax_all_import', static function (): void {
 	try {
-		(new ApiRequestsHandler())->refreshServices();
+		(new ApiRequestsHandler())->refreshSamedayServices();
     } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
@@ -786,7 +787,7 @@ add_action('admin_post_add_awb', static function () {
 });
 
 add_action('admin_post_remove-awb', static function () {
-    $awb = SamedayCourierQueryDb::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
+    $awb = QueryHandler::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
     $nonce = $_POST['_wpnonce'];
     if (empty($awb)) {
         return wp_redirect(admin_url() . '/index.php');
@@ -839,7 +840,7 @@ function wps_sameday_shipping_options_layout() {
         return;
     }
 
-    $service = SamedayCourierQueryDb::getServiceSamedayByCode(
+    $service = QueryHandler::getServiceSamedayByCode(
         Helper::getChosenShippingMethodCode(),
         Helper::isTesting()
     );
@@ -991,11 +992,11 @@ function wps_locker_row_layout() {
             <?php } ?>
         <?php } else { ?>
             <?php
-                $cities = SamedayCourierQueryDb::getCitiesWithLockers(Helper::isTesting());
+                $cities = QueryHandler::getCitiesWithLockers(Helper::isTesting());
                 $lockers = array();
                 foreach ($cities as $city) {
                     if (null !== $city->city) {
-                        $lockers[$city->city . ' (' . $city->county . ')'] = SamedayCourierQueryDb::getLockersByCity(
+                        $lockers[$city->city . ' (' . $city->county . ')'] = QueryHandler::getLockersByCity(
                             $city->city,
                             Helper::isTesting()
                         );
@@ -1283,7 +1284,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                             ' . $awbHistoryTable . ' 
                          </div>';
 
-            $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($order->get_id()));
+            $awb = QueryHandler::getAwbForOrderId(sanitize_key($order->get_id()));
             $redirectToEawbSite = sprintf(
                     '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
                     Helper::EAWB_INSTANCES[Helper::getHostCountry()],
@@ -1347,7 +1348,7 @@ function enqueue_button_scripts(): void
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',
                 [
-		            'cities' => SamedayCourierQueryDb::getCachedCities(),
+		            'cities' => QueryHandler::getCachedCities(),
                 ]
             );
         }

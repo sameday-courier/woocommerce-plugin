@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\Service;
 
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 
@@ -103,7 +104,7 @@ class ServiceInstance
      */
 	private function createServiceForm($id)
     {
-        $service = SamedayCourierQueryDb::getService($id);
+        $service = QueryHandler::getService($id);
 
         $greyedOut = "";
         $serviceName = $service->sameday_name;

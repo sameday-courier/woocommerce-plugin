@@ -1,5 +1,6 @@
 <?php
 
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (! defined( 'ABSPATH' ) ) {
@@ -12,7 +13,7 @@ if (! defined( 'ABSPATH' ) ) {
  * @return false|mixed
  */
 function isServiceEligibleToLockerFirstMile($serviceId) {
-    $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes($serviceId, Helper::isTesting());
+    $optionalServices = QueryHandler::getServiceIdOptionalTaxes($serviceId, Helper::isTesting());
      
     foreach ($optionalServices as $optionalService) {
         if ($optionalService->getCode() === Helper::PERSONAL_DELIVERY_OPTION_CODE) {
@@ -81,7 +82,7 @@ function samedaycourierAddAwbForm($order): string {
     $total_weight = $total_weight ?: 1;
 
     $pickupPointOptions = '';
-    $pickupPoints = SamedayCourierQueryDb::getPickupPoints($is_testing);
+    $pickupPoints = QueryHandler::getPickupPoints($is_testing);
     foreach ($pickupPoints as $pickupPoint) {
         $checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
         $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
@@ -113,15 +114,19 @@ function samedaycourierAddAwbForm($order): string {
 
 	if (is_int($locker)) {
 		// Get locker from local import
-		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
-		$lockerDetailsForm = json_encode([
-			'lockerId' => $localLockerSameday->locker_id,
-			'name' => $localLockerSameday->name,
-			'address' => $localLockerSameday->address,
-			'city' => $localLockerSameday->city,
-			'countyId' => $localLockerSameday->county,
-			'postalCode' => $localLockerSameday->postal_code,
-		]);
+		$localLockerSameday = QueryHandler::getLockerSameday($postMetaLocker, $is_testing);
+		try {
+            $lockerDetailsForm = json_encode([
+                'lockerId' => $localLockerSameday->locker_id,
+                'name' => $localLockerSameday->name,
+                'address' => $localLockerSameday->address,
+                'city' => $localLockerSameday->city,
+                'countyId' => $localLockerSameday->county,
+                'postalCode' => $localLockerSameday->postal_code,
+            ], JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            $localLockerSameday = null;
+        }
 		if (null !== $localLockerSameday) {
 			$lockerName = $localLockerSameday->name;
 			$lockerAddress = $localLockerSameday->address;
@@ -166,7 +171,7 @@ function samedaycourierAddAwbForm($order): string {
         ";
     }
 
-    $samedayServices = SamedayCourierQueryDb::getAvailableServices($is_testing);
+    $samedayServices = QueryHandler::getAvailableServices($is_testing);
 
 	$allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
 	$allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];

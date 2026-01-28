@@ -3,6 +3,7 @@
 namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
 use Exception;
+use JsonException;
 use Sameday\Exceptions\SamedayAuthenticationException;
 use Sameday\Exceptions\SamedayAuthorizationException;
 use Sameday\Exceptions\SamedayBadRequestException;
@@ -15,17 +16,22 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
+use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
+use Sameday\Requests\SamedayDeleteAwbRequest;
+use Sameday\Requests\SamedayGetAwbPdfRequest;
+use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetPickupPointsRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
-if (! defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH')) {
     exit;
 }
 
@@ -45,7 +51,7 @@ class ApiRequestsHandler
 	 * @throws SamedayAuthorizationException
 	 * @throws SamedayServerException
 	 */
-    public function refreshServices(): bool
+    public function refreshSamedayServices(): bool
     {
         if (empty(Helper::getSamedaySettings())) {
             wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
@@ -67,12 +73,12 @@ class ApiRequestsHandler
             }
 
             foreach ($services->getServices() as $serviceObject) {
-                $service = SamedayCourierQueryDb::getServiceSameday($serviceObject->getId(), Helper::isTesting());
+                $service = QueryHandler::getServiceSameday($serviceObject->getId(), Helper::isTesting());
                 if (! $service) {
                     // Service not found, add it.
-                    SamedayCourierQueryDb::addService($serviceObject, Helper::isTesting());
+                    QueryHandler::addService($serviceObject, Helper::isTesting());
                 } else {
-                    SamedayCourierQueryDb::updateServiceCode($serviceObject, $service->id);
+                    QueryHandler::updateServiceCode($serviceObject, $service->id);
                 }
 
                 // Save as current sameday service.
@@ -89,30 +95,30 @@ class ApiRequestsHandler
                 );
             },
 
-            SamedayCourierQueryDb::getServices(Helper::isTesting())
+            QueryHandler::getServices(Helper::isTesting())
         );
 
         // Delete local services that aren't present in remote services anymore.
         foreach ($localServices as $localService) {
             if (!in_array($localService['sameday_id'], $remoteServices, true)) {
-                SamedayCourierQueryDb::deleteService($localService['id']);
+                QueryHandler::deleteService($localService['id']);
             }
         }
 
         // Update PUDO Service
-        $lnService = SamedayCourierQueryDb::getServiceSamedayByCode(
+        $lnService = QueryHandler::getServiceSamedayByCode(
             Helper::LOCKER_NEXT_DAY_CODE,
             Helper::isTesting()
         );
 
-        $pudoService = SamedayCourierQueryDb::getServiceSamedayByCode(
+        $pudoService = QueryHandler::getServiceSamedayByCode(
             Helper::PUDO_CODE,
             Helper::isTesting()
         );
 
         if (null !== $lnService && null !== $pudoService) {
             $pudoService->status = $lnService->status;
-            SamedayCourierQueryDb::updateService((array) $pudoService);
+            QueryHandler::updateService((array) $pudoService);
         }
 
         return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
@@ -123,8 +129,8 @@ class ApiRequestsHandler
 	 */
     public function importCities(): void
     {
-		if (false === SamedayCourierQueryDb::checkIfTableExists('sameday_cities')) {
-			SamedayCourierQueryDb::createSamedayCitiesTable();
+		if (false === QueryHandler::checkIfTableExists('sameday_cities')) {
+            QueryHandler::createSamedayCitiesTable();
 		}
 
 		if (!file_exists($file = plugin_dir_path(__FILE__) . 'cities.json')) {
@@ -138,18 +144,18 @@ class ApiRequestsHandler
 		}
 
         // Remove all previews unnecessary stored data
-        SamedayCourierQueryDb::truncateSamedayCityTable();
+        QueryHandler::truncateSamedayCityTable();
         delete_transient(Helper::TRANSIENT_CACHE_KEY_FOR_CITIES);
 
 	    foreach ($cities as $samedayCity) {
             if (array_key_exists($samedayCity->country_code, WC()->countries->get_shipping_countries())) {
-                SamedayCourierQueryDb::addCity($samedayCity);
+                QueryHandler::addCity($samedayCity);
             }
 	    }
 
 		set_transient(
 			Helper::TRANSIENT_CACHE_KEY_FOR_CITIES,
-			SamedayCourierQueryDb::getCities()
+            QueryHandler::getCities()
 		);
     }
 
@@ -176,12 +182,12 @@ class ApiRequestsHandler
             }
 
 	        foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
-                $pickupPoint = SamedayCourierQueryDb::getPickupPointSameday($pickupPointObject->getId(), Helper::isTesting());
+                $pickupPoint = QueryHandler::getPickupPointSameday($pickupPointObject->getId(), Helper::isTesting());
                 if (!$pickupPoint) {
                     // Pickup point not found, add it.
-                    SamedayCourierQueryDb::addPickupPoint($pickupPointObject, Helper::isTesting());
+                    QueryHandler::addPickupPoint($pickupPointObject, Helper::isTesting());
                 } else {
-                    SamedayCourierQueryDb::updatePickupPoint($pickupPointObject, $pickupPoint->id);
+                    QueryHandler::updatePickupPoint($pickupPointObject, $pickupPoint->id);
                 }
 
                 // Save as current pickup points.
@@ -198,13 +204,13 @@ class ApiRequestsHandler
                 );
             },
 
-            SamedayCourierQueryDb::getPickupPoints(Helper::isTesting())
+            QueryHandler::getPickupPoints(Helper::isTesting())
         );
 
         // Delete local pickup points that aren't present in remote pickup points anymore.
         foreach ($localPickupPoints as $localPickupPoint) {
             if (!in_array($localPickupPoint['sameday_id'], $remotePickupPoints, true)) {
-                SamedayCourierQueryDb::deletePickupPoint($localPickupPoint['id']);
+                QueryHandler::deletePickupPoint($localPickupPoint['id']);
             }
         }
 
@@ -234,16 +240,12 @@ class ApiRequestsHandler
 	 */
 	public function updateLockersList(): void
 	{
-		$sameday = new Sameday(SamedayCourierApi::initClient(
-			Helper::getSamedaySettings()['user'],
-			Helper::getSamedaySettings()['password'],
-			Helper::getApiUrl()
-		));
+		$sameday = new Sameday(SdkInitiator::init());
 
 		$page = 1;
 		$remoteLockers = [];
 		do {
-			$request = new Sameday\Requests\SamedayGetLockersRequest();
+			$request = new SamedayGetLockersRequest();
 			$request->setPage($page++);
 
 			try {
@@ -251,12 +253,12 @@ class ApiRequestsHandler
 			} catch (Exception $exception) {return;}
 
 			foreach ($lockers->getLockers() as $lockerObject) {
-				$locker = SamedayCourierQueryDb::getLockerSameday($lockerObject->getId(), Helper::isTesting());
+				$locker = QueryHandler::getLockerSameday($lockerObject->getId(), Helper::isTesting());
 				if (!$locker) {
 					// Pickup point not found, add it.
-					SamedayCourierQueryDb::addLocker($lockerObject, Helper::isTesting());
+                    QueryHandler::addLocker($lockerObject, Helper::isTesting());
 				} else {
-					SamedayCourierQueryDb::updateLocker($lockerObject, $locker->id);
+                    QueryHandler::updateLocker($lockerObject, $locker->id);
 				}
 
 				// Save as current pickup points.
@@ -273,13 +275,13 @@ class ApiRequestsHandler
 				);
 			},
 
-			SamedayCourierQueryDb::getLockers(Helper::isTesting())
+            QueryHandler::getLockers(Helper::isTesting())
 		);
 
 		// Delete local lockers that aren't present in remote lockers anymore.
 		foreach ($localLockers as $localLocker) {
 			if (!in_array($localLocker['locker_id'], $remoteLockers, true)) {
-				SamedayCourierQueryDb::deleteLocker($localLocker['id']);
+                QueryHandler::deleteLocker($localLocker['id']);
 			}
 		}
 
@@ -354,7 +356,7 @@ class ApiRequestsHandler
 		}
 
         if (empty($errors)) {
-            $currentService = (array) SamedayCourierQueryDb::getService($post_fields['id']['value']);
+            $currentService = (array) QueryHandler::getService($post_fields['id']['value']);
             $service = array(
                 'id' => (int) $post_fields['id']['value'],
                 'name' => Helper::sanitizeInput($post_fields['name']['value']),
@@ -363,17 +365,17 @@ class ApiRequestsHandler
                 'status' => (int) $post_fields['status']['value']
             );
 
-            SamedayCourierQueryDb::updateService($service);
+            QueryHandler::updateService($service);
 
             // Update PUDO
             if ($currentService['sameday_code'] === Helper::LOCKER_NEXT_DAY_CODE) {
-                $pudoService = (array) SamedayCourierQueryDb::getServiceSamedayByCode(
+                $pudoService = (array) QueryHandler::getServiceSamedayByCode(
                     Helper::PUDO_CODE,
 	                Helper::isTesting()
                 );
 
                 $pudoService['status'] = $service['status'];
-                SamedayCourierQueryDb::updateService($pudoService);
+                QueryHandler::updateService($pudoService);
             }
 
             return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
@@ -413,12 +415,12 @@ class ApiRequestsHandler
             return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
         }
 
-		$service = SamedayCourierQueryDb::getServiceSameday(
+		$service = QueryHandler::getServiceSameday(
 			$params['samedaycourier-service'],
 			Helper::isTesting()
 		);
 
-        $optionalServices = SamedayCourierQueryDb::getServiceIdOptionalTaxes(
+        $optionalServices = QueryHandler::getServiceIdOptionalTaxes(
             $service->sameday_id,
             Helper::isTesting()
         );
@@ -580,11 +582,7 @@ class ApiRequestsHandler
             }
 	    }
 
-        $sameday = new Sameday(SdkClient::initClient(
-	        Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
 
         $parcelDimensions = [];
         // Iterate through the inputs based on their names
@@ -726,7 +724,7 @@ class ApiRequestsHandler
             'awb_cost' => $awb->getCost()
         );
 
-        SamedayCourierQueryDb::saveAwb($awbDetails);
+        QueryHandler::saveAwb($awbDetails);
 
         $samedayOrderItemId = null;
 		$shippingLines = (array) $params['shipping_lines'];
@@ -793,15 +791,11 @@ class ApiRequestsHandler
 			return false;
 		}
 
-        $sameday = new Sameday(SdkClient::initClient(
-            Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
 
         try {
-            $sameday->deleteAwb(new Sameday\Requests\SamedayDeleteAwbRequest($awb->awb_number));
-            SamedayCourierQueryDb::deleteAwbAndParcels($awb);
+            $sameday->deleteAwb(new SamedayDeleteAwbRequest($awb->awb_number));
+            QueryHandler::deleteAwbAndParcels($awb);
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {
@@ -843,21 +837,17 @@ class ApiRequestsHandler
 
 	    $defaultLabelFormat = Helper::getSamedaySettings()['default_label_format'];
 
-        $sameday = new Sameday(SdkClient::initClient(
-            Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
 
-        $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        $awb = QueryHandler::getAwbForOrderId($orderId);
 
 	    $errors = null;
 	    $pdf = null;
         try {
             $content = $sameday->getAwbPdf(
-                new Sameday\Requests\SamedayGetAwbPdfRequest(
+                new SamedayGetAwbPdfRequest(
                     $awb->awb_number,
-                    new Sameday\Objects\Types\AwbPdfType($defaultLabelFormat)
+                    new AwbPdfType($defaultLabelFormat)
                 )
             );
 
@@ -887,13 +877,9 @@ class ApiRequestsHandler
 	 */
     public function showAwbHistory($orderId)
     {
-        $sameday = new Sameday(SdkClient::initClient(
-            Helper::getSamedaySettings()['user'],
-            Helper::getSamedaySettings()['password'],
-            Helper::getApiUrl()
-        ));
+        $sameday = new Sameday(SdkInitiator::init());
 
-        $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        $awb = QueryHandler::getAwbForOrderId($orderId);
         if (empty($awb)) {
             return;
         }
@@ -911,7 +897,7 @@ class ApiRequestsHandler
                 return samedaycourierCreateAwbHistoryTable(array());
             }
 
-            SamedayCourierQueryDb::refreshPackageHistory(
+            QueryHandler::refreshPackageHistory(
                 $orderId,
                 $parcel->getAwbNumber(),
                 $parcelStatus->getSummary(),
@@ -920,7 +906,7 @@ class ApiRequestsHandler
             );
         }
 
-        $packages = SamedayCourierQueryDb::getPackagesForOrderId($orderId);
+        $packages = QueryHandler::getPackagesForOrderId($orderId);
 
         return samedaycourierCreateAwbHistoryTable($packages);
     }
@@ -937,20 +923,15 @@ class ApiRequestsHandler
 			return false;
 		}
 
-        $sameday = new Sameday(SdkClient::initClient(
-                Helper::getSamedaySettings()['user'],
-                Helper::getSamedaySettings()['password'],
-                Helper::getApiUrl()
-            )
-        );
+        $sameday = new Sameday(SdkInitiator::init());
 
-        $awb = SamedayCourierQueryDb::getAwbForOrderId($params['samedaycourier-order-id']);
+        $awb = QueryHandler::getAwbForOrderId($params['samedaycourier-order-id']);
 
         $position = $this->getPosition($awb->parcels);
 
         $request = new SamedayPostParcelRequest(
             $awb->awb_number,
-            new Sameday\Objects\ParcelDimensionsObject(
+            new ParcelDimensionsObject(
                 (float) number_format((float) $params['samedaycourier-parcel-weight'], 2),
                 (float) number_format((float) $params['samedaycourier-parcel-length'], 2),
                 (float) number_format((float) $params['samedaycourier-parcel-height'],2),
@@ -997,7 +978,7 @@ class ApiRequestsHandler
             )
         );
 
-        SamedayCourierQueryDb::updateParcels($awb->order_id, serialize($parcels));
+        QueryHandler::updateParcels($awb->order_id, serialize($parcels));
 
         return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post=$awb->order_id&action=edit"));
     }

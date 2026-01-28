@@ -2,11 +2,16 @@
 
 namespace SamedayCourier\Shipping\Utils;
 
+use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\CityObject;
 use Sameday\Objects\CountyObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
+use Sameday\Requests\SamedayGetCountiesRequest;
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 
 if (! defined( 'ABSPATH' )) {
 	exit;
@@ -348,7 +353,7 @@ class Helper
             return null;
         }
 
-        $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        $awb = QueryHandler::getAwbForOrderId($orderId);
 
         if (!empty($awb)) {
             $data['awb_number'] = $awb->awb_number;
@@ -542,7 +547,7 @@ class Helper
 
         // If you don't use lockerMap but dropdown option
         if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
-            $lockerFields = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, self::isTesting());
+            $lockerFields = QueryHandler::getLockerSameday($postMetaLocker, self::isTesting());
 
             if (null === $lockerFields) {
                 return;
@@ -716,7 +721,7 @@ class Helper
 			update_post_meta($orderId, $key, $value, false);
 		}
 
-        SamedayCourierQueryDb::updateWcOrderAddress(
+        QueryHandler::updateWcOrderAddress(
             $orderId,
             [
                 'address_1' => $address1,
@@ -775,7 +780,7 @@ class Helper
 	 */
 	public static function validatePostalCode(string $postalCode, string $countyCode): bool
 	{
-		if (null === $code = SamedayCourierQueryDb::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
+		if (null === $code = QueryHandler::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
 			return false;
 		}
 
@@ -792,17 +797,13 @@ class Helper
     public static function getCounties(): array
     {
         try {
-            $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
-                self::getSamedaySettings()['user'],
-                self::getSamedaySettings()['password'],
-                self::getApiUrl()
-            ));
+            $sameday = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException|Exception $exception) {
             return [];
         }
 
         try{
-            $samedayCounties = $sameday->getCounties(new Sameday\Requests\SamedayGetCountiesRequest(null))
+            $samedayCounties = $sameday->getCounties(new SamedayGetCountiesRequest(null))
                 ->getCounties()
             ;
         } catch (Exception $e) {
@@ -821,7 +822,7 @@ class Helper
      */
     public static function getCities($countyId): array {
         try {
-            $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
+            $sameday = new Sameday(SamedayCourierApi::initClient(
                 self::getSamedaySettings()['user'],
 	            self::getSamedaySettings()['password'],
 	            self::getApiUrl()
