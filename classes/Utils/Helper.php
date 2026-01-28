@@ -3,11 +3,13 @@
 namespace SamedayCourier\Shipping\Utils;
 
 use Exception;
+use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\CityObject;
 use Sameday\Objects\CountyObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
+use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetCountiesRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
@@ -222,6 +224,9 @@ class Helper
 		);
 	}
 
+    /**
+     * @return array[]
+     */
 	public static function getAwbPaymentTypeOptions(): array
 	{
 		return array(
@@ -247,7 +252,13 @@ class Helper
 		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode] ?? '');
 	}
 
-	public static function convertStateNameToCode($countryCode, $stateName): string
+    /**
+     * @param string $countryCode
+     * @param string $stateName
+     *
+     * @return string
+     */
+	public static function convertStateNameToCode(string $countryCode, string $stateName): string
 	{
 		if (! isset($countryCode, $stateName) || ('' === $countryCode) || ('' === $stateName)) {
 			return '';
@@ -822,11 +833,7 @@ class Helper
      */
     public static function getCities($countyId): array {
         try {
-            $sameday = new Sameday(SamedayCourierApi::initClient(
-                self::getSamedaySettings()['user'],
-	            self::getSamedaySettings()['password'],
-	            self::getApiUrl()
-            ));
+            $sameday = new Sameday(SdkInitiator::init());
         } catch (Exception $exception) {
             return [];
         }
@@ -834,7 +841,7 @@ class Helper
         $page = 1;
 	    $remoteCities = [];
         do {
-            $request = new Sameday\Requests\SamedayGetCitiesRequest($countyId);
+            $request = new SamedayGetCitiesRequest($countyId);
             $request->setPage($page++);
 
             try {

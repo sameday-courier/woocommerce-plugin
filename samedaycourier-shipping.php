@@ -236,7 +236,7 @@ function samedaycourier_shipping_method(): void
                 $ltSync = $this->settings['sameday_sync_lockers_ts'];
 
                 if ($time > ($ltSync + 86400)) {
-                    (new Sameday())->updateLockersList();
+                    (new ApiRequestsHandler())->updateLockersList();
                 }
             }
 

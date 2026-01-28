@@ -95,7 +95,7 @@ class PickupPointInstance
         <div id="smd-thickbox" class="smd-modal" style="display: none;">
             <div class="smd-modal-container">
                 <form id="thickbox-form" action="" method="POST">
-                    <h3>Add Pickup Point</h3>
+                    <h3><?= __("Add New Pickup Point", Helper::TEXT_DOMAIN)?></h3>
                     <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('add-pickup-point'); ?>">
                     <div class="form-group">
                         <label for="pickupPointCountry">Country</label>
