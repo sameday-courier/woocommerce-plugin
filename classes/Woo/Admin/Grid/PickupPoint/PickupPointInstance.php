@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint;
 
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (! defined( 'ABSPATH' ) ) {
@@ -106,18 +107,18 @@ class PickupPointInstance
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointCounty">County</label>
+                        <label for="pickupPointCounty"><?= __("County", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <select name="pickupPointCounty" id="pickupPointCounty" required data-url="">
-                                <option>Choose City</option>
-                                <?php foreach(Helper::getCounties() as $county): ?>
+                                <option><?= __("Choose City", Helper::TEXT_DOMAIN)?></option>
+                                <?php foreach(ApiRequestsHandler::getCounties() as $county): ?>
                                     <option value="<?php echo $county['id']; ?>"><?php echo $county['name']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointCity">City</label>
+                        <label for="pickupPointCity"><?= __("City", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <select name="pickupPointCity" id="pickupPointCity" required disabled>
 
@@ -125,43 +126,43 @@ class PickupPointInstance
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointAddress">Address</label>
+                        <label for="pickupPointAddress"><?= __("Address", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="text" name="pickupPointAddress" id="pickupPointAddress" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointDefault">Default</label>
+                        <label for="pickupPointDefault"><?= __("Default", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="checkbox" name="pickupPointDefault" id="pickupPointDefault" value="1">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointPostalCode">Postal Code</label>
+                        <label for="pickupPointPostalCode"><?= __("Postal Code", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="number" name="pickupPointPostalCode" id="pickupPointPostalCode" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointAlias">Alias</label>
+                        <label for="pickupPointAlias"><?= __("Alias", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="text" name="pickupPointAlias" id="pickupPointAlias" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointContactPersonName">Contact Person Name</label>
+                        <label for="pickupPointContactPersonName"><?= __("Contact Person Name", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="text" name="pickupPointContactPersonName" id="pickupPointContactPersonName" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointContactPersonPhone">Contact Person Phone</label>
+                        <label for="pickupPointContactPersonPhone"><?= __("Contact Person Phone", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="number" name="pickupPointContactPersonPhone" id="pickupPointContactPersonPhone" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pickupPointEmail">Email</label>
+                        <label for="pickupPointEmail"><?= __("Email", Helper::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <input type="email" name="pickupPointEmail" id="pickupPointEmail" required>
                         </div>
@@ -178,7 +179,7 @@ class PickupPointInstance
                 <form id="form-deletePickupPoint" data-url="delete-pickup-point">
                     <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete-pickup-point'); ?>">
                     <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
-                    <h3>Are you sure you want to delete this pickup point?</h3>
+                    <h3><?= __("Are you sure you want to delete this pickup point?", Helper::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">
                         <input type="submit" name="submit" value="Submit">
                         <button class="button-secondary" onclick="tb_remove();">Cancel</button>

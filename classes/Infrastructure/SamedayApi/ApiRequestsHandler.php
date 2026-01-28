@@ -11,6 +11,8 @@ use Sameday\Exceptions\SamedayNotFoundException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Exceptions\SamedayServerException;
+use Sameday\Objects\CityObject;
+use Sameday\Objects\CountyObject;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
@@ -21,6 +23,8 @@ use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
+use Sameday\Requests\SamedayGetCitiesRequest;
+use Sameday\Requests\SamedayGetCountiesRequest;
 use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayGetPickupPointsRequest;
@@ -909,6 +913,72 @@ class ApiRequestsHandler
         $packages = QueryHandler::getPackagesForOrderId($orderId);
 
         return samedaycourierCreateAwbHistoryTable($packages);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCounties(): array
+    {
+        try {
+            $sameday = new Sameday(SdkInitiator::init());
+        } catch (SamedaySDKException|Exception $exception) {
+            return [];
+        }
+
+        try{
+            $samedayCounties = $sameday->getCounties(new SamedayGetCountiesRequest(null))
+                ->getCounties()
+            ;
+        } catch (Exception $e) {
+            return [];
+        }
+
+        return array_map(static function(CountyObject $county){
+            return ['id' => $county->getId(), 'name' => $county->getName()];
+        }, $samedayCounties);
+    }
+
+    /**
+     * @param $countyId
+     *
+     * @return array
+     */
+    public static function getCities($countyId): array {
+        try {
+            $sameday = new Sameday(SdkInitiator::init());
+        } catch (Exception $exception) {
+            return [];
+        }
+
+        $page = 1;
+        $remoteCities = [];
+        do {
+            $request = new SamedayGetCitiesRequest($countyId);
+            $request->setPage($page++);
+
+            try {
+                $cities = $sameday->getCities($request);
+            } catch (Exception $e) {
+                return [];
+            }
+
+            foreach ($cities->getCities() as $city) {
+                // Save as current sameday service.
+                $remoteCities[] = $city;
+            }
+        } while ($page <= $cities->getPages());
+
+        if(!empty($remoteCities)){
+            return array_map(static function(CityObject $city){
+                return [
+                    'id' => $city->getId(),
+                    'name' => $city->getName()
+                ];
+            }, $remoteCities);
+        }
+
+        return [];
     }
 
     /**
