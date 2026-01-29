@@ -2,6 +2,8 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
+use Sameday\Objects\Locker\LockerObject;
+use Sameday\Objects\PickupPoint\PickupPointObject;
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\PackageType;
@@ -243,19 +245,6 @@ class QueryHandler
 		return $wpdb->get_results($query);
 	}
 
-    /**
-     * @param $id
-     * @return array|object|stdClass|null
-     */
-	public static function getPickupPoint($id)
-	{
-		global $wpdb;
-
-		$query = "SELECT * FROM {$wpdb->prefix}sameday_pickup_point WHERE id = '{$id}'";
-
-		return $wpdb->get_row($query);
-	}
-
 	/**
 	 * @param $samedayId
 	 * @param $is_testing
@@ -354,10 +343,10 @@ class QueryHandler
     }
 
 	/**
-	 * @param \Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject
+	 * @param PickupPointObject $pickupPointObject
 	 * @param $is_testing
 	 */
-	public static function addPickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $is_testing)
+	public static function addPickupPoint(PickupPointObject $pickupPointObject, $is_testing): void
 	{
 		global $wpdb;
 
@@ -380,11 +369,11 @@ class QueryHandler
 	}
 
 	/**
-	 * @param \Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject
+	 * @param PickupPointObject $pickupPointObject
 	 *
 	 * @param int $id
 	 */
-	public static function updatePickupPoint(\Sameday\Objects\PickupPoint\PickupPointObject $pickupPointObject, $id)
+	public static function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): void
 	{
 		global $wpdb;
 
@@ -409,7 +398,7 @@ class QueryHandler
 	/**
 	 * @param int $id
 	 */
-	public static function deletePickupPoint($id)
+	public static function deletePickupPoint(int $id): void
 	{
 		global $wpdb;
 
@@ -421,8 +410,8 @@ class QueryHandler
 	 * @param $samedayId
 	 * @param $is_testing
 	 *
-	 * @return array|object|void|null
-	 */
+	 * @return array|object|stdClass|null
+     */
 	public static function getLockerSameday($samedayId, $is_testing)
 	{
 		global $wpdb;
@@ -433,10 +422,10 @@ class QueryHandler
 	}
 
 	/**
-	 * @param \Sameday\Objects\Locker\LockerObject $lockerObject
+	 * @param LockerObject $lockerObject
 	 * @param bool $is_testing
 	 */
-	public static function addLocker(\Sameday\Objects\Locker\LockerObject $lockerObject, $is_testing)
+	public static function addLocker(LockerObject $lockerObject, $is_testing)
 	{
 		global $wpdb;
 
@@ -461,11 +450,11 @@ class QueryHandler
 	}
 
 	/**
-	 * @param \Sameday\Objects\Locker\LockerObject $lockerObject
+	 * @param LockerObject $lockerObject
 	 *
 	 * @param int $id
 	 */
-	public static function updateLocker(\Sameday\Objects\Locker\LockerObject $lockerObject, $id)
+	public static function updateLocker(LockerObject $lockerObject, $id)
 	{
 		global $wpdb;
 
@@ -504,8 +493,8 @@ class QueryHandler
 	/**
 	 * @param $orderId
 	 *
-	 * @return array|object|void|null
-	 */
+	 * @return array|object|stdClass|null
+     */
 	public static function getAwbForOrderId($orderId) {
 		global $wpdb;
 

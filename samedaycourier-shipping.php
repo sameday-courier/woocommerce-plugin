@@ -32,6 +32,7 @@ use SamedayCourier\Shipping\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
@@ -1327,8 +1328,12 @@ add_filter('plugin_row_meta', function ($links, $pluginFileName) {
     return $links;
 }, 10, 4);
 
-register_activation_hook( __FILE__, 'samedaycourier_create_db' );
-register_uninstall_hook( __FILE__, 'samedaycourier_drop_db');
+register_activation_hook(__FILE__, static function () {
+    SchemaHandler::install();
+});
+register_uninstall_hook(__FILE__, static function () {
+    SchemaHandler::uninstall();
+});
 
 function enqueue_button_scripts(): void
 {
