@@ -2,7 +2,7 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
-if (! defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH')) {
 	exit;
 }
 
