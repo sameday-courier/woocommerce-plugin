@@ -1,6 +1,6 @@
 <?php
 
-namespace SamedayCourier\Shipping;
+namespace SamedayCourier\Shipping\Domain;
 
 use Exception;
 use RuntimeException;
