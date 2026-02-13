@@ -478,19 +478,36 @@ class Sameday
             $state
 	    );
 
+        $address_1 = $params['shipping']['address_1'];
+        if ('' ===  $address_1 || null === $address_1) {
+            $address_1 = $params['billing']['address_1'];
+        }
+
+        $address_2 = $params['shipping']['address_2'];
+        if ('' ===  $address_2 || null === $address_2) {
+            $address_2 = $params['billing']['address_2'];
+        }
+
+        $firstName = $params['shipping']['first_name'];
+        if ('' ===  $firstName || null === $firstName) {
+            $firstName = $params['billing']['first_name'];
+        }
+
+        $lastName = $params['shipping']['last_name'];
+        if ('' ===  $lastName || null === $lastName) {
+            $lastName = $params['billing']['last_name'];
+        }
+
 	    $address = sprintf(
 		    '%s %s',
-		    ltrim($params['shipping']['address_1']),
-		    ltrim($params['shipping']['address_2'])
+		    ltrim($address_1),
+		    ltrim($address_2)
 	    );
-
-		$address_1 = $params['shipping']['address_1'];
-		$address_2 = $params['shipping']['address_2'];
 
 	    $name = sprintf(
 		    '%s %s',
-		    ltrim($params['shipping']['first_name']),
-		    ltrim($params['shipping']['last_name'])
+		    ltrim($firstName),
+		    ltrim($lastName)
 	    );
 
         $inputErrors = null;
@@ -543,11 +560,11 @@ class Sameday
 	        $state = SamedayCourierHelperClass::convertStateNameToCode($country, $county);
         }
 
-        $post_meta_samedaycourier_address_hd = SamedayCourierHelperClass::parsePostMetaSamedaycourierAddressHd(
-            $params['samedaycourier-order-id']
-        );
 	    if (!SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)) {
-            if (null !== $post_meta_samedaycourier_address_hd) {
+            $post_meta_samedaycourier_address_hd = SamedayCourierHelperClass::parsePostMetaSamedaycourierAddressHd(
+                $params['samedaycourier-order-id']
+            );
+            if (isset($post_meta_samedaycourier_address_hd)) {
                 $city = $post_meta_samedaycourier_address_hd['city'];
                 $county = SamedayCourierHelperClass::convertStateCodeToName(
                     $post_meta_samedaycourier_address_hd['country'],
@@ -563,24 +580,34 @@ class Sameday
                 $address_1 = $post_meta_samedaycourier_address_hd['address_1'];
                 $address_2 = $post_meta_samedaycourier_address_hd['address_2'];
                 $state = $post_meta_samedaycourier_address_hd['state'];
-            } else {
-                $city = $params['billing']['city'];
-                $address_1 = $params['billing']['address_1'];
-                $address_2 = $params['billing']['address_2'];
-                $address = sprintf(
-                    '%s %s',
-                    $address_1,
-                    $address_2
-                );
-                $country = $params['billing']['country'];
-                $state = $params['billing']['state'];
-                $county = SamedayCourierHelperClass::convertStateCodeToName(
-                    $country,
-                    $state
-                );
-                $postalCode = $params['billing']['postcode'];
             }
 	    }
+
+        $company = $params['shipping']['company'] ?? '';
+        if ('' === $company) {
+            $company = $params['billing']['company'] ?? '';
+        }
+        $companyObject = null;
+        if ('' !== $company) {
+            $companyObject = new CompanyEntityObject(
+                $company,
+                '',
+                '',
+                '',
+                ''
+            );
+        }
+
+        $awbRecipient = new AwbRecipientEntityObject(
+            $city,
+            $county,
+            $address,
+            $name,
+            $phone,
+            $email,
+            $companyObject,
+            $postalCode,
+        );
 
         $sameday = new \Sameday\Sameday(SamedayCourierApi::initClient(
 	        SamedayCourierHelperClass::getSamedaySettings()['user'],
@@ -622,17 +649,6 @@ class Sameday
             );
         }
 
-        $companyObject = null;
-        if ('' !== $params['shipping']['company']) {
-            $companyObject = new CompanyEntityObject(
-                $params['shipping']['company'],
-                '',
-                '',
-                '',
-                ''
-            );
-        }
-
         $request = new SamedayPostAwbRequest(
             $params['samedaycourier-package-pickup-point'],
             null,
@@ -640,16 +656,7 @@ class Sameday
             $parcelDimensionsObjects,
 	        $service->sameday_id,
             new AwbPaymentType($params['samedaycourier-package-awb-payment']),
-            new AwbRecipientEntityObject(
-                $city,
-                $county,
-                $address,
-	            $name,
-	            $phone,
-	            $email,
-                $companyObject,
-	            $postalCode
-            ),
+            $awbRecipient,
             $params['samedaycourier-package-insurance-value'],
             $params['samedaycourier-package-repayment'],
             new CodCollectorType( CodCollectorType::CLIENT),
