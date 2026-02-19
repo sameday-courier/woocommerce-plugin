@@ -80,7 +80,7 @@ function openLockers() {
                 },
                 success: () => {
                     document.querySelector('#sameday_locker_name').innerHTML = locker.name + " - " + locker.address;
-                    document.querySelector('#locker_id').value = _locker;
+                    document.querySelector('#locker').value = _locker;
                 },
                 error: () => {
                     alert('Something went wrong! Please try again latter!');
