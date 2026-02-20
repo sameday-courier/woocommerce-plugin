@@ -888,12 +888,14 @@ class SamedayCourierHelperClass
     /**
      * @param int|string|WC_Order $order
      * @param string $metaKey
-     * @param int|string|array $metaValue
+     * @param mixed $metaValue
      *
      * @return bool
      */
-    public static function updateOrderMeta($order, string $metaKey, int|string|array $metaValue): bool
+    public static function updateOrderMeta($order, string $metaKey, mixed $metaValue): bool
     {
+		
+		$metaValue=is_null($metaValue)?'':$metaValue;
         // fix compatibility with WP or old versions of WC and new WC versions
         $metaValue = is_int($metaValue) ? (string) $metaValue : $metaValue;
         // fast check if is already WC_Order
