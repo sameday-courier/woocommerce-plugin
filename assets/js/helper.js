@@ -6,7 +6,7 @@ const FIELD_TYPE_OF_SHIPPING = 'shipping';
 
 const doAjaxCall = (params = {}, reloadCheckout = true) => {
     // Predefined Params
-    if (null !== params.action) {
+    if (!params.action) {
         params.action = 'woo_sameday_post_ajax_data';
     }
     params.samedayNonce = samedayVars.samedayNonce;

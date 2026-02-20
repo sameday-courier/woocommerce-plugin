@@ -326,33 +326,24 @@ class SamedayCourierHelperClass
 	}
 
 	/**
-	 * @param $orderId
+	 * @param WC_Order $order
 	 *
-	 * @return array|null
+	 * @return string|null
 	 */
-    public static function getShippingMethodSameday($orderId): ?array
+    public static function orderHasAwb(WC_Order $order): ?string
     {
-        $data = array();
 
-        $shippingLines = wc_get_order($orderId)->get_data()['shipping_lines'];
-
-        $serviceMethod = null;
-        foreach ($shippingLines as $array) {
-            $index = array_search($array, $shippingLines, true);
-            $serviceMethod = $shippingLines[$index]->get_data()['method_id'];
-        }
-
-        if ($serviceMethod !== 'samedaycourier') {
+        if(!SamedayCourierHelperClass::shippingWithSameday($order)){
             return null;
         }
 
-        $awb = SamedayCourierQueryDb::getAwbForOrderId($orderId);
+        $awbDataRow = SamedayCourierQueryDb::getAwbForOrderId($order->get_id());
 
-        if (!empty($awb)) {
-            $data['awb_number'] = $awb->awb_number;
+        if (empty($awbDataRow) || empty($awbDataRow->awb_number)) {
+            return null;
         }
 
-        return $data;
+        return (string) $awbDataRow->awb_number;
     }
 
     /**
@@ -505,11 +496,10 @@ class SamedayCourierHelperClass
      */
 	public static function addLockerToOrderData($orderId, $locker): void
 	{
-        update_post_meta(
+        self::updateOrderMeta(
             $orderId,
             self::POST_META_SAMEDAY_SHIPPING_LOCKER,
-            $locker,
-            false
+            $locker
         );
 
         self::updateLockerOrderPostMeta($orderId);
@@ -526,7 +516,7 @@ class SamedayCourierHelperClass
 	{
 		$postMetaLocker = self::fixJson(
 			self::sanitizeInput(
-				(string) get_post_meta(
+				self::getOrderMeta(
 					$order_id,
 					self::POST_META_SAMEDAY_SHIPPING_LOCKER,
 					true
@@ -581,12 +571,11 @@ class SamedayCourierHelperClass
 
 		if ('' === self::getPostMetaSamedayShippingHDAddress($order_id)) {
             // Save HD Address
-			update_post_meta(
-				$order_id,
-				self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
-				false
-			);
+            self::updateOrderMeta(
+                $order_id,
+                self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+                json_encode($shippingInputs, JSON_THROW_ON_ERROR)
+            );
 		}
 	}
 
@@ -597,7 +586,7 @@ class SamedayCourierHelperClass
      */
     public static function getPostMetaSamedayShippingHDAddress(int $orderId): string
     {
-        return get_post_meta(
+        return self::getOrderMeta(
             $orderId,
             self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             true
@@ -711,7 +700,7 @@ class SamedayCourierHelperClass
 		];
 
 		foreach ($addressFieldsMapper as $key => $value) {
-			update_post_meta($orderId, $key, $value, false);
+			self::updateOrderMeta($orderId, $key, $value);
 		}
 
         SamedayCourierQueryDb::updateWcOrderAddress(
@@ -856,5 +845,123 @@ class SamedayCourierHelperClass
         }
 
         return [];
+    }
+    /**
+     * @param int|string|WC_Order $order
+     * @param string $metaKey
+     * @param int|string|array $metaValue
+     * @param bool $unique
+     *
+     * @return bool
+     */
+    public static function addOrderMeta($order, string $metaKey, int|string|array $metaValue, bool $unique = false): bool
+    {
+        // fix compatibility with WP or old versions of WC and new WC versions
+        $metaValue = is_int($metaValue) ? (string) $metaValue : $metaValue;
+        // fast check if is already WC_Order
+        if ($order instanceof WC_Order) {
+            $order->add_meta_data($metaKey, $metaValue, $unique);
+            //$orderObject->save() persists changes to DB (HPOS tables or post meta via the data store).
+            //Without save(), meta may appear changed in the object during request but not actually be stored.
+            $order->save();
+            return true;
+        }
+
+        //make sure is numeric > 0
+        $orderId = is_numeric($order) ? (int) $order:0;
+        if ($orderId <= 0) {
+            return false;
+        }
+
+        // make the WC_Order object
+        $orderObject = wc_get_order($orderId);
+        if ($orderObject instanceof WC_Order ) {
+            $orderObject->add_meta_data($metaKey, $metaValue, $unique);
+            $orderObject->save();
+            return true;
+        }
+
+        // fallback to add_post_meta old way
+        return false !== add_post_meta($orderId, $metaKey, $metaValue, $unique);
+    }
+
+    /**
+     * @param int|string|WC_Order $order
+     * @param string $metaKey
+     * @param mixed $metaValue
+     *
+     * @return bool
+     */
+    public static function updateOrderMeta($order, string $metaKey, mixed $metaValue): bool
+    {
+		
+		$metaValue=is_null($metaValue)?'':$metaValue;
+        // fix compatibility with WP or old versions of WC and new WC versions
+        $metaValue = is_int($metaValue) ? (string) $metaValue : $metaValue;
+        // fast check if is already WC_Order
+        if ($order instanceof WC_Order) {
+            $order->update_meta_data($metaKey, $metaValue);
+            //$orderObject->save() persists changes to DB (HPOS tables or post meta via the data store).
+            //Without save(), meta may appear changed in the object during request but not actually be stored.
+            $order->save();
+            return true;
+        }
+
+        //make sure is numeric > 0
+        $orderId = is_numeric($order) ? (int) $order:0;
+        if ($orderId <= 0) {
+            return false;
+        }
+
+        // make the WC_Order object
+        $orderObject = wc_get_order($orderId);
+        if ($orderObject instanceof WC_Order && method_exists($orderObject, 'update_meta_data')) {
+            $orderObject->update_meta_data($metaKey, $metaValue);
+            $orderObject->save();
+            return true;
+        }
+
+        // fallback to update_post_meta old way
+        return false !== update_post_meta($orderId, $metaKey, $metaValue);
+    }
+
+    /**
+     * @param int|string|WC_Order $order
+     * @param string $metaKey
+     * @param string $metaValue
+     *
+     * @return string
+     */
+    public static function getOrderMeta($order, string $metaKey, bool $single=true): string|array
+    {
+        // fast check if is already WC_Order
+        if ($order instanceof WC_Order) {
+            return $order->get_meta($metaKey, $single) ?? (!$single ? [] : '');
+        }
+
+        //make sure is numeric > 0
+        $orderId = is_numeric($order) ? (int) $order:0;
+        if ($orderId <= 0) {
+            return $single ? '':[];
+        }
+
+        // make the WC_Order object
+        $orderObject = wc_get_order($orderId);
+        if ($orderObject instanceof WC_Order && method_exists($orderObject, 'get_meta')) {
+            return $orderObject->get_meta($metaKey, $single) ?? (!$single ? [] : '');
+        }
+
+        // fallback to get_post_meta old way
+        return get_post_meta($orderId, $metaKey, $single);
+    }
+    public static function shippingWithSameday(WC_Order $order): ?WC_Order_Item_Shipping
+    {
+        foreach ($order->get_shipping_methods() as $shippingLine) {
+            if ('samedaycourier' === $shippingLine->get_method_id()) {
+                return $shippingLine;
+            }
+        }
+
+        return null;
     }
 }
