@@ -1023,41 +1023,47 @@ function wps_locker_row_layout() {
 add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 // When POST Order Form
-add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
+function samedaycourier_save_locker_to_order(WC_Order $order): void
+{
+    //On checkout is not recommended to use session so we relay on $order
+    $shippingSamedayData = SamedayCourierHelperClass::shippingWithSameday($order);
 
-    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
+    if ($shippingSamedayData && SamedayCourierHelperClass::isOohDeliveryOption($shippingSamedayData->get_meta('service_code'))) {
         try {
             SamedayCourierHelperClass::addLockerToOrderData(
                 $order->get_id(),
-                WC()->session->get('locker')
+                WC()->session?WC()->session->get('locker'):''
             );
         } catch (Exception $exception) {}
     }
+}
 
-    if ("yes" === WC()->session->get('open_package')) {
-        update_post_meta($order->get_id(), '_sameday_shipping_open_package_option', 1, true);
+function samedaycourier_save_open_package_to_order(WC_Order $order): void
+{
+    if (WC()->session && "yes" === WC()->session->get('open_package')) {
+        SamedayCourierHelperClass::updateOrderMeta(
+                $order,
+                '_sameday_shipping_open_package_option',
+                '1'
+        );
         // After store, remove it from Session
         WC()->session->set('open_package', 'no');
     }
-});
+}
 
-add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
-
-    if (SamedayCourierHelperClass::isOohDeliveryOption(SamedayCourierHelperClass::getChosenShippingMethodCode())) {
-        try {
-            SamedayCourierHelperClass::addLockerToOrderData(
-                $orderId,
-                WC()->session->get('locker')
-            );
-        } catch (Exception $exception) {}
+function samedaycourier_sync_checkout_data_to_order($orderOrId): void
+{
+    $order = $orderOrId instanceof WC_Order ? $orderOrId : wc_get_order((int) $orderOrId);
+    if (!$order instanceof WC_Order) {
+        return;
     }
 
-    if ("yes" === WC()->session->get('open_package')) {
-        update_post_meta($orderId, '_sameday_shipping_open_package_option', 1, true);
-        // After store, remove it from Session
-        WC()->session->set('open_package', 'no');
-    }
-});
+    samedaycourier_save_locker_to_order($order);
+    samedaycourier_save_open_package_to_order($order);
+}
+
+add_action('woocommerce_blocks_checkout_order_processed', 'samedaycourier_sync_checkout_data_to_order');
+add_action('woocommerce_checkout_order_processed', 'samedaycourier_sync_checkout_data_to_order');
 
 /**
  ** Add external JS file for Lockers
@@ -1243,13 +1249,13 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                     ' . $_generateAwb . '
                 </div>';
 
-        $shipping_method_sameday = SamedayCourierHelperClass::getShippingMethodSameday($order->get_id());
+        $awbNumber = SamedayCourierHelperClass::orderHasAwb($order);
 
         $newParcelModal = '';
         $historyModal = '';
         $_goTo_eAWB = '';
 
-        if (! empty($shipping_method_sameday)) {
+        if (!empty($awbNumber)) {
             $buttons = '
                 <div class="address">
                     ' . $_showAwb . $_removeAwb  .'
@@ -1268,11 +1274,10 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', function ( $o
                             ' . $awbHistoryTable . ' 
                          </div>';
 
-            $awb = SamedayCourierQueryDb::getAwbForOrderId(sanitize_key($order->get_id()));
             $redirectToEawbSite = sprintf(
                     '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
 	            SamedayCourierHelperClass::EAWB_INSTANCES[SamedayCourierHelperClass::getHostCountry()],
-	            $awb->awb_number
+                $awbNumber
             );
 
             $_goTo_eAWB = '

@@ -27,11 +27,11 @@ function isServiceEligibleToLockerFirstMile($serviceId) {
 function samedaycourierAddAwbForm($order): string {
     $is_testing = SamedayCourierHelperClass::isTesting();
 
-	$postMetaLocker = get_post_meta(
-		$order->get_id(),
-		SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
-		true
-	);
+    $postMetaLocker = SamedayCourierHelperClass::getOrderMeta(
+        $order,
+        SamedayCourierHelperClass::POST_META_SAMEDAY_SHIPPING_LOCKER,
+        true
+    );
 
 	$locker = null;
 	$lockerDetailsForm = null;
@@ -48,19 +48,14 @@ function samedaycourierAddAwbForm($order): string {
 	}
 
     $serviceCode = null;
-    foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
-        if ($shippingLine->get_method_id() !== 'samedaycourier') {
-            continue;
-        }
-
-        if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
+    $shippingSamedayData = SamedayCourierHelperClass::shippingWithSameday($order);
+    if(!empty($shippingSamedayData) ){
+        if (null !== $serviceCode = $shippingSamedayData->get_meta('service_code')) {
             if (SamedayCourierHelperClass::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
                 if (isset($locker['oohType']) && $locker['oohType'] === '1') {
 	                $serviceCode = SamedayCourierHelperClass::OOH_TYPES['1'] ;
                 }
             }
-
-            break;
         }
     }
 
@@ -104,7 +99,7 @@ function samedaycourierAddAwbForm($order): string {
         $repayment = 0;
     }
 
-    $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
+    $openPackage =  SamedayCourierHelperClass::getOrderMeta($order, '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
 
 	$lockerName = null;
 	$lockerAddress = null;
@@ -113,12 +108,12 @@ function samedaycourierAddAwbForm($order): string {
 		// Get locker from local import
 		$localLockerSameday = SamedayCourierQueryDb::getLockerSameday($postMetaLocker, $is_testing);
 		$lockerDetailsForm = json_encode([
-			'lockerId' => $localLockerSameday->locker_id,
-			'name' => $localLockerSameday->name,
-			'address' => $localLockerSameday->address,
-			'city' => $localLockerSameday->city,
-			'countyId' => $localLockerSameday->county,
-			'postalCode' => $localLockerSameday->postal_code,
+			'lockerId' => $localLockerSameday->locker_id ?? '',
+			'name' => $localLockerSameday->name ?? '',
+			'address' => $localLockerSameday->address ?? '',
+			'city' => $localLockerSameday->city ?? '',
+			'countyId' => $localLockerSameday->county ?? '',
+			'postalCode' => $localLockerSameday->postal_code ?? '',
 		]);
 		if (null !== $localLockerSameday) {
 			$lockerName = $localLockerSameday->name;
