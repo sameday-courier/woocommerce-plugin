@@ -3,6 +3,7 @@
 namespace SamedayCourier\Shipping\Infrastructure\Shipping\Method;
 
 use Exception;
+use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
@@ -185,6 +186,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
     /**
      * @return void
+     * @throws SamedaySDKException
      */
     private function syncLockers(): void
     {
@@ -464,13 +466,12 @@ final class SamedayCourier extends WC_Shipping_Method
             }
 
             foreach ($envModesByHosts as $apiUrl) {
-                $sameday = SdkInitiator::init(
-                    $post_data['woocommerce_samedaycourier_user'],
-                    $post_data['woocommerce_samedaycourier_password'],
-                    $apiUrl
-                );
-
                 try {
+                    $sameday = SdkInitiator::init(
+                        $post_data['woocommerce_samedaycourier_user'],
+                        $post_data['woocommerce_samedaycourier_password'],
+                        $apiUrl
+                    );
                     if ($sameday->login()) {
                         $isTesting = (int) (Helper::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
                         $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;

@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.11.0
+ * Version: 1.12.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -15,29 +15,22 @@
 
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\AwbPdfType;
-use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
-use Sameday\Requests\SamedayPostAwbEstimationRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
-use Sameday\Responses\SamedayPostAwbEstimationResponse;
 use Sameday\Sameday;
-use Sameday\SamedayClient;
-use SamedayCourier\Shipping\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Infrastructure\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Woo\Admin\Grid\Service\ServiceInstance;
+use SamedayCourier\Shipping\Woo\Admin\Views\NewParcelForm;
 
 if (! defined( 'ABSPATH')) {
     exit;
@@ -60,6 +53,13 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
+
+// Shipping Method init.
+add_filter('woocommerce_shipping_methods', static function (array $methods): array {
+    $methods['samedaycourier'] = SamedayCourier::class;
+
+    return $methods;
+});
 
 // Add Module Custom Actions
 add_action('admin_init','load_lockers_sync');
@@ -85,13 +85,6 @@ function load_lockers_sync() {
         wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
     }
 }
-
-// Shipping Method init.
-add_filter('woocommerce_shipping_methods', static function (array $methods): array {
-    $methods['samedaycourier'] = SamedayCourier::class;
-
-    return $methods;
-});
 
 // Plugin settings.
 add_action('plugins_loaded', static function () {
@@ -319,7 +312,7 @@ add_action('admin_post_show-awb-pdf', static function (){
     }
 });
 
-add_action('admin_post_add-new-parcel', function() {
+add_action('admin_post_add-new-parcel', static function() {
     $postFields = Helper::sanitizeInputs($_POST);
     if (empty($postFields)) {
         return wp_redirect(admin_url() . '/index.php');
@@ -775,7 +768,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             $sameday = new ApiRequestsHandler();
             $awbHistoryTable = $sameday->showAwbHistory($order->get_id());
 
-            $addNewParcelForm = samedaycourierAddNewParcelForm($order->get_id());
+            $addNewParcelForm = NewParcelForm::addNewParcelForm($order->get_id());
 
             $newParcelModal = '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">
                             ' . $addNewParcelForm . ' 
@@ -799,7 +792,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             ';
         }
 
-        $awbModal = samedaycourierAddAwbForm($order);
+        $awbModal = AwbForm::samedaycourierAddAwbForm($order);
 
         echo $buttons . $awbModal . $newParcelModal . $historyModal . $_goTo_eAWB;
     }

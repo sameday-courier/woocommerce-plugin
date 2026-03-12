@@ -34,6 +34,7 @@ use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Woo\Admin\Views\AwbHistoryTable;
 
 if (!defined( 'ABSPATH')) {
     exit;
@@ -873,19 +874,19 @@ class ApiRequestsHandler
 		exit();
     }
 
-	/**
-	 * @param $orderId
-	 *
-	 * @return string|void
-	 * @throws SamedaySDKException
-	 */
-    public function showAwbHistory($orderId)
+    /**
+     * @param $orderId
+     * @return string
+     *
+     * @throws SamedaySDKException
+     */
+    public function showAwbHistory($orderId): string
     {
         $sameday = new Sameday(SdkInitiator::init());
 
         $awb = QueryHandler::getAwbForOrderId($orderId);
         if (empty($awb)) {
-            return;
+            return "";
         }
 
         $parcels = unserialize($awb->parcels, ['']);
@@ -898,7 +899,7 @@ class ApiRequestsHandler
             try {
                 $parcelStatus = $sameday->getParcelStatusHistory(new SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
             } catch (Exception $exception) {
-                return samedaycourierCreateAwbHistoryTable(array());
+                return AwbHistoryTable::addAwbHistoryTable(array());
             }
 
             QueryHandler::refreshPackageHistory(
@@ -912,7 +913,7 @@ class ApiRequestsHandler
 
         $packages = QueryHandler::getPackagesForOrderId($orderId);
 
-        return samedaycourierCreateAwbHistoryTable($packages);
+        return AwbHistoryTable::addAwbHistoryTable($packages);
     }
 
     /**

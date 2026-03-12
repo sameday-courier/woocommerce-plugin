@@ -3,6 +3,8 @@
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
 use Sameday\Objects\Locker\LockerObject;
+use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
+use Sameday\Objects\ParcelStatusHistory\SummaryObject;
 use Sameday\Objects\PickupPoint\PickupPointObject;
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
@@ -421,11 +423,13 @@ class QueryHandler
 		return $wpdb->get_row($query);
 	}
 
-	/**
-	 * @param LockerObject $lockerObject
-	 * @param bool $is_testing
-	 */
-	public static function addLocker(LockerObject $lockerObject, $is_testing)
+    /**
+     * @param LockerObject $lockerObject
+     * @param $is_testing
+     *
+     * @return void
+     */
+	public static function addLocker(LockerObject $lockerObject, $is_testing): void
 	{
 		global $wpdb;
 
@@ -454,7 +458,7 @@ class QueryHandler
 	 *
 	 * @param int $id
 	 */
-	public static function updateLocker(LockerObject $lockerObject, $id)
+	public static function updateLocker(LockerObject $lockerObject, int $id): void
 	{
 		global $wpdb;
 
@@ -482,7 +486,7 @@ class QueryHandler
 	/**
 	 * @param int $id
 	 */
-	public static function deleteLocker($id)
+	public static function deleteLocker(int $id): void
 	{
 		global $wpdb;
 
@@ -506,7 +510,7 @@ class QueryHandler
 	/**
 	 * @param array $awb
 	 */
-	public static function saveAwb($awb)
+	public static function saveAwb(array $awb)
 	{
 		global $wpdb;
 
@@ -520,7 +524,7 @@ class QueryHandler
 	/**
 	 * @param object $awb
 	 */
-	public static function deleteAwbAndParcels($awb)
+	public static function deleteAwbAndParcels(object $awb): void
 	{
 		global $wpdb;
 
@@ -534,17 +538,17 @@ class QueryHandler
 	/**
 	 * @param $orderId
 	 * @param $awbParcel
-	 * @param \Sameday\Objects\ParcelStatusHistory\SummaryObject $summary
+	 * @param SummaryObject $summary
 	 * @param array $history
-	 * @param \Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
+	 * @param ExpeditionObject $expedition
 	 */
 	public static function refreshPackageHistory(
-			$orderId,
-			$awbParcel,
-			\Sameday\Objects\ParcelStatusHistory\SummaryObject $summary,
-			array $history,
-			\Sameday\Objects\ParcelStatusHistory\ExpeditionObject $expedition
-		)
+        $orderId,
+        $awbParcel,
+        SummaryObject $summary,
+        array $history,
+        ExpeditionObject $expedition
+    ): void
 	{
 		global $wpdb;
 
@@ -572,7 +576,7 @@ class QueryHandler
 		$summary,
 		$history,
 		$expedition
-	)
+    ): array
 	{
 		return [
 			'order_id' => $orderId,
@@ -604,7 +608,7 @@ class QueryHandler
 	 *
 	 * @return void
 	 */
-	public static function updateParcels($orderId, $parcels)
+	public static function updateParcels($orderId, $parcels): void
 	{
 		global $wpdb;
 
@@ -691,6 +695,9 @@ class QueryHandler
 		return $wpdb->get_results($query, ARRAY_A)[0]['postal_code'] ?? null;
 	}
 
+    /**
+     * @return void
+     */
 	public static function createSamedayCitiesTable(): void
 	{
 		global $wpdb;

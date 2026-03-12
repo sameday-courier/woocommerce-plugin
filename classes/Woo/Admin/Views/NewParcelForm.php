@@ -1,15 +1,25 @@
 <?php
 
+namespace SamedayCourier\Shipping\Woo\Admin\Views;
+
 use SamedayCourier\Shipping\Utils\Helper;
 
-if (! defined( 'ABSPATH' ) ) {
-	exit;
+if (!defined( 'ABSPATH' )) {
+    exit;
 }
 
-function samedaycourierAddNewParcelForm($orderId) {
-	$form = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Add new parcel", Helper::TEXT_DOMAIN) . '</strong> </h3>';
+class NewParcelForm extends AwbForm
+{
+    /**
+     * @param $orderId
+     *
+     * @return string
+     */
+    public static function addNewParcelForm($orderId): string
+    {
+        $form = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Add new parcel", Helper::TEXT_DOMAIN) . '</strong> </h3>';
 
-	$form .= '<table>
+        $form .= '<table>
 	                <tbody>                    	
 	                    <input type="hidden" form="addNewParcelForm" name="samedaycourier-order-id" value="'. $orderId . '">
 	                     <tr valign="middle">
@@ -69,5 +79,6 @@ function samedaycourierAddNewParcelForm($orderId) {
 					</tbody>
 				</table>';
 
-	return $form;
+        return $form;
+    }
 }

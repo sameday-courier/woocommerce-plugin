@@ -5,19 +5,17 @@ namespace SamedayCourier\Shipping\Woo\Admin\Grid\Service;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
-if (! defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH' )) {
 	exit;
 }
 
-if ( ! class_exists( 'WP_List_Table' ) ) {
+if (!class_exists( 'WP_List_Table' )) {
 	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
 class Services extends WP_List_Table
 {
     private $tableName = "sameday_service";
-
-    private $countRecords = 0;
 
 	/**
      * Class constructor

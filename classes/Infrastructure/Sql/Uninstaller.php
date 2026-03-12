@@ -8,7 +8,7 @@ class Uninstaller
     {
         global $wpdb;
 
-        foreach (SchemaMapper::getSamedayTables() as $table) {
+        foreach (SchemaDefinition::getSamedayTables() as $table) {
             $wpdb->query("DROP TABLE IF EXISTS $table");
         }
     }

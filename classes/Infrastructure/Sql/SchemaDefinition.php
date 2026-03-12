@@ -2,7 +2,7 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
-class SchemaMapper
+class SchemaDefinition
 {
     private const SAMEDAY_TABLES = [
         'sameday_awb',

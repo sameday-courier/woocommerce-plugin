@@ -4,18 +4,11 @@ namespace SamedayCourier\Shipping\Utils;
 
 use Exception;
 use JsonException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\CityObject;
-use Sameday\Objects\CountyObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayGetCitiesRequest;
-use Sameday\Requests\SamedayGetCountiesRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 
-if (! defined( 'ABSPATH' )) {
+if (!defined( 'ABSPATH' )) {
 	exit;
 }
 

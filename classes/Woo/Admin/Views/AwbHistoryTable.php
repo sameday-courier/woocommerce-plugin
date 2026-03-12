@@ -1,15 +1,25 @@
 <?php
 
+namespace SamedayCourier\Shipping\Woo\Admin\Views;
+
 use SamedayCourier\Shipping\Utils\Helper;
 
-if (! defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH' )) {
     exit;
 }
 
-function samedaycourierCreateAwbHistoryTable($packages) {
-    $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", Helper::TEXT_DOMAIN) . '</strong> </h3>';
+class AwbHistoryTable
+{
+    /**
+     * @param $packages
+     *
+     * @return string
+     */
+    public static function addAwbHistoryTable($packages): string
+    {
+        $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", Helper::TEXT_DOMAIN) . '</strong> </h3>';
 
-    $style = '<style>
+        $style = '<style>
                 .packages {
                   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
                   border-collapse: collapse;
@@ -57,19 +67,19 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                 }
                 </style>';
 
-    $return .= $style;
+        $return .= $style;
 
-    $packageRows = '';
-    if (empty($packages)) {
-        $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", Helper::TEXT_DOMAIN) .'</td></tr>';
-    }
+        $packageRows = '';
+        if (empty($packages)) {
+            $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", Helper::TEXT_DOMAIN) .'</td></tr>';
+        }
 
-    foreach ($packages as $package) {
-        $summary = unserialize($package['summary'], ['']);
-        $packageHistory = unserialize($package['history'], ['']);
-        $historyRows = '';
-        foreach ($packageHistory as $history) {
-            $historyRows .= '
+        foreach ($packages as $package) {
+            $summary = unserialize($package['summary'], ['']);
+            $packageHistory = unserialize($package['history'], ['']);
+            $historyRows = '';
+            foreach ($packageHistory as $history) {
+                $historyRows .= '
                 <tr>
                     <td> '.$history->getName().' </td>
                     <td> '.$history->getLabel().'</td>
@@ -80,8 +90,8 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     <td> '.$history->getReason().' </td>
                 </tr>
             ';
-        }
-        $packageRows .= '
+            }
+            $packageRows .= '
                 <tr>
                     <td style="text-align: center; cursor:pointer;" class="showHistoryDetails" value="-" data-awb-number="'.$summary->getParcelAwbNumber().'"> <strong> + </strong> </td>
                     <td> '.$summary->getParcelAwbNumber().'</td>
@@ -108,9 +118,9 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                     </td>
                 </tr>
         ';
-    }
+        }
 
-    $return .= '<table class="packages" style="width: 100%">
+        $return .= '<table class="packages" style="width: 100%">
                   <tr>
                     <th></th>
                     <th>' . __("Parcel number", Helper::TEXT_DOMAIN) . '</th>
@@ -123,7 +133,7 @@ function samedaycourierCreateAwbHistoryTable($packages) {
                   '.$packageRows.'		  
                 </table>';
 
-    $js = '
+        $js = '
         <script>
             jQuery(document).ready(function($) {
                 $(document).on("click", ".showHistoryDetails", function() {
@@ -146,8 +156,8 @@ function samedaycourierCreateAwbHistoryTable($packages) {
         </script>
     ';
 
-    $return .= $js;
+        $return .= $js;
 
-    return $return;
+        return $return;
+    }
 }
-

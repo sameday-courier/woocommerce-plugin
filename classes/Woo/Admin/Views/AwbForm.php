@@ -1,207 +1,214 @@
 <?php
 
-use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
-use SamedayCourier\Shipping\Utils\Helper;
+namespace SamedayCourier\Shipping\Woo\Admin\Views;
 
-if (! defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH' )) {
     exit;
 }
 
-/**
- * @param $serviceId
- *
- * @return false|mixed
- */
-function isServiceEligibleToLockerFirstMile($serviceId) {
-    $optionalServices = QueryHandler::getServiceIdOptionalTaxes($serviceId, Helper::isTesting());
-     
-    foreach ($optionalServices as $optionalService) {
-        if ($optionalService->getCode() === Helper::PERSONAL_DELIVERY_OPTION_CODE) {
-            return $serviceId;
+use JsonException;
+use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Utils\Helper;
+
+class AwbForm
+{
+    /**
+     * @param $serviceId
+     *
+     * @return false|mixed
+     */
+    public static function isServiceEligibleToLockerFirstMile($serviceId) : bool
+    {
+        $optionalServices = QueryHandler::getServiceIdOptionalTaxes($serviceId, Helper::isTesting());
+
+        foreach ($optionalServices as $optionalService) {
+            if ($optionalService->getCode() === Helper::PERSONAL_DELIVERY_OPTION_CODE) {
+                return $serviceId;
+            }
         }
+
+        return false;
     }
 
-	return false;
-}
+    /**
+     * @param $order
+     *
+     * @return string
+     */
+    public static function samedaycourierAddAwbForm($order): string
+    {
+        $is_testing = Helper::isTesting();
 
-/**
- * @throws JsonException
- */
-function samedaycourierAddAwbForm($order): string {
-    $is_testing = Helper::isTesting();
+        $postMetaLocker = get_post_meta(
+            $order->get_id(),
+            Helper::POST_META_SAMEDAY_SHIPPING_LOCKER,
+            true
+        );
 
-	$postMetaLocker = get_post_meta(
-		$order->get_id(),
-		Helper::POST_META_SAMEDAY_SHIPPING_LOCKER,
-		true
-	);
+        $locker = null;
+        $lockerDetailsForm = null;
+        if (is_int($postMetaLocker)) {
+            $locker = $postMetaLocker;
+        } else if (is_string($postMetaLocker)) {
+            $lockerDetailsForm = Helper::fixJson(
+                Helper::sanitizeInput($postMetaLocker)
+            );
 
-	$locker = null;
-	$lockerDetailsForm = null;
-	if (is_int($postMetaLocker)) {
-		$locker = $postMetaLocker;
-	} else if (is_string($postMetaLocker)) {
-		$lockerDetailsForm = Helper::fixJson(
-			Helper::sanitizeInput($postMetaLocker)
-		);
-
-		try {
-			$locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
-		} catch (JsonException $e) {}
-	}
-
-    $serviceCode = null;
-    foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
-        if ($shippingLine->get_method_id() !== 'samedaycourier') {
-            continue;
+            try {
+                $locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {}
         }
 
-        if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
-            if (Helper::isOohDeliveryOption($serviceCode) && '' !== $postMetaLocker) {
-                if (isset($locker['oohType']) && $locker['oohType'] === '1') {
-	                $serviceCode = Helper::OOH_TYPES['1'] ;
-                }
+        $serviceCode = null;
+        foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
+            if ($shippingLine->get_method_id() !== 'samedaycourier') {
+                continue;
             }
 
-            break;
-        }
-    }
+            if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
+                if ('' !== $postMetaLocker && isset($locker['oohType']) && $locker['oohType'] === '1' && Helper::isOohDeliveryOption($serviceCode)) {
+                    $serviceCode = Helper::OOH_TYPES['1'] ;
+                }
 
-    $total_weight = 0.0;
-    $weight = 0.0;
-    foreach ($order->get_items() as $v) {
-        $_product = wc_get_product($v['product_id']);
-        $qty = $v['quantity'];
-
-        if (isset($_product) && $_product !== false) {
-            $weight = (float) $_product->get_weight();
+                break;
+            }
         }
 
-        $total_weight += (float) number_format($weight * $qty, 2);
-    }
-    $total_weight = $total_weight ?: 1;
+        $total_weight = 0.0;
+        $weight = 0.0;
+        foreach ($order->get_items() as $v) {
+            $_product = wc_get_product($v['product_id']);
+            $qty = $v['quantity'];
 
-    $pickupPointOptions = '';
-    $pickupPoints = QueryHandler::getPickupPoints($is_testing);
-    foreach ($pickupPoints as $pickupPoint) {
-        $checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
-        $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
-    }
+            if (isset($_product) && $_product !== false) {
+                $weight = (float) $_product->get_weight();
+            }
 
-    $packageTypeOptions = '';
-    $packagesType = Helper::getPackageTypeOptions();
-    foreach ($packagesType as $packageType) {
-        $packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
-    }
-
-    $awbPaymentTypeOptions = '';
-    $awbPaymentsType = Helper::getAwbPaymentTypeOptions();
-    foreach ($awbPaymentsType as $awbPaymentType) {
-        $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
-    }
-
-    $payment_gateway = wc_get_payment_gateway_by_order($order);
-    $repayment = $order->get_total();
-
-    if ($payment_gateway->id !== Helper::CASH_ON_DELIVERY) {
-        $repayment = 0;
-    }
-
-    $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
-
-	$lockerName = null;
-	$lockerAddress = null;
-
-	if (is_int($locker)) {
-		// Get locker from local import
-		$localLockerSameday = QueryHandler::getLockerSameday($postMetaLocker, $is_testing);
-		try {
-            $lockerDetailsForm = json_encode([
-                'lockerId' => $localLockerSameday->locker_id,
-                'name' => $localLockerSameday->name,
-                'address' => $localLockerSameday->address,
-                'city' => $localLockerSameday->city,
-                'countyId' => $localLockerSameday->county,
-                'postalCode' => $localLockerSameday->postal_code,
-            ], JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            $localLockerSameday = null;
+            $total_weight += (float) number_format($weight * $qty, 2);
         }
-		if (null !== $localLockerSameday) {
-			$lockerName = $localLockerSameday->name;
-			$lockerAddress = $localLockerSameday->address;
-		}
-	}
+        $total_weight = $total_weight ?: 1;
 
-	if (is_array($locker)) {
-		$lockerName = $locker['name'];
-		$lockerAddress = $locker['address'];
-	}
+        $pickupPointOptions = '';
+        $pickupPoints = QueryHandler::getPickupPoints($is_testing);
+        foreach ($pickupPoints as $pickupPoint) {
+            $checked = $pickupPoint->default_pickup_point === '1' ? "selected" : "";
+            $pickupPointOptions .= "<option value='{$pickupPoint->sameday_id}' {$checked}> {$pickupPoint->sameday_alias} </option>" ;
+        }
 
-	$lockerDetails = null;
-	if (null !== $lockerName && null !== $lockerAddress) {
-		$lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
-	}
+        $packageTypeOptions = '';
+        $packagesType = Helper::getPackageTypeOptions();
+        foreach ($packagesType as $packageType) {
+            $packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
+        }
 
-    $username = Helper::getSamedaySettings()['user'] ?? null;
-    $hostCountry = Helper::getSamedaySettings()['host_country'] ?? null;
-    $destCity = $order->get_data()['shipping']['city'] ?? '';
-    $destCountry = $order->get_data()['shipping']['country'] ?? '';
+        $awbPaymentTypeOptions = '';
+        $awbPaymentsType = Helper::getAwbPaymentTypeOptions();
+        foreach ($awbPaymentsType as $awbPaymentType) {
+            $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
+        }
 
-    $destCurrency = Helper::CURRENCY_MAPPER[$destCountry];
-    $currency = $order->get_currency() ?? get_woocommerce_currency();
-    $currencyWarningMessage = '';
-    if ($destCurrency !== $currency
-        && $repayment > 0
-    ) {
-        $message = sprintf(
-            'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
+        $payment_gateway = wc_get_payment_gateway_by_order($order);
+        $repayment = $order->get_total();
+
+        if ($payment_gateway->id !== Helper::CASH_ON_DELIVERY) {
+            $repayment = 0;
+        }
+
+        $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
+
+        $lockerName = null;
+        $lockerAddress = null;
+
+        if (is_int($locker)) {
+            // Get locker from local import
+            $localLockerSameday = QueryHandler::getLockerSameday($postMetaLocker, $is_testing);
+            try {
+                $lockerDetailsForm = json_encode([
+                    'lockerId' => $localLockerSameday->locker_id,
+                    'name' => $localLockerSameday->name,
+                    'address' => $localLockerSameday->address,
+                    'city' => $localLockerSameday->city,
+                    'countyId' => $localLockerSameday->county,
+                    'postalCode' => $localLockerSameday->postal_code,
+                ], JSON_THROW_ON_ERROR);
+            } catch (JsonException $exception) {
+                $localLockerSameday = null;
+            }
+            if (null !== $localLockerSameday) {
+                $lockerName = $localLockerSameday->name;
+                $lockerAddress = $localLockerSameday->address;
+            }
+        }
+
+        if (is_array($locker)) {
+            $lockerName = $locker['name'];
+            $lockerAddress = $locker['address'];
+        }
+
+        $lockerDetails = null;
+        if (null !== $lockerName && null !== $lockerAddress) {
+            $lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
+        }
+
+        $username = Helper::getSamedaySettings()['user'] ?? null;
+        $hostCountry = Helper::getSamedaySettings()['host_country'] ?? null;
+        $destCity = $order->get_data()['shipping']['city'] ?? '';
+        $destCountry = $order->get_data()['shipping']['country'] ?? '';
+
+        $destCurrency = Helper::CURRENCY_MAPPER[$destCountry];
+        $currency = $order->get_currency() ?? get_woocommerce_currency();
+        $currencyWarningMessage = '';
+        if ($destCurrency !== $currency
+            && $repayment > 0
+        ) {
+            $message = sprintf(
+                'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
              Please consider a conversion !!',
-            $destCurrency,
-            $currency
-        );
-        $currencyWarningMessage = "
+                $destCurrency,
+                $currency
+            );
+            $currencyWarningMessage = "
             <tr>
                 <span>
                         <strong style='color: darkred'>"
-                            . __($message, Helper::TEXT_DOMAIN) . "
+                . __($message, Helper::TEXT_DOMAIN) . "
                         </strong>
                 </span>
             </tr>
         ";
-    }
-
-    $samedayServices = QueryHandler::getAvailableServices($is_testing);
-
-	$allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
-	$allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
-    $servicesOptions = '';
-    foreach ($samedayServices as $samedayService) {
-        $firstMileId = isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
-
-        $checked = ($serviceCode === $samedayService->sameday_code) ? 'selected' : '';
-        $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
-        if($firstMileId === $samedayService->sameday_id){
-            $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['show'];
         }
+
+        $samedayServices = QueryHandler::getAvailableServices($is_testing);
 
         $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
-        if (Helper::isOohDeliveryOption($samedayService->sameday_code)) {
-            $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['show'];
+        $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
+        $servicesOptions = '';
+        foreach ($samedayServices as $samedayService) {
+            $firstMileId = self::isServiceEligibleToLockerFirstMile($samedayService->sameday_id);
+
+            $checked = ($serviceCode === $samedayService->sameday_code) ? 'selected' : '';
+            $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
+            if($firstMileId === $samedayService->sameday_id){
+                $allowFirstMile = Helper::TOGGLE_HTML_ELEMENT['show'];
+            }
+
+            $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['hide'];
+            if (Helper::isOohDeliveryOption($samedayService->sameday_code)) {
+                $allowLastMile = Helper::TOGGLE_HTML_ELEMENT['show'];
+            }
+
+            $option = sprintf(
+                "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
+                $allowFirstMile,
+                $allowLastMile,
+                $samedayService->sameday_id,
+                $checked,
+                $samedayService->sameday_name,
+            );
+            $servicesOptions .= $option;
         }
 
-        $option = sprintf(
-            "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
-            $allowFirstMile,
-            $allowLastMile,
-            $samedayService->sameday_id,
-            $checked,
-            $samedayService->sameday_name,
-        );
-        $servicesOptions .= $option;
-    }
-
-    $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
+        $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
                 <h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Generate awb", Helper::TEXT_DOMAIN) . '</strong> </h3>      
                 <table>
                     <tbody>       
@@ -211,7 +218,7 @@ function samedaycourierAddAwbForm($order): string {
                                 <label for="samedaycourier-package-repayment"> ' . sprintf("%s (%s)", __("Repayment", Helper::TEXT_DOMAIN), $currency) .' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
-                                <input type="text" onkeypress="return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 100%; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
+                                <input type="text" onkeypress="return (event.charCode !== 8 && event.charCode === 0 || ( event.charCode === 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 100%; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
                                 <span>' . __("Payment type: ", Helper::TEXT_DOMAIN) . $payment_gateway->title . '</span>
                              </td>     
                              
@@ -224,7 +231,6 @@ function samedaycourierAddAwbForm($order): string {
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" step="0.1" style="width: 100%; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
                              </td>                        
-                             
                         </tr>
                         <tr>
                             <th><label>' . __("Parcels", Helper::TEXT_DOMAIN) . '</label></th>
@@ -297,7 +303,7 @@ function samedaycourierAddAwbForm($order): string {
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-                            $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
+        $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
                                 <label for="samedaycourier-locker_first_mile"> ' . __("Personal delivery at locker", Helper::TEXT_DOMAIN) . '</label>
                             </th> 
                             <td class="forminp forminp-text" colspan="4">
@@ -306,14 +312,14 @@ function samedaycourierAddAwbForm($order): string {
                                 <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . __("Show map", Helper::TEXT_DOMAIN) . '</a></span>
                                 <span class="custom_tooltip"> ' . __("Show locker dimensions", Helper::TEXT_DOMAIN) . '    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
                                 <tr></td>';
-                       
-                            $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
+
+        $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
                             	<th scope="row" class="titledesc"> 
                                     <label for="samedaycourier-locker-details"> ' . __("Location details", Helper::TEXT_DOMAIN) . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
-                                $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
-                                $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
+        $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
+        $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
                                     <button class="button-primary" 
                                         data-username="'.$username.'" 
                                         data-country="'.$hostCountry.'" 
@@ -325,8 +331,8 @@ function samedaycourierAddAwbForm($order): string {
                                     </button> 
                                 </td>
                             </tr>';
-                        
-                        $form .= '<tr valign="middle">
+
+        $form .= '<tr valign="middle">
                             <th scope="row" class="titledesc"> 
                                 <label for="samedaycourier-open-package-status"> ' . __("Open package", Helper::TEXT_DOMAIN) . '</label>
                             </th> 
@@ -363,5 +369,6 @@ function samedaycourierAddAwbForm($order): string {
                 });
             </script>';
 
-    return $form;
+        return $form;
+    }
 }
