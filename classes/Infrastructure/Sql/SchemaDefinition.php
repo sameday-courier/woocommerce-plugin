@@ -2,15 +2,23 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+
 class SchemaDefinition
 {
-    private const SAMEDAY_TABLES = [
-        'sameday_awb',
-        'sameday_pickup_point',
-        'sameday_service',
-        'sameday_package',
-        'sameday_locker',
-        'sameday_cities',
+    private const SAMEDAY_REPOSITORIES = [
+        SamedayAwbRepository::class,
+        SamedayLockerRepository::class,
+        SamedayPickupPointRepository::class,
+        SamedayServiceRepository::class,
+        SamedayPackageRepository::class,
+        SamedayCityRepository::class,
     ];
 
     /**
@@ -18,13 +26,11 @@ class SchemaDefinition
      */
     public static function getSamedayTables(): array
     {
-        global $wpdb;
-
         return array_map(
-            static function (string $table) use ($wpdb) {
-                return $wpdb->prefix . $table;
+            static function (RepositoryInterface $repo) {
+                return $repo::getTableName();
             },
-            self::SAMEDAY_TABLES
+            self::SAMEDAY_REPOSITORIES
         );
     }
 }

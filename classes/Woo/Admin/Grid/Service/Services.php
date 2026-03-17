@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\Service;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -40,17 +41,15 @@ class Services extends WP_List_Table
      */
 	private function getServices(): array
 	{
-		global $wpdb;
-
 		$sql = Helper::buildGridQuery(
-			$wpdb->prefix . $this->tableName,
-            Helper::isTesting(),
+			DbHandler::buildTableName($this->tableName),
+			Helper::isTesting(),
 			self::ACCEPTED_FILTERS
 		);
 
         $services = array_filter(
-            (array) $wpdb->get_results($sql, 'ARRAY_A'),
-            static function($service) {
+            DbHandler::getRows($sql),
+            static function ($service) {
                 return Helper::isInUseServices($service['sameday_code']);
             }
         );

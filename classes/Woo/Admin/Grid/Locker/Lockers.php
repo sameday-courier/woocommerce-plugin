@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\Locker;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -38,9 +39,7 @@ class Lockers extends WP_List_Table
      */
     private function getLockers(): array
     {
-        global $wpdb;
-
-        $table = $wpdb->prefix . $this->tableName;
+        $table = DbHandler::buildTableName($this->tableName);
         $is_testing = Helper::isTesting();
 
         $sql = Helper::buildGridQuery(
@@ -49,7 +48,7 @@ class Lockers extends WP_List_Table
             self::ACCEPTED_FILTERS,
         );
 
-        return $wpdb->get_results($sql, 'ARRAY_A');
+        return DbHandler::getRows($sql);
     }
 
     /**

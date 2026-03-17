@@ -23,7 +23,10 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Shipping\Method\SamedayCourier;
-use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Woo\Admin\Views\AwbForm;
@@ -281,7 +284,7 @@ add_action('admin_post_add_awb', static function () {
 });
 
 add_action('admin_post_remove-awb', static function () {
-    $awb = QueryHandler::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
+    $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
     $nonce = $_POST['_wpnonce'];
     if (empty($awb)) {
         return wp_redirect(admin_url() . '/index.php');
@@ -334,15 +337,14 @@ function wps_sameday_shipping_options_layout() {
         return;
     }
 
-    $service = QueryHandler::getServiceSamedayByCode(
-        Helper::getChosenShippingMethodCode(),
-        Helper::isTesting()
+    $service = SamedayServiceRepository::getServiceSamedayByCode(
+        Helper::getChosenShippingMethodCode()
     );
 
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
-    if ($service) {
-        $optionalTaxes = unserialize($service->service_optional_taxes, ['']);
+    if (!empty($service) && !empty($service['service_optional_taxes'])) {
+        $optionalTaxes = unserialize($service['service_optional_taxes'], ['']);
         if (!$optionalTaxes) {
             $optionalTaxes = [];
         }
@@ -486,13 +488,12 @@ function wps_locker_row_layout() {
             <?php } ?>
         <?php } else { ?>
             <?php
-                $cities = QueryHandler::getCitiesWithLockers(Helper::isTesting());
+                $cities = SamedayLockerRepository::getCitiesWithLockers();
                 $lockers = array();
                 foreach ($cities as $city) {
                     if (null !== $city->city) {
-                        $lockers[$city->city . ' (' . $city->county . ')'] = QueryHandler::getLockersByCity(
-                            $city->city,
-                            Helper::isTesting()
+                        $lockers[$city->city . ' (' . $city->county . ')'] = SamedayLockerRepository::getLockersByCity(
+                            $city->city
                         );
                     }
                 }
@@ -778,18 +779,20 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                             ' . $awbHistoryTable . ' 
                          </div>';
 
-            $awb = QueryHandler::getAwbForOrderId(sanitize_key($order->get_id()));
-            $redirectToEawbSite = sprintf(
-                    '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                    Helper::EAWB_INSTANCES[Helper::getHostCountry()],
-	            $awb->awb_number
-            );
+            $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($order->get_id()));
+            if (!empty($awb)) {
+                $redirectToEawbSite = sprintf(
+                        '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
+                        Helper::EAWB_INSTANCES[Helper::getHostCountry()],
+                        $awb['awb_number']
+                );
 
-            $_goTo_eAWB = '
-                <p class="form-field form-field-wide wc-customer-user">
-                    <a href="' . $redirectToEawbSite . '" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
-                </p>
-            ';
+                $_goTo_eAWB = '
+                    <p class="form-field form-field-wide wc-customer-user">
+                        <a href="' . $redirectToEawbSite . '" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
+                    </p>
+                ';
+            }
         }
 
         $awbModal = AwbForm::samedaycourierAddAwbForm($order);
@@ -842,7 +845,7 @@ function enqueue_button_scripts(): void
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',
                 [
-		            'cities' => QueryHandler::getCachedCities(),
+		            'cities' => SamedayCityRepository::getCachedCities(),
                 ]
             );
         }

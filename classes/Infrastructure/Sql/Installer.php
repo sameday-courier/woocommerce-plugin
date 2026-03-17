@@ -2,6 +2,14 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+
 class Installer
 {
     /**
@@ -9,16 +17,14 @@ class Installer
      */
     public static function run(): void
     {
-        global $wpdb;
+        $charset_collate = DbHandler::getCharsetCollate();
 
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $awbTable =  $wpdb->prefix . 'sameday_awb';
-        $pickup_point = $wpdb->prefix . 'sameday_pickup_point';
-        $service = $wpdb->prefix . 'sameday_service';
-        $packageTable = $wpdb->prefix . 'sameday_package';
-        $lockerTable = $wpdb->prefix . 'sameday_locker';
-        $citiesTable = $wpdb->prefix . 'sameday_cities';
+        $awbTable =  SamedayAwbRepository::getTableName();
+        $pickup_point = SamedayPickupPointRepository::getTableName();
+        $service = SamedayServiceRepository::getTableName();
+        $packageTable = SamedayPackageRepository::getTableName();
+        $lockerTable = SamedayLockerRepository::getTableName();
+        $citiesTable = SamedayCityRepository::getTableName();
 
         $createAwbTable = "CREATE TABLE IF NOT EXISTS $awbTable (
 		id INT(11) NOT NULL AUTO_INCREMENT,
@@ -103,7 +109,7 @@ class Installer
 
         $tablesToAlter = [];
 
-        $servicesRows = $wpdb->get_row("SELECT * FROM $service LIMIT 1");
+        $servicesRows = DbHandler::getRow("SELECT * FROM $service LIMIT 1");
 
         if (!isset($servicesRows->sameday_code)) {
             $alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '';";
@@ -121,12 +127,12 @@ class Installer
          * Create Tables
          */
         foreach ($tablesToCreate as $sql) {
-            $wpdb->query($sql);
+            DbHandler::executeQuery($sql);
         }
 
         if (! empty($tablesToAlter)) {
             foreach ($tablesToAlter as $sql) {
-                $wpdb->query($sql);
+                DbHandler::executeQuery($sql);
             }
         }
     }

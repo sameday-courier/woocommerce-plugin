@@ -16,7 +16,9 @@ use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
@@ -69,10 +71,10 @@ final class SamedayCourier extends WC_Shipping_Method
         }
 
         $availableServices = array_filter(
-            QueryHandler::getAvailableServices(Helper::isTesting()),
-            static function($row) use ($eligibleShippingServices) {
+            SamedayServiceRepository::getAvailableServices(),
+            static function ($row) use ($eligibleShippingServices) {
                 return in_array(
-                    $row->sameday_code,
+                    $row['sameday_code'] ?? '',
                     $eligibleShippingServices,
                     true
                 );
@@ -177,7 +179,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 && ($service->sameday_code === Helper::LOCKER_NEXT_DAY_CODE)
             ) {
                 $this->syncLockers();
-                $rate['lockers'] = QueryHandler::getLockers(Helper::isTesting());
+                $rate['lockers'] = SamedayLockerRepository::getLockers();
             }
 
             $this->add_rate($rate);
@@ -207,15 +209,14 @@ final class SamedayCourier extends WC_Shipping_Method
      */
     private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
     {
-        $pickupPointId = QueryHandler::getDefaultPickupPointId(Helper::isTesting());
+        $pickupPointId = SamedayPickupPointRepository::getDefaultPickupPointId();
         $weight = Helper::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
         $state = Helper::convertStateCodeToName($address['country'], $address['state']);
         $city = Helper::removeAccents($address['city']);
         $currency = Helper::CURRENCY_MAPPER[$address['country']];
 
-        $optionalServices = QueryHandler::getServiceIdOptionalTaxes(
-            $serviceId,
-            Helper::isTesting()
+        $optionalServices = SamedayServiceRepository::getServiceIdOptionalTaxes(
+            (int) $serviceId
         );
         $serviceTaxIds = array();
         if (WC()->session->get('open_package') === 'yes') {

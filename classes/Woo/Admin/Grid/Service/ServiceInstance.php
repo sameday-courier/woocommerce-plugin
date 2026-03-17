@@ -2,7 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\Service;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 
@@ -104,23 +104,23 @@ class ServiceInstance
      */
 	private function createServiceForm($id)
     {
-        $service = QueryHandler::getService($id);
+        $service = SamedayServiceRepository::getService((int) $id);
 
-        $greyedOut = "";
-        $serviceName = $service->sameday_name;
-        if ($service->sameday_code === Helper::LOCKER_NEXT_DAY_CODE) {
-            $greyedOut = "disabled";
-            $serviceName = Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()];
-        }
-
-        if (! $service) {
+        if (empty($service)) {
 	        WC_Admin_Settings::add_error('No service available !');
 	        WC_Admin_Settings::show_messages(); exit;
         }
 
+        $greyedOut = "";
+        $serviceName = $service['sameday_name'] ?? '';
+        if (($service['sameday_code'] ?? '') === Helper::LOCKER_NEXT_DAY_CODE) {
+            $greyedOut = "disabled";
+            $serviceName = Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()];
+        }
+
 	    $statuses = '';
         foreach ($this->getStatuses() as $status) {
-            $checked = ((int) $service->status) === ((int) $status['value']) ? 'selected' : '';
+            $checked = ((int) ($service['status'] ?? 0)) === ((int) $status['value']) ? 'selected' : '';
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 
@@ -145,7 +145,7 @@ class ServiceInstance
                                 <label for="samedaycourier-price">  '.__('Price', Helper::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.$service->price.'"> 
+                                <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.esc_attr($service['price'] ?? '').'"> 
                             </td>
                         </tr>
                         <tr valign="top">
@@ -153,7 +153,7 @@ class ServiceInstance
                                 <label for="samedaycourier-free-delivery-price">  '.__('Free delivery price', Helper::TEXT_DOMAIN).' </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.$service->price_free.'"> 
+                                <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.esc_attr($service['price_free'] ?? '').'"> 
                             </td>
                         </tr>
                        <tr valign="top">

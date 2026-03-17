@@ -7,6 +7,9 @@ use JsonException;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
 
 if (!defined( 'ABSPATH' )) {
 	exit;
@@ -357,10 +360,10 @@ class Helper
             return null;
         }
 
-        $awb = QueryHandler::getAwbForOrderId($orderId);
+        $awb = SamedayAwbRepository::getAwbForOrderId($orderId);
 
         if (!empty($awb)) {
-            $data['awb_number'] = $awb->awb_number;
+            $data['awb_number'] = $awb['awb_number'];
         }
 
         return $data;
@@ -551,7 +554,7 @@ class Helper
 
         // If you don't use lockerMap but dropdown option
         if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
-            $lockerFields = QueryHandler::getLockerSameday($postMetaLocker, self::isTesting());
+            $lockerFields = SamedayLockerRepository::getLockerSameday($postMetaLocker);
 
             if (null === $lockerFields) {
                 return;
@@ -784,7 +787,7 @@ class Helper
 	 */
 	public static function validatePostalCode(string $postalCode, string $countyCode): bool
 	{
-		if (null === $code = QueryHandler::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
+		if (null === $code = SamedayCityRepository::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
 			return false;
 		}
 

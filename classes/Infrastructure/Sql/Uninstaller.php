@@ -2,14 +2,14 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+
 class Uninstaller
 {
     public static function run(): void
     {
-        global $wpdb;
-
-        foreach (SchemaDefinition::getSamedayTables() as $table) {
-            $wpdb->query("DROP TABLE IF EXISTS $table");
+        foreach (SchemaDefinition::getSamedayTables() as $tableName) {
+            DbHandler::dropTable($tableName);
         }
     }
 }

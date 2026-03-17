@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -152,67 +153,62 @@ class PickupPoints extends WP_List_Table
     // Update data query to accept search filters
     private function getPickupPoints($search_params = [])
     {
-            global $wpdb;
+        $where_conditions = [];
+        $query_params = [];
 
-            // Start with base query
-            $where_conditions = [];
-            $query_params = [];
+        // Add testing condition
+        $where_conditions[] = "is_testing = %d";
+        $query_params[] = Helper::isTesting();
 
-            // Add testing condition
-		    $where_conditions[] = "is_testing = %d";
-		    $query_params[] = Helper::isTesting();
+        // Add search conditions
+        if (!empty($search_params['search_sameday_id'])) {
+            $where_conditions[] = "sameday_id LIKE %s";
+            $query_params[] = '%' . $search_params['search_sameday_id'] . '%';
+        }
 
-            // Add search conditions
-            if (!empty($search_params['search_sameday_id'])) {
-                $where_conditions[] = "sameday_id LIKE %s";
-                $query_params[] = '%' . $search_params['search_sameday_id'] . '%';
+        if (!empty($search_params['search_sameday_alias'])) {
+            $where_conditions[] = "sameday_alias LIKE %s";
+            $query_params[] = '%' . $search_params['search_sameday_alias'] . '%';
+        }
+
+        if (!empty($search_params['search_city'])) {
+            $where_conditions[] = "city LIKE %s";
+            $query_params[] = '%' . $search_params['search_city'] . '%';
+        }
+
+        if (!empty($search_params['search_county'])) {
+            $where_conditions[] = "county LIKE %s";
+            $query_params[] = '%' . $search_params['search_county'] . '%';
+        }
+
+        if (!empty($search_params['search_address'])) {
+            $where_conditions[] = "address LIKE %s";
+            $query_params[] = '%' . $search_params['search_address'] . '%';
+        }
+
+        if (!empty($search_params['search_contactPersons'])) {
+            $where_conditions[] = "contactPersons LIKE %s";
+            $query_params[] = '%' . $search_params['search_contactPersons'] . '%';
+        }
+
+        if (!empty($search_params['search_default_pickup_point'])) {
+            if ($search_params['search_default_pickup_point'] === 'yes') {
+                $where_conditions[] = "default_pickup_point = 1";
+            } elseif ($search_params['search_default_pickup_point'] === 'no') {
+                $where_conditions[] = "default_pickup_point = 0";
             }
+        }
 
-            if (!empty($search_params['search_sameday_alias'])) {
-                $where_conditions[] = "sameday_alias LIKE %s";
-                $query_params[] = '%' . $search_params['search_sameday_alias'] . '%';
-            }
+        $sql = "SELECT * FROM " . DbHandler::buildTableName($this->tableName);
+        if (!empty($where_conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $where_conditions);
+        }
 
-            if (!empty($search_params['search_city'])) {
-                $where_conditions[] = "city LIKE %s";
-                $query_params[] = '%' . $search_params['search_city'] . '%';
-            }
+        if (!empty($query_params)) {
+            $sql = DbHandler::prepareQuery($sql, $query_params);
+        }
 
-            if (!empty($search_params['search_county'])) {
-                $where_conditions[] = "county LIKE %s";
-                $query_params[] = '%' . $search_params['search_county'] . '%';
-            }
-
-            if (!empty($search_params['search_address'])) {
-                $where_conditions[] = "address LIKE %s";
-                $query_params[] = '%' . $search_params['search_address'] . '%';
-            }
-
-            if (!empty($search_params['search_contactPersons'])) {
-                $where_conditions[] = "contactPersons LIKE %s";
-                $query_params[] = '%' . $search_params['search_contactPersons'] . '%';
-            }
-
-            if (!empty($search_params['search_default_pickup_point'])) {
-                if ($search_params['search_default_pickup_point'] === 'yes') {
-                    $where_conditions[] = "default_pickup_point = 1";
-                } elseif ($search_params['search_default_pickup_point'] === 'no') {
-                    $where_conditions[] = "default_pickup_point = 0";
-                }
-            }
-
-            // Build final query
-            $sql = "SELECT * FROM " . $wpdb->prefix . $this->tableName;
-            if (!empty($where_conditions)) {
-                $sql .= " WHERE " . implode(' AND ', $where_conditions);
-            }
-
-            // Execute query
-            if (!empty($query_params)) {
-                $sql = $wpdb->prepare($sql, $query_params);
-            }
-
-            return $wpdb->get_results($sql, 'ARRAY_A');
+        return DbHandler::getRows($sql);
     }
     protected function extra_tablenav($which) {
         if ($which === 'top') {
