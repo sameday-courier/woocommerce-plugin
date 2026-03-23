@@ -1,15 +1,15 @@
 <?php
 
-namespace SamedayCourier\Shipping\Woo\Admin\Views;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 if (!defined( 'ABSPATH' )) {
     exit;
 }
 
 use JsonException;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 class AwbForm

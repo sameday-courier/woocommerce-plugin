@@ -3,12 +3,12 @@
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPackageRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 
 class SchemaDefinition
 {

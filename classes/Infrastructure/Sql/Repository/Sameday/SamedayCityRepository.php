@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository;
+namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use stdClass;
@@ -113,19 +114,6 @@ class SamedayCityRepository implements RepositoryInterface
     }
 
     /**
-     * @return bool
-     */
-    public static function tableExists(): bool
-    {
-        $queryString = DbHandler::prepareQuery(
-            "SHOW TABLES LIKE %s",
-            [self::getTableName()]
-        );
-
-        return (bool) DbHandler::getVar($queryString);
-    }
-
-    /**
      * @return void
      */
     public static function createTable(): void
@@ -143,6 +131,6 @@ class SamedayCityRepository implements RepositoryInterface
             PRIMARY KEY (id)
         ) $collate;";
 
-        DbHandler::query($sql);
+        DbHandler::executeQuery($sql);
     }
 }

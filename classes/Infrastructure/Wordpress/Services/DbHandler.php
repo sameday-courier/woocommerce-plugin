@@ -107,6 +107,25 @@ class DbHandler
 
     /**
      * @param string $tableName
+     *
+     * @return bool
+     */
+    public static function isTableExists(string $tableName): bool
+    {
+        global $wpdb;
+
+        $queryString = self::prepareQuery(
+            "SHOW TABLES LIKE %s",
+            [
+                $tableName
+            ]
+        );
+
+        return (bool) $wpdb->get_var($queryString);
+    }
+
+    /**
+     * @param string $tableName
      * 
      * @return void
      */

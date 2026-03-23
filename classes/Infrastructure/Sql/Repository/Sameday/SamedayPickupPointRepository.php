@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository;
+namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\PickupPoint\PickupPointObject;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace SamedayCourier\Shipping\Woo\Admin\Views;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use SamedayCourier\Shipping\Utils\Helper;
 

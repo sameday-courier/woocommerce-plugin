@@ -1,6 +1,6 @@
 <?php
 
-namespace SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint;
 
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Utils\Helper;

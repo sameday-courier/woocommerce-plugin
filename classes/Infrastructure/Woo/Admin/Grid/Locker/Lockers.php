@@ -1,6 +1,6 @@
 <?php
 
-namespace SamedayCourier\Shipping\Woo\Admin\Grid\Locker;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;

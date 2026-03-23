@@ -23,17 +23,17 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Shipping\Method\SamedayCourier;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\PluginHandler;
 use SamedayCourier\Shipping\Utils\Helper;
-use SamedayCourier\Shipping\Woo\Admin\Views\AwbForm;
-use SamedayCourier\Shipping\Woo\Admin\Grid\Locker\LockerInstance;
-use SamedayCourier\Shipping\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
-use SamedayCourier\Shipping\Woo\Admin\Grid\Service\ServiceInstance;
-use SamedayCourier\Shipping\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 
 if (! defined( 'ABSPATH')) {
     exit;
@@ -824,8 +824,8 @@ add_filter('plugin_row_meta', function ($links, $pluginFileName) {
     return $links;
 }, 10, 4);
 
-register_activation_hook(__FILE__, [SchemaHandler::class, 'install']);
-register_uninstall_hook(__FILE__, [SchemaHandler::class, 'uninstall']);
+register_activation_hook(__FILE__, [PluginHandler::class, 'install']);
+register_uninstall_hook(__FILE__, [PluginHandler::class, 'uninstall']);
 
 function enqueue_button_scripts(): void
 {

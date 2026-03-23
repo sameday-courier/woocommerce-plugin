@@ -1,8 +1,8 @@
 <?php
 
-namespace SamedayCourier\Shipping\Woo\Admin\Grid\Service;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 

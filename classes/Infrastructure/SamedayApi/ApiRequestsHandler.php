@@ -32,15 +32,15 @@ use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPackageRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
-use SamedayCourier\Shipping\Woo\Admin\Views\AwbHistoryTable;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
 if (!defined( 'ABSPATH')) {
     exit;
@@ -138,7 +138,7 @@ class ApiRequestsHandler
 	 */
     public function importCities(): void
     {
-		if (false === SamedayCityRepository::tableExists()) {
+		if (false === DbHandler::isTableExists(SamedayCityRepository::getTableName())) {
             SamedayCityRepository::createTable();
 		}
 

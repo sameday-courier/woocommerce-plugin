@@ -6,10 +6,10 @@ use Exception;
 use JsonException;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
-use SamedayCourier\Shipping\Infrastructure\Sql\QueryHandler;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo\WooOrderAddressRepository;
 
 if (!defined( 'ABSPATH' )) {
 	exit;
@@ -728,7 +728,7 @@ class Helper
 			update_post_meta($orderId, $key, $value, false);
 		}
 
-        QueryHandler::updateWcOrderAddress(
+        WooOrderAddressRepository::updateWcOrderAddress(
             $orderId,
             [
                 'address_1' => $address1,

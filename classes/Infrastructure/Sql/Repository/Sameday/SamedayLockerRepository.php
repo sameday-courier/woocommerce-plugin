@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository;
+namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\Locker\LockerObject;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -110,6 +111,12 @@ class SamedayLockerRepository implements RepositoryInterface
         );
     }
 
+    /**
+     * @param LockerObject $lockerObject
+     * @param int $id
+     *
+     * @return void
+     */
     public static function updateLocker(LockerObject $lockerObject, int $id): void
     {
         DbHandler::updateRow(

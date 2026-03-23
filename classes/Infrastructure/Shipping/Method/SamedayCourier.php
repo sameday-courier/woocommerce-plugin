@@ -16,9 +16,9 @@ use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
@@ -52,6 +52,9 @@ final class SamedayCourier extends WC_Shipping_Method
 
     /**
      * @param array $package
+     * @return void
+     *
+     * @throws SamedaySDKException
      */
     public function calculate_shipping($package = array()): void
     {
