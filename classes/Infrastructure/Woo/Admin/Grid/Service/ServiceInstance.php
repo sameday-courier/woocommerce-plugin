@@ -197,7 +197,7 @@ class ServiceInstance
 			'option'  => 'services_per_page'
 		];
 
-		add_screen_option( $option, $args );
+		add_screen_option($option, $args);
 
 		$this->services_obj = new Services();
 	}
