@@ -58,15 +58,13 @@ class SamedayPackageRepository extends AbstractRepository
      */
     public function getPackagesForOrderId(int $orderId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE order_id = %d",
             [
                 $this->getTableName(),
                 $orderId,
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**

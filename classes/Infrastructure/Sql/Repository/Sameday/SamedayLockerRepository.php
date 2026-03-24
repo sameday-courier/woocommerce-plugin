@@ -26,15 +26,13 @@ class SamedayLockerRepository extends AbstractRepository
      */
     public function getCitiesWithLockers(): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT city, county FROM %s WHERE is_testing = %s GROUP BY city",
             [
                 $this->getTableName(),
                 Helper::isTesting()
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -42,15 +40,13 @@ class SamedayLockerRepository extends AbstractRepository
      */
     public function getLockers(): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -60,7 +56,7 @@ class SamedayLockerRepository extends AbstractRepository
      */
     public function getLockersByCity(string $city): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE city = %s AND is_testing = %s",
             [
                 $this->getTableName(),
@@ -68,8 +64,6 @@ class SamedayLockerRepository extends AbstractRepository
                 Helper::isTesting()
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -79,7 +73,7 @@ class SamedayLockerRepository extends AbstractRepository
      */
     public function getLockerSameday(int $samedayId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -87,8 +81,6 @@ class SamedayLockerRepository extends AbstractRepository
                 Helper::isTesting()
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     public function addLocker(LockerObject $lockerObject): void

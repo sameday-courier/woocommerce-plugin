@@ -213,11 +213,7 @@ class PickupPoints extends WP_List_Table
             $sql .= " WHERE " . implode(' AND ', $where_conditions);
         }
 
-        if (!empty($query_params)) {
-            $sql = $this->dbHandler->prepareQuery($sql, $query_params);
-        }
-
-        return $this->dbHandler->getRows($sql);
+        return $this->dbHandler->getRows($sql, $query_params);
     }
     protected function extra_tablenav($which) {
         if ($which === 'top') {

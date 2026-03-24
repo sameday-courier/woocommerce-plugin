@@ -28,7 +28,7 @@ class SamedayPickupPointRepository extends AbstractRepository
      */
     public function getPickupPointSameday(int $samedayId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -36,8 +36,6 @@ class SamedayPickupPointRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -45,15 +43,13 @@ class SamedayPickupPointRepository extends AbstractRepository
      */
     public function getPickupPoints(): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -61,14 +57,13 @@ class SamedayPickupPointRepository extends AbstractRepository
      */
     public function getDefaultPickupPointId(): ?int
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        $result = $this->dbHandler->getRow(
             "SELECT sameday_id FROM %s WHERE default_pickup_point = 1 AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-        $result = $this->dbHandler->getRow($queryString);
 
         return isset($result['sameday_id']) ? (int) $result['sameday_id'] : null;
     }

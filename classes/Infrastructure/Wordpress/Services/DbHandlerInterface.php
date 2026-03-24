@@ -13,14 +13,6 @@ interface DbHandlerInterface
 
     /**
      * @param string $queryString
-     * @param array $queryParams
-     *
-     * @return string
-     */
-    public function prepareQuery(string $queryString, array $queryParams = []): string;
-
-    /**
-     * @param string $queryString
      *
      * @return null|string
      */
@@ -31,14 +23,14 @@ interface DbHandlerInterface
      *
      * @return array
      */
-    public function getRow(string $queryString): array;
+    public function getRow(string $queryString, array $queryParams): array;
 
     /**
      * @param string $queryString
      *
      * @return array
      */
-    public function getRows(string $queryString): array;
+    public function getRows(string $queryString, array $queryParams): array;
 
     /**
      * @param string $tableName

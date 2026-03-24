@@ -30,15 +30,13 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getAvailableServices(): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s AND status > 0",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -46,15 +44,13 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getServices(): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -64,7 +60,7 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getServiceIdOptionalTaxes(int $samedayServiceId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        $rows = $this->dbHandler->getRows(
             "SELECT service_optional_taxes FROM %s WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
             [
                 $this->getTableName(),
@@ -72,8 +68,6 @@ class SamedayServiceRepository extends AbstractRepository
                 $samedayServiceId,
             ]
         );
-
-        $rows = $this->dbHandler->getRows($queryString);
         if (empty($rows) || empty($rows[0]['service_optional_taxes'])) {
             return [];
         }
@@ -99,15 +93,13 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getService(int $id): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE id = %d LIMIT 1",
             [
                 $this->getTableName(),
                 $id,
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -117,7 +109,7 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getServiceSameday(int $samedayId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -125,8 +117,6 @@ class SamedayServiceRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -136,7 +126,7 @@ class SamedayServiceRepository extends AbstractRepository
      */
     public function getServiceSamedayByCode(string $samedayCode): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -144,8 +134,6 @@ class SamedayServiceRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     /**

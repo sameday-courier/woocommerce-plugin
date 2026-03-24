@@ -26,17 +26,6 @@ class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $queryString
-     * @param array $queryParams
-     *
-     * @return string
-     */
-    public function prepareQuery(string $queryString, array $queryParams = []): string
-    {
-        return $this->db->prepare($queryString, ...$queryParams);
-    }
-
-    /**
-     * @param string $queryString
      *
      * @return null|string
      */
@@ -50,9 +39,12 @@ class DbHandler implements DbHandlerInterface
      *
      * @return array
      */
-    public function getRow(string $queryString): array
+    public function getRow(string $queryString, array $queryParams = []): array
     {
-        return $this->db->get_row($queryString, ARRAY_A) ?? [];
+        return $this->db->get_row(
+            $this->db->prepare($queryString, ...$queryParams),
+            ARRAY_A
+        ) ?? [];
     }
 
     /**
@@ -60,9 +52,12 @@ class DbHandler implements DbHandlerInterface
      *
      * @return array
      */
-    public function getRows(string $queryString): array
+    public function getRows(string $queryString, array $queryParams = []): array
     {
-        return $this->db->get_results($queryString, ARRAY_A) ?? [];
+        return $this->db->get_results(
+            $this->db->prepare($queryString, ...$queryParams),
+            ARRAY_A
+        ) ?? [];
     }
 
     /**
@@ -106,14 +101,9 @@ class DbHandler implements DbHandlerInterface
      */
     public function isTableExists(string $tableName): bool
     {
-        $queryString = $this->prepareQuery(
-            "SHOW TABLES LIKE %s",
-            [
-                $tableName
-            ]
+        return (bool) $this->db->get_var(
+            $this->db->prepare('SHOW TABLES LIKE %s', $tableName)
         );
-
-        return (bool) $this->db->get_var($queryString);
     }
 
     /**

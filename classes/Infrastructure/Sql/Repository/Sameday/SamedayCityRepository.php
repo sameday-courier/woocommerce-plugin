@@ -18,7 +18,7 @@ class SamedayCityRepository extends AbstractRepository
 
     public function getTableName(): string
     {
-        $this->dbHandler->buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
@@ -45,15 +45,13 @@ class SamedayCityRepository extends AbstractRepository
     {
         $cities = [];
         foreach (SamedayConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
-            $queryString = $this->dbHandler->prepareQuery(
+            $cities[$countryKey] = $this->dbHandler->getRows(
                 "SELECT city_name, county_code FROM %s WHERE country_code = %s",
                 [
                     $this->getTableName(),
                     $countryKey,
                 ]
             );
-
-            $cities[$countryKey] = $this->dbHandler->getRows($queryString);
         }
 
         return $cities;
@@ -98,7 +96,7 @@ class SamedayCityRepository extends AbstractRepository
      */
     public function getPostalForSpecificCounty(string $countyCode, string $countryCode): ?string
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        $row = $this->dbHandler->getRow(
             "SELECT postal_code FROM %s WHERE county_code = %s AND country_code = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -106,8 +104,6 @@ class SamedayCityRepository extends AbstractRepository
                 $countryCode,
             ]
         );
-
-        $row = $this->dbHandler->getRow($queryString);
 
         return isset($row['postal_code']) ? (string) $row['postal_code'] : null;
     }

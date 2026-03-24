@@ -26,15 +26,13 @@ class SamedayAwbRepository extends AbstractRepository
      */
     public function getAwbForOrderId(int $orderId): array
     {
-        $queryString = $this->dbHandler->prepareQuery(
+        return $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE order_id = %d LIMIT 1",
             [
                 $this->getTableName(),
                 $orderId,
             ]
         );
-
-        return $this->dbHandler->getRow($queryString);
     }
 
     /**
