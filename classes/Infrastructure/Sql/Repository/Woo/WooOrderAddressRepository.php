@@ -2,21 +2,30 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use AbstractRepository;
 
-class WooOrderAddressRepository implements RepositoryInterface
+class WooOrderAddressRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'order_address';
-    public static function getTableName(): string
+
+    /**
+     * @return string
+     */
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
-    public static function updateWcOrderAddress(int $oderId, array $address): void
+    /**
+     * @param int $oderId
+     * @param array $address
+     *
+     * @return void
+     */
+    public function updateWcOrderAddress(int $oderId, array $address): void
     {
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             $address,
             [
                 'order_id' => $oderId,

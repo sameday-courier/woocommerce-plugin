@@ -5,53 +5,52 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\Locker\LockerObject;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayLockerRepository implements RepositoryInterface
+class SamedayLockerRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_locker';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
      * @return array
      */
-    public static function getCitiesWithLockers(): array
+    public function getCitiesWithLockers(): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT city, county FROM %s WHERE is_testing = %s GROUP BY city",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting()
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
      * @return array
      */
-    public static function getLockers(): array
+    public function getLockers(): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -59,18 +58,18 @@ class SamedayLockerRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getLockersByCity(string $city): array
+    public function getLockersByCity(string $city): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE city = %s AND is_testing = %s",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $city,
                 Helper::isTesting()
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -78,24 +77,24 @@ class SamedayLockerRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getLockerSameday(int $samedayId): array
+    public function getLockerSameday(int $samedayId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $samedayId,
                 Helper::isTesting()
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
-    public static function addLocker(LockerObject $lockerObject): void
+    public function addLocker(LockerObject $lockerObject): void
     {
-        DbHandler::insertRow(
-            self::getTableName(),
+        $this->dbHandler->insertRow(
+            $this->getTableName(),
             [
                 'locker_id' => $lockerObject->getId(),
                 'name' => $lockerObject->getName(),
@@ -117,10 +116,10 @@ class SamedayLockerRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function updateLocker(LockerObject $lockerObject, int $id): void
+    public function updateLocker(LockerObject $lockerObject, int $id): void
     {
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             [
                 'locker_id' => $lockerObject->getId(),
                 'name' => $lockerObject->getName(),
@@ -143,8 +142,8 @@ class SamedayLockerRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function deleteLocker(int $id): void
+    public function deleteLocker(int $id): void
     {
-        DbHandler::deleteRow(self::getTableName(), ['id' => $id]);
+        $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
     }
 }

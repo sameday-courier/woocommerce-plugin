@@ -20,6 +20,7 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Shipping\Method\SamedayCourier;
@@ -352,7 +353,7 @@ function wps_sameday_shipping_options_layout() {
 
     $taxOpenPackage = 0;
     foreach ($optionalTaxes as $optionalTax) {
-        if ($optionalTax->getCode() === Helper::OPEN_PACKAGE_OPTION_CODE) {
+        if ($optionalTax->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE) {
             $taxOpenPackage = $optionalTax->getId();
         }
     }
@@ -442,9 +443,9 @@ function checkout_repayment_tax() {
 	$repayment_tax = (int) (Helper::getSamedaySettings()['repayment_tax'] ?? null);
 
     if ($repayment_tax > 0
-        && Helper::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
+        && SamedayConstants::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
     ) {
-        $repayment_tax_label = Helper::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', Helper::TEXT_DOMAIN);
+        $repayment_tax_label = Helper::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
@@ -469,20 +470,20 @@ function wps_locker_row_layout() {
     if ((Helper::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
         <?php if ((Helper::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
             <tr class="shipping-pickup-store">
-                <td><strong><?php echo __('Sameday Locker', Helper::TEXT_DOMAIN) ?></strong></td>
+                <td><strong><?php echo __('Sameday Locker', SamedayConstants::TEXT_DOMAIN) ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
                         data-username='<?php echo Helper::getSamedaySettings()['user']; ?>'
                         data-country='<?php echo Helper::getSamedaySettings()['host_country']; ?>'
                     >
-                        <?php echo __('Show Locations Map', Helper::TEXT_DOMAIN) ?>
+                        <?php echo __('Show Locations Map', SamedayConstants::TEXT_DOMAIN) ?>
                     </button>
                 </th>
             </tr>
             <?php if (null !== $shipTo) { ?>
                 <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
-                    <td><strong> <?= __('Ship to', Helper::TEXT_DOMAIN) ?> </strong></td>
+                    <td><strong> <?= __('Ship to', SamedayConstants::TEXT_DOMAIN) ?> </strong></td>
                     <th><span id="showLockerDetails"><?= $shipTo ?></span></th>
                 </tr>
             <?php } ?>
@@ -524,7 +525,7 @@ function wps_locker_row_layout() {
                     <td>
                         <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 25px; font-size: 14px">
                             <option value="" style="font-size: 13px">
-                                <?= __('Select easyBox', Helper::TEXT_DOMAIN) ?>
+                                <?= __('Select easyBox', SamedayConstants::TEXT_DOMAIN) ?>
                             </option>
                             <?php echo $lockerOptions; ?>
                         </select>
@@ -681,7 +682,7 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["add-awb"] === "success") {
-            Helper::printFlashNotice('success', __("Awb was successfully generated !", Helper::TEXT_DOMAIN), true);
+            Helper::printFlashNotice('success', __("Awb was successfully generated !", SamedayConstants::TEXT_DOMAIN), true);
         }
     }
 
@@ -691,12 +692,12 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["remove-awb"] === "success") {
-            Helper::printFlashNotice('success', __("Awb was successfully removed !", Helper::TEXT_DOMAIN), true);
+            Helper::printFlashNotice('success', __("Awb was successfully removed !", SamedayConstants::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["show-awb"]) && $_GET["show-awb"] === "error") {
-        Helper::printFlashNotice('error', __("Awb invalid !", Helper::TEXT_DOMAIN), true);
+        Helper::printFlashNotice('error', __("Awb invalid !", SamedayConstants::TEXT_DOMAIN), true);
     }
 
     if (isset($_GET["add-new-parcel"])) {
@@ -705,7 +706,7 @@ add_action('admin_head', function () {
         }
 
         if ($_GET["add-new-parcel"] === "success") {
-            Helper::printFlashNotice('success', __("New parcel has been added to this awb!", Helper::TEXT_DOMAIN) , true);
+            Helper::printFlashNotice('success', __("New parcel has been added to this awb!", SamedayConstants::TEXT_DOMAIN) , true);
         }
     }
 
@@ -740,7 +741,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                 <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
                 <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="showAsPdf" formtarget="_blank" class="button-primary button-samll">'.  __('Show as pdf', Helper::TEXT_DOMAIN) . ' </button>
+                <button type="submit" form="showAsPdf" formtarget="_blank" class="button-primary button-samll">'.  __('Show as pdf', SamedayConstants::TEXT_DOMAIN) . ' </button>
             </p>';
 
         $_removeAwb = '
@@ -783,7 +784,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             if (!empty($awb)) {
                 $redirectToEawbSite = sprintf(
                         '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                        Helper::EAWB_INSTANCES[Helper::getHostCountry()],
+                        SamedayConstants::EAWB_INSTANCES[Helper::getHostCountry()],
                         $awb['awb_number']
                 );
 
@@ -854,7 +855,7 @@ function enqueue_button_scripts(): void
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
             'username' => Helper::getSamedaySettings()['user'] ?? null,
             'country'  => Helper::getSamedaySettings()['host_country'] ?? null,
-            'buttonText' => __('Show Locations Map', Helper::TEXT_DOMAIN),
+            'buttonText' => __('Show Locations Map', SamedayConstants::TEXT_DOMAIN),
         ));
     }
 }

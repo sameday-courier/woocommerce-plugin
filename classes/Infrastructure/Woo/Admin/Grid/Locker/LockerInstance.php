@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined( 'ABSPATH' )) {
@@ -54,7 +55,7 @@ class LockerInstance
 						<div class="meta-box-sortables ui-sortable">
 							<div>
                                 <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="button-primary">
-									<?php echo __('Back', Helper::TEXT_DOMAIN) ?>
+									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_lockers">

@@ -6,20 +6,19 @@ namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayPackageRepository implements RepositoryInterface
+class SamedayPackageRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_package';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
@@ -31,15 +30,16 @@ class SamedayPackageRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function refreshPackageHistory(
+    public function refreshPackageHistory(
         int $orderId,
         string $awbParcel,
         SummaryObject $summary,
         array $history,
         ExpeditionObject $expedition
-    ): void {
-        DbHandler::insertRow(
-            self::getTableName(),
+    ): void
+    {
+        $this->dbHandler->insertRow(
+            $this->getTableName(),
             [
                 'order_id' => $orderId,
                 'awb_parcel' => $awbParcel,
@@ -56,17 +56,17 @@ class SamedayPackageRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getPackagesForOrderId(int $orderId): array
+    public function getPackagesForOrderId(int $orderId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE order_id = %d",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $orderId,
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -74,10 +74,10 @@ class SamedayPackageRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function deletePackagesByOrderId(int $orderId): void
+    public function deletePackagesByOrderId(int $orderId): void
     {
-        DbHandler::deleteRow(
-            self::getTableName(),
+        $this->dbHandler->deleteRow(
+            $this->getTableName(),
             [
                 'order_id' => $orderId,
             ]

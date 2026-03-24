@@ -7,5 +7,5 @@ interface RepositoryInterface
     /**
      * @return string
      */
-    public static function getTableName(): string;
+    public function getTableName(): string;
 }

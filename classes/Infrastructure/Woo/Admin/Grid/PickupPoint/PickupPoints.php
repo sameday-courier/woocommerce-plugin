@@ -2,7 +2,10 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint;
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -10,37 +13,43 @@ if (! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'WP_List_Table' ) ) {
+if (!class_exists( 'WP_List_Table' ) ) {
 	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
 class PickupPoints extends WP_List_Table
 {
     /**
-     * @var string $tableName
+     * @var DbHandlerInterface $dbHandler
      */
-    private $tableName = 'sameday_pickup_point';
+    private DbHandlerInterface $dbHandler;
+
+    /**
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
+     */
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /** Class constructor */
 	public function __construct()
 	{
-		parent::__construct( [
-			'singular' => __('Pickup-point', Helper::TEXT_DOMAIN),
-			'plural'   => __('Pickup-points', Helper::TEXT_DOMAIN),
-			'ajax'     => false
-		] );
-	}
+		parent::__construct(
+            [
+                'singular' => __('Pickup-point', SamedayConstants::TEXT_DOMAIN),
+                'plural' => __('Pickup-points', SamedayConstants::TEXT_DOMAIN),
+                'ajax' => false
+		    ]
+        );
 
-	private const ACCEPTED_FILTERS = [
-		'sameday_id'
-	];
+        $this->dbHandler = new DbHandler();
+        $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
+	}
 
 	private const GRID_PER_PAGE_VALUE = 10;
 
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		__( 'No pickup-points available.', Helper::TEXT_DOMAIN);
+		__( 'No pickup-points available.', SamedayConstants::TEXT_DOMAIN);
 	}
 
 	/**
@@ -88,14 +97,14 @@ class PickupPoints extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id' => __('Sameday ID', Helper::TEXT_DOMAIN),
-			'sameday_alias' => __('Name', Helper::TEXT_DOMAIN),
-			'city' => __('City', Helper::TEXT_DOMAIN),
-			'county' => __('County', Helper::TEXT_DOMAIN),
-			'address' => __('Address', Helper::TEXT_DOMAIN),
-			'contactPersons' => __('Contact Persons', Helper::TEXT_DOMAIN),
-			'default_pickup_point' => __('Is default ', Helper::TEXT_DOMAIN),
-            'delete' => __('Actions', Helper::TEXT_DOMAIN),
+			'sameday_id' => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
+			'sameday_alias' => __('Name', SamedayConstants::TEXT_DOMAIN),
+			'city' => __('City', SamedayConstants::TEXT_DOMAIN),
+			'county' => __('County', SamedayConstants::TEXT_DOMAIN),
+			'address' => __('Address', SamedayConstants::TEXT_DOMAIN),
+			'contactPersons' => __('Contact Persons', SamedayConstants::TEXT_DOMAIN),
+			'default_pickup_point' => __('Is default ', SamedayConstants::TEXT_DOMAIN),
+            'delete' => __('Actions', SamedayConstants::TEXT_DOMAIN),
 		];
 	}
 
@@ -199,16 +208,16 @@ class PickupPoints extends WP_List_Table
             }
         }
 
-        $sql = "SELECT * FROM " . DbHandler::buildTableName($this->tableName);
+        $sql = "SELECT * FROM " . $this->samedayPickupPointRepository->getTableName();
         if (!empty($where_conditions)) {
             $sql .= " WHERE " . implode(' AND ', $where_conditions);
         }
 
         if (!empty($query_params)) {
-            $sql = DbHandler::prepareQuery($sql, $query_params);
+            $sql = $this->dbHandler->prepareQuery($sql, $query_params);
         }
 
-        return DbHandler::getRows($sql);
+        return $this->dbHandler->getRows($sql);
     }
     protected function extra_tablenav($which) {
         if ($which === 'top') {

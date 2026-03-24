@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayAwbRepository implements RepositoryInterface
+class SamedayAwbRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_awb';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
@@ -25,17 +24,17 @@ class SamedayAwbRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getAwbForOrderId(int $orderId): array
+    public function getAwbForOrderId(int $orderId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE order_id = %d LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $orderId,
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -43,9 +42,9 @@ class SamedayAwbRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function saveAwb(array $awb): void
+    public function saveAwb(array $awb): void
     {
-        DbHandler::insertRow(self::getTableName(), $awb);
+        $this->dbHandler->insertRow($this->getTableName(), $awb);
     }
 
     /**
@@ -53,16 +52,17 @@ class SamedayAwbRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function deleteAwbAndParcels(array $awb): void
+    public function deleteAwbAndParcels(array $awb): void
     {
         $id = $awb['id'] ?? null;
         $orderId = $awb['order_id'] ?? null;
+        $samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
 
         if ($id !== null) {
-            DbHandler::deleteRow(self::getTableName(), ['id' => $id]);
+            $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
         }
         if ($orderId !== null) {
-            SamedayPackageRepository::deletePackagesByOrderId($orderId);
+            $samedayPackageRepository->deletePackagesByOrderId($orderId);
         }
     }
 
@@ -72,10 +72,10 @@ class SamedayAwbRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function updateParcels(int $orderId, string $parcels): void
+    public function updateParcels(int $orderId, string $parcels): void
     {
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             [
                 'parcels' => $parcels
             ],

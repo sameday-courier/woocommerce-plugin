@@ -2,55 +2,47 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-class DbHandler
+class DbHandler implements DbHandlerInterface
 {
+    /**
+     * @var $db
+     */
+    private $db;
+    public function __construct()
+    {
+        global $wpdb;
+        $this->db = $wpdb;
+    }
+
     /**
      * @param string $tableName
      *
      * @return string
      */
-    public static function buildTableName(string $tableName): string
+    public function buildTableName(string $tableName): string
     {
-        global $wpdb;
-
-        return $wpdb->prefix . $tableName;
+        return $this->db->prefix . $tableName;
     }
 
     /**
      * @param string $queryString
-     * @param array $params
+     * @param array $queryParams
      *
      * @return string
      */
-    public static function prepareQuery(string $queryString, array $params = []): string
+    public function prepareQuery(string $queryString, array $queryParams = []): string
     {
-        global $wpdb;
-
-        return $wpdb->prepare($queryString, ...$params);
+        return $this->db->prepare($queryString, ...$queryParams);
     }
 
     /**
      * @param string $queryString
      *
-     * @return mixed
+     * @return null|string
      */
-    public static function getVar(string $queryString)
+    public function getVar(string $queryString): ?string
     {
-        global $wpdb;
-
-        return $wpdb->get_var($queryString);
-    }
-
-    /**
-     * @param string $queryString
-     *
-     * @return array
-     */
-    public static function getRow(string $queryString): array
-    {
-        global $wpdb;
-
-        return $wpdb->get_row($queryString, ARRAY_A) ?? [];
+        return $this->db->get_var($queryString);
     }
 
     /**
@@ -58,11 +50,19 @@ class DbHandler
      *
      * @return array
      */
-    public static function getRows(string $queryString): array
+    public function getRow(string $queryString): array
     {
-        global $wpdb;
+        return $this->db->get_row($queryString, ARRAY_A) ?? [];
+    }
 
-        return $wpdb->get_results($queryString, ARRAY_A) ?? [];
+    /**
+     * @param string $queryString
+     *
+     * @return array
+     */
+    public function getRows(string $queryString): array
+    {
+        return $this->db->get_results($queryString, ARRAY_A) ?? [];
     }
 
     /**
@@ -71,11 +71,9 @@ class DbHandler
      *
      * @return void
      */
-    public static function insertRow(string $tableName, array $params): void
+    public function insertRow(string $tableName, array $params): void
     {
-        global $wpdb;
-
-        $wpdb->insert($tableName, $params, self::buildFormat($params));
+        $this->db->insert($tableName, $params, $this->buildFormat($params));
     }
 
     /**
@@ -85,11 +83,9 @@ class DbHandler
      *
      * @return void
      */
-    public static function updateRow(string $tableName, array $row, array $where): void
+    public function updateRow(string $tableName, array $row, array $where): void
     {
-        global $wpdb;
-
-        $wpdb->update($tableName, $row, $where);
+        $this->db->update($tableName, $row, $where);
     }
 
     /**
@@ -98,11 +94,9 @@ class DbHandler
      *
      * @return void
      */
-    public static function deleteRow(string $tableName, array $where): void
+    public function deleteRow(string $tableName, array $where): void
     {
-        global $wpdb;
-
-        $wpdb->delete($tableName, $where);
+        $this->db->delete($tableName, $where);
     }
 
     /**
@@ -110,18 +104,16 @@ class DbHandler
      *
      * @return bool
      */
-    public static function isTableExists(string $tableName): bool
+    public function isTableExists(string $tableName): bool
     {
-        global $wpdb;
-
-        $queryString = self::prepareQuery(
+        $queryString = $this->prepareQuery(
             "SHOW TABLES LIKE %s",
             [
                 $tableName
             ]
         );
 
-        return (bool) $wpdb->get_var($queryString);
+        return (bool) $this->db->get_var($queryString);
     }
 
     /**
@@ -129,7 +121,7 @@ class DbHandler
      * 
      * @return void
      */
-    public static function truncateTable(string $tableName): void
+    public function truncateTable(string $tableName): void
     {
         global $wpdb;
 
@@ -141,11 +133,9 @@ class DbHandler
      *
      * @return void
      */
-    public static function dropTable(string $tableName): void
+    public function dropTable(string $tableName): void
     {
-        global $wpdb;
-
-        $wpdb->query("DROP TABLE IF EXISTS $tableName");
+        $this->db->query("DROP TABLE IF EXISTS $tableName");
     }
 
     /**
@@ -153,21 +143,17 @@ class DbHandler
      *
      * @return void
      */
-    public static function executeQuery(string $sql): void
+    public function executeQuery(string $sql): void
     {
-        global $wpdb;
-
-        $wpdb->query($sql);
+        $this->db->query($sql);
     }
 
     /**
      * @return string
      */
-    public static function getCharsetCollate(): string
+    public function getCharsetCollate(): string
     {
-        global $wpdb;
-
-        return $wpdb->get_charset_collate();
+        return $this->db->get_charset_collate();
     }
 
     /**
@@ -175,7 +161,7 @@ class DbHandler
      *
      * @return array [%s, %s, %d, ....]
      */
-    private static function buildFormat(array $params): array
+    private function buildFormat(array $params): array
     {
         $format = [];
         foreach ($params as $value) {

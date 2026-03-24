@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\PickupPoint\PickupPointObject;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayPickupPointRepository implements RepositoryInterface
+class SamedayPickupPointRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_pickup_point';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
@@ -27,49 +26,49 @@ class SamedayPickupPointRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getPickupPointSameday(int $samedayId): array
+    public function getPickupPointSameday(int $samedayId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $samedayId,
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
     /**
      * @return array
      */
-    public static function getPickupPoints(): array
+    public function getPickupPoints(): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
      * @return int|null
      */
-    public static function getDefaultPickupPointId(): ?int
+    public function getDefaultPickupPointId(): ?int
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT sameday_id FROM %s WHERE default_pickup_point = 1 AND is_testing = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
-        $result = DbHandler::getRow($queryString);
+        $result = $this->dbHandler->getRow($queryString);
 
         return isset($result['sameday_id']) ? (int) $result['sameday_id'] : null;
     }
@@ -79,10 +78,10 @@ class SamedayPickupPointRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function addPickupPoint(PickupPointObject $pickupPointObject): void
+    public function addPickupPoint(PickupPointObject $pickupPointObject): void
     {
-        DbHandler::insertRow(
-            self::getTableName(),
+        $this->dbHandler->insertRow(
+            $this->getTableName(),
             [
                 'sameday_id' => $pickupPointObject->getId(),
                 'sameday_alias' => $pickupPointObject->getAlias(),
@@ -102,10 +101,10 @@ class SamedayPickupPointRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): void
+    public function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): void
     {
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             [
                 'sameday_alias' => $pickupPointObject->getAlias(),
                 'city' => $pickupPointObject->getCity()->getName(),
@@ -125,8 +124,8 @@ class SamedayPickupPointRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function deletePickupPoint(int $id): void
+    public function deletePickupPoint(int $id): void
     {
-        DbHandler::deleteRow(self::getTableName(), ['id' => $id]);
+        $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
     }
 }

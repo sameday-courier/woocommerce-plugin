@@ -4,7 +4,6 @@ namespace SamedayCourier\Shipping\Domain;
 
 use Exception;
 use RuntimeException;
-use SamedayCourier\Shipping\Utils\Helper;
 
 class BgnCurrencyConverter
 {
@@ -25,9 +24,9 @@ class BgnCurrencyConverter
     public function convert(): string
     {
         switch ($this->currency) {
-            case Helper::EURO_CURRENCY:
+            case SamedayConstants::EURO_CURRENCY:
                 return $this->convertBGNtoEUR($this->amount);
-            case Helper::CURRENCY_MAPPER[Helper::API_HOST_LOCALE_BG]:
+            case SamedayConstants::CURRENCY_MAPPER[SamedayConstants::API_HOST_LOCALE_BG]:
                 return $this->convertEURtoBGN($this->amount);
             default:
                 throw new RuntimeException('Invalid currency');

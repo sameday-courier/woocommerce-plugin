@@ -2,7 +2,11 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -16,16 +20,29 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class Lockers extends WP_List_Table
 {
-    private $tableName = 'sameday_locker';
+    /**
+     * @var DbHandlerInterface $dbHandler
+     */
+    private DbHandlerInterface $dbHandler;
+
+    /**
+     * @var SamedayLockerRepository $samedayServiceRepository
+     */
+    private SamedayLockerRepository $samedayLockerRepository;
 
 	/** Class constructor */
 	public function __construct() {
 
-		parent::__construct( [
-			'singular' => __('Locker', Helper::TEXT_DOMAIN),
-			'plural'   => __('Lockers', Helper::TEXT_DOMAIN),
-			'ajax'     => false
-		] );
+		parent::__construct(
+            [
+                'singular' => __('Locker', SamedayConstants::TEXT_DOMAIN),
+                'plural' => __('Lockers', SamedayConstants::TEXT_DOMAIN),
+                'ajax' => false
+		    ]
+        );
+
+        $this->dbHandler = new DbHandler();
+        $this->samedayLockerRepository = new SamedayLockerRepository($this->dbHandler);
 	}
 
 	private const GRID_PER_PAGE_VALUE = 10;
@@ -39,16 +56,15 @@ class Lockers extends WP_List_Table
      */
     private function getLockers(): array
     {
-        $table = DbHandler::buildTableName($this->tableName);
         $is_testing = Helper::isTesting();
 
         $sql = Helper::buildGridQuery(
-            $table,
+            $this->samedayLockerRepository->getTableName(),
             $is_testing,
             self::ACCEPTED_FILTERS,
         );
 
-        return DbHandler::getRows($sql);
+        return $this->dbHandler->getRows($sql);
     }
 
     /**
@@ -71,7 +87,7 @@ class Lockers extends WP_List_Table
 	/** Text displayed when no lockers data is available */
 	public function no_items(): void
 	{
-		_e('No lockers available!', Helper::TEXT_DOMAIN);
+		_e('No lockers available!', SamedayConstants::TEXT_DOMAIN);
 	}
 
 	/**
@@ -96,14 +112,14 @@ class Lockers extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'locker_id' => __('Locker ID', Helper::TEXT_DOMAIN),
-			'name' => __('Name', Helper::TEXT_DOMAIN),
-			'city' => __('City', Helper::TEXT_DOMAIN),
-			'county' => __('County', Helper::TEXT_DOMAIN),
-			'address' => __('Address', Helper::TEXT_DOMAIN),
-			'lat' => __('Latitude', Helper::TEXT_DOMAIN),
-			'lng' => __('Longitude', Helper::TEXT_DOMAIN),
-			'postal_code' => __('Postal code', Helper::TEXT_DOMAIN)
+			'locker_id' => __('Locker ID', SamedayConstants::TEXT_DOMAIN),
+			'name' => __('Name', SamedayConstants::TEXT_DOMAIN),
+			'city' => __('City', SamedayConstants::TEXT_DOMAIN),
+			'county' => __('County', SamedayConstants::TEXT_DOMAIN),
+			'address' => __('Address', SamedayConstants::TEXT_DOMAIN),
+			'lat' => __('Latitude', SamedayConstants::TEXT_DOMAIN),
+			'lng' => __('Longitude', SamedayConstants::TEXT_DOMAIN),
+			'postal_code' => __('Postal code', SamedayConstants::TEXT_DOMAIN)
 		];
 	}
 
@@ -142,4 +158,3 @@ class Lockers extends WP_List_Table
         $this->items = $this->buildGrid($per_page, $current_page);
 	}
 }
-

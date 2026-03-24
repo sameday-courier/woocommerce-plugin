@@ -2,7 +2,10 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -16,18 +19,31 @@ if (!class_exists( 'WP_List_Table' )) {
 
 class Services extends WP_List_Table
 {
-    private $tableName = "sameday_service";
+    /**
+     * @var DbHandlerInterface
+     */
+    private DbHandlerInterface $dbHandler;
+
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    private SamedayServiceRepository $samedayRepository;
 
 	/**
      * Class constructor
      */
 	public function __construct() {
 
-		parent::__construct( [
-			'singular' => __('Service', Helper::TEXT_DOMAIN),
-			'plural'   => __('Services', Helper::TEXT_DOMAIN),
-			'ajax'     => false
-		] );
+		parent::__construct(
+            [
+                'singular' => __('Service', SamedayConstants::TEXT_DOMAIN),
+                'plural' => __('Services', SamedayConstants::TEXT_DOMAIN),
+                'ajax' => false
+		    ]
+        );
+
+        $this->dbHandler = new DbHandler();
+        $this->samedayRepository = new SamedayServiceRepository($this->dbHandler);
 	}
 
 	private const ACCEPTED_FILTERS = [
@@ -42,27 +58,27 @@ class Services extends WP_List_Table
 	private function getServices(): array
 	{
 		$sql = Helper::buildGridQuery(
-			DbHandler::buildTableName($this->tableName),
+			$this->samedayRepository->getTableName(),
 			Helper::isTesting(),
 			self::ACCEPTED_FILTERS
 		);
 
         $services = array_filter(
-            DbHandler::getRows($sql),
+            $this->dbHandler->getRows($sql),
             static function ($service) {
                 return Helper::isInUseServices($service['sameday_code']);
             }
         );
 
         foreach ($services as &$service) {
-            if ($service['sameday_code'] === Helper::LOCKER_NEXT_DAY_CODE) {
+            if ($service['sameday_code'] === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
                 $service['name'] = __(
-                    Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()],
-                    Helper::TEXT_DOMAIN
+                    SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()],
+                    SamedayConstants::TEXT_DOMAIN
                 );
                 $service['sameday_name'] = __(
-                    Helper::SAMEDAY_OOH_LABEL,
-                    Helper::TEXT_DOMAIN
+                    SamedayConstants::SAMEDAY_OOH_LABEL,
+                    SamedayConstants::TEXT_DOMAIN
                 );
             }
         }
@@ -103,7 +119,7 @@ class Services extends WP_List_Table
      */
     public function no_items(): void
     {
-        __( 'No services available!', Helper::TEXT_DOMAIN);
+        __( 'No services available!', SamedayConstants::TEXT_DOMAIN);
     }
 
 	/**
@@ -122,11 +138,11 @@ class Services extends WP_List_Table
 
         if (("sameday_name" === $column_name)
             && $item[$column_name] === __(
-                Helper::SAMEDAY_OOH_LABEL,
-                Helper::TEXT_DOMAIN
+                SamedayConstants::SAMEDAY_OOH_LABEL,
+                SamedayConstants::TEXT_DOMAIN
             )
         ) {
-            $title = Helper::OOH_POPUP_TITLE[Helper::getHostCountry()];
+            $title = SamedayConstants::OOH_POPUP_TITLE[Helper::getHostCountry()];
             return sprintf(
                 "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
                 $title,
@@ -160,13 +176,13 @@ class Services extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id'    => __('Sameday ID', Helper::TEXT_DOMAIN),
-			'sameday_name' => __('Sameday name', Helper::TEXT_DOMAIN),
-			'name'    => __('Name', Helper::TEXT_DOMAIN),
-			'price'    => __('Price', Helper::TEXT_DOMAIN),
-			'price_free'    => __('Price free', Helper::TEXT_DOMAIN),
-			'status'    => __('Status', Helper::TEXT_DOMAIN),
-			'edit' => __('Edit', Helper::TEXT_DOMAIN)
+			'sameday_id'    => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
+			'sameday_name' => __('Sameday name', SamedayConstants::TEXT_DOMAIN),
+			'name'    => __('Name', SamedayConstants::TEXT_DOMAIN),
+			'price'    => __('Price', SamedayConstants::TEXT_DOMAIN),
+			'price_free'    => __('Price free', SamedayConstants::TEXT_DOMAIN),
+			'status'    => __('Status', SamedayConstants::TEXT_DOMAIN),
+			'edit' => __('Edit', SamedayConstants::TEXT_DOMAIN)
 		];
 	}
 

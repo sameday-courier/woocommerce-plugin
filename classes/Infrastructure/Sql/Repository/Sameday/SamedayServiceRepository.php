@@ -8,53 +8,53 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayServiceRepository implements RepositoryInterface
+class SamedayServiceRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_service';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
      * @return array
      */
-    public static function getAvailableServices(): array
+    public function getAvailableServices(): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE is_testing = %s AND status > 0",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
      * @return array
      */
-    public static function getServices(): array
+    public function getServices(): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRows($queryString);
+        return $this->dbHandler->getRows($queryString);
     }
 
     /**
@@ -62,18 +62,18 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return OptionalTaxObject[]
      */
-    public static function getServiceIdOptionalTaxes(int $samedayServiceId): array
+    public function getServiceIdOptionalTaxes(int $samedayServiceId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT service_optional_taxes FROM %s WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 Helper::isTesting(),
                 $samedayServiceId,
             ]
         );
 
-        $rows = DbHandler::getRows($queryString);
+        $rows = $this->dbHandler->getRows($queryString);
         if (empty($rows) || empty($rows[0]['service_optional_taxes'])) {
             return [];
         }
@@ -97,17 +97,17 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getService(int $id): array
+    public function getService(int $id): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE id = %d LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $id,
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -115,18 +115,18 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getServiceSameday(int $samedayId): array
+    public function getServiceSameday(int $samedayId): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $samedayId,
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -134,18 +134,18 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return array
      */
-    public static function getServiceSamedayByCode(string $samedayCode): array
+    public function getServiceSamedayByCode(string $samedayCode): array
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT * FROM %s WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $samedayCode,
                 Helper::isTesting(),
             ]
         );
 
-        return DbHandler::getRow($queryString);
+        return $this->dbHandler->getRow($queryString);
     }
 
     /**
@@ -153,12 +153,12 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function addService(ServiceObject $service): void
+    public function addService(ServiceObject $service): void
     {
         $optionalTaxes = $service->getOptionalTaxes();
 
-        DbHandler::insertRow(
-            self::getTableName(),
+        $this->dbHandler->insertRow(
+            $this->getTableName(),
             [
                 'sameday_id' => $service->getId(),
                 'sameday_name' => $service->getName(),
@@ -175,13 +175,13 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function updateService(array $service): void
+    public function updateService(array $service): void
     {
         $id = $service['id'];
         unset($service['id']);
 
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             $service,
             [
                 'id' => $id,
@@ -195,15 +195,15 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function updateServiceCode(ServiceObject $serviceObject, int $id): void
+    public function updateServiceCode(ServiceObject $serviceObject, int $id): void
     {
         $serviceName = $serviceObject->getName();
-        if ($serviceObject->getCode() === Helper::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()];
+        if ($serviceObject->getCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()];
         }
 
-        DbHandler::updateRow(
-            self::getTableName(),
+        $this->dbHandler->updateRow(
+            $this->getTableName(),
             [
                 'sameday_code' => $serviceObject->getCode(),
                 'name' => $serviceName,
@@ -222,8 +222,8 @@ class SamedayServiceRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function deleteService(int $id): void
+    public function deleteService(int $id): void
     {
-        DbHandler::deleteRow(self::getTableName(), ['id' => $id]);
+        $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
     }
 }

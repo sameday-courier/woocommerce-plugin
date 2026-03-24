@@ -4,33 +4,32 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use stdClass;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class SamedayCityRepository implements RepositoryInterface
+class SamedayCityRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_cities';
 
-    public static function getTableName(): string
+    public function getTableName(): string
     {
-        return DbHandler::buildTableName(self::TABLE_NAME);
+        $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
      * @return array
      */
-    public static function getCachedCities(): array
+    public function getCachedCities(): array
     {
-        if (false === $cities = get_transient(Helper::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
-            $cities = self::getCities();
+        if (false === $cities = get_transient(SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
+            $cities = $this->getCities();
             set_transient(
-                Helper::TRANSIENT_CACHE_KEY_FOR_CITIES,
+                SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
                 $cities,
                 31556926
             );
@@ -42,19 +41,19 @@ class SamedayCityRepository implements RepositoryInterface
     /**
      * @return array
      */
-    public static function getCities(): array
+    public function getCities(): array
     {
         $cities = [];
-        foreach (Helper::DEFAULT_COUNTRIES as $countryKey => $value) {
-            $queryString = DbHandler::prepareQuery(
+        foreach (SamedayConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
+            $queryString = $this->dbHandler->prepareQuery(
                 "SELECT city_name, county_code FROM %s WHERE country_code = %s",
                 [
-                    self::getTableName(),
+                    $this->getTableName(),
                     $countryKey,
                 ]
             );
 
-            $cities[$countryKey] = DbHandler::getRows($queryString);
+            $cities[$countryKey] = $this->dbHandler->getRows($queryString);
         }
 
         return $cities;
@@ -63,9 +62,9 @@ class SamedayCityRepository implements RepositoryInterface
     /**
      * @return void
      */
-    public static function truncate(): void
+    public function truncate(): void
     {
-        DbHandler::truncateTable(self::getTableName());
+        $this->dbHandler->truncateTable($this->getTableName());
     }
 
     /**
@@ -73,7 +72,7 @@ class SamedayCityRepository implements RepositoryInterface
      *
      * @return void
      */
-    public static function addCity(stdClass $cityObject): void
+    public function addCity(stdClass $cityObject): void
     {
         $countyCode = $cityObject->county_code;
         if ($cityObject->country_code === 'BG') {
@@ -88,7 +87,7 @@ class SamedayCityRepository implements RepositoryInterface
             'country_code' => $cityObject->country_code,
         ];
 
-        DbHandler::insertRow(self::getTableName(), $data);
+        $this->dbHandler->insertRow($this->getTableName(), $data);
     }
 
     /**
@@ -97,40 +96,19 @@ class SamedayCityRepository implements RepositoryInterface
      *
      * @return string|null
      */
-    public static function getPostalForSpecificCounty(string $countyCode, string $countryCode): ?string
+    public function getPostalForSpecificCounty(string $countyCode, string $countryCode): ?string
     {
-        $queryString = DbHandler::prepareQuery(
+        $queryString = $this->dbHandler->prepareQuery(
             "SELECT postal_code FROM %s WHERE county_code = %s AND country_code = %s LIMIT 1",
             [
-                self::getTableName(),
+                $this->getTableName(),
                 $countyCode,
                 $countryCode,
             ]
         );
 
-        $row = DbHandler::getRow($queryString);
+        $row = $this->dbHandler->getRow($queryString);
 
         return isset($row['postal_code']) ? (string) $row['postal_code'] : null;
-    }
-
-    /**
-     * @return void
-     */
-    public static function createTable(): void
-    {
-        $tableName = self::getTableName();
-        $collate = DbHandler::getCharsetCollate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS $tableName (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            city_id INT(11),
-            city_name VARCHAR(255),
-            county_code VARCHAR(255),
-            postal_code VARCHAR(10),
-            country_code VARCHAR(10),
-            PRIMARY KEY (id)
-        ) $collate;";
-
-        DbHandler::executeQuery($sql);
     }
 }

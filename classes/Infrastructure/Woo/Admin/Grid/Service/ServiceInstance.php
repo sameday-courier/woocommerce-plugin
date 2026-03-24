@@ -2,7 +2,10 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 
@@ -18,11 +21,18 @@ class ServiceInstance
 	// services WP_List_Table object
 	public $services_obj;
 
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    private SamedayServiceRepository $samedayServiceRepository;
+
 	// class constructor
 	public function __construct()
 	{
-		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );
-		add_action( 'admin_menu', [ $this, 'plugin_menu' ] );
+		add_filter('set-screen-option', [__CLASS__, 'set_screen'], 10, 3);
+		add_action('admin_menu', [$this, 'plugin_menu']);
+
+        $this->samedayServiceRepository = new SamedayServiceRepository(new DbHandler());
 	}
 
 	public static function set_screen($status, $option, $value)
@@ -58,7 +68,7 @@ class ServiceInstance
                         <div class="meta-box-sortables ui-sortable">
                             <div>
                                 <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="button-primary">
-		                            <?php echo __('Back', Helper::TEXT_DOMAIN) ?>
+		                            <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
                                     <input type="hidden" name="action" value="refresh_services">
@@ -87,11 +97,11 @@ class ServiceInstance
 		return array(
 			array(
 				'value' => 0,
-				'text' => __('Disabled', Helper::TEXT_DOMAIN)
+				'text' => __('Disabled', SamedayConstants::TEXT_DOMAIN)
 			),
 			array(
 				'value' => 1,
-				'text' => __('Always', Helper::TEXT_DOMAIN)
+				'text' => __('Always', SamedayConstants::TEXT_DOMAIN)
 			)
 		);
 	}
@@ -104,7 +114,7 @@ class ServiceInstance
      */
 	private function createServiceForm($id)
     {
-        $service = SamedayServiceRepository::getService((int) $id);
+        $service = $this->samedayServiceRepository->getService((int) $id);
 
         if (empty($service)) {
 	        WC_Admin_Settings::add_error('No service available !');
@@ -113,9 +123,9 @@ class ServiceInstance
 
         $greyedOut = "";
         $serviceName = $service['sameday_name'] ?? '';
-        if (($service['sameday_code'] ?? '') === Helper::LOCKER_NEXT_DAY_CODE) {
+        if (($service['sameday_code'] ?? '') === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
             $greyedOut = "disabled";
-            $serviceName = Helper::OOH_SERVICES_LABELS[Helper::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()];
         }
 
 	    $statuses = '';
@@ -134,7 +144,7 @@ class ServiceInstance
                         <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('edit-service').'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-service-name">  '.__('Service Name', Helper::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-service-name">  '.__('Service Name', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" ' . $greyedOut . ' id="samedaycourier-service-name" value="'.esc_html($serviceName).'">
@@ -142,7 +152,7 @@ class ServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-price">  '.__('Price', Helper::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-price">  '.__('Price', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.esc_attr($service['price'] ?? '').'"> 
@@ -150,7 +160,7 @@ class ServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-free-delivery-price">  '.__('Free delivery price', Helper::TEXT_DOMAIN).' </label>
+                                <label for="samedaycourier-free-delivery-price">  '.__('Free delivery price', SamedayConstants::TEXT_DOMAIN).' </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.esc_attr($service['price_free'] ?? '').'"> 
@@ -158,7 +168,7 @@ class ServiceInstance
                         </tr>
                        <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-status">  '.__('Status', Helper::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-status">  '.__('Status', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <select name="samedaycourier-status" style="width: 297px; height: 36px;" id="samedaycourier-status">
@@ -167,7 +177,7 @@ class ServiceInstance
                             </td>
                         </tr>
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" >  '.__('Edit Service', Helper::TEXT_DOMAIN).'</button> </th>
+                            <th><button class="button-primary" type="submit" value="Submit" >  '.__('Edit Service', SamedayConstants::TEXT_DOMAIN).'</button> </th>
                         </tr>
                      </tbody>
                 </table>
@@ -197,7 +207,7 @@ class ServiceInstance
      */
 	public static function get_instance(): self
     {
-		if (!isset( self::$instance )) {
+		if (!isset(self::$instance)) {
 			self::$instance = new self();
 		}
 

@@ -6,9 +6,10 @@ use Exception;
 use JsonException;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\SamedayLockerRepository;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo\WooOrderAddressRepository;
 
 if (!defined( 'ABSPATH' )) {
@@ -17,109 +18,6 @@ if (!defined( 'ABSPATH' )) {
 
 class Helper
 {
-	public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
-	public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
-	public const CASH_ON_DELIVERY = 'cod';
-	public const LOCKER_NEXT_DAY_CODE = "LN";
-    public const SAMEDAY_6H_CODE = "6H";
-    public const STANDARD_24H_CODE = "24";
-    public const STANDARD_CROSSBORDER_CODE = "XB";
-    public const LOCKER_CROSSBORDER_CODE = "XL";
-    public const PUDO_CODE = "PP";
-
-    public const OOH_TYPES = [
-        0 => self::LOCKER_NEXT_DAY_CODE,
-        1 => self::PUDO_CODE,
-    ];
-
-    public const OOH_SERVICES = [
-        self::LOCKER_NEXT_DAY_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
-        self::PUDO_CODE,
-    ];
-
-    public const IN_USE_SERVICES = [
-        self::SAMEDAY_6H_CODE,
-        self::STANDARD_24H_CODE,
-        self::LOCKER_NEXT_DAY_CODE,
-        self::STANDARD_CROSSBORDER_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
-    ];
-
-    public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
-
-    public const OOH_SERVICES_LABELS = [
-        self::API_HOST_LOCALE_RO => 'Ridicare Sameday Point/Easybox',
-        self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox',
-        self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox',
-    ];
-
-    public const ELIGIBLE_SERVICES = [
-        self::SAMEDAY_6H_CODE,
-        self::STANDARD_24H_CODE,
-        self::LOCKER_NEXT_DAY_CODE
-    ];
-
-    public const CROSSBORDER_ELIGIBLE_SERVICES = [
-        self::STANDARD_CROSSBORDER_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
-    ];
-
-    public const ELIGIBLE_TO_6H_SERVICE = [
-        'Bucuresti'
-    ];
-
-	public const PERSONAL_DELIVERY_OPTION_CODE = 'PDO';
-	public const OPEN_PACKAGE_OPTION_CODE = 'OPCG';
-
-	public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
-	public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
-
-    public const OOH_POPUP_TITLE = [
-        self::API_HOST_LOCALE_RO => 'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',
-        self::API_HOST_LOCALE_BG => 'Тази опция включва LockerNextDay и PUDO!',
-        self::API_HOST_LOCALE_HU => 'Ez az opció magában foglalja a LockerNextDay és a PUDO szolgáltatást is!',
-    ];
-
-    public const CURRENCY_MAPPER = [
-        self::API_HOST_LOCALE_RO => 'RON',
-        self::API_HOST_LOCALE_BG => 'BGN',
-        self::API_HOST_LOCALE_HU => 'HUF',
-    ];
-
-    public const EURO_CURRENCY = "EUR";
-
-	public const TOGGLE_HTML_ELEMENT = [
-		'show' => 'showElement',
-		'hide' => 'hideElement',
-	];
-
-	public const API_PROD = 0;
-	public const API_DEMO = 1;
-
-	public const API_HOST_LOCALE_RO = 'RO';
-	public const API_HOST_LOCALE_HU = 'HU';
-	public const API_HOST_LOCALE_BG = 'BG';
-
-	public const EAWB_INSTANCES = [
-		self::API_HOST_LOCALE_RO => 'https://eawb.sameday.ro',
-		self::API_HOST_LOCALE_HU => 'https://eawb.sameday.hu',
-		self::API_HOST_LOCALE_BG => 'https://eawb.sameday.bg',
-	];
-
-	public const TEXT_DOMAIN = 'samedaycourier-shipping';
-
-	private const ORDER_BY_TYPES = [
-		'ASC',
-		'DESC',
-	];
-
-    public const DEFAULT_COUNTRIES = [
-        self::API_HOST_LOCALE_RO => ['value' => 187, 'label' => 'Romania'],
-        self::API_HOST_LOCALE_BG => ['value' => 34, 'label' => 'Bulgaria'],
-        self::API_HOST_LOCALE_HU => ['value' => 237, 'label' => 'Hungary'],
-    ];
-
 	public static function getSamedaySettings(): array
 	{
 		if (false === get_option('woocommerce_samedaycourier_settings')) {
@@ -137,17 +35,17 @@ class Helper
 	public static function getEnvModes(): array
 	{
 		return [
-			self::API_HOST_LOCALE_RO => [
-				self::API_PROD => 'https://api.sameday.ro',
-				self::API_DEMO => 'https://sameday-api.demo.zitec.com',
+			SamedayConstants::API_HOST_LOCALE_RO => [
+				SamedayConstants::API_PROD => 'https://api.sameday.ro',
+				SamedayConstants::API_DEMO => 'https://sameday-api.demo.zitec.com',
 			],
-			self::API_HOST_LOCALE_HU => [
-				self::API_PROD => 'https://api.sameday.hu',
-				self::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
+			SamedayConstants::API_HOST_LOCALE_HU => [
+				SamedayConstants::API_PROD => 'https://api.sameday.hu',
+				SamedayConstants::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
 			],
-			self::API_HOST_LOCALE_BG => [
-				self::API_PROD => 'https://api.sameday.bg',
-				self::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
+			SamedayConstants::API_HOST_LOCALE_BG => [
+				SamedayConstants::API_PROD => 'https://api.sameday.bg',
+				SamedayConstants::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
 			],
 		];
 	}
@@ -188,7 +86,7 @@ class Helper
 	public static function getHostCountry(): string
 	{
 		// The default will always be RO
-		return self::getSamedaySettings()['host_country'] ?? self::API_HOST_LOCALE_RO;
+		return self::getSamedaySettings()['host_country'] ?? SamedayConstants::API_HOST_LOCALE_RO;
 	}
 
 	/**
@@ -206,15 +104,15 @@ class Helper
 	{
 		return array(
 			array(
-				'name' => __("Parcel", self::TEXT_DOMAIN),
+				'name' => __("Parcel", SamedayConstants::TEXT_DOMAIN),
 				'value' => PackageType::PARCEL
 			),
 			array(
-				'name' => __("Envelope", self::TEXT_DOMAIN),
+				'name' => __("Envelope", SamedayConstants::TEXT_DOMAIN),
 				'value' => PackageType::ENVELOPE
 			),
 			array(
-				'name' => __("Large package", self::TEXT_DOMAIN),
+				'name' => __("Large package", SamedayConstants::TEXT_DOMAIN),
 				'value' => PackageType::LARGE
 			)
 		);
@@ -227,7 +125,7 @@ class Helper
 	{
 		return array(
 			array(
-				'name' => __("Client", self::TEXT_DOMAIN),
+				'name' => __("Client", SamedayConstants::TEXT_DOMAIN),
 				'value' => AwbPaymentType::CLIENT
 			)
 		);
@@ -496,7 +394,7 @@ class Helper
 			);
 		}
 
-		if (null !== $order && in_array(strtoupper($order), self::ORDER_BY_TYPES, true)) {
+		if (null !== $order && in_array(strtoupper($order), SamedayConstants::ORDER_BY_TYPES, true)) {
 			$sql .= $order;
 		}
 
@@ -521,7 +419,7 @@ class Helper
 	{
         update_post_meta(
             $orderId,
-            self::POST_META_SAMEDAY_SHIPPING_LOCKER,
+            SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
             $locker,
             false
         );
@@ -542,7 +440,7 @@ class Helper
 			self::sanitizeInput(
 				(string) get_post_meta(
 					$order_id,
-					self::POST_META_SAMEDAY_SHIPPING_LOCKER,
+					SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
 					true
 				)
 			)
@@ -597,7 +495,7 @@ class Helper
             // Save HD Address
 			update_post_meta(
 				$order_id,
-				self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+				SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
 				json_encode($shippingInputs, JSON_THROW_ON_ERROR),
 				false
 			);
@@ -613,7 +511,7 @@ class Helper
     {
         return get_post_meta(
             $orderId,
-            self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+            SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             true
         );
     }
@@ -759,12 +657,12 @@ class Helper
 
     public static function isOohDeliveryOption(string $samedayServiceCode): bool
     {
-        return in_array($samedayServiceCode, self::OOH_SERVICES, true);
+        return in_array($samedayServiceCode, SamedayConstants::OOH_SERVICES, true);
     }
 
     public static function isInUseServices(string $samedayServiceCode): bool
     {
-        return in_array($samedayServiceCode, self::IN_USE_SERVICES, true);
+        return in_array($samedayServiceCode, SamedayConstants::IN_USE_SERVICES, true);
     }
 
     /**
