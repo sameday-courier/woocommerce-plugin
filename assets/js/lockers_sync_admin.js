@@ -59,7 +59,6 @@ function openLockers() {
         clientId: clientId,
         langCode: langCode
     }
-    console.log(countryCode)
 
     window['LockerPlugin'].init(LockerData);
     let pluginInstance = window['LockerPlugin'].getInstance();

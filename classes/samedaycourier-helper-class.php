@@ -563,8 +563,23 @@ class SamedayCourierHelperClass
 				$shippingInputs[sprintf("_%s", $key)] = $value ?? '';
 			}
 		}
-var_dump($shippingInputs['shipping_country']); die();
-		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
+
+        $order = wc_get_order( $order_id );
+        $lockerShippingCountry = isset( $lockerFields['shipping_country'] )
+            ? (string) $lockerFields['shipping_country']
+            : '';
+        $countryFromPost = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? '';
+        $countryFromOrder = '';
+        if ( $order instanceof \WC_Order ) {
+            $countryFromOrder = $order->get_shipping_country() ?: $order->get_billing_country();
+        }
+
+//		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
+
+        $country = $countryFromPost
+            ?: ( $lockerShippingCountry !== '' ? $lockerShippingCountry : $countryFromOrder )
+                ?: self::getHostCountry();
+
 		$firstName = $shippingInputs['shipping_first_name'] ?? $postsMeta['billing_first_name'] ?? '';
 		$state = self::convertStateNameToCode(
 			$country,

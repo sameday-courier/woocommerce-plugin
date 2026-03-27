@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.11.0
+ * Version: 1.11.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -782,7 +782,6 @@ add_action('admin_post_add_awb', function () {
     }
 
     $data = array_merge($postFields, $orderDetails->get_data());
-    
     return (new Sameday())->postAwb($data);
 });
 
