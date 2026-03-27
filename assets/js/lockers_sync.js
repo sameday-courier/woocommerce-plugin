@@ -72,8 +72,6 @@ const _openLockers = () => {
         langCode = country.toLowerCase();
     }
 
-    console.log(country);
-
     const LockerPlugin = window['LockerPlugin'];
     const LockerData = {
         apiUsername: samedayUser,
