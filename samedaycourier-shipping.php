@@ -1368,12 +1368,3 @@ add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
 add_filter('woocommerce_cart_shipping_method_full_label', static function ($label, $method) {
     return $method->get_meta_data()['currency_conversion_label'] ?? $label;
 }, 10, 2);
-
-add_action( 'woocommerce_order_list_table_extra_tablenav', 'admin_hpos_wc_order_list_top_bar_button', 20, 2 );
-function admin_hpos_wc_order_list_top_bar_button( $order_type, $which ) {
-    if( 'shop_order' === $order_type && 'top' === $which ) {
-        printf('<div class="alignright actions custom">
-        <button type="submit" name="custom" style="height:32px;" class="button" value="%s">%s</button>
-        </div>', 'yes', esc_html__('Generate Bulk AWB', 'woocommerce') );
-    }
-}
