@@ -47,7 +47,7 @@ function openLockers() {
     const changeLockerButton = document.querySelector('#select_locker');
 
     let samedayUser = changeLockerButton.getAttribute('data-username'); // Sameday username
-    let countryCode= changeLockerButton.getAttribute('data-country'); // correspond to user eAWB instance
+    let countryCode = changeLockerButton.getAttribute('data-country'); // correspond to user eAWB instance
     let langCode = countryCode.toLowerCase(); //language of the plugin
     let destCity = changeLockerButton.getAttribute('data-dest_city');
     let destCountry = changeLockerButton.getAttribute('data-dest_country');
@@ -67,7 +67,7 @@ function openLockers() {
 
     pluginInstance.subscribe((locker) => {
         pluginInstance.close();
-
+        locker.shipping_country = destCountry;
         let _locker = JSON.stringify(locker);
 
         jQuery.post(

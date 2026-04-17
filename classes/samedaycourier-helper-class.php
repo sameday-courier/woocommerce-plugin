@@ -12,6 +12,9 @@ if (! defined( 'ABSPATH' )) {
 
 class SamedayCourierHelperClass
 {
+	/** @var bool Prevents recursive meta saves when persisting HD snapshot */
+	private static $persisting_hd_snapshot = false;
+
 	public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
 	public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
 	public const CASH_ON_DELIVERY = 'cod';
@@ -561,7 +564,22 @@ class SamedayCourierHelperClass
 			}
 		}
 
-		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
+        $order = wc_get_order( $order_id );
+        $lockerShippingCountry = isset( $lockerFields['shipping_country'] )
+            ? (string) $lockerFields['shipping_country']
+            : '';
+        $countryFromPost = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? '';
+        $countryFromOrder = '';
+        if ( $order instanceof \WC_Order ) {
+            $countryFromOrder = $order->get_shipping_country() ?: $order->get_billing_country();
+        }
+
+//		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
+
+        $country = $countryFromPost
+            ?: ( $lockerShippingCountry !== '' ? $lockerShippingCountry : $countryFromOrder )
+                ?: self::getHostCountry();
+
 		$firstName = $shippingInputs['shipping_first_name'] ?? $postsMeta['billing_first_name'] ?? '';
 		$state = self::convertStateNameToCode(
 			$country,
@@ -591,17 +609,25 @@ class SamedayCourierHelperClass
 	}
 
     /**
+     * Read _sameday_shipping_hd_address using the order object (HPOS + legacy).
+     * get_post_meta() alone does not read WooCommerce HPOS order meta.
+     *
      * @param int $orderId
      *
      * @return string
      */
     public static function getPostMetaSamedayShippingHDAddress(int $orderId): string
     {
-        return get_post_meta(
-            $orderId,
-            self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-            true
-        );
+        $order = wc_get_order($orderId);
+        if ($order instanceof \WC_Order) {
+            $meta = $order->get_meta(self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true);
+            if (is_string($meta) && '' !== $meta) {
+                return $meta;
+            }
+        }
+
+        $legacy = get_post_meta($orderId, self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true);
+        return is_string($legacy) ? $legacy : '';
     }
 
     /**
@@ -666,6 +692,110 @@ class SamedayCourierHelperClass
 
         return $fields;
     }
+
+	/**
+	 * Build JSON for _sameday_shipping_hd_address (same shape as locker checkout / parsePostMetaSamedaycourierAddressHd).
+	 *
+	 * @param WC_Order $order
+	 * @return string
+	 */
+	public static function encodeHdAddressSnapshotFromOrder(\WC_Order $order): string
+	{
+		$shipping = $order->get_address('shipping');
+		$billing = $order->get_address('billing');
+
+		$keys = array(
+			'first_name',
+			'last_name',
+			'company',
+			'address_1',
+			'address_2',
+			'city',
+			'state',
+			'postcode',
+			'country',
+			'phone',
+			'email',
+		);
+
+		$payload = array();
+		foreach ($keys as $key) {
+			$sVal = isset($shipping[ $key ]) ? (string) $shipping[ $key ] : '';
+			$bVal = isset($billing[ $key ]) ? (string) $billing[ $key ] : '';
+			$payload[ '_shipping_' . $key ] = ( '' !== $sVal ) ? $sVal : $bVal;
+			$payload[ '_billing_' . $key ] = $bVal;
+		}
+
+		$method_ids = array();
+		foreach ($order->get_shipping_methods() as $item) {
+			$method_ids[] = $item->get_method_id();
+		}
+		if ( ! empty($method_ids)) {
+			$payload['_shipping_method'] = $method_ids;
+		}
+
+		return wp_json_encode($payload, JSON_UNESCAPED_UNICODE);
+	}
+
+	/**
+	 * Store HD address snapshot on the order (order meta, HPOS-safe).
+	 *
+	 * @param WC_Order $order
+	 * @return void
+	 */
+	public static function persistHdAddressSnapshotFromOrder(\WC_Order $order): void
+	{
+		if (self::$persisting_hd_snapshot) {
+			return;
+		}
+
+		self::$persisting_hd_snapshot = true;
+		try {
+			$json = self::encodeHdAddressSnapshotFromOrder($order);
+			$existing = (string) $order->get_meta(self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true);
+			if ($existing === $json) {
+				return;
+			}
+
+			$order->update_meta_data(self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, $json);
+			$order->save_meta_data();
+		} finally {
+			self::$persisting_hd_snapshot = false;
+		}
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @return void
+	 */
+	public static function maybePersistHdAddressSnapshotCheckout(\WC_Order $order): void
+	{
+		$existing = (string) $order->get_meta(self::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS, true);
+		if ('' !== $existing) {
+			return;
+		}
+		self::persistHdAddressSnapshotFromOrder($order);
+	}
+
+	/**
+	 * When staff saves an order, keep snapshot in sync with current shipping (so postAwb does not fall back to billing).
+	 *
+	 * @param int $order_id
+	 * @return void
+	 */
+	public static function syncHdAddressSnapshotOnAdminOrderSave(int $order_id): void
+	{
+		if ( ! is_admin()) {
+			return;
+		}
+
+		$order = wc_get_order($order_id);
+		if ( ! $order ) {
+			return;
+		}
+
+		self::persistHdAddressSnapshotFromOrder($order);
+	}
 
 	/**
 	 * @param $orderId

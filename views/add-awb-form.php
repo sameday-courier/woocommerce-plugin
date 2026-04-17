@@ -141,6 +141,8 @@ function samedaycourierAddAwbForm($order): string {
     $destCity = $order->get_data()['shipping']['city'] ?? '';
     $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
+    $dataCountry = ($hostCountry == $destCountry) ? $hostCountry : $destCountry;
+
     $destCurrency = SamedayCourierHelperClass::CURRENCY_MAPPER[$destCountry];
     $currency = $order->get_currency() ?? get_woocommerce_currency();
     $currencyWarningMessage = '';
@@ -311,7 +313,7 @@ function samedaycourierAddAwbForm($order): string {
                                         data-username="'.$username.'" 
                                         data-country="'.$hostCountry.'" 
                                         data-dest_city="'.$destCity.'" 
-                                        data-dest_country="'.$destCountry.'" 
+                                        data-dest_country="'.$dataCountry.'" 
                                         class="button alt sameday_select_locker" 
                                         type="button" 
                                         id="select_locker"> ' . __("Change location", SamedayCourierHelperClass::TEXT_DOMAIN) . ' 

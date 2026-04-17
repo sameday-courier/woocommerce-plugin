@@ -533,6 +533,7 @@ class Sameday
 
 	    $lockerId = null;
         $oohLastMile = null;
+
         if ('' !== ($locker = $params['locker'] ?? '')
             && SamedayCourierHelperClass::isOohDeliveryOption($service->sameday_code)
         ) {
@@ -548,6 +549,10 @@ class Sameday
             }
 
             if ($service->sameday_code === SamedayCourierHelperClass::PUDO_CODE) {
+                $oohLastMile = $locker['id'] ?? $locker['lockerId'];
+            }
+
+            if ($service->sameday_code === SamedayCourierHelperClass::LOCKER_CROSSBORDER_CODE){
                 $oohLastMile = $locker['id'] ?? $locker['lockerId'];
             }
 

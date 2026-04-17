@@ -4,7 +4,7 @@
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 1.11.1
+ * Version: 1.11.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -782,7 +782,6 @@ add_action('admin_post_add_awb', function () {
     }
 
     $data = array_merge($postFields, $orderDetails->get_data());
-    
     return (new Sameday())->postAwb($data);
 });
 
@@ -1057,7 +1056,26 @@ add_action('woocommerce_checkout_order_processed', static function ($orderId): v
         // After store, remove it from Session
         WC()->session->set('open_package', 'no');
     }
-});
+}, 10);
+
+add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
+    if ( ! $order instanceof WC_Order) {
+        return;
+    }
+    SamedayCourierHelperClass::maybePersistHdAddressSnapshotCheckout($order);
+}, 20);
+
+add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
+    $order = wc_get_order($orderId);
+    if ( ! $order) {
+        return;
+    }
+    SamedayCourierHelperClass::maybePersistHdAddressSnapshotCheckout($order);
+}, 20);
+
+add_action('woocommerce_update_order', static function ($order_id): void {
+    SamedayCourierHelperClass::syncHdAddressSnapshotOnAdminOrderSave((int) $order_id);
+}, 20);
 
 /**
  ** Add external JS file for Lockers
