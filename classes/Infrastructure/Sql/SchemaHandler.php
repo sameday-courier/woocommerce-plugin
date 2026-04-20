@@ -12,7 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 class SchemaHandler
 {
-    
     /**
      * @return string
      */
