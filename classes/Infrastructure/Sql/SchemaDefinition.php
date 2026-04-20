@@ -24,7 +24,7 @@ class SchemaDefinition
     /**
      * @return string[]
      */
-    public static function getSamedayTables(): array
+    public function getSamedayTables(): array
     {
         return array_map(
             static function (RepositoryInterface $repo) {

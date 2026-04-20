@@ -12,14 +12,25 @@ class Uninstaller
      */
     private $dbHandler;
 
+    /**
+     * @var SchemaDefinition
+     */
+    private SchemaDefinition $schemaDefinition;
+
     public function __construct()
     {
         $this->dbHandler = new DbHandler();
+        $this->schemaDefinition = new SchemaDefinition();
     }
 
+    /**
+     * @return void
+     */
     public function run(): void
     {
-        foreach (SchemaDefinition::getSamedayTables() as $tableName) {
+        $samedayTables = $this->schemaDefinition->getSamedayTables();
+
+        foreach ($samedayTables as $tableName) {
             $this->dbHandler->dropTable($tableName);
         }
     }
