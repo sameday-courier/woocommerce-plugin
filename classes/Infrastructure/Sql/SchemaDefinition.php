@@ -28,7 +28,7 @@ class SchemaDefinition
     {
         return array_map(
             static function (RepositoryInterface $repo) {
-                return $repo::getTableName();
+                return $repo->getTableName();
             },
             self::SAMEDAY_REPOSITORIES
         );
