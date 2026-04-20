@@ -10,7 +10,7 @@ class PluginHandler
 {
     public static function install(): void
     {
-        Installer::run();
+        (new Installer())->run();
     }
 
     /**
@@ -18,7 +18,7 @@ class PluginHandler
      */
     public static function uninstall(): void
     {
-        Uninstaller::run();
+        (new Uninstaller())->run();
     }
 }
 

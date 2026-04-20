@@ -4,12 +4,19 @@ namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
 class Installer
 {
+    private SchemaHandler $schemaHandler;
+
+    public function __construct()
+    {
+        $this->schemaHandler = new SchemaHandler();
+    }
+
     /**
      * @return void
      */
-    public static function run(): void
+    public function run(): void
     {
-        SchemaHandler::createTables();
-        SchemaHandler::alterTables();
+        $this->schemaHandler->createTables();
+        $this->schemaHandler->alterTables();
     }
 }

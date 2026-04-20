@@ -9,15 +9,62 @@ use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPackage
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 
 class SchemaHandler
 {
     /**
+     * @var SamedayAwbRepository
+     */
+    private SamedayAwbRepository $samedayAwbRepository;
+
+    /**
+     * @var SamedayPickupPointRepository
+     */
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
+
+    /**
+     * @var SamedayServiceRepository
+     */
+    private SamedayServiceRepository $samedayServiceRepository;
+
+    /**
+     * @var SamedayPackageRepository
+     */
+    private SamedayPackageRepository $samedayPackageRepository;
+
+    /**
+     * @var SamedayLockerRepository
+     */
+    private SamedayLockerRepository $samedayLockerRepository;
+
+    /**
+     * @var SamedayCityRepository
+     */
+    private SamedayCityRepository $samedayCityRepository;
+
+    /**
+     * @var DbHandlerInterface
+     */
+    private DbHandlerInterface $dbHandler;
+
+    public function __construct()
+    {
+        $this->dbHandler = new DbHandler();
+        $this->samedayAwbRepository = new SamedayAwbRepository($this->dbHandler);
+        $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
+        $this->samedayServiceRepository = new SamedayServiceRepository($this->dbHandler);
+        $this->samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
+        $this->samedayLockerRepository = new SamedayLockerRepository($this->dbHandler);
+        $this->samedayCityRepository = new SamedayCityRepository($this->dbHandler);
+    }
+
+    /**
      * @return string
      */
-    public static function buildAwbTableQuery(): string
+    public function buildAwbTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayAwbRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayAwbRepository->getTableName() . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             order_id INT(11) NOT NULL,
             awb_number VARCHAR(255),
@@ -25,12 +72,15 @@ class SchemaHandler
             awb_cost DOUBLE(10, 2),
             PRIMARY KEY (id),
             UNIQUE KEY id (id)
-        ) " . DbHandler::getCharsetCollate() . ";";
+        ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
-    public static function buildPickUpPointTableQuery(): string
+    /**
+     * @return string
+     */
+    public function buildPickUpPointTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayPickupPointRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayPickupPointRepository->getTableName() . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             sameday_id INT(11) NOT NULL,
             sameday_alias VARCHAR(255),
@@ -42,12 +92,15 @@ class SchemaHandler
             default_pickup_point TINYINT(1),
             PRIMARY KEY (id),
             UNIQUE KEY id (id)
-            ) " . DbHandler::getCharsetCollate() . ";";
+            ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
-    public static function buildServiceTableQuery(): string
+    /**
+     * @return string
+     */
+    public function buildServiceTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayServiceRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayServiceRepository->getTableName() . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             sameday_id INT(11) NOT NULL,
             sameday_name VARCHAR(255),
@@ -58,12 +111,15 @@ class SchemaHandler
             status INT(11),
             PRIMARY KEY (id),
             UNIQUE KEY id (id)
-        ) " . DbHandler::getCharsetCollate() . ";";
+        ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
-    public static function buildPackageTableQuery(): string
+    /**
+     * @return string
+     */
+    public function buildPackageTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayPackageRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayPackageRepository->getTableName() . " (
             order_id INT(11) NOT NULL,
             awb_parcel VARCHAR(255),
             summary TEXT,
@@ -71,12 +127,15 @@ class SchemaHandler
             expedition_status TEXT,
             sync TEXT,
             PRIMARY KEY (order_id, awb_parcel)
-        ) " . DbHandler::getCharsetCollate() . ";";
+        ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
-    public static function buildLockerTableQuery(): string
+    /**
+     * @return string
+     */
+    public function buildLockerTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayLockerRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayLockerRepository->getTableName() . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             locker_id INT(11),
             name VARCHAR(255),
@@ -89,12 +148,12 @@ class SchemaHandler
             boxes TEXT,
             is_testing TINYINT(1),
             PRIMARY KEY (id)
-        ) " . DbHandler::getCharsetCollate() . ";";
+        ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
-    public static function buildCitiesTableQuery(): string
+    public function buildCitiesTableQuery(): string
     {
-        return "CREATE TABLE IF NOT EXISTS " . SamedayCityRepository::getTableName() . " (
+        return "CREATE TABLE IF NOT EXISTS " . $this->samedayCityRepository->getTableName() . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             city_id INT(11),
             city_name VARCHAR(255),
@@ -102,7 +161,7 @@ class SchemaHandler
             postal_code VARCHAR(10),
             country_code VARCHAR(10),
             PRIMARY KEY (id)
-        ) " . DbHandler::getCharsetCollate() . ";";
+        ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
     /**
@@ -110,37 +169,37 @@ class SchemaHandler
      *
      * @return void
      */
-    public static function createTable(string $createTableQuery): void
+    public function createTable(string $createTableQuery): void
     {
-        DbHandler::executeQuery($createTableQuery);
+        $this->dbHandler->executeQuery($createTableQuery);
     }
 
     /**
      * @return void
      */
-    public static function createTables(): void
+    public function createTables(): void
     {
         $tablesToCreate = [
-            self::buildAwbTableQuery(),
-            self::buildPickUpPointTableQuery(),
-            self::buildServiceTableQuery(),
-            self::buildPackageTableQuery(),
-            self::buildLockerTableQuery(),
-            self::buildCitiesTableQuery(),
+            $this->buildAwbTableQuery(),
+            $this->buildPickUpPointTableQuery(),
+            $this->buildServiceTableQuery(),
+            $this->buildPackageTableQuery(),
+            $this->buildLockerTableQuery(),
+            $this->buildCitiesTableQuery(),
         ];
 
         foreach ($tablesToCreate as $query) {
-            self::createTable($query);
+            $this->createTable($query);
         }
     }
 
     /**
      * @return void
      */
-    public static function alterTables(): void
+    public function alterTables(): void
     {
-        $service = SamedayServiceRepository::getTableName();
-        $servicesRows = DbHandler::getRow("SELECT * FROM $service LIMIT 1");
+        $service = $this->samedayServiceRepository->getTableName();
+        $servicesRows = $this->dbHandler->getRow("SELECT * FROM $service LIMIT 1");
 
         $tablesToAlter = [];
         if (!isset($servicesRows->sameday_code)) {
@@ -157,7 +216,7 @@ class SchemaHandler
 
         if (!empty($tablesToAlter)) {
             foreach ($tablesToAlter as $sql) {
-                DbHandler::executeQuery($sql);
+                $this->dbHandler->executeQuery($sql);
             }
         }
     }
