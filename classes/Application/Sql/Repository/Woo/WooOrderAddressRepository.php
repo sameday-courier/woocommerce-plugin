@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo;
 
-use AbstractRepository;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 
 class WooOrderAddressRepository extends AbstractRepository
 {

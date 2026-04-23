@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
@@ -51,12 +53,12 @@ class SchemaHandler
     public function __construct()
     {
         $this->dbHandler = new DbHandler();
-        $this->samedayAwbRepository = new SamedayAwbRepository($this->dbHandler);
-        $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
-        $this->samedayServiceRepository = new SamedayServiceRepository($this->dbHandler);
-        $this->samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
-        $this->samedayLockerRepository = new SamedayLockerRepository($this->dbHandler);
-        $this->samedayCityRepository = new SamedayCityRepository($this->dbHandler);
+        $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
+        $this->samedayServiceRepository = new SamedayServiceRepository();
+        $this->samedayPackageRepository = new SamedayPackageRepository();
+        $this->samedayLockerRepository = new SamedayLockerRepository();
+        $this->samedayCityRepository = new SamedayCityRepository();
     }
 
     /**
@@ -165,16 +167,6 @@ class SchemaHandler
     }
 
     /**
-     * @param string $createTableQuery
-     *
-     * @return void
-     */
-    public function createTable(string $createTableQuery): void
-    {
-        $this->dbHandler->executeQuery($createTableQuery);
-    }
-
-    /**
      * @return void
      */
     public function createTables(): void
@@ -191,6 +183,16 @@ class SchemaHandler
         foreach ($tablesToCreate as $query) {
             $this->createTable($query);
         }
+    }
+
+    /**
+     * @param string $createTableQuery
+     *
+     * @return void
+     */
+    public function createTable(string $createTableQuery): void
+    {
+        $this->dbHandler->executeQuery($createTableQuery);
     }
 
     /**

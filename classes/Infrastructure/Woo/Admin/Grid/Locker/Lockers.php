@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;

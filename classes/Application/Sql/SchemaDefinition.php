@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Sql;
 
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\RepositoryInterface;

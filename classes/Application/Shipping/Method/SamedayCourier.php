@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Shipping\Method;
 
 use Exception;
@@ -15,17 +17,29 @@ use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourierShipping\Shipping\Domain\SamedayServiceRules;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
 final class SamedayCourier extends WC_Shipping_Method
 {
+    /**
+     * @var SamedayServiceSelector
+     */
+    private SamedayServiceSelector $samedayServiceSelector;
+
+    /**
+     * @var SamedayServiceRules
+     */
+    private SamedayServiceRules $samedayServiceRules;
+
     /**
      * SamedayCourier_Shipping_Method constructor.
      *
@@ -48,6 +62,10 @@ final class SamedayCourier extends WC_Shipping_Method
             'instance-settings'
         );
 
+        $samedayServiceRepository = new SamedayServiceRepository();
+        $this->samedayServiceSelector = new SamedayServiceSelector($samedayServiceRepository);
+        $this->samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
+
         $this->init();
     }
 
@@ -63,29 +81,19 @@ final class SamedayCourier extends WC_Shipping_Method
             return;
         }
 
+        $eligibleServices = $this->samedayServiceSelector->getEligibleServices(
+            $package['destination']['country'] ?? SamedayConstants::API_HOST_LOCALE_RO
+        );
+
+        if (empty($eligibleServices)) {
+            return;
+        }
+
         $useEstimatedCost = $this->settings['estimated_cost'];
         $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
         $useLockerMap = $this->settings['lockers_map'] === 'yes';
-        $hostCountry = Helper::getHostCountry();
-        $destinationCountry = $package['destination']['country'] ?? SamedayConstants::API_HOST_LOCALE_RO;
-
-        $eligibleShippingServices = SamedayConstants::ELIGIBLE_SERVICES;
-        if ($destinationCountry !== $hostCountry) {
-            $eligibleShippingServices = SamedayConstants::CROSSBORDER_ELIGIBLE_SERVICES;
-        }
-
-        $availableServices = array_filter(
-            SamedayServiceRepository::getAvailableServices(),
-            static function ($row) use ($eligibleShippingServices) {
-                return in_array(
-                    $row['sameday_code'] ?? '',
-                    $eligibleShippingServices,
-                    true
-                );
-            }
-        );
-
         $cartValue = WC()->cart->get_subtotal();
+
         if (true === Helper::isApplyFreeShippingAfterDiscount()) {
             $cartValue = WC()->cart->get_cart_contents_total();
         }
@@ -95,18 +103,8 @@ final class SamedayCourier extends WC_Shipping_Method
             $package['destination']['state']
         );
 
-        if (empty($availableServices)) {
-            return;
-        }
-
-        foreach ($availableServices as $service) {
-            if ($service->sameday_code === SamedayConstants::SAMEDAY_6H_CODE
-                && !in_array(
-                    Helper::removeAccents($stateName),
-                    SamedayConstants::ELIGIBLE_TO_6H_SERVICE,
-                    true
-                )
-            ) {
+        foreach ($eligibleServices as $service) {
+            if (!$this->samedayServiceRules->isEligibleTo6H($service)) {
                 continue;
             }
 
@@ -152,7 +150,7 @@ final class SamedayCourier extends WC_Shipping_Method
                                     $service->name,
                                     $price,
                                     $storeCurrency,
-                                    $estimatedPrice,
+                                    number_format($estimatedPrice, 2),
                                     $estimatedCurrency
                                 );
                             } catch (Exception $exception) {}

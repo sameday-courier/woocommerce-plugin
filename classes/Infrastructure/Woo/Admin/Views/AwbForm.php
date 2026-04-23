@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 if (!defined( 'ABSPATH' )) {
@@ -16,32 +18,12 @@ use SamedayCourier\Shipping\Utils\Helper;
 class AwbForm
 {
     /**
-     * @param $serviceId
-     *
-     * @return false|mixed
-     */
-    public static function isServiceEligibleToLockerFirstMile($serviceId) : bool
-    {
-        $optionalServices = SamedayServiceRepository::getServiceIdOptionalTaxes($serviceId);
-
-        foreach ($optionalServices as $optionalService) {
-            if ($optionalService->getCode() === SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE) {
-                return $serviceId;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param $order
      *
      * @return string
      */
     public static function samedaycourierAddAwbForm($order): string
     {
-        $is_testing = Helper::isTesting();
-
         $postMetaLocker = get_post_meta(
             $order->get_id(),
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,

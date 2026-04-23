@@ -8,6 +8,7 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
+use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
@@ -78,7 +79,8 @@ class SamedayServiceRepository extends AbstractRepository
             [
                 'allowed_classes' => [
                     OptionalTaxObject::class,
-                    PackageType::class, CostType::class
+                    PackageType::class,
+                    CostType::class,
                 ],
             ]
         );

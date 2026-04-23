@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 class DbHandler implements DbHandlerInterface
