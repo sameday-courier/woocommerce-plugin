@@ -412,7 +412,7 @@ class ApiRequestsHandler
         if (empty($errors)) {
             $currentService = $this->samedayServiceRepository->getService((int) $post_fields['id']['value']);
             if (null === $currentService) {
-                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services'));
+                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
             }
 
             $service = array(
