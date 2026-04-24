@@ -26,12 +26,12 @@ use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Shipping\Method\SamedayCourier;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\PluginHandler;
+use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
@@ -46,7 +46,7 @@ if (! defined( 'ABSPATH')) {
 /**
  * Check if WooCommerce plugin is enabled
  */
-if (!in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), '')) {
+if (!in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), true)) {
     exit;
 }
 
@@ -341,9 +341,8 @@ function wps_sameday_shipping_options_layout() {
         return;
     }
 
-    $service = SamedayServiceRepository::getServiceSamedayByCode(
-        Helper::getChosenShippingMethodCode()
-    );
+    $samedayServiceRepository = new SamedayServiceRepository();
+    $service = $samedayServiceRepository->getServiceSamedayByCode(Helper::getChosenShippingMethodCode());
 
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];

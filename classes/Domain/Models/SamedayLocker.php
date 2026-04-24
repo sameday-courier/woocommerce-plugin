@@ -2,8 +2,6 @@
 
 namespace SamedayCourier\Shipping\Domain\Models;
 
-use SamedayCourier\Shipping\Domain\ModelInterface;
-
 final class SamedayLocker implements ModelInterface
 {
     public int $id;

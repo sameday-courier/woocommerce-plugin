@@ -2,7 +2,7 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\ModelInterface;
+use SamedayCourier\Shipping\Domain\Models\ModelInterface;
 
 abstract class AbstractMapper implements MapperInterface
 {

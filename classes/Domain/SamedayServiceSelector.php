@@ -3,7 +3,7 @@
 namespace SamedayCourier\Shipping\Domain;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 final class SamedayServiceSelector

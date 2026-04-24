@@ -9,10 +9,10 @@ use JsonException;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 
 if (!defined( 'ABSPATH' )) {
 	exit;

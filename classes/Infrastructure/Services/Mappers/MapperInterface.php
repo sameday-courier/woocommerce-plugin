@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\ModelInterface;
+use SamedayCourier\Shipping\Domain\Models\ModelInterface;
 
 interface MapperInterface
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourierShipping\Shipping\Domain;
+namespace SamedayCourier\Shipping\Domain;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 final class SamedayServiceRules

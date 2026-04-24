@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
 use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 
 if (!defined('ABSPATH')) {
     exit;

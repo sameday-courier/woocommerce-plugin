@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql;
+namespace SamedayCourier\Shipping\Application\Sql;
 
 if (!defined( 'ABSPATH')) {
 	exit;

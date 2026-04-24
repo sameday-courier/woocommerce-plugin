@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository;
+namespace SamedayCourier\Shipping\Application\Sql\Repository;
 
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\MapperInterface;
 

@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 
@@ -34,7 +32,8 @@ class ServiceInstance
 		add_filter('set-screen-option', [__CLASS__, 'set_screen'], 10, 3);
 		add_action('admin_menu', [$this, 'plugin_menu']);
 
-        $this->samedayServiceRepository = new SamedayServiceRepository(new DbHandler());
+        $x = 2;
+        $this->samedayServiceRepository = new SamedayServiceRepository();
 	}
 
 	public static function set_screen($status, $option, $value)

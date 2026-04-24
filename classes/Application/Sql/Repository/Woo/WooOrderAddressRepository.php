@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Woo;
+namespace SamedayCourier\Shipping\Application\Sql\Repository\Woo;
 
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 
 class WooOrderAddressRepository extends AbstractRepository
 {

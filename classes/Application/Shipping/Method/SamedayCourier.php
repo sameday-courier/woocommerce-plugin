@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Shipping\Method;
+namespace SamedayCourier\Shipping\Application\Shipping\Method;
 
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
@@ -21,11 +21,11 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
-use SamedayCourierShipping\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 

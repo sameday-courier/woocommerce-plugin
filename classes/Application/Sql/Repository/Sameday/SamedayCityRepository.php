@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use stdClass;
 
 if (!defined('ABSPATH')) {

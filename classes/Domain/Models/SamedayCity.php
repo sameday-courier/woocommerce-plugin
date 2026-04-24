@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Models;
 
-use SamedayCourier\Shipping\Domain\ModelInterface;
-
 final class SamedayCity implements ModelInterface
 {
     public int $id;
@@ -136,11 +134,9 @@ final class SamedayCity implements ModelInterface
     }
 
     /**
-     * Shape expected by checkout JS (county-city-handle.js).
-     *
      * @return array{city_name: ?string, county_code: ?string}
      */
-    public function toCheckoutLegacyArray(): array
+    public function toArray(): array
     {
         return [
             'city_name' => $this->cityName,

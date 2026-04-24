@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
 use Sameday\Objects\Locker\LockerObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
-use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {

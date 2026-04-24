@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Domain;
+namespace SamedayCourier\Shipping\Domain\Models;
 
 interface ModelInterface
 {
