@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Shipping\Method;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\ParcelDimensionsObject;

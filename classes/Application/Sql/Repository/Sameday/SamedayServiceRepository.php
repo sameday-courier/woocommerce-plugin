@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
@@ -13,11 +17,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class SamedayServiceRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_service';

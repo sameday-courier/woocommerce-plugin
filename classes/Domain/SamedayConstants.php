@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-class SamedayConstants
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+final class SamedayConstants
 {
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
     public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;

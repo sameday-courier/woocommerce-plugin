@@ -2,6 +2,10 @@
 
 namespace SamedayCourier\Shipping\Domain\Models;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 final class SamedayLocker implements ModelInterface
 {
     public int $id;

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Utils;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use Exception;
 use JsonException;
 use Sameday\Objects\Types\AwbPaymentType;
@@ -13,11 +17,6 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbReposit
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
-
-if (!defined( 'ABSPATH' )) {
-	exit;
-}
-
 class Helper
 {
 	public static function getSamedaySettings(): array

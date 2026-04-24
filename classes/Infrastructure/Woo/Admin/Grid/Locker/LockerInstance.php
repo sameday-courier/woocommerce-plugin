@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Utils\Helper;
-
-if (!defined( 'ABSPATH' )) {
-	exit;
-}
 
 class LockerInstance
 {

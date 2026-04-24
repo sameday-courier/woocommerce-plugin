@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
-
-if (!defined( 'ABSPATH' )) {
+if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Utils\Helper;
 class NewParcelForm extends AwbForm
 {
     /**

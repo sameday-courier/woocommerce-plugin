@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class SamedayPackageRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_package';

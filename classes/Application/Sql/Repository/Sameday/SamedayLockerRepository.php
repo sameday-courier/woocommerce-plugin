@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use Sameday\Objects\Locker\LockerObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class SamedayLockerRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_locker';

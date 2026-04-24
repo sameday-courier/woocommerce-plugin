@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
-use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
-use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
-
-if (!defined('ABSPATH')) {
+if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
+use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 class SamedayAwbRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_awb';

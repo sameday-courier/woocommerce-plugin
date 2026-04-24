@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
-
-if (!defined( 'ABSPATH' )) {
-	exit;
-}
-
 class ServiceInstance
 {
 	static $instance;

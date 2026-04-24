@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use stdClass;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class SamedayCityRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_cities';

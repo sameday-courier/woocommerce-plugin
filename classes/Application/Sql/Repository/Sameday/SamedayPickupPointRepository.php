@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use Sameday\Objects\PickupPoint\PickupPointObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class SamedayPickupPointRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_pickup_point';

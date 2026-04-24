@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 /**
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
@@ -38,11 +42,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
-
-if (! defined( 'ABSPATH')) {
-    exit;
-}
-
 /**
  * Check if WooCommerce plugin is enabled
  */

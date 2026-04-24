@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use SamedayCourier\Shipping\Application\Sql\Repository\RepositoryInterface;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;

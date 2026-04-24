@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql\Repository;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\MapperInterface;
 
 interface RepositoryInterface

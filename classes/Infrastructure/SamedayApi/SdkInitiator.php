@@ -12,10 +12,6 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Utils\Helper;
 
-if (! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
 /**
  * Class Api
  */

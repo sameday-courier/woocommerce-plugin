@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Exception;
 use http\Exception\RuntimeException;
 use JsonException;
@@ -51,10 +55,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
-
-if (!defined( 'ABSPATH')) {
-    exit;
-}
 
 class ApiRequestsHandler
 {

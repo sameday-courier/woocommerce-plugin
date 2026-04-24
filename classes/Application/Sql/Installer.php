@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Sql;
 
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 class Installer
 {
     private SchemaHandler $schemaHandler;

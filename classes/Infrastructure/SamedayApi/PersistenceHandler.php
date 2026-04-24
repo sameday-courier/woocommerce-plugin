@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
 if (!defined( 'ABSPATH')) {
-	exit;
+    exit;
 }
 
 use \Sameday\PersistentData\SamedayPersistentDataInterface;
