@@ -13,13 +13,10 @@ if (!defined( 'ABSPATH' )) {
 
 class LockerInstance
 {
-	// class instance
 	static $instance;
 
-	// Lockers WP_List_Table object
 	public $lockers_obj;
 
-	// class constructor
 	public function __construct()
 	{
 		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );

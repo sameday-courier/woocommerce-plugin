@@ -14,13 +14,10 @@ if (! defined( 'ABSPATH' ) ) {
 
 class PickupPointInstance
 {
-	// class instance
 	static $instance;
 
-	// Pickup-points WP_List_Table object
 	public $pickuppoints_obj;
 
-	// class constructor
 	public function __construct()
 	{
 		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );

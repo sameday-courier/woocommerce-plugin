@@ -15,10 +15,8 @@ if (!defined( 'ABSPATH' )) {
 
 class ServiceInstance
 {
-	// class instance
 	static $instance;
 
-	// services WP_List_Table object
 	public $services_obj;
 
     /**
@@ -26,13 +24,11 @@ class ServiceInstance
      */
     private SamedayServiceRepository $samedayServiceRepository;
 
-	// class constructor
 	public function __construct()
 	{
 		add_filter('set-screen-option', [__CLASS__, 'set_screen'], 10, 3);
 		add_action('admin_menu', [$this, 'plugin_menu']);
 
-        $x = 2;
         $this->samedayServiceRepository = new SamedayServiceRepository();
 	}
 
