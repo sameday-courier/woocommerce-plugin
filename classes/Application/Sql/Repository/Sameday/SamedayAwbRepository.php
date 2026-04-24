@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
+use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 
 if (!defined('ABSPATH')) {
@@ -22,17 +24,23 @@ class SamedayAwbRepository extends AbstractRepository
     /**
      * @param int $orderId
      *
-     * @return array
+     * @return SamedayAwb|null
      */
-    public function getAwbForOrderId(int $orderId): array
+    public function getAwbForOrderId(int $orderId): ?SamedayAwb
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE order_id = %d LIMIT 1",
             [
                 $this->getTableName(),
                 $orderId,
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayAwbMapper::class)->map($row);
     }
 
     /**
@@ -46,20 +54,20 @@ class SamedayAwbRepository extends AbstractRepository
     }
 
     /**
-     * @param array $awb Must contain 'id' and 'order_id' keys
+     * @param SamedayAwb $awb
      *
      * @return void
      */
-    public function deleteAwbAndParcels(array $awb): void
+    public function deleteAwbAndParcels(SamedayAwb $awb): void
     {
-        $id = $awb['id'] ?? null;
-        $orderId = $awb['order_id'] ?? null;
+        $id = $awb->getId();
+        $orderId = $awb->getOrderId();
         $samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
 
-        if ($id !== null) {
+        if ($id > 0) {
             $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
         }
-        if ($orderId !== null) {
+        if ($orderId > 0) {
             $samedayPackageRepository->deletePackagesByOrderId($orderId);
         }
     }

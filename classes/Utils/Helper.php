@@ -262,8 +262,8 @@ class Helper
 
         $awb = SamedayAwbRepository::getAwbForOrderId($orderId);
 
-        if (!empty($awb)) {
-            $data['awb_number'] = $awb['awb_number'];
+        if (null !== $awb && null !== $awb->getAwbNumber()) {
+            $data['awb_number'] = $awb->getAwbNumber();
         }
 
         return $data;
@@ -454,13 +454,19 @@ class Helper
 
         // If you don't use lockerMap but dropdown option
         if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
-            $lockerFields = SamedayLockerRepository::getLockerSameday($postMetaLocker);
+            $lockerModel = SamedayLockerRepository::getLockerSameday((int) $postMetaLocker);
 
-            if (null === $lockerFields) {
+            if (null === $lockerModel) {
                 return;
             }
 
-            $lockerFields = (array) $lockerFields;
+            $lockerFields = [
+                'name' => $lockerModel->getName(),
+                'city' => $lockerModel->getCity(),
+                'county' => $lockerModel->getCounty(),
+                'address' => $lockerModel->getAddress(),
+                'postalCode' => $lockerModel->getPostalCode(),
+            ];
         }
 
 		$postsMeta = $_POST;

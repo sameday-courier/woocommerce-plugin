@@ -10,6 +10,7 @@ use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -27,31 +28,35 @@ class SamedayServiceRepository extends AbstractRepository
     }
 
     /**
-     * @return array
+     * @return SamedayService[]
      */
     public function getAvailableServices(): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s AND status > 0",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
+
+        return $this->getMapper(SamedayServiceMapper::class)->mapCollection($rows);
     }
 
     /**
-     * @return array
+     * @return SamedayService[]
      */
     public function getServices(): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
+
+        return $this->getMapper(SamedayServiceMapper::class)->mapCollection($rows);
     }
 
     /**
@@ -91,27 +96,33 @@ class SamedayServiceRepository extends AbstractRepository
     /**
      * @param int $id
      *
-     * @return array
+     * @return SamedayService|null
      */
-    public function getService(int $id): array
+    public function getService(int $id): ?SamedayService
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE id = %d LIMIT 1",
             [
                 $this->getTableName(),
                 $id,
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayServiceMapper::class)->map($row);
     }
 
     /**
      * @param int $samedayId
      *
-     * @return array
+     * @return SamedayService|null
      */
-    public function getServiceSameday(int $samedayId): array
+    public function getServiceSameday(int $samedayId): ?SamedayService
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -119,16 +130,22 @@ class SamedayServiceRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayServiceMapper::class)->map($row);
     }
 
     /**
      * @param string $samedayCode
      *
-     * @return array
+     * @return SamedayService|null
      */
-    public function getServiceSamedayByCode(string $samedayCode): array
+    public function getServiceSamedayByCode(string $samedayCode): ?SamedayService
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -136,6 +153,12 @@ class SamedayServiceRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayServiceMapper::class)->map($row);
     }
 
     /**

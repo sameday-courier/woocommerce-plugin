@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\Locker\LockerObject;
+use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -22,41 +24,45 @@ class SamedayLockerRepository extends AbstractRepository
     }
 
     /**
-     * @return array
+     * @return SamedayLocker[]
      */
     public function getCitiesWithLockers(): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT city, county FROM %s WHERE is_testing = %s GROUP BY city",
             [
                 $this->getTableName(),
                 Helper::isTesting()
             ]
         );
+
+        return $this->getMapper(SamedayLockerMapper::class)->mapCollection($rows);
     }
 
     /**
-     * @return array
+     * @return SamedayLocker[]
      */
     public function getLockers(): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
+
+        return $this->getMapper(SamedayLockerMapper::class)->mapCollection($rows);
     }
 
     /**
      * @param string $city
      *
-     * @return array
+     * @return SamedayLocker[]
      */
     public function getLockersByCity(string $city): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE city = %s AND is_testing = %s",
             [
                 $this->getTableName(),
@@ -64,16 +70,18 @@ class SamedayLockerRepository extends AbstractRepository
                 Helper::isTesting()
             ]
         );
+
+        return $this->getMapper(SamedayLockerMapper::class)->mapCollection($rows);
     }
 
     /**
      * @param int $samedayId
      *
-     * @return array
+     * @return SamedayLocker|null
      */
-    public function getLockerSameday(int $samedayId): array
+    public function getLockerSameday(int $samedayId): ?SamedayLocker
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -81,6 +89,12 @@ class SamedayLockerRepository extends AbstractRepository
                 Helper::isTesting()
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayLockerMapper::class)->map($row);
     }
 
     public function addLocker(LockerObject $lockerObject): void

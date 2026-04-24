@@ -4,62 +4,32 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\ModelInterface;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
-final class SamedayServiceMapper implements MapperInterface
+final class SamedayServiceMapper extends AbstractMapper
 {
     /**
-     * @param array $row Column keys and scalar values as returned for the service table (e.g. from wpdb ARRAY_A).
+     * @param array $row
      *
-     * @return ModelInterface
+     * @return SamedayService
      */
-    public function map(array $row): ModelInterface
+    public function map(array $row): SamedayService
     {
         $service = new SamedayService();
 
-        $service->setId((int) $row['id']);
-        $service->setSamedayId((int) $row['sameday_id']);
-        $service->setSamedayCode((string) $row['sameday_code']);
-
-        $samedayName = $row['sameday_name'] ?? null;
-        $service->setSamedayName($samedayName === null ? null : (string) $samedayName);
-
-        $isTesting = $row['is_testing'] ?? null;
-        $service->setIsTesting($isTesting === null ? null : ((int) $isTesting !== 0));
-
-        $name = $row['name'] ?? null;
-        $service->setName($name === null ? null : (string) $name);
-
-        $price = $row['price'] ?? null;
-        $service->setPrice($price === null ? null : (float) $price);
-
-        $priceFree = $row['price_free'] ?? null;
-        $service->setPriceFree($priceFree === null ? null : (float) $priceFree);
-
-        $status = $row['status'] ?? null;
-        $service->setStatus($status === null ? null : (int) $status);
-
-        $serviceOptionalTaxes = $row['service_optional_taxes'] ?? null;
-        $service->setServiceOptionalTaxes(
-            $serviceOptionalTaxes === null ? null : (string) $serviceOptionalTaxes
+        $service->setId((int) $row["id"]);
+        $service->setSamedayId((int) $row["sameday_id"]);
+        $service->setSamedayCode((string) $row["sameday_code"]);
+        $service->setSamedayName($row["sameday_name"] ?? null);
+        $service->setIsTesting((bool) ($row["is_testing"] ?? false));
+        $service->setName($row["name"] ?? null);
+        $service->setPrice(isset($row['price']) && $row['price'] !== '' ? (float) $row['price'] : null);
+        $service->setPriceFree(
+            isset($row['price_free']) && $row['price_free'] !== '' ? (float) $row['price_free'] : null
         );
+        $service->setStatus($row["status"] ?? null);
+        $service->setServiceOptionalTaxes($row["service_optional_taxes"] ?? null);
 
         return $service;
-    }
-
-    /**
-     * @param array $rows
-     *
-     * @return ModelInterface[]
-     */
-    public function mapCollection(array $rows): array
-    {
-        $collection = [];
-        foreach ($rows as $row) {
-            $collection[] = $this->map($row);
-        }
-
-        return $collection;
     }
 }

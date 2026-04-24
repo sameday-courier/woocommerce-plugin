@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository;
 
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\MapperInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 
@@ -14,8 +15,25 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     protected DbHandlerInterface $dbHandler;
 
-    public function __construct()
+    /**
+     * @param DbHandlerInterface|null $dbHandler
+     */
+    public function __construct(DbHandlerInterface $dbHandler = null)
     {
-        $this->dbHandler = new DbHandler();
+        if (null === $dbHandler) {
+            $this->dbHandler = new DbHandler();
+        } else {
+            $this->dbHandler = $dbHandler;
+        }
+    }
+
+    /**
+     * @param string $mapperClass
+     *
+     * @return MapperInterface
+     */
+    public function getMapper(string $mapperClass): MapperInterface
+    {
+        return new $mapperClass();
     }
 }

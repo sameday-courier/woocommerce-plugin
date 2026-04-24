@@ -134,4 +134,17 @@ final class SamedayCity implements ModelInterface
 
         return $this;
     }
+
+    /**
+     * Shape expected by checkout JS (county-city-handle.js).
+     *
+     * @return array{city_name: ?string, county_code: ?string}
+     */
+    public function toCheckoutLegacyArray(): array
+    {
+        return [
+            'city_name' => $this->cityName,
+            'county_code' => $this->countyCode,
+        ];
+    }
 }

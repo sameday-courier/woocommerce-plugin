@@ -22,6 +22,7 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
@@ -346,8 +347,8 @@ function wps_sameday_shipping_options_layout() {
 
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
-    if (!empty($service) && !empty($service['service_optional_taxes'])) {
-        $optionalTaxes = unserialize($service['service_optional_taxes'], ['']);
+    if (null !== $service && null !== $service->getServiceOptionalTaxes() && '' !== $service->getServiceOptionalTaxes()) {
+        $optionalTaxes = unserialize($service->getServiceOptionalTaxes(), ['']);
         if (!$optionalTaxes) {
             $optionalTaxes = [];
         }
@@ -494,9 +495,9 @@ function wps_locker_row_layout() {
                 $cities = SamedayLockerRepository::getCitiesWithLockers();
                 $lockers = array();
                 foreach ($cities as $city) {
-                    if (null !== $city->city) {
-                        $lockers[$city->city . ' (' . $city->county . ')'] = SamedayLockerRepository::getLockersByCity(
-                            $city->city
+                    if (null !== $city->getCity()) {
+                        $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = SamedayLockerRepository::getLockersByCity(
+                            (string) $city->getCity()
                         );
                     }
                 }
@@ -506,14 +507,14 @@ function wps_locker_row_layout() {
                     $optionGroup = "<optgroup label='$city' style='font-size: 13px;'></optgroup>";
                     $options = '';
                     foreach ($cityLockers as $locker) {
-                        $lockerDetails = "<span>" . $locker->name . ' - ' . $locker->address . "</span>";
+                        $lockerDetails = "<span>" . $locker->getName() . ' - ' . $locker->getAddress() . "</span>";
                         $isSelected = null;
-                        if ((int) WC()->session->get('locker') === (int) $locker->locker_id) {
+                        if ((int) WC()->session->get('locker') === (int) $locker->getLockerId()) {
                             $isSelected = "selected='selected'";
                         }
                         $options .= sprintf(
                             "<option value='%s' style='font-size: 9px' %s> %s </option>",
-                            $locker->locker_id,
+                            $locker->getLockerId(),
                             $isSelected,
                             $lockerDetails
                         );
@@ -783,11 +784,11 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                          </div>';
 
             $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($order->get_id()));
-            if (!empty($awb)) {
+            if (null !== $awb && null !== $awb->getAwbNumber()) {
                 $redirectToEawbSite = sprintf(
                         '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
                         SamedayConstants::EAWB_INSTANCES[Helper::getHostCountry()],
-                        $awb['awb_number']
+                        $awb->getAwbNumber()
                 );
 
                 $_goTo_eAWB = '
@@ -845,10 +846,28 @@ function enqueue_button_scripts(): void
                     'select2'
                 ]
             );
+            $cachedCities = (new SamedayCityRepository())->getCachedCities();
+            $citiesForCheckout = [];
+            foreach ($cachedCities as $countryCode => $cityModels) {
+                $citiesForCheckout[$countryCode] = array_map(
+                    static function ($city) {
+                        if ($city instanceof SamedayCity) {
+                            return $city->toCheckoutLegacyArray();
+                        }
+
+                        return [
+                            'city_name' => $city['city_name'] ?? null,
+                            'county_code' => $city['county_code'] ?? null,
+                        ];
+                    },
+                    $cityModels
+                );
+            }
+
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',
                 [
-		            'cities' => SamedayCityRepository::getCachedCities(),
+		            'cities' => $citiesForCheckout,
                 ]
             );
         }

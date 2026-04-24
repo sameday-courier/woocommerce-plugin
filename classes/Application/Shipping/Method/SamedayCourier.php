@@ -16,6 +16,7 @@ use Sameday\Responses\SamedayPostAwbEstimationResponse;
 use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
+use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
@@ -104,11 +105,11 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         foreach ($eligibleServices as $service) {
-            if (!$this->samedayServiceRules->isEligibleTo6H($service)) {
+            if (!$this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
                 continue;
             }
 
-            if (Helper::isOohDeliveryOption($service->sameday_code)) {
+            if (Helper::isOohDeliveryOption($service->getSamedayCode())) {
                 if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
                     $lockerMaxItems = SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
                 }
@@ -118,7 +119,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 }
             }
 
-            $price = $service->price;
+            $price = $service->getPrice() ?? 0.0;
 
             if (
                 '' !== $package['destination']['city']
@@ -126,12 +127,12 @@ final class SamedayCourier extends WC_Shipping_Method
                 && '' !== $package['destination']['address']
                 && $useEstimatedCost !== 'no'
             ) {
-                $estimatedCost = $this->getEstimatedCost($package['destination'], $service->sameday_id);
+                $estimatedCost = $this->getEstimatedCost($package['destination'], $service->getSamedayId());
                 if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
                     $estimatedPrice = $estimatedCost->getCost();
                     $estimatedCurrency = $estimatedCost->getCurrency();
-                    if (($useEstimatedCost === 'yes')
-                        || ($useEstimatedCost === 'btfp' && $service->price < $estimatedPrice)
+                        if (($useEstimatedCost === 'yes')
+                        || ($useEstimatedCost === 'btfp' && ($service->getPrice() ?? 0) < $estimatedPrice)
                     ) {
                         if ($estimatedCostExtraFee > 0) {
                             $estimatedPrice += (float) number_format($price * ($estimatedCostExtraFee /100), 2, '.', '');
@@ -147,7 +148,7 @@ final class SamedayCourier extends WC_Shipping_Method
                                 $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
                                 $price = $bgnCurrencyConverter->convert();
                                 $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
-                                    $service->name,
+                                    $service->getName() ?? '',
                                     $price,
                                     $storeCurrency,
                                     number_format($estimatedPrice, 2),
@@ -159,17 +160,17 @@ final class SamedayCourier extends WC_Shipping_Method
                 }
             }
 
-            if ($service->price_free !== null && ($cartValue > $service->price_free)) {
+            if ($service->getPriceFree() !== null && ($cartValue > $service->getPriceFree())) {
                 $price = .0;
             }
 
             $rate = array(
-                'id' => sprintf('%s:%s:%s', $this->id, $service->sameday_id, $service->sameday_code),
-                'label' => $service->name,
+                'id' => sprintf('%s:%s:%s', $this->id, $service->getSamedayId(), $service->getSamedayCode()),
+                'label' => $service->getName() ?? '',
                 'cost' => $price,
                 'meta_data' => array(
-                    'service_id' => $service->sameday_id,
-                    'service_code' => $service->sameday_code
+                    'service_id' => $service->getSamedayId(),
+                    'service_code' => $service->getSamedayCode()
                 )
             );
 
@@ -178,10 +179,27 @@ final class SamedayCourier extends WC_Shipping_Method
             }
 
             if ((false === $useLockerMap)
-                && ($service->sameday_code === SamedayConstants::LOCKER_NEXT_DAY_CODE)
+                && ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE)
             ) {
                 $this->syncLockers();
-                $rate['lockers'] = SamedayLockerRepository::getLockers();
+                $rate['lockers'] = array_map(
+                    static function (SamedayLocker $locker): array {
+                        return [
+                            'id' => $locker->getId(),
+                            'locker_id' => $locker->getLockerId(),
+                            'name' => $locker->getName(),
+                            'city' => $locker->getCity(),
+                            'county' => $locker->getCounty(),
+                            'address' => $locker->getAddress(),
+                            'lat' => $locker->getLat(),
+                            'lng' => $locker->getLng(),
+                            'postal_code' => $locker->getPostalCode(),
+                            'boxes' => $locker->getBoxes(),
+                            'is_testing' => $locker->getIsTesting(),
+                        ];
+                    },
+                    SamedayLockerRepository::getLockers()
+                );
             }
 
             $this->add_rate($rate);

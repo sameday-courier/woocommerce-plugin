@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\PickupPoint\PickupPointObject;
+use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -24,11 +26,11 @@ class SamedayPickupPointRepository extends AbstractRepository
     /**
      * @param int $samedayId
      *
-     * @return array
+     * @return SamedayPickupPoint|null
      */
-    public function getPickupPointSameday(int $samedayId): array
+    public function getPickupPointSameday(int $samedayId): ?SamedayPickupPoint
     {
-        return $this->dbHandler->getRow(
+        $row = $this->dbHandler->getRow(
             "SELECT * FROM %s WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $this->getTableName(),
@@ -36,20 +38,28 @@ class SamedayPickupPointRepository extends AbstractRepository
                 Helper::isTesting(),
             ]
         );
+
+        if ($row === []) {
+            return null;
+        }
+
+        return $this->getMapper(SamedayPickupPointMapper::class)->map($row);
     }
 
     /**
-     * @return array
+     * @return SamedayPickupPoint[]
      */
     public function getPickupPoints(): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE is_testing = %s",
             [
                 $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
+
+        return $this->getMapper(SamedayPickupPointMapper::class)->mapCollection($rows);
     }
 
     /**

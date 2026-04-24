@@ -118,21 +118,21 @@ class ServiceInstance
     {
         $service = $this->samedayServiceRepository->getService((int) $id);
 
-        if (empty($service)) {
+        if (null === $service) {
 	        WC_Admin_Settings::add_error('No service available !');
 	        WC_Admin_Settings::show_messages(); exit;
         }
 
         $greyedOut = "";
-        $serviceName = $service['sameday_name'] ?? '';
-        if (($service['sameday_code'] ?? '') === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+        $serviceName = $service->getSamedayName() ?? '';
+        if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
             $greyedOut = "disabled";
             $serviceName = SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()];
         }
 
 	    $statuses = '';
         foreach ($this->getStatuses() as $status) {
-            $checked = ((int) ($service['status'] ?? 0)) === ((int) $status['value']) ? 'selected' : '';
+            $checked = ((int) ($service->getStatus() ?? 0)) === ((int) $status['value']) ? 'selected' : '';
 	        $statuses .= '<option value="'.$status['value'].'" '.$checked.' >' . $status['text'] . '</option>';
         }
 
@@ -157,7 +157,7 @@ class ServiceInstance
                                 <label for="samedaycourier-price">  '.__('Price', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.esc_attr($service['price'] ?? '').'"> 
+                                <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.esc_attr((string) ($service->getPrice() ?? '')).'"> 
                             </td>
                         </tr>
                         <tr valign="top">
@@ -165,7 +165,7 @@ class ServiceInstance
                                 <label for="samedaycourier-free-delivery-price">  '.__('Free delivery price', SamedayConstants::TEXT_DOMAIN).' </label>
                             </th> 
                             <td class="forminp forminp-text">
-                                <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.esc_attr($service['price_free'] ?? '').'"> 
+                                <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.esc_attr((string) ($service->getPriceFree() ?? '')).'"> 
                             </td>
                         </tr>
                        <tr valign="top">

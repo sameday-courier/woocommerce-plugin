@@ -6,6 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
 use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject;
+use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 
 if (!defined('ABSPATH')) {
@@ -54,17 +56,19 @@ class SamedayPackageRepository extends AbstractRepository
     /**
      * @param int $orderId
      *
-     * @return array
+     * @return SamedayPackage[]
      */
     public function getPackagesForOrderId(int $orderId): array
     {
-        return $this->dbHandler->getRows(
+        $rows = $this->dbHandler->getRows(
             "SELECT * FROM %s WHERE order_id = %d",
             [
                 $this->getTableName(),
                 $orderId,
             ]
         );
+
+        return $this->getMapper(SamedayPackageMapper::class)->mapCollection($rows);
     }
 
     /**

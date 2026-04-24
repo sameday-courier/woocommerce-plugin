@@ -10,10 +10,12 @@ if (!defined( 'ABSPATH' )) {
 
 use JsonException;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourierShipping\Shipping\Domain\SamedayServiceRules;
 
 class AwbForm
 {
@@ -76,8 +78,8 @@ class AwbForm
         $pickupPointOptions = '';
         $pickupPoints = SamedayPickupPointRepository::getPickupPoints();
         foreach ($pickupPoints as $pickupPoint) {
-            $checked = ($pickupPoint['default_pickup_point'] ?? '') === '1' ? "selected" : "";
-            $pickupPointOptions .= "<option value='{$pickupPoint['sameday_id']}' {$checked}> {$pickupPoint['sameday_alias']} </option>" ;
+            $checked = true === $pickupPoint->getDefaultPickupPoint() ? "selected" : "";
+            $pickupPointOptions .= "<option value='{$pickupPoint->getSamedayId()}' {$checked}> {$pickupPoint->getSamedayAlias()} </option>" ;
         }
 
         $packageTypeOptions = '';
@@ -106,22 +108,24 @@ class AwbForm
 
         if (is_int($locker)) {
             // Get locker from local import
-            $localLockerSameday = SamedayLockerRepository::getLockerSameday($postMetaLocker);
-            try {
-                $lockerDetailsForm = json_encode([
-                    'lockerId' => $localLockerSameday['locker_id'] ?? '',
-                    'name' => $localLockerSameday['name'] ?? '',
-                    'address' => $localLockerSameday['address'] ?? '',
-                    'city' => $localLockerSameday['city'] ?? '',
-                    'countyId' => $localLockerSameday['county'] ?? '',
-                    'postalCode' => $localLockerSameday['postal_code'] ?? '',
-                ], JSON_THROW_ON_ERROR);
-            } catch (JsonException $exception) {
-                $localLockerSameday = [];
+            $localLockerSameday = SamedayLockerRepository::getLockerSameday((int) $postMetaLocker);
+            if (null !== $localLockerSameday) {
+                try {
+                    $lockerDetailsForm = json_encode([
+                        'lockerId' => $localLockerSameday->getLockerId() ?? '',
+                        'name' => $localLockerSameday->getName() ?? '',
+                        'address' => $localLockerSameday->getAddress() ?? '',
+                        'city' => $localLockerSameday->getCity() ?? '',
+                        'countyId' => $localLockerSameday->getCounty() ?? '',
+                        'postalCode' => $localLockerSameday->getPostalCode() ?? '',
+                    ], JSON_THROW_ON_ERROR);
+                } catch (JsonException $exception) {
+                    $localLockerSameday = null;
+                }
             }
-            if (!empty($localLockerSameday)) {
-                $lockerName = $localLockerSameday['name'] ?? null;
-                $lockerAddress = $localLockerSameday['address'] ?? null;
+            if (null !== $localLockerSameday) {
+                $lockerName = $localLockerSameday->getName();
+                $lockerAddress = $localLockerSameday->getAddress();
             }
         }
 
@@ -164,21 +168,24 @@ class AwbForm
         }
 
         $samedayServices = SamedayServiceRepository::getAvailableServices();
+        $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository());
 
         $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
         $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
         $servicesOptions = '';
         foreach ($samedayServices as $samedayService) {
-            $firstMileId = self::isServiceEligibleToLockerFirstMile((int) $samedayService['sameday_id']);
+            $firstMileId = $samedayServiceRules->isEligibleToLockerFirstMile($samedayService)
+                ? $samedayService->getSamedayId()
+                : 0;
 
-            $checked = ($serviceCode === ($samedayService['sameday_code'] ?? '')) ? 'selected' : '';
+            $checked = ($serviceCode === $samedayService->getSamedayCode()) ? 'selected' : '';
             $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-            if ($firstMileId === (int) $samedayService['sameday_id']) {
+            if ($firstMileId === $samedayService->getSamedayId()) {
                 $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 
             $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-            if (Helper::isOohDeliveryOption($samedayService['sameday_code'] ?? '')) {
+            if (Helper::isOohDeliveryOption($samedayService->getSamedayCode())) {
                 $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 
@@ -186,9 +193,9 @@ class AwbForm
                 "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
                 $allowFirstMile,
                 $allowLastMile,
-                $samedayService['sameday_id'],
+                $samedayService->getSamedayId(),
                 $checked,
-                $samedayService['sameday_name'] ?? '',
+                $samedayService->getSamedayName() ?? '',
             );
             $servicesOptions .= $option;
         }

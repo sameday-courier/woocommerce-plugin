@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday;
 
+use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\AbstractRepository;
 use stdClass;
 
@@ -22,7 +24,7 @@ class SamedayCityRepository extends AbstractRepository
     }
 
     /**
-     * @return array
+     * @return array<string, SamedayCity[]>
      */
     public function getCachedCities(): array
     {
@@ -39,19 +41,21 @@ class SamedayCityRepository extends AbstractRepository
     }
 
     /**
-     * @return array
+     * @return array<string, SamedayCity[]>
      */
     public function getCities(): array
     {
+        $mapper = $this->getMapper(SamedayCityMapper::class);
         $cities = [];
         foreach (SamedayConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
-            $cities[$countryKey] = $this->dbHandler->getRows(
-                "SELECT city_name, county_code FROM %s WHERE country_code = %s",
+            $rows = $this->dbHandler->getRows(
+                "SELECT * FROM %s WHERE country_code = %s",
                 [
                     $this->getTableName(),
                     $countryKey,
                 ]
             );
+            $cities[$countryKey] = $mapper->mapCollection($rows);
         }
 
         return $cities;

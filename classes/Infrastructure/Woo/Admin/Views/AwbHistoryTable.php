@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
+use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -78,8 +79,14 @@ class AwbHistoryTable
         }
 
         foreach ($packages as $package) {
-            $summary = unserialize($package['summary'], ['']);
-            $packageHistory = unserialize($package['history'], ['']);
+            $summarySerialized = $package instanceof SamedayPackage
+                ? ($package->getSummary() ?? '')
+                : ($package['summary'] ?? '');
+            $historySerialized = $package instanceof SamedayPackage
+                ? ($package->getHistory() ?? '')
+                : ($package['history'] ?? '');
+            $summary = unserialize($summarySerialized, ['']);
+            $packageHistory = unserialize($historySerialized, ['']);
             $historyRows = '';
             foreach ($packageHistory as $history) {
                 $historyRows .= '

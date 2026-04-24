@@ -2,6 +2,7 @@
 
 namespace SamedayCourier\Shipping\Domain;
 
+use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Infrastructure\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -20,7 +21,7 @@ final class SamedayServiceSelector
     /**
      * @param string $destinationCountry
      *
-     * @return array
+     * @return SamedayService[]
      */
     public function getEligibleServices(string $destinationCountry): array
     {
@@ -32,9 +33,9 @@ final class SamedayServiceSelector
 
         return array_filter(
             $this->samedayServiceRepository->getAvailableServices(),
-            static function ($row) use ($eligibleShippingServices) {
+            static function (SamedayService $service) use ($eligibleShippingServices) {
                 return in_array(
-                    $row['sameday_code'] ?? '',
+                    $service->getSamedayCode(),
                     $eligibleShippingServices,
                     true
                 );
