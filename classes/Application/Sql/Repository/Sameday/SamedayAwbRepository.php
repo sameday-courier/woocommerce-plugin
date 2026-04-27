@@ -11,6 +11,7 @@ if (!defined( 'ABSPATH')) {
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
+
 class SamedayAwbRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_awb';
