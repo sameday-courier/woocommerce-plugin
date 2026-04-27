@@ -53,6 +53,7 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
@@ -88,6 +89,21 @@ class ApiRequestsHandler
      */
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @var SamedayLockerRepository $samedayLockerRepository
+     */
+    private SamedayLockerRepository $samedayLockerRepository;
+
+    /**
+     * @var SchemaHandler $schemaHandler
+     */
+    private SchemaHandler $schemaHandler;
+
+    /**
+     * @var SamedayPackageRepository $samedayPackageRepository
+     */
+    private SamedayPackageRepository $samedayPackageRepository;
+
     public function __construct()
     {
         $this->dbHandler = new DbHandler();
@@ -95,6 +111,9 @@ class ApiRequestsHandler
         $this->samedayCityRepository = new SamedayCityRepository($this->dbHandler);
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
         $this->samedayAwbRepository = new SamedayAwbRepository($this->dbHandler);
+        $this->samedayLockerRepository = new SamedayLockerRepository($this->dbHandler);
+        $this->samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
+        $this->schemaHandler = new SchemaHandler();
     }
 
 	/**
@@ -184,7 +203,7 @@ class ApiRequestsHandler
     public function importCities(): void
     {
 		if (false === $this->dbHandler->isTableExists($this->samedayServiceRepository->getTableName())) {
-            $this->dbHandler->executeQuery(SchemaHandler::buildCitiesTableQuery());
+            $this->dbHandler->executeQuery($this->schemaHandler->buildCitiesTableQuery());
 		}
 
 		if (!file_exists($file = plugin_dir_path(__FILE__) . 'cities.json')) {
@@ -307,12 +326,12 @@ class ApiRequestsHandler
 			} catch (Exception $exception) {return;}
 
 				foreach ($lockers->getLockers() as $lockerObject) {
-				$locker = SamedayLockerRepository::getLockerSameday($lockerObject->getId());
+				$locker = $this->samedayLockerRepository->getLockerSameday($lockerObject->getId());
 				if (null === $locker) {
 					// Pickup point not found, add it.
-                    SamedayLockerRepository::addLocker($lockerObject);
+                    $this->samedayLockerRepository->addLocker($lockerObject);
 				} else {
-                    SamedayLockerRepository::updateLocker($lockerObject, $locker->getId());
+                    $this->samedayLockerRepository->updateLocker($lockerObject, $locker->getId());
 				}
 
 				// Save as current pickup points.
@@ -329,13 +348,13 @@ class ApiRequestsHandler
 				);
 			},
 
-            SamedayLockerRepository::getLockers()
+            $this->samedayLockerRepository->getLockers()
 		);
 
 		// Delete local lockers that aren't present in remote lockers anymore.
 		foreach ($localLockers as $localLocker) {
 			if (!in_array($localLocker['locker_id'], $remoteLockers, true)) {
-                SamedayLockerRepository::deleteLocker((int) $localLocker['id']);
+                $this->samedayLockerRepository->deleteLocker((int) $localLocker['id']);
 			}
 		}
 
@@ -349,7 +368,7 @@ class ApiRequestsHandler
 		$samedayOptions = Helper::getSamedaySettings();
 	    $samedayOptions['sameday_sync_lockers_ts'] = $time;
 
-        update_option('woocommerce_samedaycourier_settings', $samedayOptions);
+        OptionsHandler::setOption('woocommerce_samedaycourier_settings', $samedayOptions);
     }
 
 	/**
@@ -962,7 +981,7 @@ class ApiRequestsHandler
 
         $parcels = unserialize($awb->getParcels() ?? '', ['']);
 
-        SamedayPackageRepository::deletePackagesByOrderId($orderId);
+        $this->samedayPackageRepository->deletePackagesByOrderId($orderId);
 
 	    foreach ($parcels as $parcel) {
             try {

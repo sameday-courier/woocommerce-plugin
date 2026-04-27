@@ -19,11 +19,11 @@ abstract class AbstractMapper implements MapperInterface
      */
     public function mapCollection(array $rows): array
     {
-        $collection = [];
-        foreach ($rows as $row) {
-            $collection[] = $this->map($row);
-        }
-
-        return $collection;
+        return array_map(
+            function ($row) {
+                $this->map($row);
+            },
+            $rows
+        );
     }
 }

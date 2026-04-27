@@ -10,6 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use \Sameday\PersistentData\SamedayPersistentDataInterface;
 use \Sameday\SamedayClient;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 class PersistenceHandler implements SamedayPersistentDataInterface
 {
@@ -20,7 +21,7 @@ class PersistenceHandler implements SamedayPersistentDataInterface
 
 	public function get($key)
 	{
-		return get_option("woocommerce_samedaycourier_settings_{$key}")[self::KEYS[$key]];
+		return OptionsHandler::getOption("woocommerce_samedaycourier_settings_{$key}", [])[self::KEYS[$key]];
 	}
 
 	public function set($key, $value): void

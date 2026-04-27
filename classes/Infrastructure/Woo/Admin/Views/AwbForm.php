@@ -15,6 +15,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 class AwbForm
 {
@@ -229,7 +230,7 @@ class AwbForm
                                 <input readonly type="number" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" value="' . __("1", SamedayConstants::TEXT_DOMAIN) . '">
                             </td>
                              <td class="forminp forminp-text">
-                                <input readonly type="text" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . get_option('woocommerce_weight_unit') . '">
+                                <input readonly type="text" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . OptionsHandler::getOption('woocommerce_weight_unit', 'kg') . '">
                              </td>
                              <td>
                                 <button class="button-primary" id="addParcelButton">+</button>

@@ -17,15 +17,18 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbReposit
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+
 class Helper
 {
 	public static function getSamedaySettings(): array
 	{
-		if (false === get_option('woocommerce_samedaycourier_settings')) {
+		$settings = OptionsHandler::getOption('woocommerce_samedaycourier_settings', false);
+		if (false === $settings) {
 			return [];
 		}
 
-		return get_option('woocommerce_samedaycourier_settings');
+		return is_array($settings) ? $settings : [];
 	}
 
 	public static function getPathToSettingsPage(): string
@@ -72,13 +75,13 @@ class Helper
 	}
 
 	/**
-	 * @return int
+	 * @return bool
 	 */
-	public static function isTesting(): int
+	public static function isTesting(): bool
 	{
 		$isTesting = self::getSamedaySettings()['is_testing'] ?? null;
 
-		return ($isTesting === 'yes' || $isTesting === '1') ? 1 : 0;
+		return $isTesting === 'yes' || $isTesting === '1';
 	}
 
 	/**
@@ -334,7 +337,7 @@ class Helper
      */
     public static function showFlashNotice($notice): void
     {
-        $notices = get_option($notice);
+        $notices = OptionsHandler::getOption($notice, false);
         if (! empty($notices)) {
             self::printFlashNotice($notices['type'], $notices['message'], $notices['dismissible']);
 
@@ -648,7 +651,7 @@ class Helper
 
     public static function convertWeight(float $weight): float
     {
-        $weightUnit = get_option('woocommerce_weight_unit');
+        $weightUnit = OptionsHandler::getOption('woocommerce_weight_unit', 'kg');
 
         switch ($weightUnit) {
             case 'g':
