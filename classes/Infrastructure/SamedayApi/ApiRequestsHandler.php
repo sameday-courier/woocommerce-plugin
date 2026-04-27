@@ -51,19 +51,17 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPoin
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
 class ApiRequestsHandler
 {
-	private const USER_ROLE_PERMISSIONS = [
-		'administrator',
-		'shop_manager',
-	];
-
     /**
      * @var DbHandlerInterface $dbHandler
      */
@@ -125,7 +123,7 @@ class ApiRequestsHandler
     public function refreshSamedayServices(): bool
     {
         if (empty(Helper::getSamedaySettings())) {
-            wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
         $sameday = new Sameday(SdkInitiator::init());
@@ -140,7 +138,7 @@ class ApiRequestsHandler
             try {
                 $services = $sameday->getServices($request);
             } catch (Exception $e) {
-                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
             }
 
             foreach ($services->getServices() as $serviceObject) {
@@ -194,7 +192,7 @@ class ApiRequestsHandler
             );
         }
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
     }
 
 	/**
@@ -238,7 +236,7 @@ class ApiRequestsHandler
 	public function refreshSamedayPickupPoints(): bool
     {
         if (empty(Helper::getSamedaySettings())) {
-            wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+            Redirector::to('admin.php', ['page' => 'sameday_pickup_points']);
         }
 
         $sameday = new Sameday(SdkInitiator::init());
@@ -251,7 +249,7 @@ class ApiRequestsHandler
             try {
                 $pickUpPoints = $sameday->getPickupPoints($request);
             } catch (Exception $e) {
-	            return wp_redirect(admin_url() . 'admin.php?page=sameday_pickup_points');
+	            Redirector::to('admin.php', ['page' => 'sameday_pickup_points']);
             }
 
 	        foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
@@ -287,7 +285,7 @@ class ApiRequestsHandler
             }
         }
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
 
     /**
@@ -300,12 +298,12 @@ class ApiRequestsHandler
     public function refreshSamedayLockers(): bool
     {
         if (empty(Helper::getSamedaySettings()) ) {
-            return wp_redirect(admin_url() . 'admin.php?page=sameday_lockers');
+            Redirector::to('admin.php', ['page' => 'sameday_lockers']);
         }
 
         $this->updateLockersList();
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_lockers');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
     }
 
 	/**
@@ -372,16 +370,20 @@ class ApiRequestsHandler
     }
 
 	/**
-	 * @return bool
+	 * @return void
 	 */
-    public function editService(): bool
+    public function editService(): void
     {
-	    if (false === $this->isAllowed() || false === wp_verify_nonce($_POST['_wpnonce'], 'edit-service')) {
-		    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
-		}
+        if (!NonceVerifier::verify($_POST['_wpnonce'], 'edit-service')) {
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+        }
+
+        if (!UserPermissionChecker::hasAllowedRole()) {
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+        }
 
         if (!($_POST['action'] === 'edit_service')) {
-            return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
         if (null === $_POST['samedaycourier-service-name'] ?? null) {
@@ -431,7 +433,7 @@ class ApiRequestsHandler
         if (empty($errors)) {
             $currentService = $this->samedayServiceRepository->getService((int) $post_fields['id']['value']);
             if (null === $currentService) {
-                return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
             }
 
             $service = array(
@@ -460,12 +462,17 @@ class ApiRequestsHandler
                 }
             }
 
-            return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_services');
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
 		$fieldId = (int) $post_fields['id']['value'];
 
-        return wp_redirect(admin_url() . "edit.php?post_type=page&page=sameday_services&action=edit&id='$fieldId'");
+        Redirector::to('edit.php', [
+            'post_type' => 'page',
+            'page' => 'sameday_services',
+            'action' => 'edit',
+            'id' => $fieldId,
+        ]);
     }
 
 	/**
@@ -486,15 +493,26 @@ class ApiRequestsHandler
 			$noticeMessage = __('You are not allowed to do this operation !', SamedayConstants::TEXT_DOMAIN);
 			Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
-			return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+			Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+                'add-awb' => 'error',
+            ]);
 		}
 
         if (empty(Helper::getSamedaySettings()) ) {
-            wp_redirect(admin_url() . "post.php?post={$params['samedaycourier-order-id']}&action=edit");
+            Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+            ]);
         }
 
         if (empty($params['shipping_lines'])) {
-            return wp_redirect(add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit"));
+            Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+                'add-awb' => 'error',
+            ]);
         }
 
 		$service = $this->samedayServiceRepository->getServiceSameday(
@@ -509,9 +527,11 @@ class ApiRequestsHandler
                 true
             );
 
-            return wp_redirect(
-                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-            );
+            Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+                'add-awb' => 'error',
+            ]);
         }
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes(
@@ -602,9 +622,11 @@ class ApiRequestsHandler
                 'error',
                 true
             );
-            return wp_redirect(
-                add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-            );
+            Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+                'add-awb' => 'error',
+            ]);
         }
 
 	    $lockerId = null;
@@ -805,9 +827,11 @@ class ApiRequestsHandler
             $noticeMessage = Helper::parseAwbErrors($errors);
             Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
-			return wp_redirect(
-				add_query_arg('add-awb', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-			);
+			Redirector::to('post.php', [
+				'post' => $params['samedaycourier-order-id'],
+				'action' => 'edit',
+				'add-awb' => 'error',
+			]);
         }
 
         $awbDetails = array(
@@ -864,9 +888,11 @@ class ApiRequestsHandler
             );
         } catch (Exception $exception) {}
 
-        return wp_redirect(
-			add_query_arg('add-awb', 'success', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-        );
+        Redirector::to('post.php', [
+			'post' => $params['samedaycourier-order-id'],
+			'action' => 'edit',
+			'add-awb' => 'success',
+		]);
     }
 
     /**
@@ -907,10 +933,18 @@ class ApiRequestsHandler
         if (isset($errors)) {
             Helper::addFlashNotice('remove_awb_notice', Helper::parseAwbErrors($errors), 'error', true);
 
-            return wp_redirect(add_query_arg('remove-awb', 'error', "post.php?post={$awb->getOrderId()}&action=edit"));
+            Redirector::to('post.php', [
+                'post' => $awb->getOrderId(),
+                'action' => 'edit',
+                'remove-awb' => 'error',
+            ]);
         }
 
-        return wp_redirect(add_query_arg('remove-awb', 'success', "post.php?post={$awb->getOrderId()}&action=edit"));
+        Redirector::to('post.php', [
+            'post' => $awb->getOrderId(),
+            'action' => 'edit',
+            'remove-awb' => 'success',
+        ]);
     }
 
     /**
@@ -952,7 +986,11 @@ class ApiRequestsHandler
         }
 
         if (null !== $errors && null === $pdf) {
-            wp_redirect(add_query_arg('show-awb', 'error', "post.php?post={$awb->getOrderId()}&action=edit"));
+            Redirector::to('post.php', [
+                'post' => $awb->getOrderId(),
+                'action' => 'edit',
+                'show-awb' => 'error',
+            ]);
         }
 
         header('Content-type: application/pdf');
@@ -1094,9 +1132,11 @@ class ApiRequestsHandler
                 true
             );
 
-            return wp_redirect(
-                add_query_arg('add-new-parcel', 'error', "post.php?post={$params['samedaycourier-order-id']}&action=edit")
-            );
+            Redirector::to('post.php', [
+                'post' => $params['samedaycourier-order-id'],
+                'action' => 'edit',
+                'add-new-parcel' => 'error',
+            ]);
         }
 
         $position = $this->getPosition($awb->getParcels() ?? '');
@@ -1140,7 +1180,11 @@ class ApiRequestsHandler
             $noticeError = Helper::parseAwbErrors($errors);
             Helper::addFlashNotice('add_new_parcel_notice', $noticeError, 'error', true);
 
-            return wp_redirect(add_query_arg('add-new-parcel', 'error', "post.php?post={$awb->getOrderId()}&action=edit"));
+            Redirector::to('post.php', [
+                'post' => $awb->getOrderId(),
+                'action' => 'edit',
+                'add-new-parcel' => 'error',
+            ]);
         }
 
         $parcels = array_merge(unserialize($awb->getParcels() ?? '', ['']), array(new ParcelObject(
@@ -1152,7 +1196,11 @@ class ApiRequestsHandler
 
         $this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels));
 
-        return wp_redirect(add_query_arg('add-new-parcel', 'success', "post.php?post={$awb->getOrderId()}&action=edit"));
+        Redirector::to('post.php', [
+            'post' => $awb->getOrderId(),
+            'action' => 'edit',
+            'add-new-parcel' => 'success',
+        ]);
     }
 
 	private function isAllowed(): bool

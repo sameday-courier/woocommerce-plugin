@@ -42,6 +42,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 /**
  * Check if WooCommerce plugin is enabled
  */
@@ -223,14 +224,14 @@ add_action('wp_ajax_send_pickup_point', static function () {
         $noticeMessage = Helper::parseAwbErrors($e->getErrors());
         Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     } catch (Exception $e) {
         Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
 
-    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+    Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
 });
 
 add_action('wp_ajax_delete_pickup_point', static function() {
@@ -250,7 +251,7 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     } catch (SamedaySDKException|Exception $e) {
         Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
 
     try {
@@ -260,10 +261,10 @@ add_action('wp_ajax_delete_pickup_point', static function() {
 
         wp_send_json_error('Failed to delete pickup point: ' . $exception->getMessage(), 500);
 
-        return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
 
-    return wp_redirect(admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points');
+    Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
 });
 
 add_action('admin_post_edit_service', static function() {
@@ -274,7 +275,7 @@ add_action('admin_post_add_awb', static function () {
     $postFields = Helper::sanitizeInputs($_POST);
     $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
     if (empty($orderDetails)) {
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 
     $data = array_merge($postFields, $orderDetails->get_data());
@@ -290,7 +291,7 @@ add_action('admin_post_remove-awb', static function () {
     $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
     $nonce = $_POST['_wpnonce'];
     if (empty($awb)) {
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 
     try {
@@ -298,7 +299,7 @@ add_action('admin_post_remove-awb', static function () {
     } catch (Exception $e) {
         Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 });
 
@@ -306,7 +307,7 @@ add_action('admin_post_show-awb-pdf', static function (){
     $orderId = (int) sanitize_key($_POST['order-id']);
 	$nonce = $_POST['_wpnonce'];
     if (!isset($orderId)) {
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 
     try {
@@ -314,14 +315,14 @@ add_action('admin_post_show-awb-pdf', static function (){
     } catch (Exception $exception) {
         Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
 
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 });
 
 add_action('admin_post_add-new-parcel', static function() {
     $postFields = Helper::sanitizeInputs($_POST);
     if (empty($postFields)) {
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 
     try {
@@ -329,7 +330,7 @@ add_action('admin_post_add-new-parcel', static function() {
     } catch (Exception $exception) {
         Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
 
-        return wp_redirect(admin_url() . '/index.php');
+        Redirector::to('index.php');
     }
 });
 
