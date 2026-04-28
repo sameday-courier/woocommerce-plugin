@@ -42,6 +42,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 /**
  * Check if WooCommerce plugin is enabled
@@ -172,7 +173,7 @@ add_action('wp_ajax_send_pickup_point', static function () {
         wp_send_json_error('Invalid data', 400);
         die();
     }
-    if (false === wp_verify_nonce($formData['_wpnonce'], 'add-pickup-point')) {
+    if (!NonceVerifier::verify($formData['_wpnonce'], 'add-pickup-point')) {
         wp_send_json_error('Forbidden action', 403);
         die();
     }
@@ -237,7 +238,7 @@ add_action('wp_ajax_send_pickup_point', static function () {
 add_action('wp_ajax_delete_pickup_point', static function() {
     $formData = $_POST['data'] ?? [];
 
-    if (false === wp_verify_nonce($formData['_wpnonce'], 'delete-pickup-point')) {
+    if (!NonceVerifier::verify($formData['_wpnonce'], 'delete-pickup-point')) {
         wp_send_json_error('Forbidden action !', 403);
         die();
     }
@@ -405,7 +406,7 @@ add_action('wp_ajax_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
 add_action('wp_ajax_nopriv_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
 
 function woo_sameday_post_ajax_data(): void {
-    if (false === wp_verify_nonce($_POST['samedayNonce'], 'sameday-post-data')) {
+    if (!NonceVerifier::verify($_POST['samedayNonce'], 'sameday-post-data')) {
         die('Invalid Request !');
     }
 

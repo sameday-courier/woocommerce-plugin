@@ -489,7 +489,7 @@ class ApiRequestsHandler
 	 */
     public function postAwb($params): bool
     {
-		if (false === $this->isAllowed() || false === wp_verify_nonce($params['_wpnonce'], 'add-awb')) {
+		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($params['_wpnonce'], 'add-awb')) {
 			$noticeMessage = __('You are not allowed to do this operation !', SamedayConstants::TEXT_DOMAIN);
 			Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
@@ -905,7 +905,7 @@ class ApiRequestsHandler
      */
     public function removeAwb(SamedayAwb $awb, string $nonce): bool
     {
-		if (false === $this->isAllowed() || false === wp_verify_nonce($nonce, 'remove-awb')) {
+		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($nonce, 'remove-awb')) {
 			return false;
 		}
 
@@ -956,7 +956,7 @@ class ApiRequestsHandler
      */
     public function showAwbAsPdf($orderId, $nonce): string
     {
-	    if (false === $this->isAllowed() || false === wp_verify_nonce($nonce, 'show-as-pdf')) {
+	    if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($nonce, 'show-as-pdf')) {
 		    throw new RuntimeException("Not allowed!");
 	    }
 
@@ -1116,7 +1116,7 @@ class ApiRequestsHandler
      */
     public function addNewParcel($params): bool
     {
-		if (false === $this->isAllowed() || false === wp_verify_nonce($params['_wpnonce'], 'add-new-parcel')) {
+		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($params['_wpnonce'], 'add-new-parcel')) {
 			return false;
 		}
 
@@ -1202,22 +1202,6 @@ class ApiRequestsHandler
             'add-new-parcel' => 'success',
         ]);
     }
-
-	private function isAllowed(): bool
-	{
-		$currentUser = wp_get_current_user();
-		$roles = $currentUser->roles ?? [];
-
-		$userRolePermissions = self::USER_ROLE_PERMISSIONS;
-
-		foreach ($userRolePermissions as $role) {
-			if (in_array($role, $roles, true)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 
     /**
      * @param $parcels
