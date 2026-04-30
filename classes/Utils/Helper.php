@@ -17,20 +17,10 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbReposit
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 
 class Helper
 {
-	public static function getSamedaySettings(): array
-	{
-		$settings = OptionsHandler::getOption('woocommerce_samedaycourier_settings', false);
-		if (false === $settings) {
-			return [];
-		}
-
-		return is_array($settings) ? $settings : [];
-	}
-
 	public static function getPathToSettingsPage(): string
 	{
 		return admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
@@ -59,7 +49,7 @@ class Helper
 	 */
 	public static function isApplyFreeShippingAfterDiscount(): bool
 	{
-		$discountFreeShipping = self::getSamedaySettings()['discount_free_shipping'] ?? null;
+		$discountFreeShipping = OptionsHandler::getSamedayOptions()['discount_free_shipping'] ?? null;
 
 		return ! (null === $discountFreeShipping || 'no' === $discountFreeShipping);
 	}
@@ -69,7 +59,7 @@ class Helper
 	 */
 	public static function isUseSamedayNomenclator(): bool
 	{
-		$useSamedayNomenclator = self::getSamedaySettings()['use_nomenclator'] ?? null;
+		$useSamedayNomenclator = OptionsHandler::getSamedayOptions()['use_nomenclator'] ?? null;
 
 		return ! (null === $useSamedayNomenclator || 'no' === $useSamedayNomenclator);
 	}
@@ -79,7 +69,7 @@ class Helper
 	 */
 	public static function isTesting(): bool
 	{
-		$isTesting = self::getSamedaySettings()['is_testing'] ?? null;
+		$isTesting = OptionsHandler::getSamedayOptions()['is_testing'] ?? null;
 
 		return $isTesting === 'yes' || $isTesting === '1';
 	}
@@ -90,7 +80,7 @@ class Helper
 	public static function getHostCountry(): string
 	{
 		// The default will always be RO
-		return self::getSamedaySettings()['host_country'] ?? SamedayConstants::API_HOST_LOCALE_RO;
+		return OptionsHandler::getSamedayOptions()['host_country'] ?? SamedayConstants::API_HOST_LOCALE_RO;
 	}
 
 	/**
@@ -307,60 +297,7 @@ class Helper
         return implode('<br/>', $allErrors);
     }
 
-    /**
-     * @param string $notice
-     * @param string $notice_message
-     * @param string $type
-     * @param bool $dismissible
-     *
-     * @return void
-     */
-    public static function addFlashNotice(
-		string $notice = "",
-		string $notice_message = "",
-		string $type = "warning",
-		bool $dismissible = false
-    ): void
-    {
-        update_option($notice, array(
-                "message" => $notice_message,
-                "type" => $type,
-                "dismissible" => $dismissible
-            )
-        );
-    }
 
-    /**
-     * @param $notice
-     *
-     * @return void
-     */
-    public static function showFlashNotice($notice): void
-    {
-        $notices = OptionsHandler::getOption($notice, false);
-        if (! empty($notices)) {
-            self::printFlashNotice($notices['type'], $notices['message'], $notices['dismissible']);
-
-            // After show flash message in page, remove it from db.
-            delete_option($notice);
-        }
-    }
-
-    /**
-     * @param $type
-     * @param $dismissible
-     * @param $message
-     *
-     * @return void
-     */
-    public static function printFlashNotice($type, $message, $dismissible): void
-    {
-        printf( '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
-            $type,
-            ($dismissible) ? "is-dismissible" : "",
-            $message
-        );
-    }
 
     /**
      * @param $string

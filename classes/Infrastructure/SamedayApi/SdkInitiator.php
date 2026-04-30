@@ -10,6 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 /**
@@ -32,10 +33,10 @@ final class SdkInitiator
     ): SamedayClient
 	{
         if (null === $username) {
-            $username = Helper::getSamedaySettings()['user'];
+            $username = OptionsHandler::getSamedayOptions()['user'];
         }
         if (null === $password) {
-            $password = Helper::getSamedaySettings()['password'];
+            $password = OptionsHandler::getSamedayOptions()['password'];
         }
         if (null === $apiUrl) {
             $apiUrl = Helper::getApiUrl();

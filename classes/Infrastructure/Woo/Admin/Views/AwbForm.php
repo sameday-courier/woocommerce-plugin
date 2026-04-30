@@ -15,7 +15,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 
 class AwbForm
 {
@@ -139,8 +139,8 @@ class AwbForm
             $lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
         }
 
-        $username = Helper::getSamedaySettings()['user'] ?? null;
-        $hostCountry = Helper::getSamedaySettings()['host_country'] ?? null;
+        $username = OptionsHandler::getSamedayOptions()['user'] ?? null;
+        $hostCountry = OptionsHandler::getSamedayOptions()['host_country'] ?? null;
         $destCity = $order->get_data()['shipping']['city'] ?? '';
         $destCountry = $order->get_data()['shipping']['country'] ?? '';
 

@@ -36,7 +36,11 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
@@ -223,11 +227,11 @@ add_action('wp_ajax_send_pickup_point', static function () {
         wp_send_json_success($response->getPickupPointId());
     } catch (SamedayBadRequestException $e) {
         $noticeMessage = Helper::parseAwbErrors($e->getErrors());
-        Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
         Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     } catch (Exception $e) {
-        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
         Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
@@ -250,7 +254,7 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     try {
         $sameday = new Sameday(SdkInitiator::init());
     } catch (SamedaySDKException|Exception $e) {
-        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
         Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
     }
@@ -268,9 +272,7 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
 });
 
-add_action('admin_post_edit_service', static function() {
-    return (new ApiRequestsHandler())->editService();
-});
+add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
 
 add_action('admin_post_add_awb', static function () {
     $postFields = Helper::sanitizeInputs($_POST);
@@ -284,7 +286,7 @@ add_action('admin_post_add_awb', static function () {
     try {
         return (new ApiRequestsHandler())->postAwb($data);
     } catch (Exception $e) {
-        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
     };
 });
 
@@ -298,13 +300,13 @@ add_action('admin_post_remove-awb', static function () {
     try {
         return (new ApiRequestsHandler())->removeAwb($awb, $nonce);
     } catch (Exception $e) {
-        Helper::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
         Redirector::to('index.php');
     }
 });
 
-add_action('admin_post_show-awb-pdf', static function (){
+add_action('admin_post_show-awb-pdf', static function () {
     $orderId = (int) sanitize_key($_POST['order-id']);
 	$nonce = $_POST['_wpnonce'];
     if (!isset($orderId)) {
@@ -314,26 +316,13 @@ add_action('admin_post_show-awb-pdf', static function (){
     try {
         return (new ApiRequestsHandler())->showAwbAsPdf($orderId, $nonce);
     } catch (Exception $exception) {
-        Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
+        NoticerHandler::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
 
         Redirector::to('index.php');
     }
 });
 
-add_action('admin_post_add-new-parcel', static function() {
-    $postFields = Helper::sanitizeInputs($_POST);
-    if (empty($postFields)) {
-        Redirector::to('index.php');
-    }
-
-    try {
-        return (new ApiRequestsHandler())->addNewParcel($postFields);
-    } catch (Exception $exception) {
-        Helper::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
-
-        Redirector::to('index.php');
-    }
-});
+add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {
@@ -362,7 +351,7 @@ function wps_sameday_shipping_options_layout() {
     }
 
     if ($taxOpenPackage
-        && Helper::getSamedaySettings()['open_package_status'] === "yes"
+        && OptionsHandler::getSamedayOptions()['open_package_status'] === "yes"
     ) {
         ?>
             <tr class="shipping-pickup-store">
@@ -376,7 +365,7 @@ function wps_sameday_shipping_options_layout() {
                                     'type' => 'checkbox',
                                     'class' => array('input-checkbox'),
                                     'id' => 'sameday_open_package',
-                                    'label' => Helper::getSamedaySettings()['open_package_label'],
+                                    'label' => OptionsHandler::getSamedayOptions()['open_package_label'],
                                     'required' => false,
                                 ],
                                 WC()->session->get('open_package') === 'yes'
@@ -443,12 +432,12 @@ function checkout_repayment_tax() {
 		return;
     }
 
-	$repayment_tax = (int) (Helper::getSamedaySettings()['repayment_tax'] ?? null);
+	$repayment_tax = (int) (OptionsHandler::getSamedayOptions()['repayment_tax'] ?? null);
 
     if ($repayment_tax > 0
         && SamedayConstants::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
     ) {
-        $repayment_tax_label = Helper::getSamedaySettings()['repayment_tax_label'] ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
+        $repayment_tax_label = OptionsHandler::getSamedayOptions()['repayment_tax_label'] ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
@@ -471,14 +460,14 @@ function wps_locker_row_layout() {
     }
 
     if ((Helper::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
-        <?php if ((Helper::getSamedaySettings()['lockers_map'] ?? null) === "yes") { ?>
+        <?php if ((OptionsHandler::getSamedayOptions()['lockers_map'] ?? null) === "yes") { ?>
             <tr class="shipping-pickup-store">
                 <td><strong><?php echo __('Sameday Locker', SamedayConstants::TEXT_DOMAIN) ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
-                        data-username='<?php echo Helper::getSamedaySettings()['user']; ?>'
-                        data-country='<?php echo Helper::getSamedaySettings()['host_country']; ?>'
+                        data-username='<?php echo OptionsHandler::getSamedayOptions()['user']; ?>'
+                        data-country='<?php echo OptionsHandler::getSamedayOptions()['host_country']; ?>'
                     >
                         <?php echo __('Show Locations Map', SamedayConstants::TEXT_DOMAIN) ?>
                     </button>
@@ -681,35 +670,35 @@ add_action('wp_head', 'wps_locker_style');
 add_action('admin_head', function () {
     if (isset($_GET["add-awb"])){
         if ($_GET["add-awb"] === "error") {
-            Helper::showFlashNotice('add_awb_notice');
+            NoticerHandler::showFlashNotice('add_awb_notice');
         }
 
         if ($_GET["add-awb"] === "success") {
-            Helper::printFlashNotice('success', __("Awb was successfully generated !", SamedayConstants::TEXT_DOMAIN), true);
+            NoticerHandler::printFlashNotice('success', __("Awb was successfully generated !", SamedayConstants::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["remove-awb"])) {
         if ($_GET["remove-awb"] === "error") {
-            Helper::showFlashNotice('remove_awb_notice');
+            NoticerHandler::showFlashNotice('remove_awb_notice');
         }
 
         if ($_GET["remove-awb"] === "success") {
-            Helper::printFlashNotice('success', __("Awb was successfully removed !", SamedayConstants::TEXT_DOMAIN), true);
+            NoticerHandler::printFlashNotice('success', __("Awb was successfully removed !", SamedayConstants::TEXT_DOMAIN), true);
         }
     }
 
     if (isset($_GET["show-awb"]) && $_GET["show-awb"] === "error") {
-        Helper::printFlashNotice('error', __("Awb invalid !", SamedayConstants::TEXT_DOMAIN), true);
+        NoticerHandler::printFlashNotice('error', __("Awb invalid !", SamedayConstants::TEXT_DOMAIN), true);
     }
 
     if (isset($_GET["add-new-parcel"])) {
         if ($_GET["add-new-parcel"] === "error") {
-            Helper::showFlashNotice('add_new_parcel_notice');
+            NoticerHandler::showFlashNotice('add_new_parcel_notice');
         }
 
         if ($_GET["add-new-parcel"] === "success") {
-            Helper::printFlashNotice('success', __("New parcel has been added to this awb!", SamedayConstants::TEXT_DOMAIN) , true);
+            NoticerHandler::printFlashNotice('success', __("New parcel has been added to this awb!", SamedayConstants::TEXT_DOMAIN) , true);
         }
     }
 
@@ -874,8 +863,8 @@ function enqueue_button_scripts(): void
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => Helper::getSamedaySettings()['user'] ?? null,
-            'country'  => Helper::getSamedaySettings()['host_country'] ?? null,
+            'username' => OptionsHandler::getSamedayOptions()['user'] ?? null,
+            'country'  => OptionsHandler::getSamedayOptions()['host_country'] ?? null,
             'buttonText' => __('Show Locations Map', SamedayConstants::TEXT_DOMAIN),
         ));
     }

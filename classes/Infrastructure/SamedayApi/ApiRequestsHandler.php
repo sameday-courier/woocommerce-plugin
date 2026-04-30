@@ -32,22 +32,14 @@ use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetCountiesRequest;
-use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
-use Sameday\Requests\SamedayGetPickupPointsRequest;
-use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
@@ -56,7 +48,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChec
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
@@ -78,24 +71,9 @@ class ApiRequestsHandler
     private SamedayCityRepository $samedayCityRepository;
 
     /**
-     * @var SamedayPickupPointRepository $samedayPickupPointRepository
-     */
-    private SamedayPickupPointRepository $samedayPickupPointRepository;
-
-    /**
      * @var SamedayAwbRepository $samedayAwbRepository
      */
     private SamedayAwbRepository $samedayAwbRepository;
-
-    /**
-     * @var SamedayLockerRepository $samedayLockerRepository
-     */
-    private SamedayLockerRepository $samedayLockerRepository;
-
-    /**
-     * @var SchemaHandler $schemaHandler
-     */
-    private SchemaHandler $schemaHandler;
 
     /**
      * @var SamedayPackageRepository $samedayPackageRepository
@@ -106,267 +84,8 @@ class ApiRequestsHandler
     {
         $this->dbHandler = new DbHandler();
         $this->samedayServiceRepository = new SamedayServiceRepository($this->dbHandler);
-        $this->samedayCityRepository = new SamedayCityRepository($this->dbHandler);
-        $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
         $this->samedayAwbRepository = new SamedayAwbRepository($this->dbHandler);
-        $this->samedayLockerRepository = new SamedayLockerRepository($this->dbHandler);
         $this->samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
-        $this->schemaHandler = new SchemaHandler();
-    }
-
-	/**
-	 * @return bool
-	 * @throws SamedaySDKException
-	 * @throws SamedayAuthorizationException
-	 * @throws SamedayServerException
-	 */
-    public function refreshSamedayServices(): bool
-    {
-        if (empty(Helper::getSamedaySettings())) {
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
-        $sameday = new Sameday(SdkInitiator::init());
-
-        $remoteServices = [];
-        $page = 1;
-
-        do {
-            $request = new SamedayGetServicesRequest();
-            $request->setPage($page++);
-
-            try {
-                $services = $sameday->getServices($request);
-            } catch (Exception $e) {
-                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-            }
-
-            foreach ($services->getServices() as $serviceObject) {
-                $service = $this->samedayServiceRepository->getServiceSameday($serviceObject->getId());
-                if (null === $service) {
-                    // Service not found, add it.
-                    $this->samedayServiceRepository->addService($serviceObject);
-                } else {
-                    $this->samedayServiceRepository->updateServiceCode($serviceObject, $service->getId());
-                }
-
-                // Save as current sameday service.
-                $remoteServices[] = $serviceObject->getId();
-            }
-        } while ($page <= $services->getPages());
-
-        // Build array of local services.
-        $localServices = array_map(
-            static function (SamedayService $service) {
-                return array(
-                    'id' => $service->getId(),
-                    'sameday_id' => $service->getSamedayId()
-                );
-            },
-
-            $this->samedayServiceRepository->getServices()
-        );
-
-        // Delete local services that aren't present in remote services anymore.
-        foreach ($localServices as $localService) {
-            if (!in_array($localService['sameday_id'], $remoteServices, true)) {
-                $this->samedayServiceRepository->deleteService((int) $localService['id']);
-            }
-        }
-
-        // Update PUDO Service
-        $lnService = $this->samedayServiceRepository->getServiceSamedayByCode(
-            SamedayConstants::LOCKER_NEXT_DAY_CODE
-        );
-
-        $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
-            SamedayConstants::PUDO_CODE
-        );
-
-        if (null !== $lnService && null !== $pudoService) {
-            $this->samedayServiceRepository->updateService(
-                [
-                    'id' => $pudoService->getId(),
-                    'status' => $lnService->getStatus(),
-                ]
-            );
-        }
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-    }
-
-	/**
-	 * @return void
-	 */
-    public function importCities(): void
-    {
-		if (false === $this->dbHandler->isTableExists($this->samedayServiceRepository->getTableName())) {
-            $this->dbHandler->executeQuery($this->schemaHandler->buildCitiesTableQuery());
-		}
-
-		if (!file_exists($file = plugin_dir_path(__FILE__) . 'cities.json')) {
-			return;
-		}
-
-		try {
-			$cities = json_decode(file_get_contents($file), false, 512, JSON_THROW_ON_ERROR);
-		} catch (JsonException $exception) {
-			return;
-		}
-
-        // Remove all previews unnecessary stored data
-        $this->samedayCityRepository->truncate();
-        delete_transient(SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES);
-
-	    foreach ($cities as $samedayCity) {
-            if (array_key_exists($samedayCity->country_code, WC()->countries->get_shipping_countries())) {
-                $this->samedayCityRepository->addCity($samedayCity);
-            }
-	    }
-
-		set_transient(
-			SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
-            $this->samedayCityRepository->getCities()
-		);
-    }
-
-	/**
-	 * @throws SamedaySDKException
-	 */
-	public function refreshSamedayPickupPoints(): bool
-    {
-        if (empty(Helper::getSamedaySettings())) {
-            Redirector::to('admin.php', ['page' => 'sameday_pickup_points']);
-        }
-
-        $sameday = new Sameday(SdkInitiator::init());
-
-        $remotePickupPoints = [];
-        $page = 1;
-        do {
-            $request = new SamedayGetPickupPointsRequest();
-            $request->setPage($page++);
-            try {
-                $pickUpPoints = $sameday->getPickupPoints($request);
-            } catch (Exception $e) {
-	            Redirector::to('admin.php', ['page' => 'sameday_pickup_points']);
-            }
-
-	        foreach ($pickUpPoints->getPickupPoints() as $pickupPointObject) {
-                $pickupPoint = $this->samedayPickupPointRepository->getPickupPointSameday($pickupPointObject->getId());
-                if (null === $pickupPoint) {
-                    // Pickup point not found, add it.
-                    $this->samedayPickupPointRepository->addPickupPoint($pickupPointObject);
-                } else {
-                    $this->samedayPickupPointRepository->updatePickupPoint($pickupPointObject, $pickupPoint->getId());
-                }
-
-                // Save as current pickup points.
-                $remotePickupPoints[] = $pickupPointObject->getId();
-            }
-        } while ($page <= $pickUpPoints->getPages());
-
-        // Build array of local pickup points.
-        $localPickupPoints = array_map(
-            static function (SamedayPickupPoint $pickupPoint) {
-                return array(
-                    'id' => $pickupPoint->getId(),
-                    'sameday_id' => $pickupPoint->getSamedayId()
-                );
-            },
-
-            $this->samedayPickupPointRepository->getPickupPoints()
-        );
-
-        // Delete local pickup points that aren't present in remote pickup points anymore.
-        foreach ($localPickupPoints as $localPickupPoint) {
-            if (!in_array($localPickupPoint['sameday_id'], $remotePickupPoints, true)) {
-                $this->samedayPickupPointRepository->deletePickupPoint((int) $localPickupPoint['id']);
-            }
-        }
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-    }
-
-    /**
-     * @return bool
-     * @throws SamedayAuthorizationException
-     * @throws SamedayBadRequestException
-     * @throws SamedaySDKException
-     * @throws SamedayServerException
-     */
-    public function refreshSamedayLockers(): bool
-    {
-        if (empty(Helper::getSamedaySettings()) ) {
-            Redirector::to('admin.php', ['page' => 'sameday_lockers']);
-        }
-
-        $this->updateLockersList();
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
-    }
-
-	/**
-	 * @throws SamedaySDKException
-	 */
-	public function updateLockersList(): void
-	{
-		$sameday = new Sameday(SdkInitiator::init());
-
-		$page = 1;
-		$remoteLockers = [];
-		do {
-			$request = new SamedayGetLockersRequest();
-			$request->setPage($page++);
-
-			try {
-				$lockers = $sameday->getLockers($request);
-			} catch (Exception $exception) {return;}
-
-				foreach ($lockers->getLockers() as $lockerObject) {
-				$locker = $this->samedayLockerRepository->getLockerSameday($lockerObject->getId());
-				if (null === $locker) {
-					// Pickup point not found, add it.
-                    $this->samedayLockerRepository->addLocker($lockerObject);
-				} else {
-                    $this->samedayLockerRepository->updateLocker($lockerObject, $locker->getId());
-				}
-
-				// Save as current pickup points.
-				$remoteLockers[] = $lockerObject->getId();
-			}
-		} while ($page < $lockers->getPages());
-
-		// Build array of local lockers.
-        $localLockers = array_map(
-			static function (SamedayLocker $locker) {
-				return array(
-					'id' => $locker->getId(),
-					'locker_id' => (int) $locker->getLockerId()
-				);
-			},
-
-            $this->samedayLockerRepository->getLockers()
-		);
-
-		// Delete local lockers that aren't present in remote lockers anymore.
-		foreach ($localLockers as $localLocker) {
-			if (!in_array($localLocker['locker_id'], $remoteLockers, true)) {
-                $this->samedayLockerRepository->deleteLocker((int) $localLocker['id']);
-			}
-		}
-
-		$this->updateLastSyncTimestamp();
-	}
-
-    private function updateLastSyncTimestamp(): void
-    {
-        $time = time();
-
-		$samedayOptions = Helper::getSamedaySettings();
-	    $samedayOptions['sameday_sync_lockers_ts'] = $time;
-
-        OptionsHandler::setOption('woocommerce_samedaycourier_settings', $samedayOptions);
     }
 
 	/**
@@ -382,7 +101,7 @@ class ApiRequestsHandler
             Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
-        if (!($_POST['action'] === 'edit_service')) {
+        if (!($_POST['action'] === 'sameday_edit_service')) {
             Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
@@ -425,54 +144,6 @@ class ApiRequestsHandler
 
         // End of Validation check.
 
-	    $priceFree = null;
-		if ((float) $post_fields['price_free']['value'] > 0) {
-			$priceFree = (float) $post_fields['price_free']['value'];
-		}
-
-        if (empty($errors)) {
-            $currentService = $this->samedayServiceRepository->getService((int) $post_fields['id']['value']);
-            if (null === $currentService) {
-                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-            }
-
-            $service = array(
-                'id' => (int) $post_fields['id']['value'],
-                'name' => Helper::sanitizeInput($post_fields['name']['value']),
-                'price' => (float) $post_fields['price']['value'],
-                'price_free' => $priceFree,
-                'status' => (int) $post_fields['status']['value']
-            );
-
-            $this->samedayServiceRepository->updateService($service);
-
-            // Update PUDO
-            if ($currentService->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
-                    SamedayConstants::PUDO_CODE
-                );
-
-                if (null !== $pudoService) {
-                    $this->samedayServiceRepository->updateService(
-                        [
-                            'id' => $pudoService->getId(),
-                            'status' => $service['status'],
-                        ]
-                    );
-                }
-            }
-
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
-		$fieldId = (int) $post_fields['id']['value'];
-
-        Redirector::to('edit.php', [
-            'post_type' => 'page',
-            'page' => 'sameday_services',
-            'action' => 'edit',
-            'id' => $fieldId,
-        ]);
     }
 
 	/**
@@ -491,7 +162,7 @@ class ApiRequestsHandler
     {
 		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($params['_wpnonce'], 'add-awb')) {
 			$noticeMessage = __('You are not allowed to do this operation !', SamedayConstants::TEXT_DOMAIN);
-			Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+			NoticerHandler::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
 			Redirector::to('post.php', [
                 'post' => $params['samedaycourier-order-id'],
@@ -500,7 +171,7 @@ class ApiRequestsHandler
             ]);
 		}
 
-        if (empty(Helper::getSamedaySettings()) ) {
+        if (empty(OptionsHandler::getSamedayOptions()) ) {
             Redirector::to('post.php', [
                 'post' => $params['samedaycourier-order-id'],
                 'action' => 'edit',
@@ -520,7 +191,7 @@ class ApiRequestsHandler
         );
 
         if (null === $service) {
-            Helper::addFlashNotice(
+            NoticerHandler::addFlashNotice(
                 'add_awb_notice',
                 __('Selected service could not be found.', SamedayConstants::TEXT_DOMAIN),
                 'error',
@@ -616,7 +287,7 @@ class ApiRequestsHandler
         }
 
         if (!empty($inputErrors)) {
-            Helper::addFlashNotice(
+            NoticerHandler::addFlashNotice(
                 'add_awb_notice',
                 implode('<br />', $inputErrors),
                 'error',
@@ -825,7 +496,7 @@ class ApiRequestsHandler
 
         if (null !== $errors && null === $awb) {
             $noticeMessage = Helper::parseAwbErrors($errors);
-            Helper::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+            NoticerHandler::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
 
 			Redirector::to('post.php', [
 				'post' => $params['samedaycourier-order-id'],
@@ -931,7 +602,7 @@ class ApiRequestsHandler
         }
 
         if (isset($errors)) {
-            Helper::addFlashNotice('remove_awb_notice', Helper::parseAwbErrors($errors), 'error', true);
+            NoticerHandler::addFlashNotice('remove_awb_notice', Helper::parseAwbErrors($errors), 'error', true);
 
             Redirector::to('post.php', [
                 'post' => $awb->getOrderId(),
@@ -960,7 +631,7 @@ class ApiRequestsHandler
 		    throw new RuntimeException("Not allowed!");
 	    }
 
-	    $defaultLabelFormat = Helper::getSamedaySettings()['default_label_format'];
+	    $defaultLabelFormat = OptionsHandler::getSamedayOptions()['default_label_format'];
 
         $sameday = new Sameday(SdkInitiator::init());
 
@@ -1071,7 +742,8 @@ class ApiRequestsHandler
      *
      * @return array
      */
-    public static function getCities($countyId): array {
+    public static function getCities($countyId): array
+    {
         try {
             $sameday = new Sameday(SdkInitiator::init());
         } catch (Exception $exception) {
@@ -1096,7 +768,7 @@ class ApiRequestsHandler
             }
         } while ($page <= $cities->getPages());
 
-        if(!empty($remoteCities)){
+        if (!empty($remoteCities)) {
             return array_map(static function(CityObject $city){
                 return [
                     'id' => $city->getId(),
@@ -1106,112 +778,5 @@ class ApiRequestsHandler
         }
 
         return [];
-    }
-
-    /**
-     * @param $params
-     * @return bool
-     * @throws JsonException
-     * @throws SamedaySDKException
-     */
-    public function addNewParcel($params): bool
-    {
-		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($params['_wpnonce'], 'add-new-parcel')) {
-			return false;
-		}
-
-        $sameday = new Sameday(SdkInitiator::init());
-
-        $awb = $this->samedayAwbRepository->getAwbForOrderId((int) $params['samedaycourier-order-id']);
-
-        if (null === $awb) {
-            Helper::addFlashNotice(
-                'add_new_parcel_notice',
-                __('AWB not found for this order.', SamedayConstants::TEXT_DOMAIN),
-                'error',
-                true
-            );
-
-            Redirector::to('post.php', [
-                'post' => $params['samedaycourier-order-id'],
-                'action' => 'edit',
-                'add-new-parcel' => 'error',
-            ]);
-        }
-
-        $position = $this->getPosition($awb->getParcels() ?? '');
-
-        $request = new SamedayPostParcelRequest(
-            (string) $awb->getAwbNumber(),
-            new ParcelDimensionsObject(
-                (float) number_format((float) $params['samedaycourier-parcel-weight'], 2),
-                (float) number_format((float) $params['samedaycourier-parcel-length'], 2),
-                (float) number_format((float) $params['samedaycourier-parcel-height'],2),
-                (float) number_format((float) $params['samedaycourier-parcel-width'], 2)
-            ),
-            $position,
-            $params['samedaycourier-parcel-observation'],
-            null,
-            $params['samedaycourier-parcel-is-last']
-        );
-
-	    $parcel = null;
-        try {
-            $parcel = $sameday->postParcel($request);
-        } catch (SamedayBadRequestException $e) {
-            $errors = $e->getErrors();
-        } catch (SamedayOtherException $exception) {
-            $error = $exception->getRawResponse()->getBody();
-            if (null !== $error && '' !== $error) {
-                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
-            }
-
-            if (null !== $parsedError = $error['error']) {
-                $errors[] = $parsedError;
-            }
-        } catch (Exception $e) {
-            $errors[] = [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ];
-        }
-
-        if (isset($errors) && null === $parcel) {
-            $noticeError = Helper::parseAwbErrors($errors);
-            Helper::addFlashNotice('add_new_parcel_notice', $noticeError, 'error', true);
-
-            Redirector::to('post.php', [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'add-new-parcel' => 'error',
-            ]);
-        }
-
-        $parcels = array_merge(unserialize($awb->getParcels() ?? '', ['']), array(new ParcelObject(
-                    $position,
-                    $parcel->getParcelAwbNumber()
-                )
-            )
-        );
-
-        $this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels));
-
-        Redirector::to('post.php', [
-            'post' => $awb->getOrderId(),
-            'action' => 'edit',
-            'add-new-parcel' => 'success',
-        ]);
-    }
-
-    /**
-     * @param $parcels
-     *
-     * @return int
-     */
-    private function getPosition($parcels): int
-    {
-        $nrOfParcels = count(unserialize($parcels, ['']));
-
-        return $nrOfParcels + 1;
     }
 }

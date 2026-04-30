@@ -133,7 +133,7 @@ class ServiceInstance
         return
         '<strong style="font-size: large; color: #0A246A"> Edit Service - ' . esc_html($serviceName) . '</strong>
             <form method="POST" onsubmit="" action="'.admin_url('admin-post.php').'">
-                <input type="hidden" name="action" value="edit_service">
+                <input type="hidden" name="action" value="sameday_edit_service">
                 <table class="form-table editServiceForm">
                     <tbody>
                         <input type="hidden" name="samedaycourier-service-id" value="'.esc_html($id).'">
