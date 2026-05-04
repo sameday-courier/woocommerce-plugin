@@ -36,6 +36,10 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
 use SamedayCourier\Shipping\Utils\Helper;
@@ -298,7 +302,9 @@ add_action('admin_post_remove-awb', static function () {
     }
 
     try {
-        return (new ApiRequestsHandler())->removeAwb($awb, $nonce);
+        return (new RemoveAwb(
+            new RemoveAwbRequest($awb, (string) $nonce)
+        ))->execute();
     } catch (Exception $e) {
         NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
 
@@ -759,8 +765,9 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                     ' . $_showAwb . $_removeAwb  .'
                 </div>';
 
-            $sameday = new ApiRequestsHandler();
-            $awbHistoryTable = $sameday->showAwbHistory($order->get_id());
+            $awbHistoryTable = (new ShowHistoryAwb(
+                new ShowHistoryAwbRequest((int) $order->get_id())
+            ))->execute()->getHtml();
 
             $addNewParcelForm = NewParcelForm::addNewParcelForm($order->get_id());
 

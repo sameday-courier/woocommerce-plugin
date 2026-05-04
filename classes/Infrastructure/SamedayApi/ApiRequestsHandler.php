@@ -28,18 +28,14 @@ use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetCountiesRequest;
-use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
@@ -51,7 +47,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
-use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
 class ApiRequestsHandler
 {
@@ -75,17 +70,11 @@ class ApiRequestsHandler
      */
     private SamedayAwbRepository $samedayAwbRepository;
 
-    /**
-     * @var SamedayPackageRepository $samedayPackageRepository
-     */
-    private SamedayPackageRepository $samedayPackageRepository;
-
     public function __construct()
     {
         $this->dbHandler = new DbHandler();
         $this->samedayServiceRepository = new SamedayServiceRepository($this->dbHandler);
         $this->samedayAwbRepository = new SamedayAwbRepository($this->dbHandler);
-        $this->samedayPackageRepository = new SamedayPackageRepository($this->dbHandler);
     }
 
 	/**
@@ -563,58 +552,6 @@ class ApiRequestsHandler
 			'post' => $params['samedaycourier-order-id'],
 			'action' => 'edit',
 			'add-awb' => 'success',
-		]);
-    }
-
-    /**
-     * @param $awb
-     * @param $nonce
-     * @return bool
-     *
-     * @throws JsonException
-     * @throws SamedaySDKException
-     */
-    public function removeAwb(SamedayAwb $awb, string $nonce): bool
-    {
-		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($nonce, 'remove-awb')) {
-			return false;
-		}
-
-        $sameday = new Sameday(SdkInitiator::init());
-
-        try {
-            $sameday->deleteAwb(new SamedayDeleteAwbRequest((string) $awb->getAwbNumber()));
-            $this->samedayAwbRepository->deleteAwbAndParcels($awb);
-        } catch (SamedayOtherException $exception) {
-            $error = $exception->getRawResponse()->getBody();
-            if (null !== $error && '' !== $error) {
-                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
-            }
-
-            if (null !== $parsedError = $error['error']) {
-                $errors[] = $parsedError;
-            }
-        } catch (Exception $e) {
-            $errors[] = [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ];
-        }
-
-        if (isset($errors)) {
-            NoticerHandler::addFlashNotice('remove_awb_notice', Helper::parseAwbErrors($errors), 'error', true);
-
-            Redirector::to('post.php', [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'remove-awb' => 'error',
-            ]);
-        }
-
-        Redirector::to('post.php', [
-            'post' => $awb->getOrderId(),
-            'action' => 'edit',
-            'remove-awb' => 'success',
         ]);
     }
 
@@ -671,46 +608,6 @@ class ApiRequestsHandler
         echo $pdf;
 
 		exit();
-    }
-
-    /**
-     * @param $orderId
-     * @return string
-     *
-     * @throws SamedaySDKException
-     */
-    public function showAwbHistory($orderId): string
-    {
-        $sameday = new Sameday(SdkInitiator::init());
-
-        $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
-        if (null === $awb) {
-            return "";
-        }
-
-        $parcels = unserialize($awb->getParcels() ?? '', ['']);
-
-        $this->samedayPackageRepository->deletePackagesByOrderId($orderId);
-
-	    foreach ($parcels as $parcel) {
-            try {
-                $parcelStatus = $sameday->getParcelStatusHistory(new SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber()));
-            } catch (Exception $exception) {
-                return AwbHistoryTable::addAwbHistoryTable(array());
-            }
-
-            SamedayPackageRepository::refreshPackageHistory(
-                $orderId,
-                $parcel->getAwbNumber(),
-                $parcelStatus->getSummary(),
-                $parcelStatus->getHistory(),
-                $parcelStatus->getExpeditionStatus()
-            );
-        }
-
-        $packages = SamedayPackageRepository::getPackagesForOrderId($orderId);
-
-        return AwbHistoryTable::addAwbHistoryTable($packages);
     }
 
     /**
