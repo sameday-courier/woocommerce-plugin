@@ -36,11 +36,10 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\RemoveAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -748,9 +747,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                     ' . $_showAwb . $_removeAwb  .'
                 </div>';
 
-            $awbHistoryTable = (new ShowHistoryAwb(
-                new ShowHistoryAwbRequest((int) $order->get_id())
-            ))->execute()->getHtml();
+            $awbHistoryTable = (new ShowHistoryAwbController())->render((int) $order->get_id());
 
             $addNewParcelForm = NewParcelForm::addNewParcelForm($order->get_id());
 

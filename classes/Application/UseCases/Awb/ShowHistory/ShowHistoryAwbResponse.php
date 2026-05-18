@@ -10,15 +10,57 @@ if (!defined('ABSPATH')) {
 
 class ShowHistoryAwbResponse
 {
-    private string $html;
+    /**
+     * @var int $orderId
+     */
+    private int $orderId;
 
-    public function __construct(string $html = '')
-    {
-        $this->html = $html;
+    /**
+     * @var bool $hasAwb
+     */
+    private bool $hasAwb;
+
+    /**
+     * @var array $packages
+     */
+    private array $packages;
+
+    /**
+     * @param int $orderId
+     * @param bool $hasAwb
+     * @param array $packages
+     */
+    public function __construct(
+        int $orderId,
+        bool $hasAwb,
+        array $packages
+    ) {
+        $this->orderId = $orderId;
+        $this->hasAwb = $hasAwb;
+        $this->packages = $packages;
     }
 
-    public function getHtml(): string
+    /**
+     * @return int
+     */
+    public function getOrderId(): int
     {
-        return $this->html;
+        return $this->orderId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAwb(): bool
+    {
+        return $this->hasAwb;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPackages(): array
+    {
+        return $this->packages;
     }
 }

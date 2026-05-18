@@ -11,7 +11,6 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -19,7 +18,7 @@ if (!defined('ABSPATH')) {
 
 class ShowHistoryAwb
 {
-    private ShowHistoryAwbRequest $showAwbHistoryAwbRequest;
+    private ShowHistoryAwbRequest $showHistoryAwbRequest;
 
     /**
      * @var SamedayAwbRepository $samedayAwbRepository
@@ -31,12 +30,9 @@ class ShowHistoryAwb
      */
     private SamedayPackageRepository $samedayPackageRepository;
 
-    /**
-     * @param ShowHistoryAwbRequest $showAwbHistoryAwbRequest
-     */
-    public function __construct(ShowHistoryAwbRequest $showAwbHistoryAwbRequest)
+    public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
     {
-        $this->showAwbHistoryAwbRequest = $showAwbHistoryAwbRequest;
+        $this->showHistoryAwbRequest = $showHistoryAwbRequest;
         $this->samedayAwbRepository = new SamedayAwbRepository();
         $this->samedayPackageRepository = new SamedayPackageRepository();
     }
@@ -48,14 +44,18 @@ class ShowHistoryAwb
      */
     public function execute(): ShowHistoryAwbResponse
     {
-        $sameday = new Sameday(SdkInitiator::init());
-        $orderId = $this->showAwbHistoryAwbRequest->getOrderId();
-
+        $orderId = $this->showHistoryAwbRequest->getOrderId();
         $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
+
         if (null === $awb) {
-            return new ShowHistoryAwbResponse('');
+            return new ShowHistoryAwbResponse(
+                $orderId,
+                false,
+                [],
+            );
         }
 
+        $sameday = new Sameday(SdkInitiator::init());
         $parcels = unserialize($awb->getParcels() ?? '', ['']);
 
         $this->samedayPackageRepository->deletePackagesByOrderId($orderId);
@@ -67,7 +67,9 @@ class ShowHistoryAwb
                 );
             } catch (Exception $exception) {
                 return new ShowHistoryAwbResponse(
-                    AwbHistoryTable::addAwbHistoryTable([])
+                    $orderId,
+                    true,
+                    [],
                 );
             }
 
@@ -80,10 +82,10 @@ class ShowHistoryAwb
             );
         }
 
-        $packages = $this->samedayPackageRepository->getPackagesForOrderId($orderId);
-
         return new ShowHistoryAwbResponse(
-            AwbHistoryTable::addAwbHistoryTable($packages)
+            $orderId,
+            true,
+            $this->samedayPackageRepository->getPackagesForOrderId($orderId),
         );
     }
 }
