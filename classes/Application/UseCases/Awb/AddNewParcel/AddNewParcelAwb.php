@@ -13,6 +13,7 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Common\ResponseStatus\ResponseStatus;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -40,29 +41,21 @@ class AddNewParcelAwb
     }
 
     /**
-     * @return void
-     * @throws JsonException|SamedaySDKException
+     * @return AddNewParcelAwbResponse
+     *
+     * @throws JsonException
+     * @throws SamedaySDKException
      */
-    public function execute(): void
+    public function execute(): AddNewParcelAwbResponse
     {
         $sameday = new Sameday(SdkInitiator::init());
         $awb = $this->samedayAwbRepository->getAwbForOrderId($this->addNewParcelAwbRequest->getOrderId());
 
         if (null === $awb) {
-            NoticerHandler::addFlashNotice(
-                'add_new_parcel_notice',
-                __('AWB not found for this order.', SamedayConstants::TEXT_DOMAIN),
-                'error',
-                true
-            );
-
-            Redirector::to(
-                'post.php',
-                [
-                    'post' => $this->addNewParcelAwbRequest->getOrderId(),
-                    'action' => 'edit',
-                    'add-new-parcel' => 'error',
-                ]
+            return new AddNewParcelAwbResponse(
+                $this->addNewParcelAwbRequest->getOrderId(),
+                ResponseStatus::ERROR,
+                'AWB not found for this order.',
             );
         }
 
@@ -100,14 +93,12 @@ class AddNewParcelAwb
         }
 
         if (isset($errors) && null === $parcel) {
-            $noticeError = Helper::parseAwbErrors($errors);
-            NoticerHandler::addFlashNotice('add_new_parcel_notice', $noticeError, 'error', true);
 
-            Redirector::to('post.php', [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'add-new-parcel' => 'error',
-            ]);
+            return new AddNewParcelAwbResponse(
+                $this->addNewParcelAwbRequest->getOrderId(),
+                ResponseStatus::ERROR,
+                Helper::parseAwbErrors($errors),
+            );
         }
 
         $parcels = array_merge(
@@ -122,13 +113,9 @@ class AddNewParcelAwb
 
         $this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels));
 
-        Redirector::to(
-            'post.php',
-            [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'add-new-parcel' => 'success',
-            ]
+        return new AddNewParcelAwbResponse(
+            $this->addNewParcelAwbRequest->getOrderId(),
+            ResponseStatus::SUCCESS,
         );
     }
 

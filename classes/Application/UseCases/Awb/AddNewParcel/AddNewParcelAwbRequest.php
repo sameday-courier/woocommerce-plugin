@@ -10,9 +10,20 @@ if (!defined('ABSPATH')) {
 
 class AddNewParcelAwbRequest
 {
+    /**
+     * @var int $orderId
+     */
     private int $orderId;
+
+    /**
+     * @var AddNewParcelAwbItem $awbItem
+     */
     private AddNewParcelAwbItem $awbItem;
 
+    /**
+     * @param int $orderId
+     * @param AddNewParcelAwbItem $awbItem
+     */
     public function __construct(
         int $orderId,
         AddNewParcelAwbItem $awbItem
@@ -22,6 +33,9 @@ class AddNewParcelAwbRequest
         $this->awbItem = $awbItem;
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;

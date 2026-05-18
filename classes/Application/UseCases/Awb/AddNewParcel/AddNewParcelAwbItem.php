@@ -12,9 +12,19 @@ if (!defined('ABSPATH')) {
 
 class AddNewParcelAwbItem
 {
+    /**
+     * @var ParcelDimensionsObject $parcelDimensionsObject
+     */
     private ParcelDimensionsObject $parcelDimensionsObject;
+
+    /**
+     * @var string $parcelObservation
+     */
     private string $parcelObservation;
 
+    /**
+     * @var bool $parcelIsLast
+     */
     private bool $parcelIsLast;
 
     public function __construct(

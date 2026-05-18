@@ -10,6 +10,9 @@ use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
+use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbResponse;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -53,6 +56,24 @@ class AddNewParcelAwbController extends AbstractController
             ),
         );
 
-        $addNewParcelAwb->execute();
+        $result = $addNewParcelAwb->execute();
+
+        if ($result->hasNotices()) {
+            NoticerHandler::addFlashNotice(
+                'add_new_parcel_notice',
+                $result->getNoticeMessage(),
+                $result->getStatus(),
+                true
+            );
+        }
+
+        Redirector::to(
+            'post.php',
+            [
+                'post' => $result->getOrderId(),
+                'action' => 'edit',
+                'add-new-parcel' => $result->getStatus(),
+            ]
+        );
     }
 }
