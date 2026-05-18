@@ -36,12 +36,11 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\RemoveAwbController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -294,23 +293,7 @@ add_action('admin_post_add_awb', static function () {
     };
 });
 
-add_action('admin_post_remove-awb', static function () {
-    $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($_POST['order-id']));
-    $nonce = $_POST['_wpnonce'];
-    if (empty($awb)) {
-        Redirector::to('index.php');
-    }
-
-    try {
-        return (new RemoveAwb(
-            new RemoveAwbRequest($awb, (string) $nonce)
-        ))->execute();
-    } catch (Exception $e) {
-        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
-
-        Redirector::to('index.php');
-    }
-});
+add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
 
 add_action('admin_post_show-awb-pdf', static function () {
     $orderId = (int) sanitize_key($_POST['order-id']);

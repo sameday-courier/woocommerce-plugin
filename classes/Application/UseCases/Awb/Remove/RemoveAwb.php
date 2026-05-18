@@ -11,11 +11,8 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Common\ResponseStatus\ResponseStatus;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
@@ -38,20 +35,14 @@ class RemoveAwb
     }
 
     /**
-     * @return bool False when the user is not allowed; otherwise redirects and exits.
+     * @return RemoveAwbResponse
      *
      * @throws JsonException
      * @throws SamedaySDKException
      */
-    public function execute(): bool
+    public function execute(): RemoveAwbResponse
     {
         $awb = $this->removeAwbRequest->getAwb();
-        $nonce = $this->removeAwbRequest->getNonce();
-
-        if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($nonce, 'remove-awb')) {
-            return false;
-        }
-
         $sameday = new Sameday(SdkInitiator::init());
 
         try {
@@ -74,19 +65,17 @@ class RemoveAwb
         }
 
         if (isset($errors)) {
-            NoticerHandler::addFlashNotice('remove_awb_notice', Helper::parseAwbErrors($errors), 'error', true);
 
-            Redirector::to('post.php', [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'remove-awb' => 'error',
-            ]);
+            return new RemoveAwbResponse(
+                $awb->getOrderId(),
+                ResponseStatus::ERROR,
+                Helper::parseAwbErrors($errors),
+            );
         }
 
-        Redirector::to('post.php', [
-            'post' => $awb->getOrderId(),
-            'action' => 'edit',
-            'remove-awb' => 'success',
-        ]);
+        return new RemoveAwbResponse(
+            $awb->getOrderId(),
+            ResponseStatus::SUCCESS,
+        );
     }
 }

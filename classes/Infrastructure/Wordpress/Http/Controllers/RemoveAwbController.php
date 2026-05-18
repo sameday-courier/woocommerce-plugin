@@ -1,0 +1,69 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
+
+use JsonException;
+use Sameday\Exceptions\SamedaySDKException;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class RemoveAwbController extends AbstractController
+{
+    private const ACTION = 'remove-awb';
+
+    /**
+     * @return string
+     */
+    public function getAction(): string
+    {
+        return self::ACTION;
+    }
+
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     *
+     * @throws JsonException
+     * @throws SamedaySDKException
+     */
+    protected function processPostAction(array $inputParams): void
+    {
+        $awb = (new SamedayAwbRepository())->getAwbForOrderId((int) $inputParams['order-id']);
+
+        if (null === $awb) {
+            Redirector::to('index.php');
+        }
+
+        $result = (new RemoveAwb(
+            new RemoveAwbRequest($awb)
+        ))->execute();
+
+        if ($result->hasNotices()) {
+            NoticerHandler::addFlashNotice(
+                'remove_awb_notice',
+                $result->getNoticeMessage(),
+                $result->getStatus(),
+                true
+            );
+        }
+
+        Redirector::to(
+            'post.php',
+            [
+                'post' => $result->getOrderId(),
+                'action' => 'edit',
+                'remove-awb' => $result->getStatus(),
+            ]
+        );
+    }
+}
