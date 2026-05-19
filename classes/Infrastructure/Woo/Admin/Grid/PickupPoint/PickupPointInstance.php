@@ -76,6 +76,7 @@ class PickupPointInstance
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:fit-content; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_pickup_points">
+									<input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_pickup_points')); ?>">
 									<input type="submit" class="button-primary" value="Refresh Pickup point">
 								</form>
                                 <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="button-primary button-samll thickbox">

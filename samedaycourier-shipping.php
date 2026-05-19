@@ -42,9 +42,12 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAs
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
+use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
+use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -118,12 +121,7 @@ add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
 add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
 add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
 add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
-
-add_action('admin_post_refresh_pickup_points', static function () {
-    try {
-        return (new ApiRequestsHandler())->refreshSamedayPickupPoints();
-    } catch (Exception $exception) { return $exception->getMessage(); }
-});
+add_action('admin_post_refresh_pickup_points', [new RefreshPickupPointController(), 'handle']);
 
 add_action('admin_post_refresh_lockers', static function () {
     try {
@@ -145,7 +143,13 @@ add_action('wp_ajax_all_import', static function (): void {
     }
 
 	try {
-		(new ApiRequestsHandler())->refreshSamedayPickupPoints();
+        $refreshPickupPointsResult = (new RefreshPickupPoint(
+            new RefreshPickupPointRequest(!empty(OptionsHandler::getSamedayOptions()))
+        ))->execute();
+
+        if (ResponseNoticeType::ERROR === $refreshPickupPointsResult->getNoticeType()) {
+            throw new \RuntimeException($refreshPickupPointsResult->getNoticeMessage() ?? 'Failed to refresh pickup points.');
+        }
     } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
