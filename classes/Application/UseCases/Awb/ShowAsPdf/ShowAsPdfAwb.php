@@ -10,7 +10,7 @@ use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 if (!defined('ABSPATH')) {

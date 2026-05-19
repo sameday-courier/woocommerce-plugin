@@ -36,11 +36,15 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\RemoveAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ShowAsPdfAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ShowHistoryAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
+use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
+use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -108,11 +112,12 @@ add_action('plugins_loaded', static function () {
     LockerInstance::get_instance();
 });
 
-add_action('admin_post_refresh_services', static function () {
-    try {
-        return (new ApiRequestsHandler())->refreshSamedayServices();
-    } catch (Exception $exception) { return $exception->getMessage(); }
-});
+// WIP REGISTER CONTROLLERS :
+add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
+add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
+add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
+add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
+add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
 
 add_action('admin_post_refresh_pickup_points', static function () {
     try {
@@ -128,7 +133,13 @@ add_action('admin_post_refresh_lockers', static function () {
 
 add_action('wp_ajax_all_import', static function (): void {
 	try {
-		(new ApiRequestsHandler())->refreshSamedayServices();
+        $refreshResult = (new RefreshService(
+            new RefreshServiceRequest(!empty(OptionsHandler::getSamedayOptions()))
+        ))->execute();
+
+        if (ResponseNoticeType::ERROR === $refreshResult->getNoticeType()) {
+            throw new \RuntimeException($refreshResult->getNoticeMessage() ?? 'Failed to refresh services.');
+        }
     } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
@@ -275,8 +286,6 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
 });
 
-add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
-
 add_action('admin_post_add_awb', static function () {
     $postFields = Helper::sanitizeInputs($_POST);
     $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
@@ -292,12 +301,6 @@ add_action('admin_post_add_awb', static function () {
         NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
     };
 });
-
-add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
-
-add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
-
-add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {

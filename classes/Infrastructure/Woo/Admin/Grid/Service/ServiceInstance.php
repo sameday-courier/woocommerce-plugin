@@ -68,6 +68,7 @@ class ServiceInstance
                                 </a>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
                                     <input type="hidden" name="action" value="refresh_services">
+                                    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_services')); ?>">
                                     <input type="submit" class="button-primary" value="Refresh Services">
                                 </form>
                             </div>

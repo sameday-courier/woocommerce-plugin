@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
+use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
 class RemoveAwbResponse
 {
+    use NoticerTrait;
+
     /**
      * @var int $orderId
      */
     private int $orderId;
 
     /**
-     * @var string? $noticeMessage
+     * @param int $orderId
+     * @param string $noticeType
+     * @param string|null $noticeMessage
      */
-    private string $noticeMessage;
-
-    /**
-     * @var string $noticeType
-     */
-    private string $noticeType;
-
     public function __construct(
         int $orderId,
         string $noticeType,
-        $noticeMessage = null
+        ?string $noticeMessage = null
     ) {
         $this->orderId = $orderId;
         $this->noticeType = $noticeType;
@@ -41,29 +40,5 @@ class RemoveAwbResponse
     public function getOrderId(): int
     {
         return $this->orderId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNoticeType(): string
-    {
-        return $this->noticeType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNoticeMessage(): string
-    {
-        return $this->noticeMessage;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasNotices(): bool
-    {
-        return $this->getNoticeMessage() !== null;
     }
 }

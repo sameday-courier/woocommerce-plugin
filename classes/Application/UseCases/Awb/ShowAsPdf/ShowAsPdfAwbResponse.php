@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
+use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
 class ShowAsPdfAwbResponse
 {
+    use NoticerTrait;
+
     /**
      * @var int $orderId
      */
     private int $orderId;
-
-    /**
-     * @var string $noticeType
-     */
-    private string $noticeType;
-
-    /**
-     * @var string|null $noticeMessage
-     */
-    private ?string $noticeMessage;
 
     /**
      * @var string|null $pdf
@@ -57,35 +51,11 @@ class ShowAsPdfAwbResponse
     }
 
     /**
-     * @return string
-     */
-    public function getNoticeType(): string
-    {
-        return $this->noticeType;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getNoticeMessage(): ?string
-    {
-        return $this->noticeMessage;
-    }
-
-    /**
      * @return string|null
      */
     public function getPdf(): ?string
     {
         return $this->pdf;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasNotices(): bool
-    {
-        return null !== $this->noticeMessage;
     }
 
     /**

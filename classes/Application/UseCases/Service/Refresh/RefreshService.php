@@ -1,48 +1,59 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\DataSync;
+namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayGetServicesRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshServices
+class RefreshService
 {
+    /**
+     * @var RefreshServiceRequest $refreshServiceRequest
+     */
+    private RefreshServiceRequest $refreshServiceRequest;
+
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
      */
     private SamedayServiceRepository $samedayServiceRepository;
 
-    public function __construct()
+    /**
+     * @param RefreshServiceRequest $refreshServiceRequest
+     */
+    public function __construct(RefreshServiceRequest $refreshServiceRequest)
     {
+        $this->refreshServiceRequest = $refreshServiceRequest;
         $this->samedayServiceRepository = new SamedayServiceRepository();
     }
 
     /**
-     * @return void
+     * @return RefreshServiceResponse
+     *
      * @throws SamedaySDKException
      */
-    public function refresh(): void
+    public function execute(): RefreshServiceResponse
     {
-        if (empty(OptionsHandler::getSamedayOptions())) {
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+        if (!$this->refreshServiceRequest->hasSamedayOptions()) {
+            return new RefreshServiceResponse(
+                ResponseNoticeType::ERROR,
+                'Sameday options are not configured.',
+            );
         }
 
         $sameday = new Sameday(SdkInitiator::init());
-
         $remoteServices = [];
         $page = 1;
 
@@ -53,43 +64,40 @@ class RefreshServices
             try {
                 $services = $sameday->getServices($request);
             } catch (Exception $e) {
-                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+                return new RefreshServiceResponse(
+                    ResponseNoticeType::ERROR,
+                    $e->getMessage(),
+                );
             }
 
             foreach ($services->getServices() as $serviceObject) {
                 $service = $this->samedayServiceRepository->getServiceSameday($serviceObject->getId());
                 if (null === $service) {
-                    // Service not found, add it.
                     $this->samedayServiceRepository->addService($serviceObject);
                 } else {
                     $this->samedayServiceRepository->updateServiceCode($serviceObject, $service->getId());
                 }
 
-                // Save as current sameday service.
                 $remoteServices[] = $serviceObject->getId();
             }
         } while ($page <= $services->getPages());
 
-        // Build array of local services.
         $localServices = array_map(
             static function (SamedayService $service) {
-                return array(
+                return [
                     'id' => $service->getId(),
-                    'sameday_id' => $service->getSamedayId()
-                );
+                    'sameday_id' => $service->getSamedayId(),
+                ];
             },
-
             $this->samedayServiceRepository->getServices()
         );
 
-        // Delete local services that aren't present in remote services anymore.
         foreach ($localServices as $localService) {
             if (!in_array($localService['sameday_id'], $remoteServices, true)) {
                 $this->samedayServiceRepository->deleteService((int) $localService['id']);
             }
         }
 
-        // Update PUDO Service
         $lnService = $this->samedayServiceRepository->getServiceSamedayByCode(
             SamedayConstants::LOCKER_NEXT_DAY_CODE
         );
@@ -107,6 +115,6 @@ class RefreshServices
             );
         }
 
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+        return new RefreshServiceResponse(ResponseNoticeType::SUCCESS);
     }
 }

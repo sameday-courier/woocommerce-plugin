@@ -4,39 +4,31 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
+use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
 class AddNewParcelAwbResponse
 {
+    use NoticerTrait;
+
     /**
      * @var int $orderId
      */
     private int $orderId;
 
     /**
-     * @var bool $hasNotices
+     * @param int $orderId
+     * @param string $noticeType
+     * @param string|null $noticeMessage
      */
-    private bool $hasNotices;
-
-    /**
-     * @var string? $noticeMessage
-     */
-    private string $noticeMessage;
-
-    /**
-     * @var string $noticeType
-     */
-    private string $noticeType;
-
-
     public function __construct(
         int $orderId,
         string $noticeType,
-        $noticeMessage = null
-    )
-    {
+        ?string $noticeMessage = null
+    ) {
         $this->orderId = $orderId;
         $this->noticeType = $noticeType;
         $this->noticeMessage = $noticeMessage;
@@ -48,29 +40,5 @@ class AddNewParcelAwbResponse
     public function getOrderId(): int
     {
         return $this->orderId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNoticeType(): string
-    {
-        return $this->noticeType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNoticeMessage(): string
-    {
-        return $this->noticeMessage;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasNotices(): bool
-    {
-        return $this->getNoticeMessage() !== null;
     }
 }

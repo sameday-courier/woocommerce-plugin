@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Common\ResponseNoticeType;
+namespace SamedayCourier\Shipping\Application\Common\ResponseNoticeType;
 
 if (!defined('ABSPATH')) {
     exit;
