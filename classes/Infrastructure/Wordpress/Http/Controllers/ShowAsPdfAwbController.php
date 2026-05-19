@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
-use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use Sameday\Objects\Types\AwbPdfType;
+use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class RemoveAwbController extends AbstractController
+final class ShowAsPdfAwbController extends AbstractController
 {
-    private const ACTION = 'remove-awb';
-
-    /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
-    private SamedayAwbRepository $samedayAwbRepository;
+    private const ACTION = 'show-as-pdf';
 
     /**
      * @return string
@@ -33,32 +28,36 @@ final class RemoveAwbController extends AbstractController
         return self::ACTION;
     }
 
-    public function __construct()
-    {
-        $this->samedayAwbRepository = new SamedayAwbRepository();
-    }
-
     /**
-     * @param array $inputParams
+     * @param array<string, mixed> $inputParams
      *
      * @return void
      *
-     * @throws JsonException
      * @throws SamedaySDKException
      */
     protected function processPostAction(array $inputParams): void
     {
-        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId((int) $inputParams['order-id'])) {
-            Redirector::to('index.php');
+        $showAsPdf = new ShowAsPdfAwb(
+            new ShowAsPdfAwbRequest(
+                (int) $inputParams['order-id'],
+                OptionsHandler::getSamedayOptions()['default_label_format'] ?? AwbPdfType::A4
+            )
+        );
+        $result = $showAsPdf->execute();
+
+        if ($result->hasPdf()) {
+            header('Content-type: application/pdf');
+            header('Cache-Control: no-cache');
+            header('Pragma: no-cache');
+
+            echo $result->getPdf();
+
+            exit;
         }
-
-        $removeAwb = new RemoveAwb(new RemoveAwbRequest($awb));
-
-        $result = $removeAwb->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'remove_awb_notice',
+                'show_awb_pdf_notice',
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
                 true
@@ -70,7 +69,7 @@ final class RemoveAwbController extends AbstractController
             [
                 'post' => $result->getOrderId(),
                 'action' => 'edit',
-                'remove-awb' => $result->getNoticeType(),
+                'show-awb' => $result->getNoticeType(),
             ]
         );
     }

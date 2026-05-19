@@ -10,7 +10,6 @@ use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
-use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbResponse;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -19,7 +18,7 @@ if (!defined("ABSPATH")) {
     exit;
 }
 
-class AddNewParcelAwbController extends AbstractController
+final class AddNewParcelAwbController extends AbstractController
 {
     private const ACTION = "add-new-parcel";
 

@@ -39,6 +39,7 @@ use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\RemoveAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
@@ -294,21 +295,7 @@ add_action('admin_post_add_awb', static function () {
 
 add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
 
-add_action('admin_post_show-awb-pdf', static function () {
-    $orderId = (int) sanitize_key($_POST['order-id']);
-	$nonce = $_POST['_wpnonce'];
-    if (!isset($orderId)) {
-        Redirector::to('index.php');
-    }
-
-    try {
-        return (new ApiRequestsHandler())->showAwbAsPdf($orderId, $nonce);
-    } catch (Exception $exception) {
-        NoticerHandler::addFlashNotice('add_awb_notice', $exception->getMessage(), 'error',true);
-
-        Redirector::to('index.php');
-    }
-});
+add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
 
 add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
 

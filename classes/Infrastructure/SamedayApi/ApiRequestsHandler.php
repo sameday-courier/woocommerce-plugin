@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 }
 
 use Exception;
-use http\Exception\RuntimeException;
 use JsonException;
 use Sameday\Exceptions\SamedayAuthenticationException;
 use Sameday\Exceptions\SamedayAuthorizationException;
@@ -25,10 +24,8 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Requests\SamedayGetCountiesRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
@@ -495,61 +492,6 @@ class ApiRequestsHandler
 			'action' => 'edit',
 			'add-awb' => 'success',
         ]);
-    }
-
-    /**
-     * @param $orderId
-     * @param $nonce
-     * @return string
-     *
-     * @throws SamedaySDKException
-     */
-    public function showAwbAsPdf($orderId, $nonce): string
-    {
-	    if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($nonce, 'show-as-pdf')) {
-		    throw new RuntimeException("Not allowed!");
-	    }
-
-	    $defaultLabelFormat = OptionsHandler::getSamedayOptions()['default_label_format'];
-
-        $sameday = new Sameday(SdkInitiator::init());
-
-        $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
-
-        if (null === $awb) {
-            throw new \RuntimeException('AWB not found for order.');
-        }
-
-	    $errors = null;
-	    $pdf = null;
-        try {
-            $content = $sameday->getAwbPdf(
-                new SamedayGetAwbPdfRequest(
-                    (string) $awb->getAwbNumber(),
-                    new AwbPdfType($defaultLabelFormat)
-                )
-            );
-
-            $pdf = $content->getPdf();
-        } catch (Exception $e) {
-            $errors = $e->getMessage();
-        }
-
-        if (null !== $errors && null === $pdf) {
-            Redirector::to('post.php', [
-                'post' => $awb->getOrderId(),
-                'action' => 'edit',
-                'show-awb' => 'error',
-            ]);
-        }
-
-        header('Content-type: application/pdf');
-        header("Cache-Control: no-cache");
-        header("Pragma: no-cache");
-
-        echo $pdf;
-
-		exit();
     }
 
     /**

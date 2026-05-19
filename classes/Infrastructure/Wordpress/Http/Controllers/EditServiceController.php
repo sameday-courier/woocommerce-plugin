@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class EditServiceController extends AbstractController
+final class EditServiceController extends AbstractController
 {
     /**
      * @var string

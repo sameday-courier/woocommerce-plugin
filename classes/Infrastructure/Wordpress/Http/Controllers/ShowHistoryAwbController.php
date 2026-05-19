@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowHistoryAwbController
+final class ShowHistoryAwbController
 {
     /**
      * @param int $orderId
