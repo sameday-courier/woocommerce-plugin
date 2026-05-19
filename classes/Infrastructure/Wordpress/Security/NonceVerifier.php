@@ -18,6 +18,6 @@ class NonceVerifier
      */
     public static function verify(string $nonceString, string $action): bool
     {
-        return wp_verify_nonce($nonceString, $action);
+        return (bool) wp_verify_nonce($nonceString, $action);
     }
 }
