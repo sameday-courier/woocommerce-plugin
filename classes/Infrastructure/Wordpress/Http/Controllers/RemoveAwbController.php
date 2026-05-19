@@ -21,11 +21,21 @@ class RemoveAwbController extends AbstractController
     private const ACTION = 'remove-awb';
 
     /**
+     * @var SamedayAwbRepository $samedayAwbRepository
+     */
+    private SamedayAwbRepository $samedayAwbRepository;
+
+    /**
      * @return string
      */
     public function getAction(): string
     {
         return self::ACTION;
+    }
+
+    public function __construct()
+    {
+        $this->samedayAwbRepository = new SamedayAwbRepository();
     }
 
     /**
@@ -38,15 +48,13 @@ class RemoveAwbController extends AbstractController
      */
     protected function processPostAction(array $inputParams): void
     {
-        $awb = (new SamedayAwbRepository())->getAwbForOrderId((int) $inputParams['order-id']);
-
-        if (null === $awb) {
+        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId((int) $inputParams['order-id'])) {
             Redirector::to('index.php');
         }
 
-        $result = (new RemoveAwb(
-            new RemoveAwbRequest($awb)
-        ))->execute();
+        $removeAwb = new RemoveAwb(new RemoveAwbRequest($awb));
+
+        $result = $removeAwb->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
