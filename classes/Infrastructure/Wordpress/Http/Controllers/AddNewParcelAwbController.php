@@ -12,6 +12,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAw
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbResponse;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined("ABSPATH")) {
@@ -61,8 +62,8 @@ class AddNewParcelAwbController extends AbstractController
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
                 'add_new_parcel_notice',
-                $result->getNoticeMessage(),
-                $result->getStatus(),
+                TranslatorHandler::translate($result->getNoticeMessage()),
+                $result->getNoticeType(),
                 true
             );
         }
@@ -72,7 +73,7 @@ class AddNewParcelAwbController extends AbstractController
             [
                 'post' => $result->getOrderId(),
                 'action' => 'edit',
-                'add-new-parcel' => $result->getStatus(),
+                'add-new-parcel' => $result->getNoticeType(),
             ]
         );
     }

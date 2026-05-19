@@ -52,7 +52,7 @@ class RemoveAwbController extends AbstractController
             NoticerHandler::addFlashNotice(
                 'remove_awb_notice',
                 $result->getNoticeMessage(),
-                $result->getStatus(),
+                $result->getNoticeType(),
                 true
             );
         }
@@ -62,7 +62,7 @@ class RemoveAwbController extends AbstractController
             [
                 'post' => $result->getOrderId(),
                 'action' => 'edit',
-                'remove-awb' => $result->getStatus(),
+                'remove-awb' => $result->getNoticeType(),
             ]
         );
     }

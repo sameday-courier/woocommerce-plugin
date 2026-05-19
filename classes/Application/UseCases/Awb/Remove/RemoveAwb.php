@@ -11,7 +11,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Common\ResponseStatus\ResponseStatus;
+use SamedayCourier\Shipping\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -68,14 +68,14 @@ class RemoveAwb
 
             return new RemoveAwbResponse(
                 $awb->getOrderId(),
-                ResponseStatus::ERROR,
+                ResponseNoticeType::ERROR,
                 Helper::parseAwbErrors($errors),
             );
         }
 
         return new RemoveAwbResponse(
             $awb->getOrderId(),
-            ResponseStatus::SUCCESS,
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

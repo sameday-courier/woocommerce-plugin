@@ -78,64 +78,6 @@ class ApiRequestsHandler
     }
 
 	/**
-	 * @return void
-	 */
-    public function editService(): void
-    {
-        if (!NonceVerifier::verify($_POST['_wpnonce'], 'edit-service')) {
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
-        if (!UserPermissionChecker::hasAllowedRole()) {
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
-        if (!($_POST['action'] === 'sameday_edit_service')) {
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
-        if (null === $_POST['samedaycourier-service-name'] ?? null) {
-            $_POST['samedaycourier-service-name'] = SamedayConstants::OOH_SERVICES_LABELS[
-                Helper::getHostCountry()
-            ];
-        }
-
-        $post_fields = array(
-            'id' => array(
-                'required' => true,
-                'value' => $_POST['samedaycourier-service-id']
-            ),
-            'name' => array(
-                'required' => true,
-                'value' =>  $_POST['samedaycourier-service-name']
-            ),
-            'price' => array(
-                'required' => true,
-                'value' => $_POST['samedaycourier-price']
-            ),
-            'price_free' => array(
-                'required' => false,
-                'value' => $_POST['samedaycourier-free-delivery-price'] ?: null
-            ),
-            'status' => array(
-                'required' => false,
-                'value' => $_POST['samedaycourier-status']
-            )
-        );
-
-        $errors = array();
-
-        foreach ($post_fields as $field => $field_value) {
-            if ($field_value['required'] && ('' === trim($field_value['value']))) {
-                $errors[] = __("The $field must not be empty", SamedayConstants::TEXT_DOMAIN);
-            }
-        }
-
-        // End of Validation check.
-
-    }
-
-	/**
 	 * @param $params
 	 *
 	 * @return bool

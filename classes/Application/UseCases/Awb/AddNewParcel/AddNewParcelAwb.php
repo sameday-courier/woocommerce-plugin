@@ -13,7 +13,7 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Common\ResponseStatus\ResponseStatus;
+use SamedayCourier\Shipping\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -54,7 +54,7 @@ class AddNewParcelAwb
         if (null === $awb) {
             return new AddNewParcelAwbResponse(
                 $this->addNewParcelAwbRequest->getOrderId(),
-                ResponseStatus::ERROR,
+                ResponseNoticeType::ERROR,
                 'AWB not found for this order.',
             );
         }
@@ -96,7 +96,7 @@ class AddNewParcelAwb
 
             return new AddNewParcelAwbResponse(
                 $this->addNewParcelAwbRequest->getOrderId(),
-                ResponseStatus::ERROR,
+                ResponseNoticeType::ERROR,
                 Helper::parseAwbErrors($errors),
             );
         }
@@ -115,7 +115,7 @@ class AddNewParcelAwb
 
         return new AddNewParcelAwbResponse(
             $this->addNewParcelAwbRequest->getOrderId(),
-            ResponseStatus::SUCCESS,
+            ResponseNoticeType::SUCCESS,
         );
     }
 

@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
@@ -18,107 +16,111 @@ if (!defined('ABSPATH')) {
 class EditService
 {
     /**
+     * @var EditServiceRequest $editServiceRequest
+     */
+    private EditServiceRequest $editServiceRequest;
+
+    /**
      * @var SamedayServiceRepository $samedayServiceRepository
      */
     private SamedayServiceRepository $samedayServiceRepository;
 
-    public function __construct()
+    /**
+     * @param EditServiceRequest $editServiceRequest
+     */
+    public function __construct(EditServiceRequest $editServiceRequest)
     {
+        $this->editServiceRequest = $editServiceRequest;
         $this->samedayServiceRepository = new SamedayServiceRepository();
     }
 
     /**
-     * @return void
+     * @return EditServiceResponse
      */
-    public function execute(): void
+    public function execute(): EditServiceResponse
     {
+        $serviceId = $this->editServiceRequest->getId();
 
+        $postFields = [
+            'id' => [
+                'required' => true,
+                'value' => (string) $serviceId,
+            ],
+            'name' => [
+                'required' => true,
+                'value' => $this->editServiceRequest->getName(),
+            ],
+            'price' => [
+                'required' => true,
+                'value' => $this->editServiceRequest->getPrice(),
+            ],
+            'price_free' => [
+                'required' => false,
+                'value' => $this->editServiceRequest->getPriceFree(),
+            ],
+            'status' => [
+                'required' => false,
+                'value' => $this->editServiceRequest->getStatus(),
+            ],
+        ];
 
-        if (null === $_POST['samedaycourier-service-name'] ?? null) {
-            $_POST['samedaycourier-service-name'] = SamedayConstants::OOH_SERVICES_LABELS[
-                Helper::getHostCountry()
-            ];
+        $errors = [];
+
+        foreach ($postFields as $field => $fieldValue) {
+            if ($fieldValue['required'] && ('' === trim((string) $fieldValue['value']))) {
+                $errors[] = "The $field must not be empty";
+            }
         }
 
-        $post_fields = array(
-            'id' => array(
-                'required' => true,
-                'value' => $_POST['samedaycourier-service-id']
-            ),
-            'name' => array(
-                'required' => true,
-                'value' =>  $_POST['samedaycourier-service-name']
-            ),
-            'price' => array(
-                'required' => true,
-                'value' => $_POST['samedaycourier-price']
-            ),
-            'price_free' => array(
-                'required' => false,
-                'value' => $_POST['samedaycourier-free-delivery-price'] ?: null
-            ),
-            'status' => array(
-                'required' => false,
-                'value' => $_POST['samedaycourier-status']
-            )
-        );
-
-        $errors = array();
-
-        foreach ($post_fields as $field => $field_value) {
-            if ($field_value['required'] && ('' === trim($field_value['value']))) {
-                $errors[] = __("The $field must not be empty", SamedayConstants::TEXT_DOMAIN);
-            }
+        if (!empty($errors)) {
+            return new EditServiceResponse(
+                $serviceId,
+                ResponseNoticeType::ERROR,
+                implode(' ', $errors),
+            );
         }
 
         $priceFree = null;
-        if ((float) $post_fields['price_free']['value'] > 0) {
-            $priceFree = (float) $post_fields['price_free']['value'];
+        if ((float) $postFields['price_free']['value'] > 0) {
+            $priceFree = (float) $postFields['price_free']['value'];
         }
 
-        if (empty($errors)) {
-            $currentService = $this->samedayServiceRepository->getService((int) $post_fields['id']['value']);
-            if (null === $currentService) {
-                Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-            }
+        $currentService = $this->samedayServiceRepository->getService($serviceId);
+        if (null === $currentService) {
+            return new EditServiceResponse(
+                $serviceId,
+                ResponseNoticeType::ERROR,
+            );
+        }
 
-            $service = array(
-                'id' => (int) $post_fields['id']['value'],
-                'name' => Helper::sanitizeInput($post_fields['name']['value']),
-                'price' => (float) $post_fields['price']['value'],
-                'price_free' => $priceFree,
-                'status' => (int) $post_fields['status']['value']
+        $service = [
+            'id' => $serviceId,
+            'name' => Helper::sanitizeInput($postFields['name']['value']),
+            'price' => (float) $postFields['price']['value'],
+            'price_free' => $priceFree,
+            'status' => (int) $postFields['status']['value'],
+        ];
+
+        $this->samedayServiceRepository->updateService($service);
+
+        if ($currentService->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+            $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
+                SamedayConstants::PUDO_CODE
             );
 
-            $this->samedayServiceRepository->updateService($service);
-
-            // Update PUDO
-            if ($currentService->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
-                    SamedayConstants::PUDO_CODE
+            if (null !== $pudoService) {
+                $this->samedayServiceRepository->updateService(
+                    [
+                        'id' => $pudoService->getId(),
+                        'status' => $service['status'],
+                    ]
                 );
-
-                if (null !== $pudoService) {
-                    $this->samedayServiceRepository->updateService(
-                        [
-                            'id' => $pudoService->getId(),
-                            'status' => $service['status'],
-                        ]
-                    );
-                }
             }
-
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
-        Redirector::to(
-            'edit.php',
-            [
-                'post_type' => 'page',
-                'page' => 'sameday_services',
-                'action' => 'edit',
-                'id' => (int) $post_fields['id']['value'],
-            ]
+        return new EditServiceResponse(
+            $serviceId,
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

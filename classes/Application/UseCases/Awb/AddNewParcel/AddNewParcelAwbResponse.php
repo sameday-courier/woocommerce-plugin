@@ -26,19 +26,19 @@ class AddNewParcelAwbResponse
     private string $noticeMessage;
 
     /**
-     * @var string $status
+     * @var string $noticeType
      */
-    private string $status;
+    private string $noticeType;
 
 
     public function __construct(
         int $orderId,
-        string $status,
+        string $noticeType,
         $noticeMessage = null
     )
     {
         $this->orderId = $orderId;
-        $this->status = $status;
+        $this->noticeType = $noticeType;
         $this->noticeMessage = $noticeMessage;
     }
 
@@ -53,9 +53,9 @@ class AddNewParcelAwbResponse
     /**
      * @return string
      */
-    public function getStatus(): string
+    public function getNoticeType(): string
     {
-        return $this->status;
+        return $this->noticeType;
     }
 
     /**

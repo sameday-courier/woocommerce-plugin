@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
 use SamedayCourier\Shipping\Utils\Helper;
@@ -23,11 +24,15 @@ abstract class AbstractController implements ControllerInterface
     {
         $inputParams = Helper::sanitizeInputs($_POST);
         if (!UserPermissionChecker::hasAllowedRole()) {
-            throw new AccessDeniedException("Not enough permission to access this page.");
+            throw new AccessDeniedException(
+                TranslatorHandler::translate("Not enough permission to access this page.")
+            );
         }
 
         if (!NonceVerifier::verify($inputParams['_wpnonce'], $this->getAction())) {
-            throw new AccessDeniedException("Invalid nonce.");
+            throw new AccessDeniedException(
+                TranslatorHandler::translate("Invalid nonce.")
+            );
         }
 
         $this->processPostAction($inputParams);

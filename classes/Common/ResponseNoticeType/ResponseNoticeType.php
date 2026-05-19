@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Common\ResponseStatus;
+namespace SamedayCourier\Shipping\Common\ResponseNoticeType;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class ResponseStatus
+final class ResponseNoticeType
 {
     public const SUCCESS = 'success';
+
     public const ERROR = 'error';
 }
