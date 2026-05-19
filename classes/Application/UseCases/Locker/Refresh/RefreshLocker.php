@@ -2,81 +2,80 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\DataSync;
+namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshLockers
+class RefreshLocker
 {
+    /**
+     * @var RefreshLockerRequest $refreshLockerRequest
+     */
+    private RefreshLockerRequest $refreshLockerRequest;
+
     /**
      * @var SamedayLockerRepository $samedayLockerRepository
      */
     private SamedayLockerRepository $samedayLockerRepository;
 
-    public function __construct()
+    /**
+     * @param RefreshLockerRequest $refreshLockerRequest
+     */
+    public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
+        $this->refreshLockerRequest = $refreshLockerRequest;
         $this->samedayLockerRepository = new SamedayLockerRepository();
     }
 
     /**
-     * @return void
-     * @throws SamedaySDKException
-     */
-    public function syncFromRemote(): void
-    {
-        $this->updateLockersList(false);
-    }
-
-    /**
-     * @return void
+     * @return RefreshLockerResponse
      *
      * @throws SamedaySDKException
      */
-    public function refresh(): void
+    public function execute(): RefreshLockerResponse
     {
-        if (empty(OptionsHandler::getSamedayOptions())) {
-            Redirector::to('admin.php', ['page' => 'sameday_lockers']);
+        if (!$this->refreshLockerRequest->hasSamedayOptions()) {
+            if ($this->refreshLockerRequest->isSilentOnApiError()) {
+                return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
+            }
+
+            return new RefreshLockerResponse(
+                ResponseNoticeType::ERROR,
+                'Sameday options are not configured.',
+            );
         }
 
-        $this->updateLockersList(true);
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
-    }
-
-    /**
-     * @param bool $redirectOnApiError
-     * @return void
-     * @throws SamedaySDKException
-     */
-    private function updateLockersList(bool $redirectOnApiError): void
-    {
         $sameday = new Sameday(SdkInitiator::init());
-
         $remoteLockers = [];
         $page = 1;
+
         do {
             $request = new SamedayGetLockersRequest();
             $request->setPage($page++);
+
             try {
                 $lockers = $sameday->getLockers($request);
             } catch (Exception $e) {
-                if ($redirectOnApiError) {
-                    Redirector::to('admin.php', ['page' => 'sameday_lockers']);
+                if ($this->refreshLockerRequest->isSilentOnApiError()) {
+                    return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
                 }
 
-                return;
+                return new RefreshLockerResponse(
+                    ResponseNoticeType::ERROR,
+                    $e->getMessage(),
+                );
             }
 
             foreach ($lockers->getLockers() as $lockerObject) {
@@ -93,10 +92,10 @@ class RefreshLockers
 
         $localLockers = array_map(
             static function (SamedayLocker $locker) {
-                return array(
+                return [
                     'id' => $locker->getId(),
-                    'locker_id' => (int) $locker->getLockerId()
-                );
+                    'locker_id' => (int) $locker->getLockerId(),
+                ];
             },
             $this->samedayLockerRepository->getLockers()
         );
@@ -108,6 +107,8 @@ class RefreshLockers
         }
 
         $this->updateLastSyncTimestamp();
+
+        return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
     }
 
     /**

@@ -44,10 +44,13 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
+use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
+use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\RefreshLockerController;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -122,12 +125,7 @@ add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handl
 add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
 add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
 add_action('admin_post_refresh_pickup_points', [new RefreshPickupPointController(), 'handle']);
-
-add_action('admin_post_refresh_lockers', static function () {
-    try {
-        return (new ApiRequestsHandler())->refreshSamedayLockers();
-    } catch (Exception $exception) { return $exception->getMessage(); }
-});
+add_action('admin_post_refresh_lockers', [new RefreshLockerController(), 'handle']);
 
 add_action('wp_ajax_all_import', static function (): void {
 	try {
@@ -155,8 +153,14 @@ add_action('wp_ajax_all_import', static function (): void {
     }
 
 	try {
-		(new ApiRequestsHandler())->refreshSamedayLockers();
-	} catch (Exception $exception) {
+        $refreshLockerResult = (new RefreshLocker(
+            new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()))
+        ))->execute();
+
+        if (ResponseNoticeType::ERROR === $refreshLockerResult->getNoticeType()) {
+            throw new \RuntimeException($refreshLockerResult->getNoticeMessage() ?? 'Failed to refresh lockers.');
+        }
+    } catch (Exception $exception) {
 		throw new \RuntimeException($exception->getMessage());
     }
 

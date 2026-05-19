@@ -23,8 +23,10 @@ use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
+use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
+use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -221,7 +223,9 @@ final class SamedayCourier extends WC_Shipping_Method
         $ltSync = $this->settings['sameday_sync_lockers_ts'];
 
         if ($time > ($ltSync + 86400)) {
-            (new ApiRequestsHandler())->updateLockersList();
+            (new RefreshLocker(
+                new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()), true)
+            ))->execute();
         }
     }
 
