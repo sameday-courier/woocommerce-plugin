@@ -78,7 +78,8 @@ class RefreshCity
 
         $this->cacheHandler->refreshCachedData(
             SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
-            $this->samedayCityRepository->getCities()
+            $this->samedayCityRepository->getCities(),
+            2592000
         );
 
         return new RefreshCityResponse(

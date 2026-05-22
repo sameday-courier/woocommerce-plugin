@@ -22,13 +22,13 @@ class CacheHandler implements CacheHandlerInterface
 
     /**
      * @param string $key
-     * @param $data
-     * @param int $timeToLive lifetime in second. 0 = lifetime
+     * @param array $data
+     * @param int $timeToLiveInSeconds lifetime in second. 0 = lifetime
      * @return void
      */
-    public function refreshCachedData(string $key, array $data, int $timeToLive = 0): void
+    public function refreshCachedData(string $key, array $data, int $timeToLiveInSeconds = 0): void
     {
         delete_transient($key);
-        set_transient($key, $data, $timeToLive);
+        set_transient($key, $data, $timeToLiveInSeconds);
     }
 }
