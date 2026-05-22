@@ -40,13 +40,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNew
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
-use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
-use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
@@ -74,10 +68,13 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
         echo 'SamedayCourier Shipping was not installed because autoloader is missing.';
         echo '</p></div>';
     });
+
     return;
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
+
+define('SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 // Shipping Method init.
 add_filter('woocommerce_shipping_methods', static function (array $methods): array {
@@ -95,6 +92,12 @@ function load_lockers_sync() {
     if ('samedaycourier' === $section) {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/sameday_admin.js', ['jquery']);
+        wp_localize_script('lockers-sync-admin', 'samedayAdmin', [
+            'nonces' => [
+                'all_import' => wp_create_nonce('all_import'),
+                'import_cities' => wp_create_nonce('import_cities'),
+            ],
+        ]);
         wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
         wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
@@ -118,7 +121,7 @@ add_action('plugins_loaded', static function () {
     LockerInstance::get_instance();
 });
 
-// WIP REGISTER CONTROLLERS :
+// WIP REGISTER CONTROLLERS ADMIN POST:
 add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
 add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
 add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
@@ -126,58 +129,56 @@ add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'han
 add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
 add_action('admin_post_refresh_pickup_points', [new RefreshPickupPointController(), 'handle']);
 add_action('admin_post_refresh_lockers', [new RefreshLockerController(), 'handle']);
+// WIP REGISTER CONTROLLERS AJAX REQUEST:
+add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
 
-add_action('wp_ajax_all_import', static function (): void {
-	try {
-        $refreshResult = (new RefreshService(
-            new RefreshServiceRequest(!empty(OptionsHandler::getSamedayOptions()))
-        ))->execute();
-
-        if (ResponseNoticeType::ERROR === $refreshResult->getNoticeType()) {
-            throw new \RuntimeException($refreshResult->getNoticeMessage() ?? 'Failed to refresh services.');
-        }
-    } catch (Exception $exception) {
-		throw new \RuntimeException($exception->getMessage());
-    }
-
-	try {
-        $refreshPickupPointsResult = (new RefreshPickupPoint(
-            new RefreshPickupPointRequest(!empty(OptionsHandler::getSamedayOptions()))
-        ))->execute();
-
-        if (ResponseNoticeType::ERROR === $refreshPickupPointsResult->getNoticeType()) {
-            throw new \RuntimeException($refreshPickupPointsResult->getNoticeMessage() ?? 'Failed to refresh pickup points.');
-        }
-    } catch (Exception $exception) {
-		throw new \RuntimeException($exception->getMessage());
-    }
-
-	try {
-        $refreshLockerResult = (new RefreshLocker(
-            new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()))
-        ))->execute();
-
-        if (ResponseNoticeType::ERROR === $refreshLockerResult->getNoticeType()) {
-            throw new \RuntimeException($refreshLockerResult->getNoticeMessage() ?? 'Failed to refresh lockers.');
-        }
-    } catch (Exception $exception) {
-		throw new \RuntimeException($exception->getMessage());
-    }
-
-	try {
-		(new ApiRequestsHandler())->importCities();
-	} catch(Exception $exception) {
-		throw new \RuntimeException($exception->getMessage());
-	}
-});
-
-add_action('wp_ajax_import_cities', static function (): void {
-    try {
-        (new ApiRequestsHandler())->importCities();
-    } catch(Exception $exception) {
-	    throw new \RuntimeException($exception->getMessage());
-    }
-});
+//add_action('wp_ajax_all_import', static function () use ($importCitiesController): void {
+//	try {
+//        $refreshResult = (new RefreshService(
+//            new RefreshServiceRequest(!empty(OptionsHandler::getSamedayOptions()))
+//        ))->execute();
+//
+//        if (ResponseNoticeType::ERROR === $refreshResult->getNoticeType()) {
+//            throw new \RuntimeException($refreshResult->getNoticeMessage() ?? 'Failed to refresh services.');
+//        }
+//    } catch (Exception $exception) {
+//		throw new \RuntimeException($exception->getMessage());
+//    }
+//
+//	try {
+//        $refreshPickupPointsResult = (new RefreshPickupPoint(
+//            new RefreshPickupPointRequest(!empty(OptionsHandler::getSamedayOptions()))
+//        ))->execute();
+//
+//        if (ResponseNoticeType::ERROR === $refreshPickupPointsResult->getNoticeType()) {
+//            throw new \RuntimeException($refreshPickupPointsResult->getNoticeMessage() ?? 'Failed to refresh pickup points.');
+//        }
+//    } catch (Exception $exception) {
+//		throw new \RuntimeException($exception->getMessage());
+//    }
+//
+//	try {
+//        $refreshLockerResult = (new RefreshLocker(
+//            new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()))
+//        ))->execute();
+//
+//        if (ResponseNoticeType::ERROR === $refreshLockerResult->getNoticeType()) {
+//            throw new \RuntimeException($refreshLockerResult->getNoticeMessage() ?? 'Failed to refresh lockers.');
+//        }
+//    } catch (Exception $exception) {
+//		throw new \RuntimeException($exception->getMessage());
+//    }
+//
+//	try {
+//        $importCitiesResult = $importCitiesController->runImport();
+//
+//        if (ResponseNoticeType::ERROR === $importCitiesResult->getNoticeType()) {
+//            throw new \RuntimeException($importCitiesResult->getNoticeMessage() ?? 'Failed to import cities.');
+//        }
+//	} catch(Exception $exception) {
+//		throw new \RuntimeException($exception->getMessage());
+//	}
+//});
 
 add_action('wp_ajax_change_locker', static function() {
     if (null !== $orderId = $_POST['orderId']) {

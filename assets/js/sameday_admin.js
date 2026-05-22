@@ -24,6 +24,7 @@ function importAllFct() {
         ajaxurl, 
         {
             'action': 'all_import',
+            '_wpnonce': samedayAdmin.nonces.all_import,
         }, 
         () => {
             document.querySelector("#loadingImport").remove();
@@ -36,6 +37,7 @@ function importCities() {
             url: ajaxurl,
             data: {
                 'action': 'import_cities',
+                '_wpnonce': samedayAdmin.nonces.import_cities,
             },
             success: () => {
                 jQuery('#wpbody-content').prepend(
