@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -11,38 +14,25 @@ if (!defined('ABSPATH')) {
 class RefreshLockerRequest
 {
     /**
-     * @var bool $hasSamedayOptions
+     * @var SamedayLockerRepository $samedayLockerRepository
      */
-    private bool $hasSamedayOptions;
+    public SamedayLockerRepository $samedayLockerRepository;
 
     /**
-     * @var bool $silentOnApiError
+     * @var Sameday $sameday
      */
-    private bool $silentOnApiError;
+    public Sameday $sameday;
 
     /**
-     * @param bool $hasSamedayOptions
-     * @param bool $silentOnApiError
+     * @param SamedayLockerRepository $samedayLockerRepository
+     * @param Sameday $sameday
      */
-    public function __construct(bool $hasSamedayOptions, bool $silentOnApiError = false)
+    public function __construct(
+        SamedayLockerRepository $samedayLockerRepository,
+        Sameday $sameday
+    )
     {
-        $this->hasSamedayOptions = $hasSamedayOptions;
-        $this->silentOnApiError = $silentOnApiError;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasSamedayOptions(): bool
-    {
-        return $this->hasSamedayOptions;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSilentOnApiError(): bool
-    {
-        return $this->silentOnApiError;
+        $this->samedayLockerRepository = $samedayLockerRepository;
+        $this->sameday = $sameday;
     }
 }

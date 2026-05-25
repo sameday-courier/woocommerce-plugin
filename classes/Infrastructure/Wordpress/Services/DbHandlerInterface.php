@@ -26,6 +26,7 @@ interface DbHandlerInterface
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return array
      */
@@ -33,6 +34,7 @@ interface DbHandlerInterface
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return array
      */

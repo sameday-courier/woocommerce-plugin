@@ -28,9 +28,8 @@ class SamedayLockerRepository extends AbstractRepository
     public function getCitiesWithLockers(): array
     {
         $rows = $this->dbHandler->getRows(
-            "SELECT city, county FROM %s WHERE is_testing = %s GROUP BY city",
+            "SELECT city, county FROM {$this->getTableName()} WHERE is_testing = %s GROUP BY city",
             [
-                $this->getTableName(),
                 Helper::isTesting()
             ]
         );
@@ -44,9 +43,8 @@ class SamedayLockerRepository extends AbstractRepository
     public function getLockers(): array
     {
         $rows = $this->dbHandler->getRows(
-            "SELECT * FROM %s WHERE is_testing = %s",
+            "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                $this->getTableName(),
                 Helper::isTesting(),
             ]
         );
@@ -62,9 +60,8 @@ class SamedayLockerRepository extends AbstractRepository
     public function getLockersByCity(string $city): array
     {
         $rows = $this->dbHandler->getRows(
-            "SELECT * FROM %s WHERE city = %s AND is_testing = %s",
+            "SELECT * FROM {$this->getTableName()} WHERE city = %s AND is_testing = %s",
             [
-                $this->getTableName(),
                 $city,
                 Helper::isTesting()
             ]
@@ -81,9 +78,8 @@ class SamedayLockerRepository extends AbstractRepository
     public function getLockerSameday(int $samedayId): ?SamedayLocker
     {
         $row = $this->dbHandler->getRow(
-            "SELECT * FROM %s WHERE locker_id = %d AND is_testing = %s LIMIT 1",
+            "SELECT * FROM {$this->getTableName()} WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
-                $this->getTableName(),
                 $samedayId,
                 Helper::isTesting()
             ]

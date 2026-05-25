@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
+use Exception;
 use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -35,11 +42,26 @@ final class RefreshLockerController extends AbstractController
      * @param array<string, mixed> $inputParams
      *
      * @return void
-     * @throws SamedaySDKException
      */
     protected function processPostAction(array $inputParams): void
     {
-        $request = new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()));
+        try {
+            $samedayApiClient = new Sameday(SdkInitiator::init());
+        } catch (Exception $exception) {
+            NoticerHandler::addFlashNotice(
+                'refresh_lockers_notice',
+                ResponseNoticeType::ERROR,
+                TranslatorHandler::translate("Could not instantiate Sameday client service."),
+                true
+            );
+
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
+        }
+
+        $request = new RefreshLockerRequest(
+            new SamedayLockerRepository(),
+            $samedayApiClient
+        );
         $refreshLocker = new RefreshLocker($request);
 
         $result = $refreshLocker->execute();

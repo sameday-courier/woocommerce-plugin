@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
 use Exception;
-use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayGetPickupPointsRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -20,9 +18,9 @@ if (!defined('ABSPATH')) {
 class RefreshPickupPoint
 {
     /**
-     * @var RefreshPickupPointRequest $refreshPickupPointRequest
+     * @var Sameday $sameday
      */
-    private RefreshPickupPointRequest $refreshPickupPointRequest;
+    private Sameday $sameday;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
@@ -34,25 +32,15 @@ class RefreshPickupPoint
      */
     public function __construct(RefreshPickupPointRequest $refreshPickupPointRequest)
     {
-        $this->refreshPickupPointRequest = $refreshPickupPointRequest;
-        $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
+        $this->sameday = $refreshPickupPointRequest->sameday;
+        $this->samedayPickupPointRepository = $refreshPickupPointRequest->samedayPickupPointRepository;
     }
 
     /**
      * @return RefreshPickupPointResponse
-     *
-     * @throws SamedaySDKException
      */
     public function execute(): RefreshPickupPointResponse
     {
-        if (!$this->refreshPickupPointRequest->hasSamedayOptions()) {
-            return new RefreshPickupPointResponse(
-                ResponseNoticeType::ERROR,
-                'Sameday options are not configured.',
-            );
-        }
-
-        $sameday = new Sameday(SdkInitiator::init());
         $remotePickupPoints = [];
         $page = 1;
 
@@ -61,8 +49,9 @@ class RefreshPickupPoint
             $request->setPage($page++);
 
             try {
-                $pickUpPoints = $sameday->getPickupPoints($request);
+                $pickUpPoints = $this->sameday->getPickupPoints($request);
             } catch (Exception $e) {
+
                 return new RefreshPickupPointResponse(
                     ResponseNoticeType::ERROR,
                     $e->getMessage(),

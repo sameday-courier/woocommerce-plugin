@@ -42,26 +42,28 @@ class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return array
      */
     public function getRow(string $queryString, array $queryParams = []): array
     {
         return $this->db->get_row(
-            $this->db->prepare($queryString, ...$queryParams),
+            $this->prepareQuery($queryString, $queryParams),
             ARRAY_A
         ) ?? [];
     }
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return array
      */
     public function getRows(string $queryString, array $queryParams = []): array
     {
         return $this->db->get_results(
-            $this->db->prepare($queryString, ...$queryParams),
+            $this->prepareQuery($queryString, $queryParams),
             ARRAY_A
         ) ?? [];
     }
@@ -172,5 +174,20 @@ class DbHandler implements DbHandlerInterface
         }
 
         return $format;
+    }
+
+    /**
+     * @param string $queryString
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    private function prepareQuery(string $queryString, array $queryParams = []): string
+    {
+        if (empty($queryParams)) {
+            return $queryString;
+        }
+
+        return $this->db->prepare($queryString, ...$queryParams);
     }
 }

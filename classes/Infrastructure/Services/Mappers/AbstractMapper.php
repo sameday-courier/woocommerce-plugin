@@ -21,7 +21,7 @@ abstract class AbstractMapper implements MapperInterface
     {
         return array_map(
             function ($row) {
-                $this->map($row);
+                return $this->map($row);
             },
             $rows
         );

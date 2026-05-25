@@ -21,9 +21,9 @@ if (!defined('ABSPATH')) {
 class RefreshService
 {
     /**
-     * @var RefreshServiceRequest $refreshServiceRequest
+     * @var Sameday $sameday
      */
-    private RefreshServiceRequest $refreshServiceRequest;
+    private Sameday $sameday;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -35,25 +35,15 @@ class RefreshService
      */
     public function __construct(RefreshServiceRequest $refreshServiceRequest)
     {
-        $this->refreshServiceRequest = $refreshServiceRequest;
-        $this->samedayServiceRepository = new SamedayServiceRepository();
+        $this->sameday = $refreshServiceRequest->sameday;
+        $this->samedayServiceRepository = $refreshServiceRequest->samedayServiceRepository;
     }
 
     /**
      * @return RefreshServiceResponse
-     *
-     * @throws SamedaySDKException
      */
     public function execute(): RefreshServiceResponse
     {
-        if (!$this->refreshServiceRequest->hasSamedayOptions()) {
-            return new RefreshServiceResponse(
-                ResponseNoticeType::ERROR,
-                'Sameday options are not configured.',
-            );
-        }
-
-        $sameday = new Sameday(SdkInitiator::init());
         $remoteServices = [];
         $page = 1;
 
@@ -62,7 +52,7 @@ class RefreshService
             $request->setPage($page++);
 
             try {
-                $services = $sameday->getServices($request);
+                $services = $this->sameday->getServices($request);
             } catch (Exception $e) {
                 return new RefreshServiceResponse(
                     ResponseNoticeType::ERROR,

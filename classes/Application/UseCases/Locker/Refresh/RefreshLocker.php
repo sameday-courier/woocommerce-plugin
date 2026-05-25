@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
 use Exception;
-use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
@@ -21,43 +19,29 @@ if (!defined('ABSPATH')) {
 class RefreshLocker
 {
     /**
-     * @var RefreshLockerRequest $refreshLockerRequest
-     */
-    private RefreshLockerRequest $refreshLockerRequest;
-
-    /**
      * @var SamedayLockerRepository $samedayLockerRepository
      */
-    private SamedayLockerRepository $samedayLockerRepository;
+    public SamedayLockerRepository $samedayLockerRepository;
+
+    /**
+     * @var Sameday $sameday
+     */
+    public Sameday $sameday;
 
     /**
      * @param RefreshLockerRequest $refreshLockerRequest
      */
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
-        $this->refreshLockerRequest = $refreshLockerRequest;
-        $this->samedayLockerRepository = new SamedayLockerRepository();
+        $this->samedayLockerRepository = $refreshLockerRequest->samedayLockerRepository;
+        $this->sameday = $refreshLockerRequest->sameday;
     }
 
     /**
      * @return RefreshLockerResponse
-     *
-     * @throws SamedaySDKException
      */
     public function execute(): RefreshLockerResponse
     {
-        if (!$this->refreshLockerRequest->hasSamedayOptions()) {
-            if ($this->refreshLockerRequest->isSilentOnApiError()) {
-                return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
-            }
-
-            return new RefreshLockerResponse(
-                ResponseNoticeType::ERROR,
-                'Sameday options are not configured.',
-            );
-        }
-
-        $sameday = new Sameday(SdkInitiator::init());
         $remoteLockers = [];
         $page = 1;
 
@@ -66,11 +50,8 @@ class RefreshLocker
             $request->setPage($page++);
 
             try {
-                $lockers = $sameday->getLockers($request);
+                $lockers = $this->sameday->getLockers($request);
             } catch (Exception $e) {
-                if ($this->refreshLockerRequest->isSilentOnApiError()) {
-                    return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
-                }
 
                 return new RefreshLockerResponse(
                     ResponseNoticeType::ERROR,
@@ -118,6 +99,7 @@ class RefreshLocker
     {
         $samedayOptions = OptionsHandler::getSamedayOptions();
         $samedayOptions['sameday_sync_lockers_ts'] = time();
+
         OptionsHandler::setSamedayOptions($samedayOptions);
     }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -11,23 +14,26 @@ if (!defined('ABSPATH')) {
 class RefreshServiceRequest
 {
     /**
-     * @var bool $hasSamedayOptions
+     * @var Sameday $sameday
      */
-    private bool $hasSamedayOptions;
+    public Sameday $sameday;
 
     /**
-     * @param bool $hasSamedayOptions
+     * @var SamedayServiceRepository $samedayServiceRepository
      */
-    public function __construct(bool $hasSamedayOptions)
-    {
-        $this->hasSamedayOptions = $hasSamedayOptions;
-    }
+    public SamedayServiceRepository $samedayServiceRepository;
 
     /**
-     * @return bool
+     * @param Sameday $sameday
+     *
+     * @param SamedayServiceRepository $samedayServiceRepository
      */
-    public function hasSamedayOptions(): bool
+    public function __construct(
+        Sameday $sameday,
+        SamedayServiceRepository $samedayServiceRepository
+    )
     {
-        return $this->hasSamedayOptions;
+        $this->sameday = $sameday;
+        $this->samedayServiceRepository = $samedayServiceRepository;
     }
 }

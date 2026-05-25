@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint;
 
+
+use Sameday\Sameday;
 use Sameday\Exceptions\SamedaySDKException;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
@@ -35,11 +40,26 @@ final class RefreshPickupPointController extends AbstractController
      * @param array<string, mixed> $inputParams
      *
      * @return void
-     * @throws SamedaySDKException
      */
     protected function processPostAction(array $inputParams): void
     {
-        $request = new RefreshPickupPointRequest(!empty(OptionsHandler::getSamedayOptions()));
+        try {
+            $samedayApiClient = new Sameday(SdkInitiator::init());
+        } catch (SamedaySDKException $exception) {
+            NoticerHandler::addFlashNotice(
+                'refresh_pickup_points_notice',
+                TranslatorHandler::translate($exception->getMessage()),
+                ResponseNoticeType::ERROR,
+                true
+            );
+
+            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
+        }
+
+        $request = new RefreshPickupPointRequest(
+            $samedayApiClient,
+            new SamedayPickupPointRepository()
+        );
         $refreshPickupPoint = new RefreshPickupPoint($request);
 
         $result = $refreshPickupPoint->execute();

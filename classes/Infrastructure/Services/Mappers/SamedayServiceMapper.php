@@ -31,7 +31,7 @@ final class SamedayServiceMapper extends AbstractMapper
         $service->setPriceFree(
             isset($row['price_free']) && $row['price_free'] !== '' ? (float) $row['price_free'] : null
         );
-        $service->setStatus($row["status"] ?? null);
+        $service->setStatus((bool) $row["status"]);
         $service->setServiceOptionalTaxes($row["service_optional_taxes"] ?? null);
 
         return $service;

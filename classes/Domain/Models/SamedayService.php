@@ -17,7 +17,7 @@ final class SamedayService implements ModelInterface
     public ?string $name;
     public ?float $price;
     public ?float $priceFree;
-    public ?int $status;
+    public bool $status;
     public string $samedayCode;
     public ?string $serviceOptionalTaxes;
 
@@ -162,19 +162,19 @@ final class SamedayService implements ModelInterface
     }
 
     /**
-     * @return int|null
+     * @return bool
      */
-    public function getStatus(): ?int
+    public function getStatus(): bool
     {
         return $this->status;
     }
 
     /**
-     * @param int|null $status
+     * @param bool $status
      *
      * @return self
      */
-    public function setStatus(?int $status): self
+    public function setStatus(bool $status): self
     {
         $this->status = $status;
 

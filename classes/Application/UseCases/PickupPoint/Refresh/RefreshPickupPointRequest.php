@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -11,23 +14,25 @@ if (!defined('ABSPATH')) {
 class RefreshPickupPointRequest
 {
     /**
-     * @var bool $hasSamedayOptions
+     * @var Sameday $sameday
      */
-    private bool $hasSamedayOptions;
+    public Sameday $sameday;
 
     /**
-     * @param bool $hasSamedayOptions
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
      */
-    public function __construct(bool $hasSamedayOptions)
-    {
-        $this->hasSamedayOptions = $hasSamedayOptions;
-    }
+    public SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @return bool
+     * @param SamedayPickupPointRepository $pickupPointRepository
+     * @param Sameday $sameday
      */
-    public function hasSamedayOptions(): bool
+    public function __construct(
+        Sameday $sameday,
+        SamedayPickupPointRepository $pickupPointRepository
+    )
     {
-        return $this->hasSamedayOptions;
+        $this->sameday = $sameday;
+        $this->samedayPickupPointRepository = $pickupPointRepository;
     }
 }

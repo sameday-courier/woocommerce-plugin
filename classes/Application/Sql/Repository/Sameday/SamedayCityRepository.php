@@ -48,9 +48,8 @@ class SamedayCityRepository extends AbstractRepository
         $cities = [];
         foreach (SamedayConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
             $rows = $this->dbHandler->getRows(
-                "SELECT * FROM %s WHERE country_code = %s",
+                "SELECT * FROM {$this->getTableName()} WHERE country_code = %s",
                 [
-                    $this->getTableName(),
                     $countryKey,
                 ]
             );
@@ -100,9 +99,8 @@ class SamedayCityRepository extends AbstractRepository
     public function getPostalForSpecificCounty(string $countyCode, string $countryCode): ?string
     {
         $row = $this->dbHandler->getRow(
-            "SELECT postal_code FROM %s WHERE county_code = %s AND country_code = %s LIMIT 1",
+            "SELECT postal_code FROM {$this->getTableName()} WHERE county_code = %s AND country_code = %s LIMIT 1",
             [
-                $this->getTableName(),
                 $countyCode,
                 $countryCode,
             ]
