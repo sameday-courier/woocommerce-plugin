@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\FileReadHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
@@ -71,7 +71,7 @@ class RefreshCity
         $this->samedayCityRepository->truncate();
 
         foreach ($cities as $samedayCity) {
-            if (array_key_exists($samedayCity->country_code, WC()->countries->get_shipping_countries())) {
+            if (array_key_exists($samedayCity->country_code, WcHandler::getShippingCountries())) {
                 $this->samedayCityRepository->addCity($samedayCity);
             }
         }

@@ -76,8 +76,8 @@ class SamedayCityRepository extends AbstractRepository
     public function addCity(stdClass $cityObject): void
     {
         $countyCode = $cityObject->county_code;
-        if ($cityObject->country_code === 'BG') {
-            $countyCode = 'BG-' . $cityObject->county_code;
+        if ($cityObject->country_code === SamedayConstants::API_HOST_LOCALE_BG) {
+            $countyCode = SamedayConstants::API_HOST_LOCALE_BG . "-" . $cityObject->county_code;
         }
 
         $data = [
