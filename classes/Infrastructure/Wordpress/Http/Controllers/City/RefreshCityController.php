@@ -62,7 +62,10 @@ final class RefreshCityController extends AbstractController
 
         $result = $refreshCity->execute();
         if ($result->hasNotices()) {
-            NoticerHandler::showFlashNotice($result->getNoticeMessage());
+            NoticerHandler::addFlashNotice(
+                $result->getNoticeType(),
+                $result->getNoticeMessage()
+            );
         }
     }
 }

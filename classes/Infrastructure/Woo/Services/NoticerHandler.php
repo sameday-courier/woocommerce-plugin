@@ -10,8 +10,10 @@ if (!defined('ABSPATH')) {
 
 class NoticerHandler
 {
+    public const NOTICE_DOMAIN = 'sameday';
+    private const NOTICE_KEY = 'samedaycourier_notice_key';
+
     /**
-     * @param string $notice
      * @param string $notice_message
      * @param string $type
      * @param bool $dismissible
@@ -19,14 +21,13 @@ class NoticerHandler
      * @return void
      */
     public static function addFlashNotice(
-        string $notice = "",
         string $notice_message = "",
         string $type = "warning",
         bool $dismissible = false
     ): void
     {
         OptionsHandler::setOption(
-            $notice,
+            self::NOTICE_KEY,
             [
                 "message" => $notice_message,
                 "type" => $type,
@@ -36,18 +37,16 @@ class NoticerHandler
     }
 
     /**
-     * @param $notice
-     *
      * @return void
      */
-    public static function showFlashNotice($notice): void
+    public static function showFlashNotice(): void
     {
-        $notices = OptionsHandler::getOption($notice);
+        $notices = OptionsHandler::getOption(self::NOTICE_KEY);
         if (!empty($notices)) {
             self::printFlashNotice($notices['type'], $notices['message'], $notices['dismissible']);
 
             // After show flash message in page, remove it from db.
-            OptionsHandler::removeOption($notice);
+            OptionsHandler::removeOption(self::NOTICE_KEY);
         }
     }
 

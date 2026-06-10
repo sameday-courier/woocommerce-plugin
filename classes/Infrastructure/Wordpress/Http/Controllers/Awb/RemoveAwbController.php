@@ -59,7 +59,6 @@ final class RemoveAwbController extends AbstractController
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'remove_awb_notice',
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
                 true

@@ -12,7 +12,6 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -47,7 +46,6 @@ final class RefreshServiceController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                'refresh_services_notice',
                 TranslatorHandler::translate($exception->getMessage()),
                 ResponseNoticeType::ERROR,
                 true
@@ -66,7 +64,6 @@ final class RefreshServiceController extends AbstractController
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'refresh_services_notice',
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
                 true

@@ -76,6 +76,7 @@ class RemoveAwb
         return new RemoveAwbResponse(
             $awb->getOrderId(),
             ResponseNoticeType::SUCCESS,
+            "Awb removed with success.",
         );
     }
 }

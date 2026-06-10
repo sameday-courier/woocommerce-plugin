@@ -95,7 +95,6 @@ class AddNewPickupPointController extends AbstractController
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'send_pickup_point_notice',
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
                 true

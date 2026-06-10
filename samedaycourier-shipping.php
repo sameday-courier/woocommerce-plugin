@@ -654,41 +654,15 @@ function wps_locker_style() {
 add_action('wp_head', 'wps_locker_style');
 // Locker !
 
-add_action('admin_head', function () {
-    if (isset($_GET["add-awb"])){
-        if ($_GET["add-awb"] === "error") {
-            NoticerHandler::showFlashNotice('add_awb_notice');
-        }
-
-        if ($_GET["add-awb"] === "success") {
-            NoticerHandler::printFlashNotice('success', __("Awb was successfully generated !", SamedayConstants::TEXT_DOMAIN), true);
-        }
+add_action('admin_notices', static function (): void {
+    if (strpos(get_current_screen()->id, NoticerHandler::NOTICE_DOMAIN) === false) {
+        return;
     }
 
-    if (isset($_GET["remove-awb"])) {
-        if ($_GET["remove-awb"] === "error") {
-            NoticerHandler::showFlashNotice('remove_awb_notice');
-        }
+    NoticerHandler::showFlashNotice();
+});
 
-        if ($_GET["remove-awb"] === "success") {
-            NoticerHandler::printFlashNotice('success', __("Awb was successfully removed !", SamedayConstants::TEXT_DOMAIN), true);
-        }
-    }
-
-    if (isset($_GET["show-awb"]) && $_GET["show-awb"] === "error") {
-        NoticerHandler::printFlashNotice('error', __("Awb invalid !", SamedayConstants::TEXT_DOMAIN), true);
-    }
-
-    if (isset($_GET["add-new-parcel"])) {
-        if ($_GET["add-new-parcel"] === "error") {
-            NoticerHandler::showFlashNotice('add_new_parcel_notice');
-        }
-
-        if ($_GET["add-new-parcel"] === "success") {
-            NoticerHandler::printFlashNotice('success', __("New parcel has been added to this awb!", SamedayConstants::TEXT_DOMAIN) , true);
-        }
-    }
-
+add_action('admin_head', static function () {
     echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="add_awb">
                 <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('add-awb').'">

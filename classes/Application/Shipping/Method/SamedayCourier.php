@@ -37,6 +37,8 @@ use WC_Shipping_Method;
 
 final class SamedayCourier extends WC_Shipping_Method
 {
+    private const DOMAIN_NAME = 'sameday';
+
     /**
      * @var SamedayServiceSelector
      */
@@ -480,7 +482,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $this->init_settings();
 
-        add_action( 'woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
+        add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
     }
 
     public function process_admin_options(): void
@@ -524,7 +526,6 @@ final class SamedayCourier extends WC_Shipping_Method
 
             parent::process_admin_options();
         } else {
-
             WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
         }
     }

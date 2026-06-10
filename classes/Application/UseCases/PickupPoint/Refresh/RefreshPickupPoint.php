@@ -86,6 +86,9 @@ class RefreshPickupPoint
             }
         }
 
-        return new RefreshPickupPointResponse(ResponseNoticeType::SUCCESS);
+        return new RefreshPickupPointResponse(
+            ResponseNoticeType::SUCCESS,
+            "Pickup points successfully refreshed.",
+        );
     }
 }

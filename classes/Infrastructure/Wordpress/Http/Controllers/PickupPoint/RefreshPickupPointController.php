@@ -47,7 +47,6 @@ final class RefreshPickupPointController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                'refresh_pickup_points_notice',
                 TranslatorHandler::translate($exception->getMessage()),
                 ResponseNoticeType::ERROR,
                 true
@@ -66,7 +65,6 @@ final class RefreshPickupPointController extends AbstractController
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'refresh_pickup_points_notice',
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
                 true

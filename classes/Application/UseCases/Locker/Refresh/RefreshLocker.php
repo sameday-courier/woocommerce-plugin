@@ -89,7 +89,10 @@ class RefreshLocker
 
         $this->updateLastSyncTimestamp();
 
-        return new RefreshLockerResponse(ResponseNoticeType::SUCCESS);
+        return new RefreshLockerResponse(
+            ResponseNoticeType::SUCCESS,
+            "Lockers successfully refreshed.",
+        );
     }
 
     /**

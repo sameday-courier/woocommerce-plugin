@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
+use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class EditServiceResponse
+class EditServiceResponse implements ResponseInterface
 {
     use NoticerTrait;
 

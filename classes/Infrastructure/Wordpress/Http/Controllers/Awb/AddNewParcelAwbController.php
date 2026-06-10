@@ -61,7 +61,6 @@ final class AddNewParcelAwbController extends AbstractController
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                'add_new_parcel_notice',
                 TranslatorHandler::translate($result->getNoticeMessage()),
                 $result->getNoticeType(),
                 true

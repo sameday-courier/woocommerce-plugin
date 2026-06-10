@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
+use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewParcelAwbResponse
+class AddNewParcelAwbResponse implements ResponseInterface
 {
     use NoticerTrait;
 

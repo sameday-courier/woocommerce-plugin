@@ -116,6 +116,7 @@ class AddNewParcelAwb
         return new AddNewParcelAwbResponse(
             $this->addNewParcelAwbRequest->getOrderId(),
             ResponseNoticeType::SUCCESS,
+            "AWB added new parcel successfully.",
         );
     }
 

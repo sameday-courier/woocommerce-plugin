@@ -105,6 +105,9 @@ class RefreshService
             );
         }
 
-        return new RefreshServiceResponse(ResponseNoticeType::SUCCESS);
+        return new RefreshServiceResponse(
+            ResponseNoticeType::SUCCESS,
+            "Service successfully refreshed.",
+        );
     }
 }
