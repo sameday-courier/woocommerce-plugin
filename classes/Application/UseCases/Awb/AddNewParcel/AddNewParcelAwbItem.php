@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewParcelAwbItem
+final class AddNewParcelAwbItem
 {
     /**
      * @var ParcelDimensionsObject $parcelDimensionsObject

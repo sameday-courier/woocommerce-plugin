@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RemoveAwb
+final class RemoveAwb
 {
     private RemoveAwbRequest $removeAwbRequest;
 

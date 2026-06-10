@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewPickupPointRequest
+final class AddNewPickupPointRequest
 {
     /**
      * @var AddNewPickupPointItem $pickupPointItem

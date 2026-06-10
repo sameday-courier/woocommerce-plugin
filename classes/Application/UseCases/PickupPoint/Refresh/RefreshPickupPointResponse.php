@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshPickupPointResponse implements ResponseInterface
+final class RefreshPickupPointResponse implements ResponseInterface
 {
     use NoticerTrait;
 

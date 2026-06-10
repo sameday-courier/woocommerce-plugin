@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshCityRequest
+final class RefreshCityRequest
 {
     /**
      * @var SamedayCityRepository $samedayCityRepository

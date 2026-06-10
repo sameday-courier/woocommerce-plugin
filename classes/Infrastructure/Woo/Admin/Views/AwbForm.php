@@ -76,7 +76,7 @@ class AwbForm
         $total_weight = $total_weight ?: 1;
 
         $pickupPointOptions = '';
-        $pickupPoints = SamedayPickupPointRepository::getPickupPoints();
+        $pickupPoints = (new SamedayPickupPointRepository())->getPickupPoints();
         foreach ($pickupPoints as $pickupPoint) {
             $checked = true === $pickupPoint->getDefaultPickupPoint() ? "selected" : "";
             $pickupPointOptions .= "<option value='{$pickupPoint->getSamedayId()}' {$checked}> {$pickupPoint->getSamedayAlias()} </option>" ;
@@ -167,7 +167,7 @@ class AwbForm
         ";
         }
 
-        $samedayServices = SamedayServiceRepository::getAvailableServices();
+        $samedayServices = (new SamedayServiceRepository())->getAvailableServices();
         $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository());
 
         $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];

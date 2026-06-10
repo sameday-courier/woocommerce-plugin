@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class EditService
+final class EditService
 {
     /**
      * @var EditServiceRequest $editServiceRequest

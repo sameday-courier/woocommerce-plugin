@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowHistoryAwb
+final class ShowHistoryAwb
 {
     private ShowHistoryAwbRequest $showHistoryAwbRequest;
 

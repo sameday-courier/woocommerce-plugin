@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewParcelAwbRequest
+final class AddNewParcelAwbRequest
 {
     /**
      * @var int $orderId

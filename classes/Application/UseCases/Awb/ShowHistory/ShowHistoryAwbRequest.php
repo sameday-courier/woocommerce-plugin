@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowHistoryAwbRequest
+final class ShowHistoryAwbRequest
 {
     private int $orderId;
 

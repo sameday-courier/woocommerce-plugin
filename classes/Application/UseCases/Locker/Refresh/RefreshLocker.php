@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshLocker
+final class RefreshLocker
 {
     /**
      * @var SamedayLockerRepository $samedayLockerRepository

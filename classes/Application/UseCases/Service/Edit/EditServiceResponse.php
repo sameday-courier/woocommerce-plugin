@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class EditServiceResponse implements ResponseInterface
+final class EditServiceResponse implements ResponseInterface
 {
     use NoticerTrait;
 

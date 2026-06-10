@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class EditServiceRequest
+final class EditServiceRequest
 {
     /**
      * @var int $id

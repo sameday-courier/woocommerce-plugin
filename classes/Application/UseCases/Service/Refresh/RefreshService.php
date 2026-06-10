@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshService
+final class RefreshService
 {
     /**
      * @var Sameday $sameday

@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewParcelAwb
+final class AddNewParcelAwb
 {
 
     private AddNewParcelAwbRequest $addNewParcelAwbRequest;

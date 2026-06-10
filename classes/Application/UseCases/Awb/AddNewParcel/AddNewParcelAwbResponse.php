@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewParcelAwbResponse implements ResponseInterface
+final class AddNewParcelAwbResponse implements ResponseInterface
 {
     use NoticerTrait;
 

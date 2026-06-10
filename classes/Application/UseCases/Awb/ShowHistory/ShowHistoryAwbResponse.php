@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowHistoryAwbResponse
+final class ShowHistoryAwbResponse
 {
     /**
      * @var int $orderId

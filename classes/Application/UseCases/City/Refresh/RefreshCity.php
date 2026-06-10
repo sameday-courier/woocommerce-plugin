@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshCity
+final class RefreshCity
 {
     /**
      * @var CacheHandler $cacheHandler

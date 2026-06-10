@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshLockerResponse implements ResponseInterface
+final class RefreshLockerResponse implements ResponseInterface
 {
     use NoticerTrait;
 

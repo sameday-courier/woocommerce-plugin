@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshCityResponse implements ResponseInterface
+final class RefreshCityResponse implements ResponseInterface
 {
     use NoticerTrait;
 

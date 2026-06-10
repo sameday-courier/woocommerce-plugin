@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewPickupPointResponse
+final class AddNewPickupPointResponse
 {
     use NoticerTrait;
 

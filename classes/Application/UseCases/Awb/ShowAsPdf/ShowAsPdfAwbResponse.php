@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowAsPdfAwbResponse implements ResponseInterface
+final class ShowAsPdfAwbResponse implements ResponseInterface
 {
     use NoticerTrait;
 

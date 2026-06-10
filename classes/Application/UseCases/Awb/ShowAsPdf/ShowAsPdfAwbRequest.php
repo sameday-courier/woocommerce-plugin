@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowAsPdfAwbRequest
+final class ShowAsPdfAwbRequest
 {
     /**
      * @var int $orderId

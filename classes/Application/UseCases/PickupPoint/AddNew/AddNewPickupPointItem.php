@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewPickupPointItem
+final class AddNewPickupPointItem
 {
     /**
      * @var string $pickupPointCountryId

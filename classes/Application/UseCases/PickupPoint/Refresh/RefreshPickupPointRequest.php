@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RefreshPickupPointRequest
+final class RefreshPickupPointRequest
 {
     /**
      * @var Sameday $sameday

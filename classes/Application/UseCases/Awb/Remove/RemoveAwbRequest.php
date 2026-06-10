@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RemoveAwbRequest
+final class RemoveAwbRequest
 {
     /**
      * @var SamedayAwb $awb

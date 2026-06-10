@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class ShowAsPdfAwb
+final class ShowAsPdfAwb
 {
     /**
      * @var ShowAsPdfAwbRequest $showAsPdfAwbRequest

@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class RemoveAwbResponse implements ResponseInterface
+final class RemoveAwbResponse implements ResponseInterface
 {
     use NoticerTrait;
 
