@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
-use Exception;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use JsonException;
+use Sameday\Exceptions\SamedaySDKException;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -21,73 +23,58 @@ if (!defined("ABSPATH")) {
 
 final class GenerateAwbController extends AbstractController
 {
-    private CONST ACTION = "add-awb";
+    private const ACTION = "add-awb";
 
     public function getAction(): string
     {
         return self::ACTION;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     *
+     * @throws JsonException
+     * @throws SamedaySDKException
+     */
     protected function processPostAction(array $inputParams): void
     {
-        $orderDetails = wc_get_order($inputParams['samedaycourier-order-id']);
+        $orderId = (int) $inputParams['samedaycourier-order-id'];
+        $orderData = WcHandler::getShippingOrderById($orderId);
 
-        if (empty($orderDetails)) {
+        if (empty($orderData)) {
             Redirector::to('index.php');
         }
 
-        $data = array_merge($inputParams, $orderDetails->get_data());
+        $data = array_merge($inputParams, $orderData);
 
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
-                $exception->getMessage()
-            );
-
-            Redirector::to('index.php');
-        }
-
-        $generateAwbRequest = new GenerateAwbRequest(
-            new GenerateAwbItem(
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-            ),
-            $samedayApiClient,
+        $dbHandler = new DbHandler();
+        $generateAwb = new GenerateAwb(
+            new GenerateAwbRequest(
+                GenerateAwbItem::fromArray($data),
+                $dbHandler,
+                new SamedayServiceRepository($dbHandler),
+                new SamedayAwbRepository($dbHandler),
+            )
         );
 
-        $awbGenerate = new GenerateAwb($generateAwbRequest);
-
-        $result = $awbGenerate->execute();
+        $result = $generateAwb->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::SUCCESS,
-                "Awb generated successfully.",
+                $result->getNoticeMessage(),
+                $result->getNoticeType(),
             );
         }
 
-        Redirector::to('index.php');
+        Redirector::to(
+            'post.php',
+            [
+                'post' => $orderId,
+                'action' => 'edit',
+                'add-awb' => $result->getNoticeType(),
+            ]
+        );
     }
 }

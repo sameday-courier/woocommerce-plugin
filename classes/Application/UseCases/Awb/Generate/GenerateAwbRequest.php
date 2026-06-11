@@ -4,21 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
-use Exception;
-use JsonException;
-use Sameday\Exceptions\SamedayBadRequestException;
-use Sameday\Exceptions\SamedayOtherException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\PostAwb\ParcelObject;
-use Sameday\Requests\SamedayPostParcelRequest;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -32,16 +20,35 @@ final class GenerateAwbRequest
     public GenerateAwbItem $generateAwbItem;
 
     /**
-     * @var Sameday $sameday
+     * @var DbHandler $dbHandler
      */
-    public Sameday $sameday;
+    public DbHandler $dbHandler;
 
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    public SamedayServiceRepository $samedayServiceRepository;
+
+    /**
+     * @var SamedayAwbRepository $samedayAwbRepository
+     */
+    public SamedayAwbRepository $samedayAwbRepository;
+
+    /**
+     * @param GenerateAwbItem $generateAwbItem
+     * @param DbHandler $dbHandler
+     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param SamedayAwbRepository $samedayAwbRepository
+     */
     public function __construct(
         GenerateAwbItem $generateAwbItem,
-        Sameday $sameday
-    )
-    {
+        DbHandler $dbHandler,
+        SamedayServiceRepository $samedayServiceRepository,
+        SamedayAwbRepository $samedayAwbRepository
+    ) {
         $this->generateAwbItem = $generateAwbItem;
-        $this->sameday = $sameday;
+        $this->dbHandler = $dbHandler;
+        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->samedayAwbRepository = $samedayAwbRepository;
     }
 }

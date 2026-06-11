@@ -17,4 +17,20 @@ class WcHandler
     {
         return WC()->countries->get_shipping_countries();
     }
+
+    /**
+     * @param int $id
+     *
+     * @return array|null
+     */
+    public static function getShippingOrderById(int $id): ?array
+    {
+        $order = wc_get_order($id);
+
+        if (empty($order)) {
+            return null;
+        }
+
+        return $order->get_data();
+    }
 }

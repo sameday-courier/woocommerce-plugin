@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use Sameday\Objects\ParcelDimensionsObject;
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
-use Sameday\Objects\PostAwb\Request\ThirdPartyPickupEntityObject;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\CodCollectorType;
-use Sameday\Objects\Types\DeliveryIntervalServiceType;
-use Sameday\Objects\Types\PackageType;
+use SamedayCourier\Shipping\Domain\DTOs\BillingObject;
+use SamedayCourier\Shipping\Domain\DTOs\ShippingObject;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,20 +14,44 @@ if (!defined('ABSPATH')) {
 
 final class GenerateAwbItem
 {
+    private int $orderId;
+
+    private int $serviceId;
+
     /**
-     * @var int
+     * @var array<int, mixed>
      */
+    private array $shippingLines;
+
+    private ShippingObject $shipping;
+
+    private BillingObject $billing;
+
+    private ?string $locker;
+
+    private bool $hasOpenPackage;
+
+    private bool $hasLockerFirstMile;
+
+    private int $packageType;
+
     private int $pickupPointId;
 
-    /**
-     * @var int|null
-     */
-    private ?int $contactPersonId;
+    private int $awbPayment;
 
     /**
-     * @var PackageType
+     * @var float|string
      */
-    private PackageType $packageType;
+    private $insuranceValue;
+
+    /**
+     * @var float|string
+     */
+    private $repayment;
+
+    private ?string $clientReference;
+
+    private ?string $observation;
 
     /**
      * @var ParcelDimensionsObject[]
@@ -39,225 +59,209 @@ final class GenerateAwbItem
     private array $parcelsDimensions;
 
     /**
-     * @var int
-     */
-    private int $serviceId;
-
-    /**
-     * @var AwbPaymentType
-     */
-    private AwbPaymentType $awbPayment;
-
-    /**
-     * @var AwbRecipientEntityObject
-     */
-    private AwbRecipientEntityObject $awbRecipient;
-
-    /**
-     * @var float
-     */
-    private float $insuredValue;
-
-    /**
-     * @var float
-     */
-    private float $cashOnDeliveryAmount;
-
-    /**
-     * @var CodCollectorType|null
-     */
-    private ?CodCollectorType $cashOnDeliveryCollector;
-
-    /**
-     * @var ThirdPartyPickupEntityObject|null
-     */
-    private ?ThirdPartyPickupEntityObject $thirdPartyPickup;
-
-    /**
-     * @var int[]
-     */
-    private array $serviceTaxIds;
-
-    /**
-     * @var DeliveryIntervalServiceType|null
-     */
-    private ?DeliveryIntervalServiceType $deliveryIntervalServiceType;
-
-    /**
-     * @var string|null
-     */
-    private ?string $reference;
-
-    /**
-     * @var string|null
-     */
-    private ?string $observation;
-
-    /**
-     * @var string|null
-     */
-    private ?string $priceObservation;
-
-    /**
-     * @var string|null
-     */
-    private ?string $clientObservation;
-
-    /**
-     * @var int|null
-     */
-    private ?int $lockerFirstMile;
-
-    /**
-     * @var int|null
-     */
-    private ?int $lockerLastMile;
-
-    /**
-     * @var int|null
-     */
-    private ?int $oohFirstMile;
-
-    /**
-     * @var int|null
-     */
-    private ?int $oohLastMile;
-
-    /**
-     * @var string|null
-     */
-    private ?string $currency;
-
-    /**
-     * @param int $pickupPointId
-     * @param int|null $contactPersonId
-     * @param PackageType $packageType
-     * @param ParcelDimensionsObject[] $parcelsDimensions
+     * @param int $orderId
      * @param int $serviceId
-     * @param AwbPaymentType $awbPayment
-     * @param AwbRecipientEntityObject $awbRecipient
-     * @param float $insuredValue
-     * @param float $cashOnDeliveryAmount
-     * @param CodCollectorType|null $cashOnDeliveryCollector
-     * @param ThirdPartyPickupEntityObject|null $thirdPartyPickup
-     * @param int[] $serviceTaxIds
-     * @param DeliveryIntervalServiceType|null $deliveryIntervalServiceType
-     * @param string|null $reference
+     * @param array<int, mixed> $shippingLines
+     * @param ShippingObject $shipping
+     * @param BillingObject $billing
+     * @param string|null $locker
+     * @param bool $hasOpenPackage
+     * @param bool $hasLockerFirstMile
+     * @param int $packageType
+     * @param int $pickupPointId
+     * @param int $awbPayment
+     * @param float|string $insuranceValue
+     * @param float|string $repayment
+     * @param string|null $clientReference
      * @param string|null $observation
-     * @param string|null $priceObservation
-     * @param string|null $clientObservation
-     * @param int|null $lockerFirstMile
-     * @param int|null $lockerLastMile
-     * @param int|null $oohFirstMile
-     * @param int|null $oohLastMile
-     * @param string|null $currency
+     * @param ParcelDimensionsObject[] $parcelsDimensions
      */
     public function __construct(
-        int $pickupPointId,
-        ?int $contactPersonId,
-        PackageType $packageType,
-        array $parcelsDimensions,
+        int $orderId,
         int $serviceId,
-        AwbPaymentType $awbPayment,
-        AwbRecipientEntityObject $awbRecipient,
-        float $insuredValue,
-        float $cashOnDeliveryAmount = 0.0,
-        ?CodCollectorType $cashOnDeliveryCollector = null,
-        ?ThirdPartyPickupEntityObject $thirdPartyPickup = null,
-        array $serviceTaxIds = [],
-        ?DeliveryIntervalServiceType $deliveryIntervalServiceType = null,
-        ?string $reference = null,
-        ?string $observation = null,
-        ?string $priceObservation = null,
-        ?string $clientObservation = null,
-        ?int $lockerFirstMile = null,
-        ?int $lockerLastMile = null,
-        ?int $oohFirstMile = null,
-        ?int $oohLastMile = null,
-        ?string $currency = null
+        array $shippingLines,
+        ShippingObject $shipping,
+        BillingObject $billing,
+        ?string $locker,
+        bool $hasOpenPackage,
+        bool $hasLockerFirstMile,
+        int $packageType,
+        int $pickupPointId,
+        int $awbPayment,
+        $insuranceValue,
+        $repayment,
+        ?string $clientReference,
+        ?string $observation,
+        array $parcelsDimensions
     ) {
-        $this->pickupPointId = $pickupPointId;
-        $this->contactPersonId = $contactPersonId;
-        $this->packageType = $packageType;
-        $this->parcelsDimensions = $parcelsDimensions;
+        $this->orderId = $orderId;
         $this->serviceId = $serviceId;
+        $this->shippingLines = $shippingLines;
+        $this->shipping = $shipping;
+        $this->billing = $billing;
+        $this->locker = $locker;
+        $this->hasOpenPackage = $hasOpenPackage;
+        $this->hasLockerFirstMile = $hasLockerFirstMile;
+        $this->packageType = $packageType;
+        $this->pickupPointId = $pickupPointId;
         $this->awbPayment = $awbPayment;
-        $this->awbRecipient = $awbRecipient;
-        $this->insuredValue = $insuredValue;
-        $this->cashOnDeliveryAmount = $cashOnDeliveryAmount;
-        $this->cashOnDeliveryCollector = $cashOnDeliveryCollector;
-        $this->thirdPartyPickup = $thirdPartyPickup;
-        $this->serviceTaxIds = $serviceTaxIds;
-        $this->deliveryIntervalServiceType = $deliveryIntervalServiceType;
-        $this->reference = $reference;
+        $this->insuranceValue = $insuranceValue;
+        $this->repayment = $repayment;
+        $this->clientReference = $clientReference;
         $this->observation = $observation;
-        $this->priceObservation = $priceObservation;
-        $this->clientObservation = $clientObservation;
-        $this->lockerFirstMile = $lockerFirstMile;
-        $this->lockerLastMile = $lockerLastMile;
-        $this->oohFirstMile = $oohFirstMile;
-        $this->oohLastMile = $oohLastMile;
-        $this->currency = $currency;
+        $this->parcelsDimensions = $parcelsDimensions;
     }
 
     /**
-     * @return int
+     * @param array<string, mixed> $data
+     *
+     * @return self
      */
+    public static function fromArray(array $data): self
+    {
+        $parcelDimensions = [];
+
+        foreach ($data as $key => $value) {
+            if (!preg_match('/^samedaycourier-package-(weight|length|height|width)(\d+)$/', $key, $matches)) {
+                continue;
+            }
+
+            $attribute = $matches[1];
+            $index = $matches[2];
+
+            if (!isset($parcelDimensions[$index])) {
+                $parcelDimensions[$index] = [
+                    'weight' => null,
+                    'length' => null,
+                    'height' => null,
+                    'width' => null,
+                ];
+            }
+
+            $parcelDimensions[$index][$attribute] = $value;
+        }
+
+        $parcelsDimensions = [];
+        foreach ($parcelDimensions as $dimension) {
+            $parcelsDimensions[] = new ParcelDimensionsObject(
+                $dimension['weight'],
+                $dimension['length'],
+                $dimension['height'],
+                $dimension['width']
+            );
+        }
+
+        return new self(
+            (int) $data['samedaycourier-order-id'],
+            (int) $data['samedaycourier-service'],
+            (array) ($data['shipping_lines'] ?? []),
+            ShippingObject::fromArray((array) ($data['shipping'] ?? [])),
+            BillingObject::fromArray((array) ($data['billing'] ?? [])),
+            '' !== ($data['locker'] ?? '') ? (string) $data['locker'] : null,
+            isset($data['samedaycourier-open-package-status']),
+            isset($data['samedaycourier-locker_first_mile']),
+            (int) $data['samedaycourier-package-type'],
+            (int) $data['samedaycourier-package-pickup-point'],
+            (int) $data['samedaycourier-package-awb-payment'],
+            $data['samedaycourier-package-insurance-value'],
+            $data['samedaycourier-package-repayment'],
+            $data['samedaycourier-client-reference'] ?? null,
+            $data['samedaycourier-package-observation'] ?? null,
+            $parcelsDimensions,
+        );
+    }
+
+    public function getOrderId(): int
+    {
+        return $this->orderId;
+    }
+
+    public function getServiceId(): int
+    {
+        return $this->serviceId;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function getShippingLines(): array
+    {
+        return $this->shippingLines;
+    }
+
+    /**
+     * @return ShippingObject
+     */
+    public function getShipping(): ShippingObject
+    {
+        return $this->shipping;
+    }
+
+    /**
+     * @return BillingObject
+     */
+    public function getBilling(): BillingObject
+    {
+        return $this->billing;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocker(): ?string
+    {
+        return $this->locker;
+    }
+
+    public function hasOpenPackage(): bool
+    {
+        return $this->hasOpenPackage;
+    }
+
+    public function hasLockerFirstMile(): bool
+    {
+        return $this->hasLockerFirstMile;
+    }
+
+    public function getPackageType(): int
+    {
+        return $this->packageType;
+    }
+
     public function getPickupPointId(): int
     {
         return $this->pickupPointId;
     }
 
-    /**
-     * @param int $pickupPointId
-     *
-     * @return $this
-     */
-    public function setPickupPointId(int $pickupPointId): self
+    public function getAwbPayment(): int
     {
-        $this->pickupPointId = $pickupPointId;
-
-        return $this;
+        return $this->awbPayment;
     }
 
     /**
-     * @return int|null
+     * @return float|string
      */
-    public function getContactPersonId(): ?int
+    public function getInsuranceValue()
     {
-        return $this->contactPersonId;
+        return $this->insuranceValue;
     }
 
     /**
-     * @param int|null $contactPersonId
-     *
-     * @return $this
+     * @return float|string
      */
-    public function setContactPersonId(?int $contactPersonId): self
+    public function getRepayment()
     {
-        $this->contactPersonId = $contactPersonId;
-
-        return $this;
+        return $this->repayment;
     }
 
-    /**
-     * @return PackageType
-     */
-    public function getPackageType(): PackageType
+    public function getClientReference(): ?string
     {
-        return $this->packageType;
+        return $this->clientReference;
     }
 
-    /**
-     * @param PackageType $packageType
-     *
-     * @return $this
-     */
-    public function setPackageType(PackageType $packageType): self
+    public function getObservation(): ?string
     {
-        $this->packageType = $packageType;
-
-        return $this;
+        return $this->observation;
     }
 
     /**
@@ -266,377 +270,5 @@ final class GenerateAwbItem
     public function getParcelsDimensions(): array
     {
         return $this->parcelsDimensions;
-    }
-
-    /**
-     * @param ParcelDimensionsObject[] $parcelsDimensions
-     *
-     * @return $this
-     */
-    public function setParcelsDimensions(array $parcelsDimensions): self
-    {
-        $this->parcelsDimensions = $parcelsDimensions;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getServiceId(): int
-    {
-        return $this->serviceId;
-    }
-
-    /**
-     * @param int $serviceId
-     *
-     * @return $this
-     */
-    public function setServiceId(int $serviceId): self
-    {
-        $this->serviceId = $serviceId;
-
-        return $this;
-    }
-
-    /**
-     * @return AwbPaymentType
-     */
-    public function getAwbPayment(): AwbPaymentType
-    {
-        return $this->awbPayment;
-    }
-
-    /**
-     * @param AwbPaymentType $awbPayment
-     *
-     * @return $this
-     */
-    public function setAwbPayment(AwbPaymentType $awbPayment): self
-    {
-        $this->awbPayment = $awbPayment;
-
-        return $this;
-    }
-
-    /**
-     * @return AwbRecipientEntityObject
-     */
-    public function getAwbRecipient(): AwbRecipientEntityObject
-    {
-        return $this->awbRecipient;
-    }
-
-    /**
-     * @param AwbRecipientEntityObject $awbRecipient
-     *
-     * @return $this
-     */
-    public function setAwbRecipient(AwbRecipientEntityObject $awbRecipient): self
-    {
-        $this->awbRecipient = $awbRecipient;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getInsuredValue(): float
-    {
-        return $this->insuredValue;
-    }
-
-    /**
-     * @param float $insuredValue
-     *
-     * @return $this
-     */
-    public function setInsuredValue(float $insuredValue): self
-    {
-        $this->insuredValue = $insuredValue;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCashOnDeliveryAmount(): float
-    {
-        return $this->cashOnDeliveryAmount;
-    }
-
-    /**
-     * @param float $cashOnDeliveryAmount
-     *
-     * @return $this
-     */
-    public function setCashOnDeliveryAmount(float $cashOnDeliveryAmount): self
-    {
-        $this->cashOnDeliveryAmount = $cashOnDeliveryAmount;
-
-        return $this;
-    }
-
-    /**
-     * @return CodCollectorType|null
-     */
-    public function getCashOnDeliveryCollector(): ?CodCollectorType
-    {
-        return $this->cashOnDeliveryCollector;
-    }
-
-    /**
-     * @param CodCollectorType|null $cashOnDeliveryCollector
-     *
-     * @return $this
-     */
-    public function setCashOnDeliveryCollector(?CodCollectorType $cashOnDeliveryCollector): self
-    {
-        $this->cashOnDeliveryCollector = $cashOnDeliveryCollector;
-
-        return $this;
-    }
-
-    /**
-     * @return ThirdPartyPickupEntityObject|null
-     */
-    public function getThirdPartyPickup(): ?ThirdPartyPickupEntityObject
-    {
-        return $this->thirdPartyPickup;
-    }
-
-    /**
-     * @param ThirdPartyPickupEntityObject|null $thirdPartyPickup
-     *
-     * @return $this
-     */
-    public function setThirdPartyPickup(?ThirdPartyPickupEntityObject $thirdPartyPickup): self
-    {
-        $this->thirdPartyPickup = $thirdPartyPickup;
-
-        return $this;
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getServiceTaxIds(): array
-    {
-        return $this->serviceTaxIds;
-    }
-
-    /**
-     * @param int[] $serviceTaxIds
-     *
-     * @return $this
-     */
-    public function setServiceTaxIds(array $serviceTaxIds): self
-    {
-        $this->serviceTaxIds = $serviceTaxIds;
-
-        return $this;
-    }
-
-    /**
-     * @return DeliveryIntervalServiceType|null
-     */
-    public function getDeliveryIntervalServiceType(): ?DeliveryIntervalServiceType
-    {
-        return $this->deliveryIntervalServiceType;
-    }
-
-    /**
-     * @param DeliveryIntervalServiceType|null $deliveryIntervalServiceType
-     *
-     * @return $this
-     */
-    public function setDeliveryIntervalServiceType(?DeliveryIntervalServiceType $deliveryIntervalServiceType): self
-    {
-        $this->deliveryIntervalServiceType = $deliveryIntervalServiceType;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getReference(): ?string
-    {
-        return $this->reference;
-    }
-
-    /**
-     * @param string|null $reference
-     *
-     * @return $this
-     */
-    public function setReference(?string $reference): self
-    {
-        $this->reference = $reference;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getObservation(): ?string
-    {
-        return $this->observation;
-    }
-
-    /**
-     * @param string|null $observation
-     *
-     * @return $this
-     */
-    public function setObservation(?string $observation): self
-    {
-        $this->observation = $observation;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPriceObservation(): ?string
-    {
-        return $this->priceObservation;
-    }
-
-    /**
-     * @param string|null $priceObservation
-     *
-     * @return $this
-     */
-    public function setPriceObservation(?string $priceObservation): self
-    {
-        $this->priceObservation = $priceObservation;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getClientObservation(): ?string
-    {
-        return $this->clientObservation;
-    }
-
-    /**
-     * @param string|null $clientObservation
-     *
-     * @return $this
-     */
-    public function setClientObservation(?string $clientObservation): self
-    {
-        $this->clientObservation = $clientObservation;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getLockerFirstMile(): ?int
-    {
-        return $this->lockerFirstMile;
-    }
-
-    /**
-     * @param int|null $lockerFirstMile
-     *
-     * @return $this
-     */
-    public function setLockerFirstMile(?int $lockerFirstMile): self
-    {
-        $this->lockerFirstMile = $lockerFirstMile;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getLockerLastMile(): ?int
-    {
-        return $this->lockerLastMile;
-    }
-
-    /**
-     * @param int|null $lockerLastMile
-     *
-     * @return $this
-     */
-    public function setLockerLastMile(?int $lockerLastMile): self
-    {
-        $this->lockerLastMile = $lockerLastMile;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getOohFirstMile(): ?int
-    {
-        return $this->oohFirstMile;
-    }
-
-    /**
-     * @param int|null $oohFirstMile
-     *
-     * @return $this
-     */
-    public function setOohFirstMile(?int $oohFirstMile): self
-    {
-        $this->oohFirstMile = $oohFirstMile;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getOohLastMile(): ?int
-    {
-        return $this->oohLastMile;
-    }
-
-    /**
-     * @param int|null $oohLastMile
-     *
-     * @return $this
-     */
-    public function setOohLastMile(?int $oohLastMile): self
-    {
-        $this->oohLastMile = $oohLastMile;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @param string|null $currency
-     *
-     * @return $this
-     */
-    public function setCurrency(?string $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
     }
 }
