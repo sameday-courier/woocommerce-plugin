@@ -28,7 +28,6 @@ use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;

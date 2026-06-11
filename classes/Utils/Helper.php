@@ -252,7 +252,7 @@ class Helper
             return null;
         }
 
-        $awb = SamedayAwbRepository::getAwbForOrderId($orderId);
+        $awb = (new SamedayAwbRepository)->getAwbForOrderId($orderId);
 
         if (null !== $awb && null !== $awb->getAwbNumber()) {
             $data['awb_number'] = $awb->getAwbNumber();

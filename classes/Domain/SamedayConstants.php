@@ -57,46 +57,36 @@ final class SamedayConstants
     public const OPEN_PACKAGE_OPTION_CODE = 'OPCG';
     public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
     public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
-
     public const OOH_POPUP_TITLE = [
         self::API_HOST_LOCALE_RO => 'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',
         self::API_HOST_LOCALE_BG => 'Тази опция включва LockerNextDay и PUDO!',
         self::API_HOST_LOCALE_HU => 'Ez az opció magában foglalja a LockerNextDay és a PUDO szolgáltatást is!',
     ];
-
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
         self::API_HOST_LOCALE_BG => 'BGN',
         self::API_HOST_LOCALE_HU => 'HUF',
     ];
-
     public const EURO_CURRENCY = "EUR";
-
     public const TOGGLE_HTML_ELEMENT = [
         'show' => 'showElement',
         'hide' => 'hideElement',
     ];
-
     public const API_PROD = 0;
     public const API_DEMO = 1;
-
     public const API_HOST_LOCALE_RO = 'RO';
     public const API_HOST_LOCALE_HU = 'HU';
     public const API_HOST_LOCALE_BG = 'BG';
-
     public const EAWB_INSTANCES = [
         self::API_HOST_LOCALE_RO => 'https://eawb.sameday.ro',
         self::API_HOST_LOCALE_HU => 'https://eawb.sameday.hu',
         self::API_HOST_LOCALE_BG => 'https://eawb.sameday.bg',
     ];
-
     public const TEXT_DOMAIN = 'samedaycourier-shipping';
-
     public const ORDER_BY_TYPES = [
         'ASC',
         'DESC',
     ];
-
     public const DEFAULT_COUNTRIES = [
         self::API_HOST_LOCALE_RO => ['value' => 187, 'label' => 'Romania'],
         self::API_HOST_LOCALE_BG => ['value' => 34, 'label' => 'Bulgaria'],

@@ -37,12 +37,20 @@ use WC_Shipping_Method;
 
 final class SamedayCourier extends WC_Shipping_Method
 {
-    private const DOMAIN_NAME = 'sameday';
-
     /**
      * @var SamedayServiceSelector
      */
     private SamedayServiceSelector $samedayServiceSelector;
+
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    private SamedayServiceRepository $samedayServiceRepository;
+
+    /**
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
+     */
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
      * @var SamedayServiceRules
@@ -73,6 +81,8 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $samedayServiceRepository = new SamedayServiceRepository();
         $this->samedayServiceSelector = new SamedayServiceSelector($samedayServiceRepository);
+        $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
+        $this->samedayServiceRepository = new SamedayServiceRepository();
         $this->samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
 
         $this->init();
@@ -113,9 +123,9 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         foreach ($eligibleServices as $service) {
-            if (!$this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
-                continue;
-            }
+//            if (!$this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
+//                continue;
+//            }
 
             if (Helper::isOohDeliveryOption($service->getSamedayCode())) {
                 if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
@@ -239,15 +249,13 @@ final class SamedayCourier extends WC_Shipping_Method
      */
     private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
     {
-        $pickupPointId = SamedayPickupPointRepository::getDefaultPickupPointId();
+        $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
         $weight = Helper::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
         $state = Helper::convertStateCodeToName($address['country'], $address['state']);
         $city = Helper::removeAccents($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
 
-        $optionalServices = SamedayServiceRepository::getServiceIdOptionalTaxes(
-            (int) $serviceId
-        );
+        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int) $serviceId);
         $serviceTaxIds = array();
         if (WC()->session->get('open_package') === 'yes') {
             foreach ($optionalServices as $optionalService) {
