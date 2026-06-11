@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
+use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
@@ -18,6 +19,11 @@ final class GenerateAwbRequest
      * @var GenerateAwbItem $generateAwbItem
      */
     public GenerateAwbItem $generateAwbItem;
+
+    /**
+     * @var Sameday $sameday
+     */
+    public Sameday $sameday;
 
     /**
      * @var DbHandler $dbHandler
@@ -36,17 +42,20 @@ final class GenerateAwbRequest
 
     /**
      * @param GenerateAwbItem $generateAwbItem
+     * @param Sameday $sameday
      * @param DbHandler $dbHandler
      * @param SamedayServiceRepository $samedayServiceRepository
      * @param SamedayAwbRepository $samedayAwbRepository
      */
     public function __construct(
         GenerateAwbItem $generateAwbItem,
+        Sameday $sameday,
         DbHandler $dbHandler,
         SamedayServiceRepository $samedayServiceRepository,
         SamedayAwbRepository $samedayAwbRepository
     ) {
         $this->generateAwbItem = $generateAwbItem;
+        $this->sameday = $sameday;
         $this->dbHandler = $dbHandler;
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;

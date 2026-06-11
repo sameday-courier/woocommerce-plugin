@@ -11,6 +11,7 @@ if (!defined( 'ABSPATH')) {
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 /**
@@ -50,8 +51,8 @@ final class SdkInitiator
 			$username,
 			$password,
 			$apiUrl,
-			'WOOCOMMERCE ' . WC()->version,
-			WC()->version,
+			'WOOCOMMERCE ' . WcHandler::getPlatformVersion(),
+			WcHandler::getPlatformVersion(),
 			'curl',
 			new PersistenceHandler()
 		);

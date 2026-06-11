@@ -31,7 +31,15 @@ if (!defined('ABSPATH')) {
 
 final class GenerateAwb
 {
+    /**
+     * @var GenerateAwbRequest
+     */
     private GenerateAwbRequest $generateAwbRequest;
+
+    /**
+     * @var Sameday $sameday
+     */
+    private Sameday $sameday;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -51,6 +59,7 @@ final class GenerateAwb
     public function __construct(GenerateAwbRequest $generateAwbRequest)
     {
         $this->generateAwbRequest = $generateAwbRequest;
+        $this->sameday = $generateAwbRequest->sameday;
         $this->dbHandler = $generateAwbRequest->dbHandler;
         $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
         $this->samedayAwbRepository = $generateAwbRequest->samedayAwbRepository;
@@ -69,11 +78,17 @@ final class GenerateAwb
         $billing = $item->getBilling();
 
         if (empty(OptionsHandler::getSamedayOptions())) {
-            return new GenerateAwbResponse(ResponseNoticeType::ERROR);
+            return new GenerateAwbResponse(
+                ResponseNoticeType::ERROR,
+                "No sameday options available.",
+            );
         }
 
         if (empty($item->getShippingLines())) {
-            return new GenerateAwbResponse(ResponseNoticeType::ERROR);
+            return new GenerateAwbResponse(
+                ResponseNoticeType::ERROR,
+                "No shipping lines for this awb item."
+            );
         }
 
         $service = $this->samedayServiceRepository->getServiceSameday($item->getServiceId());
@@ -81,7 +96,7 @@ final class GenerateAwb
         if (null === $service) {
             return new GenerateAwbResponse(
                 ResponseNoticeType::ERROR,
-                __('Selected service could not be found.', SamedayConstants::TEXT_DOMAIN),
+                "Selected service could not be found.",
             );
         }
 
@@ -240,8 +255,6 @@ final class GenerateAwb
             }
         }
 
-        $sameday = new Sameday(SdkInitiator::init());
-
         $companyObject = null;
         if ('' !== ($shipping->getCompany() ?? '')) {
             $companyObject = new CompanyEntityObject(
@@ -290,7 +303,7 @@ final class GenerateAwb
         $errors = null;
         $awb = null;
         try {
-            $awb = $sameday->postAwb($request);
+            $awb = $this->sameday->postAwb($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
             if ($errors !== '') {
@@ -388,11 +401,16 @@ final class GenerateAwb
                 ['order_item_name' => $service->getName() ?? $service->getSamedayName() ?? ''],
                 ['order_item_id' => $samedayOrderItemId]
             );
-        } catch (Exception $exception) {}
+        } catch (Exception $exception) {
+            return new GenerateAwbResponse(
+                ResponseNoticeType::ERROR,
+                $exception->getMessage(),
+            );
+        }
 
         return new GenerateAwbResponse(
             ResponseNoticeType::SUCCESS,
-            __('Awb generated successfully.', SamedayConstants::TEXT_DOMAIN),
+            "Awb generated successfully.",
         );
     }
 }

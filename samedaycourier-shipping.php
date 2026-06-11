@@ -642,10 +642,6 @@ add_action('wp_head', 'wps_locker_style');
 // Locker !
 
 add_action('admin_notices', static function (): void {
-    if (strpos(get_current_screen()->id, NoticerHandler::NOTICE_DOMAIN) === false) {
-        return;
-    }
-
     NoticerHandler::showFlashNotice();
 });
 

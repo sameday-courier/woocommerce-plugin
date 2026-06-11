@@ -10,6 +10,11 @@ if (!defined('ABSPATH')) {
 
 class WcHandler
 {
+    public static function getPlatformVersion(): string
+    {
+        return WC()->version;
+    }
+
     /**
      * @return array
      */
