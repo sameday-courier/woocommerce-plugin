@@ -65,7 +65,6 @@ class AddNewPickupPointController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                'send_pickup_point_notice',
                 ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
                 true
@@ -97,7 +96,6 @@ class AddNewPickupPointController extends AbstractController
             NoticerHandler::addFlashNotice(
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
-                true
             );
         }
 

@@ -49,7 +49,6 @@ final class RefreshPickupPointController extends AbstractController
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($exception->getMessage()),
                 ResponseNoticeType::ERROR,
-                true
             );
 
             Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
@@ -67,7 +66,6 @@ final class RefreshPickupPointController extends AbstractController
             NoticerHandler::addFlashNotice(
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
-                true
             );
         }
 

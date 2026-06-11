@@ -60,7 +60,6 @@ final class ShowAsPdfAwbController extends AbstractController
             NoticerHandler::addFlashNotice(
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
-                true
             );
         }
 

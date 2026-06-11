@@ -37,6 +37,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\GenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
@@ -129,6 +130,8 @@ add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'han
 add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
 add_action('admin_post_refresh_pickup_points', [new RefreshPickupPointController(), 'handle']);
 add_action('admin_post_refresh_lockers', [new RefreshLockerController(), 'handle']);
+add_action('admin_post_add_awb', [new GenerateAwbController(), 'handle']);
+
 // WIP REGISTER CONTROLLERS AJAX REQUEST:
 add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
 
@@ -293,22 +296,6 @@ add_action('wp_ajax_delete_pickup_point', static function() {
     }
 
     Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-});
-
-add_action('admin_post_add_awb', static function () {
-    $postFields = Helper::sanitizeInputs($_POST);
-    $orderDetails = wc_get_order($postFields['samedaycourier-order-id']);
-    if (empty($orderDetails)) {
-        Redirector::to('index.php');
-    }
-
-    $data = array_merge($postFields, $orderDetails->get_data());
-    
-    try {
-        return (new ApiRequestsHandler())->postAwb($data);
-    } catch (Exception $e) {
-        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
-    };
 });
 
 // Open Package :

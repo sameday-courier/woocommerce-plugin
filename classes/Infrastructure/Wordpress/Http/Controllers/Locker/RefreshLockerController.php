@@ -51,7 +51,6 @@ final class RefreshLockerController extends AbstractController
             NoticerHandler::addFlashNotice(
                 ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
-                true
             );
 
             Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
@@ -69,7 +68,6 @@ final class RefreshLockerController extends AbstractController
             NoticerHandler::addFlashNotice(
                 $result->getNoticeMessage(),
                 $result->getNoticeType(),
-                true
             );
         }
 

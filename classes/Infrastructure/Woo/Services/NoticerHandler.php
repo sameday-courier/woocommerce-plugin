@@ -23,7 +23,7 @@ class NoticerHandler
     public static function addFlashNotice(
         string $notice_message = "",
         string $type = "warning",
-        bool $dismissible = false
+        bool $dismissible = true
     ): void
     {
         OptionsHandler::setOption(
@@ -59,7 +59,8 @@ class NoticerHandler
      */
     public static function printFlashNotice($type, $message, $dismissible): void
     {
-        printf( '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
+        printf(
+            '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
             $type,
             ($dismissible) ? "is-dismissible" : "",
             $message

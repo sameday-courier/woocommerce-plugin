@@ -90,13 +90,18 @@ class ApiRequestsHandler
     {
 		if (!UserPermissionChecker::hasAllowedRole() || !NonceVerifier::verify($params['_wpnonce'], 'add-awb')) {
 			$noticeMessage = __('You are not allowed to do this operation !', SamedayConstants::TEXT_DOMAIN);
-			NoticerHandler::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
+			NoticerHandler::addFlashNotice(
+                $noticeMessage,
+                'error',
+            );
 
-			Redirector::to('post.php', [
-                'post' => $params['samedaycourier-order-id'],
-                'action' => 'edit',
-                'add-awb' => 'error',
-            ]);
+			Redirector::to('post.php',
+                [
+                    'post' => $params['samedaycourier-order-id'],
+                    'action' => 'edit',
+                    'add-awb' => 'error',
+                ]
+            );
 		}
 
         if (empty(OptionsHandler::getSamedayOptions()) ) {
@@ -120,10 +125,8 @@ class ApiRequestsHandler
 
         if (null === $service) {
             NoticerHandler::addFlashNotice(
-                'add_awb_notice',
                 __('Selected service could not be found.', SamedayConstants::TEXT_DOMAIN),
                 'error',
-                true
             );
 
             Redirector::to('post.php', [
@@ -216,10 +219,8 @@ class ApiRequestsHandler
 
         if (!empty($inputErrors)) {
             NoticerHandler::addFlashNotice(
-                'add_awb_notice',
                 implode('<br />', $inputErrors),
                 'error',
-                true
             );
             Redirector::to('post.php', [
                 'post' => $params['samedaycourier-order-id'],

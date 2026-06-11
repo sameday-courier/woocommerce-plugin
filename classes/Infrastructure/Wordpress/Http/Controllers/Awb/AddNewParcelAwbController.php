@@ -63,7 +63,6 @@ final class AddNewParcelAwbController extends AbstractController
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($result->getNoticeMessage()),
                 $result->getNoticeType(),
-                true
             );
         }
 
