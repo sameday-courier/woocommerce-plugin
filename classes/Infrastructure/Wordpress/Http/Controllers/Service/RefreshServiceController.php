@@ -68,6 +68,12 @@ final class RefreshServiceController extends AbstractController
             );
         }
 
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+        Redirector::to(
+            'edit.php',
+            [
+                'post_type' => 'page',
+                'page' => 'sameday_services'
+            ]
+        );
     }
 }

@@ -8,6 +8,7 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Utils\Helper;
@@ -55,17 +56,14 @@ final class EditServiceController extends AbstractController
 
         $result = $editService->execute();
 
-        if (ResponseNoticeType::SUCCESS === $result->getNoticeType()) {
-            Redirector::to(
-                'edit.php',
-                [
-                    'post_type' => 'page',
-                    'page' => 'sameday_services'
-                ]
+        if ($result->hasNotices()) {
+            NoticerHandler::addFlashNotice(
+                $result->getNoticeMessage(),
+                $result->getNoticeType(),
             );
         }
 
-        if ($result->hasNotices()) {
+        if ($result->getNoticeType() === ResponseNoticeType::ERROR) {
             Redirector::to(
                 'edit.php',
                 [

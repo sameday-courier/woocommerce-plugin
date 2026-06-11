@@ -90,6 +90,7 @@ final class EditService
             return new EditServiceResponse(
                 $serviceId,
                 ResponseNoticeType::ERROR,
+                "Unable to find service $serviceId",
             );
         }
 
@@ -121,6 +122,7 @@ final class EditService
         return new EditServiceResponse(
             $serviceId,
             ResponseNoticeType::SUCCESS,
+            "Service has been edited",
         );
     }
 }
