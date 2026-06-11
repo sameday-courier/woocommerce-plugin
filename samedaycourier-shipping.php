@@ -83,6 +83,10 @@ add_filter('woocommerce_shipping_methods', static function (array $methods): arr
     return $methods;
 });
 
+add_action('admin_notices', static function (): void {
+    NoticerHandler::showFlashNotice();
+});
+
 // Add Module Custom Actions
 add_action('admin_init','load_lockers_sync');
 function load_lockers_sync() {
@@ -640,10 +644,6 @@ function wps_locker_style() {
 add_action('wp_head', 'wps_locker_style');
 // Locker !
 
-add_action('admin_notices', static function (): void {
-    NoticerHandler::showFlashNotice();
-});
-
 add_action('admin_head', static function () {
     echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'">
                 <input type="hidden" name="action" value="add_awb">
@@ -748,7 +748,7 @@ add_action('woocommerce_checkout_process', static function () {
 });
 
 // Insert links to eAWB ::
-add_filter('plugin_row_meta', function ($links, $pluginFileName) {
+add_filter('plugin_row_meta', static function ($links, $pluginFileName) {
     if (strpos($pluginFileName, basename(__FILE__))) {
         $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
         $pathToEawb = 'https://eawb.sameday.ro/';
