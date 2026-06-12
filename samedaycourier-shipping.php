@@ -19,35 +19,16 @@ if (!defined( 'ABSPATH')) {
  * Text Domain: sameday
  */
 
-use Sameday\Exceptions\SamedayBadRequestException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Requests\SamedayPostPickupPointRequest;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\GenerateAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCitiesController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County\GetCountiesController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\DeletePickupPointController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\RefreshLockerController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -57,7 +38,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPoin
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 /**
  * Check if WooCommerce plugin is enabled
  */
@@ -85,6 +65,8 @@ add_filter('woocommerce_shipping_methods', static function (array $methods): arr
 
     return $methods;
 });
+
+ControllersRegisterService::register();
 
 add_action('admin_notices', static function (): void {
     NoticerHandler::showFlashNotice();
@@ -127,23 +109,6 @@ add_action('plugins_loaded', static function () {
     PickupPointInstance::get_instance();
     LockerInstance::get_instance();
 });
-
-// WIP REGISTER CONTROLLERS ADMIN POST:
-add_action('admin_post_remove-awb', [new RemoveAwbController(), 'handle']);
-add_action('admin_post_show-awb-pdf', [new ShowAsPdfAwbController(), 'handle']);
-add_action('admin_post_add-new-parcel', [new AddNewParcelAwbController(), 'handle']);
-add_action('admin_post_sameday_edit_service', [new EditServiceController(), 'handle']);
-add_action('admin_post_refresh_services', [new RefreshServiceController(), 'handle']);
-add_action('admin_post_refresh_pickup_points', [new RefreshPickupPointController(), 'handle']);
-add_action('admin_post_refresh_lockers', [new RefreshLockerController(), 'handle']);
-add_action('admin_post_add_awb', [new GenerateAwbController(), 'handle']);
-
-// WIP REGISTER CONTROLLERS AJAX REQUEST:
-add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
-add_action('wp_ajax_get_counties', [new GetCountiesController(), 'handle']);
-add_action('wp_ajax_get_cities', [new GetCitiesController(), 'handle']);
-add_action('wp_ajax_delete_pickup_point', [new DeletePickupPointController(), 'handle']);
-add_action('wp_ajax_send_pickup_point', [new AddNewPickupPointController(), 'handle']);
 
 //add_action('wp_ajax_all_import', static function () use ($importCitiesController): void {
 //	try {
