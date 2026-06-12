@@ -5,8 +5,9 @@ if (document.getElementById('pickupPointCounty')) {
             {
                 url: ajaxurl,
                 data: {
-                    'action': 'change_counties',
+                    'action': 'get_cities',
                     'countyId': event.target.value,
+                    '_wpnonce': samedayPickupPointsAdmin.nonces.get_cities,
                 },
                 success: (result) => {
                     cityHtmlElement.innerHTML = '';

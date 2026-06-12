@@ -58,6 +58,15 @@ class PickupPointInstance
             time(),
             true
         );
+        wp_localize_script(
+            'sameday-admin-script',
+            'samedayPickupPointsAdmin',
+            [
+                'nonces' => [
+                    'get_cities' => wp_create_nonce('get_cities'),
+                ],
+            ]
+        );
     }
 
 	public static function set_screen( $status, $option, $value )

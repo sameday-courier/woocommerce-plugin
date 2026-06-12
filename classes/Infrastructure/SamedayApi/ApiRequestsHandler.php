@@ -51,47 +51,4 @@ class ApiRequestsHandler
             return ['id' => $county->getId(), 'name' => $county->getName()];
         }, $samedayCounties);
     }
-
-    /**
-     * @param $countyId
-     *
-     * @return array
-     */
-    public static function getCities($countyId): array
-    {
-        try {
-            $sameday = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            return [];
-        }
-
-        $page = 1;
-        $remoteCities = [];
-        do {
-            $request = new SamedayGetCitiesRequest($countyId);
-            $request->setPage($page++);
-
-            try {
-                $cities = $sameday->getCities($request);
-            } catch (Exception $e) {
-                return [];
-            }
-
-            foreach ($cities->getCities() as $city) {
-                // Save as current sameday service.
-                $remoteCities[] = $city;
-            }
-        } while ($page <= $cities->getPages());
-
-        if (!empty($remoteCities)) {
-            return array_map(static function(CityObject $city){
-                return [
-                    'id' => $city->getId(),
-                    'name' => $city->getName()
-                ];
-            }, $remoteCities);
-        }
-
-        return [];
-    }
 }

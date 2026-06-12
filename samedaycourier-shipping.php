@@ -39,6 +39,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\Genera
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCitiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
@@ -138,6 +139,7 @@ add_action('admin_post_add_awb', [new GenerateAwbController(), 'handle']);
 
 // WIP REGISTER CONTROLLERS AJAX REQUEST:
 add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
+add_action('wp_ajax_get_cities', [new GetCitiesController(), 'handle']);
 add_action('wp_ajax_delete_pickup_point', [new DeletePickupPointController(), 'handle']);
 add_action('wp_ajax_send_pickup_point', [new AddNewPickupPointController(), 'handle']);
 
@@ -196,15 +198,6 @@ add_action('wp_ajax_change_locker', static function() {
 	    } catch (Exception $exception) {}
     }
 });
-
-add_action('wp_ajax_change_counties', static function() {
-    if (!isset($_POST['countyId'])) {
-        return [];
-    }
-    wp_send_json(Helper::getCities($_POST['countyId'])); die();
-});
-
-
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {

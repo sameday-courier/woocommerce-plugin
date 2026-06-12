@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
+
+use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCities;
+use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+final class GetCitiesController extends AbstractController
+{
+    private const ACTION = 'get_cities';
+
+    /**
+     * @return string
+     */
+    public function getAction(): string
+    {
+        return self::ACTION;
+    }
+
+    /**
+     * @param array<string, mixed> $inputParams
+     *
+     * @return void
+     */
+    protected function processPostAction(array $inputParams): void
+    {
+        if (!isset($inputParams['countyId'])) {
+            wp_send_json_error(
+                TranslatorHandler::translate('County id is required.'),
+                400
+            );
+        }
+
+        try {
+            $samedayApiClient = new Sameday(SdkInitiator::init());
+        } catch (SamedaySDKException $exception) {
+            wp_send_json_error(
+                TranslatorHandler::translate('Could not instantiate Sameday client service.'),
+                500
+            );
+
+            die();
+        }
+
+        $getCities = new GetCities(
+            new GetCitiesRequest(
+                $samedayApiClient,
+                (int) $inputParams['countyId']
+            )
+        );
+
+        $result = $getCities->execute();
+
+        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
+            wp_send_json_error($result->getNoticeMessage(), 500);
+        }
+
+        wp_send_json($result->getCities());
+    }
+}
