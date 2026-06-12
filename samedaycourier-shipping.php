@@ -23,7 +23,6 @@ use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
@@ -41,8 +40,10 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\Remove
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\DeletePickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\RefreshLockerController;
 use SamedayCourier\Shipping\Utils\Helper;
@@ -137,6 +138,8 @@ add_action('admin_post_add_awb', [new GenerateAwbController(), 'handle']);
 
 // WIP REGISTER CONTROLLERS AJAX REQUEST:
 add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
+add_action('wp_ajax_delete_pickup_point', [new DeletePickupPointController(), 'handle']);
+add_action('wp_ajax_send_pickup_point', [new AddNewPickupPointController(), 'handle']);
 
 //add_action('wp_ajax_all_import', static function () use ($importCitiesController): void {
 //	try {
@@ -201,105 +204,7 @@ add_action('wp_ajax_change_counties', static function() {
     wp_send_json(Helper::getCities($_POST['countyId'])); die();
 });
 
-add_action('wp_ajax_send_pickup_point', static function () {
-    if (null === $formData = $_POST['data'] ?? null) {
-        wp_send_json_error('Invalid data', 400);
-        die();
-    }
-    if (!NonceVerifier::verify($formData['_wpnonce'], 'add-pickup-point')) {
-        wp_send_json_error('Forbidden action', 403);
-        die();
-    }
 
-    $requiredFields = [
-        'pickupPointCountry',
-        'pickupPointCounty',
-        'pickupPointCity',
-        'pickupPointAddress',
-        'pickupPointPostalCode',
-        'pickupPointAlias',
-        'pickupPointContactPersonName',
-        'pickupPointContactPersonPhone',
-    ];
-
-    foreach ($requiredFields as $field) {
-        if (empty($formData[$field])) {
-            wp_send_json_error("Missing or invalid field: $field", 400);
-            die();
-        }
-    }
-
-    try {
-        $sameday = new Sameday(SdkInitiator::init());
-    } catch (SamedaySDKException|Exception $exception) {
-
-        wp_send_json_error($exception->getMessage(), 500);
-        die();
-    }
-
-    try {
-        $response = $sameday->postPickupPoint(new SamedayPostPickupPointRequest(
-            $formData['pickupPointCountry'],
-            $formData['pickupPointCounty'],
-            $formData['pickupPointCity'],
-            $formData['pickupPointAddress'],
-            $formData['pickupPointPostalCode'],
-            $formData['pickupPointAlias'],
-            [new PickupPointContactPersonObject(
-                $formData['pickupPointContactPersonName'],
-                $formData['pickupPointContactPersonPhone'],
-                true
-            )],
-	        (bool) $formData['default']
-        ));
-
-        wp_send_json_success($response->getPickupPointId());
-    } catch (SamedayBadRequestException $e) {
-        $noticeMessage = Helper::parseAwbErrors($e->getErrors());
-        NoticerHandler::addFlashNotice('add_awb_notice', $noticeMessage, 'error', true);
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-    } catch (Exception $e) {
-        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-    }
-
-    Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-});
-
-add_action('wp_ajax_delete_pickup_point', static function() {
-    $formData = $_POST['data'] ?? [];
-
-    if (!NonceVerifier::verify($formData['_wpnonce'], 'delete-pickup-point')) {
-        wp_send_json_error('Forbidden action !', 403);
-        die();
-    }
-    if (null === $sameday_id = $formData['sameday_id'] ?? null) {
-        wp_send_json_error('Invalid data format', 400);
-        die();
-    }
-
-    try {
-        $sameday = new Sameday(SdkInitiator::init());
-    } catch (SamedaySDKException|Exception $e) {
-        NoticerHandler::addFlashNotice('add_awb_notice', $e->getMessage(), 'error',true);
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-    }
-
-    try {
-        $response = $sameday->deletePickupPoint(new SamedayDeletePickupPointRequest($sameday_id));
-        wp_send_json_success($response);
-    } catch (Exception $exception) {
-
-        wp_send_json_error('Failed to delete pickup point: ' . $exception->getMessage(), 500);
-
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-    }
-
-    Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
-});
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {

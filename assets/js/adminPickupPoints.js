@@ -70,6 +70,7 @@ if (document.getElementById('form-deletePickupPoint')) {
             url: ajaxurl,
             data: {
                 'action': 'delete_pickup_point',
+                '_wpnonce': data['_wpnonce'],
                 'data': data
             },
             success: function (r) {

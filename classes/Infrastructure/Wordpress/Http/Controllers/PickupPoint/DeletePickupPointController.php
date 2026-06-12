@@ -7,9 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Pick
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPoint;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointItem;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointRequest;
+use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPoint;
+use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
@@ -20,9 +19,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class AddNewPickupPointController extends AbstractController
+final class DeletePickupPointController extends AbstractController
 {
-    private const ACTION = "send_pickup_point";
+    private const ACTION = 'delete_pickup_point';
 
     /**
      * @return string
@@ -39,7 +38,7 @@ class AddNewPickupPointController extends AbstractController
      */
     public function processPostAction(array $inputParams): void
     {
-        if (null === $formData = $inputParams['data'] ?? null) {
+        if (null === $form = $inputParams['data'] ?? null) {
             NoticerHandler::addFlashNotice(
                 ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Unable to process the request."),
@@ -69,30 +68,10 @@ class AddNewPickupPointController extends AbstractController
             );
         }
 
-        $requiredFields = [
-            'pickupPointCountry',
-            'pickupPointCounty',
-            'pickupPointCity',
-            'pickupPointAddress',
-            'pickupPointPostalCode',
-            'pickupPointAlias',
-            'pickupPointContactPersonName',
-            'pickupPointContactPersonPhone',
-        ];
-
-        $requiredFieldsErrors = [];
-        foreach ($requiredFields as $field) {
-            if (empty($formData[$field])) {
-                // WIP treat form error ::
-                $requiredFieldsErrors[] = sprintf("%s is required.", $field);
-            }
-        }
-
-        if (!empty($requiredFieldsErrors)) {
-            $errorMessage = implode(" <br/> ", $requiredFieldsErrors);
+        if (null === $samedayId = $form['sameday_id'] ?? null) {
             NoticerHandler::addFlashNotice(
                 ResponseNoticeType::ERROR,
-                TranslatorHandler::translate($errorMessage),
+                TranslatorHandler::translate("Invalid data format."),
             );
 
             Redirector::to('edit.php',
@@ -103,24 +82,13 @@ class AddNewPickupPointController extends AbstractController
             );
         }
 
-        $request = new AddNewPickupPointRequest(
-            new AddNewPickupPointItem(
-                $formData['pickupPointCountry'],
-                $formData['pickupPointCounty'],
-                $formData['pickupPointCity'],
-                $formData['pickupPointAddress'],
-                $formData['pickupPointPostalCode'],
-                $formData['pickupPointAlias'],
-                $formData['pickupPointContactPersonName'],
-                $formData['pickupPointContactPersonPhone'],
-                (bool) $formData['isDefault'],
-            ),
-            $samedayApiClient
+        $request = new DeletePickupPointRequest(
+            $samedayApiClient,
+            (int) $samedayId
         );
 
-        $addNewPickupPoint = new AddNewPickupPoint($request);
-
-        $result = $addNewPickupPoint->execute();
+        $deletePickupPoint = new DeletePickupPoint($request);
+        $result = $deletePickupPoint->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(

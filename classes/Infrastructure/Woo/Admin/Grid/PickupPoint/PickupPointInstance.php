@@ -177,8 +177,8 @@ class PickupPointInstance
         </div>
         <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
             <div class="smd-modal-container">
-                <form id="form-deletePickupPoint" data-url="delete-pickup-point">
-                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete-pickup-point'); ?>">
+                <form id="form-deletePickupPoint" data-url="delete_pickup_point">
+                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
                     <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
                     <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">
