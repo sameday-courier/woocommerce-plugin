@@ -22,23 +22,42 @@ class PickupPointInstance
 	{
 		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );
 		add_action( 'admin_menu', [ $this, 'plugin_menu' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	/**
 	 * @return void
 	 */
-    public function enqueue_styles(): void
+    public function enqueue_scripts(string $hook): void
     {
+        if (!isset($_GET['page']) || 'sameday_pickup_points' !== $_GET['page']) {
+            return;
+        }
+
 	    add_thickbox();
+
+        $pluginMainFile = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'samedaycourier-shipping.php';
+
         wp_enqueue_style(
             'sameday-thickboxform-style',
-            plugin_dir_url(__FILE__) . '../assets/css/tickbox-form.css',
+            plugins_url('assets/css/tickbox-form.css', $pluginMainFile),
             [],
             time()
         );
-        wp_enqueue_script('sameday-admin-helper', plugin_dir_url(__FILE__) . '../assets/js/helper.js', ['jquery'], time(), true);
-        wp_enqueue_script('sameday-admin-script', plugin_dir_url(__FILE__) . '../assets/js/adminPickupPoints.js', ['jquery'], time(), true);
+        wp_enqueue_script(
+            'sameday-admin-helper',
+            plugins_url('assets/js/helper.js', $pluginMainFile),
+            ['jquery'],
+            time(),
+            true
+        );
+        wp_enqueue_script(
+            'sameday-admin-script',
+            plugins_url('assets/js/adminPickupPoints.js', $pluginMainFile),
+            ['jquery'],
+            time(),
+            true
+        );
     }
 
 	public static function set_screen( $status, $option, $value )
@@ -96,7 +115,7 @@ class PickupPointInstance
 		</div>
         <div id="smd-thickbox" class="smd-modal" style="display: none;">
             <div class="smd-modal-container">
-                <form id="thickbox-form" action="" method="POST">
+                <form id="thickbox-form" data-url="send_pickup_point" method="POST">
                     <h3><?= __("Add New Pickup Point", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('send_pickup_point'); ?>">
                     <div class="form-group">

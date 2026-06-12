@@ -60,7 +60,8 @@ final class DeletePickupPointController extends AbstractController
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
             );
 
-            Redirector::to('edit.php',
+            Redirector::to(
+                'edit.php',
                 [
                     'post_type' => 'page',
                     'page' => 'sameday_pickup_points'
@@ -74,7 +75,8 @@ final class DeletePickupPointController extends AbstractController
                 TranslatorHandler::translate("Invalid data format."),
             );
 
-            Redirector::to('edit.php',
+            Redirector::to(
+                'edit.php',
                 [
                     'post_type' => 'page',
                     'page' => 'sameday_pickup_points'
@@ -97,7 +99,8 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
-        Redirector::to('edit.php',
+        Redirector::to(
+            'edit.php',
             [
                 'post_type' => 'page',
                 'page' => 'sameday_pickup_points'

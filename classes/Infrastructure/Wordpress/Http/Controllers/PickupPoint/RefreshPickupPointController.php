@@ -51,7 +51,12 @@ final class RefreshPickupPointController extends AbstractController
                 ResponseNoticeType::ERROR,
             );
 
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
+            Redirector::to('edit.php',
+                [
+                    'post_type' => 'page',
+                    'page' => 'sameday_pickup_points'
+                ]
+            );
         }
 
         $request = new RefreshPickupPointRequest(
@@ -69,6 +74,12 @@ final class RefreshPickupPointController extends AbstractController
             );
         }
 
-        Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_pickup_points']);
+        Redirector::to(
+            'edit.php',
+            [
+                'post_type' => 'page',
+                'page' => 'sameday_pickup_points'
+            ]
+        );
     }
 }
