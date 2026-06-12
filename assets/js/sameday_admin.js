@@ -21,15 +21,20 @@ function init() {
 function importAllFct() {
     document.body.insertAdjacentHTML("beforeend", "<div class='loading' id='loadingImport'>Loading&#8230;</div>");
     jQuery.post(
-        ajaxurl, 
+        ajaxurl,
         {
             'action': 'all_import',
             '_wpnonce': samedayAdmin.nonces.all_import,
-        }, 
+        },
         () => {
-            document.querySelector("#loadingImport").remove();
+            window.location.reload();
         }
-    );
+    ).always(() => {
+        const loading = document.querySelector("#loadingImport");
+        if (loading) {
+            loading.remove();
+        }
+    });
 }
 function importCities() {
     jQuery.post(

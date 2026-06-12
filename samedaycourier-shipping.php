@@ -110,54 +110,6 @@ add_action('plugins_loaded', static function () {
     LockerInstance::get_instance();
 });
 
-//add_action('wp_ajax_all_import', static function () use ($importCitiesController): void {
-//	try {
-//        $refreshResult = (new RefreshService(
-//            new RefreshServiceRequest(!empty(OptionsHandler::getSamedayOptions()))
-//        ))->execute();
-//
-//        if (ResponseNoticeType::ERROR === $refreshResult->getNoticeType()) {
-//            throw new \RuntimeException($refreshResult->getNoticeMessage() ?? 'Failed to refresh services.');
-//        }
-//    } catch (Exception $exception) {
-//		throw new \RuntimeException($exception->getMessage());
-//    }
-//
-//	try {
-//        $refreshPickupPointsResult = (new RefreshPickupPoint(
-//            new RefreshPickupPointRequest(!empty(OptionsHandler::getSamedayOptions()))
-//        ))->execute();
-//
-//        if (ResponseNoticeType::ERROR === $refreshPickupPointsResult->getNoticeType()) {
-//            throw new \RuntimeException($refreshPickupPointsResult->getNoticeMessage() ?? 'Failed to refresh pickup points.');
-//        }
-//    } catch (Exception $exception) {
-//		throw new \RuntimeException($exception->getMessage());
-//    }
-//
-//	try {
-//        $refreshLockerResult = (new RefreshLocker(
-//            new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()))
-//        ))->execute();
-//
-//        if (ResponseNoticeType::ERROR === $refreshLockerResult->getNoticeType()) {
-//            throw new \RuntimeException($refreshLockerResult->getNoticeMessage() ?? 'Failed to refresh lockers.');
-//        }
-//    } catch (Exception $exception) {
-//		throw new \RuntimeException($exception->getMessage());
-//    }
-//
-//	try {
-//        $importCitiesResult = $importCitiesController->runImport();
-//
-//        if (ResponseNoticeType::ERROR === $importCitiesResult->getNoticeType()) {
-//            throw new \RuntimeException($importCitiesResult->getNoticeMessage() ?? 'Failed to import cities.');
-//        }
-//	} catch(Exception $exception) {
-//		throw new \RuntimeException($exception->getMessage());
-//	}
-//});
-
 add_action('wp_ajax_change_locker', static function() {
     if (null !== $orderId = $_POST['orderId']) {
 	    try {

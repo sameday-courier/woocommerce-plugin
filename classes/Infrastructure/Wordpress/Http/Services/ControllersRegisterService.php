@@ -12,6 +12,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAs
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCitiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County\GetCountiesController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import\AllImportController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\RefreshLockerController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\DeletePickupPointController;
@@ -42,6 +43,7 @@ class ControllersRegisterService
         ],
         self::AJAX_CONTROLLERS =>
         [
+            AllImportController::class,
             RefreshCityController::class,
             GetCountiesController::class,
             GetCitiesController::class,
