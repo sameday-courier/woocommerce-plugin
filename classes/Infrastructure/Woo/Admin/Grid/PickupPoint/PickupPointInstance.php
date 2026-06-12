@@ -9,7 +9,6 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\ApiRequestsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 
 class PickupPointInstance
@@ -63,7 +62,10 @@ class PickupPointInstance
             'samedayPickupPointsAdmin',
             [
                 'nonces' => [
+                    'get_counties' => wp_create_nonce('get_counties'),
                     'get_cities' => wp_create_nonce('get_cities'),
+                    'send_pickup_point' => wp_create_nonce('send_pickup_point'),
+                    'delete_pickup_point' => wp_create_nonce('delete_pickup_point'),
                 ],
             ]
         );
@@ -126,7 +128,6 @@ class PickupPointInstance
             <div class="smd-modal-container">
                 <form id="thickbox-form" data-url="send_pickup_point" method="POST">
                     <h3><?= __("Add New Pickup Point", SamedayConstants::TEXT_DOMAIN)?></h3>
-                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('send_pickup_point'); ?>">
                     <div class="form-group">
                         <label for="pickupPointCountry">Country</label>
                         <div class="form-input">
@@ -138,11 +139,8 @@ class PickupPointInstance
                     <div class="form-group">
                         <label for="pickupPointCounty"><?= __("County", SamedayConstants::TEXT_DOMAIN)?></label>
                         <div class="form-input">
-                            <select name="pickupPointCounty" id="pickupPointCounty" required data-url="">
-                                <option><?= __("Choose City", SamedayConstants::TEXT_DOMAIN)?></option>
-                                <?php foreach(ApiRequestsHandler::getCounties() as $county): ?>
-                                    <option value="<?php echo $county['id']; ?>"><?php echo $county['name']; ?></option>
-                                <?php endforeach; ?>
+                            <select name="pickupPointCounty" id="pickupPointCounty" required disabled>
+                            <!-- // Bind data from server via ajax request -->
                             </select>
                         </div>
                     </div>
@@ -150,7 +148,7 @@ class PickupPointInstance
                         <label for="pickupPointCity"><?= __("City", SamedayConstants::TEXT_DOMAIN)?></label>
                         <div class="form-input">
                             <select name="pickupPointCity" id="pickupPointCity" required disabled>
-
+                            <!-- // Bind data from server via ajax request -->
                             </select>
                         </div>
                     </div>
@@ -206,7 +204,6 @@ class PickupPointInstance
         <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
             <div class="smd-modal-container">
                 <form id="form-deletePickupPoint" data-url="delete_pickup_point">
-                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
                     <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
                     <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">

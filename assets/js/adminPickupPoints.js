@@ -1,29 +1,65 @@
 if (document.getElementById('pickupPointCounty')) {
-    document.getElementById('pickupPointCounty').addEventListener('change', (event) => {
-        let cityHtmlElement = document.getElementById('pickupPointCity');
-        jQuery.post(
-            {
-                url: ajaxurl,
-                data: {
-                    'action': 'get_cities',
-                    'countyId': event.target.value,
-                    '_wpnonce': samedayPickupPointsAdmin.nonces.get_cities,
-                },
-                success: (result) => {
-                    cityHtmlElement.innerHTML = '';
-                    result.forEach((city) => {
-                        cityHtmlElement.innerHTML += '<option value="' + city.id + '">' + city.name + '</option>';
-                    });
-                    cityHtmlElement.disabled = false;
-                },
-                beforeSend: function () {
-                    cityHtmlElement.innerHTML = '<option value="">Loading...</option>';
-                },
-                error: () => {
-                    alert('Something went wrong! Please try again latter!');
-                },
-            }
-        );
+    const countySelect = document.getElementById('pickupPointCounty');
+    const citySelect = document.getElementById('pickupPointCity');
+
+    const requestOptions = (action, params = {}) => ({
+        url: ajaxurl,
+        data: {
+            action: action,
+            _wpnonce: samedayPickupPointsAdmin.nonces[action],
+            ...params,
+        },
+    });
+
+    const populateSelectOptions = (selectElement, items, placeholder = '') => {
+        selectElement.innerHTML = '';
+
+        if ('' !== placeholder) {
+            selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+        }
+
+        items.forEach((item) => {
+            selectElement.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+        });
+    };
+
+    const handleRequestError = () => {
+        alert('Something went wrong! Please try again latter!');
+    };
+
+    jQuery.post({
+        ...requestOptions('get_counties'),
+        beforeSend: () => {
+            countySelect.innerHTML = '<option value="">Loading...</option>';
+            countySelect.disabled = true;
+        },
+        success: (counties) => {
+            populateSelectOptions(countySelect, counties, 'Choose County');
+            countySelect.disabled = false;
+        },
+        error: handleRequestError,
+    });
+
+    countySelect.addEventListener('change', (event) => {
+        if ('' === event.target.value) {
+            citySelect.innerHTML = '';
+            citySelect.disabled = true;
+
+            return;
+        }
+
+        jQuery.post({
+            ...requestOptions('get_cities', { countyId: event.target.value }),
+            beforeSend: () => {
+                citySelect.innerHTML = '<option value="">Loading...</option>';
+                citySelect.disabled = true;
+            },
+            success: (cities) => {
+                populateSelectOptions(citySelect, cities);
+                citySelect.disabled = false;
+            },
+            error: handleRequestError,
+        });
     });
 }
 
@@ -41,7 +77,7 @@ const submitFormAsync = (form, action) => {
 
     jQuery.post(ajaxurl, {
         action: action,
-        _wpnonce: data._wpnonce,
+        _wpnonce: samedayPickupPointsAdmin.nonces[action],
         data: data,
     });
 };

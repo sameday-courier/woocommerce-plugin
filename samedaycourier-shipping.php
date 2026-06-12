@@ -41,6 +41,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAs
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCitiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County\GetCountiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
@@ -139,6 +140,7 @@ add_action('admin_post_add_awb', [new GenerateAwbController(), 'handle']);
 
 // WIP REGISTER CONTROLLERS AJAX REQUEST:
 add_action('wp_ajax_import_cities', [new RefreshCityController(), 'handle']);
+add_action('wp_ajax_get_counties', [new GetCountiesController(), 'handle']);
 add_action('wp_ajax_get_cities', [new GetCitiesController(), 'handle']);
 add_action('wp_ajax_delete_pickup_point', [new DeletePickupPointController(), 'handle']);
 add_action('wp_ajax_send_pickup_point', [new AddNewPickupPointController(), 'handle']);
