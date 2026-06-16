@@ -63,36 +63,6 @@ if (document.getElementById('pickupPointCounty')) {
     });
 }
 
-// const serializeFormData = (form) => {
-//     const data = {};
-//     new FormData(form).forEach((value, key) => {
-//         data[key] = value;
-//     });
-//
-//     return data;
-// };
-//
-// const submitFormAsync = (form, action) => {
-//     const data = serializeFormData(form);
-//     console.log(data);
-//
-//
-//
-//     jQuery.post(ajaxurl, {
-//         action: action,
-//         _wpnonce: samedayPickupPointsAdmin.nonces[action],
-//         data: data,
-//     });
-// };
-
-// document.querySelectorAll('form[data-url]').forEach((form) => {
-//     form.addEventListener('submit', (event) => {
-//         event.preventDefault();
-//         console.log("Click aici !");
-//         submitFormAsync(form, form.dataset.url);
-//     });
-// });
-//
 jQuery('body').on('click', '.delete-pickup-point', function (e) {
     e.preventDefault();
     jQuery('#form-deletePickupPoint #input-deletePickupPoint').val(jQuery(this).data('id'));
