@@ -80,13 +80,6 @@ function load_lockers_sync() {
     $section = $_GET['section'] ?? null;
     if ('samedaycourier' === $section) {
         wp_enqueue_script('jquery');
-        wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/sameday_admin.js', ['jquery']);
-        wp_localize_script('lockers-sync-admin', 'samedayAdmin', [
-            'nonces' => [
-                'all_import' => wp_create_nonce('all_import'),
-                'import_cities' => wp_create_nonce('import_cities'),
-            ],
-        ]);
         wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
         wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );

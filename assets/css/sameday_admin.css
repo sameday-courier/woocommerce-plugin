@@ -196,3 +196,17 @@ input[type=checkbox]:checked::before{
 #form-deletePickupPoint h3{
     text-align: center;
 }
+
+.sameday-settings-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 20px;
+    padding: 0;
+}
+
+.sameday-settings-actions .button-primary {
+    margin: 0;
+    vertical-align: middle;
+}

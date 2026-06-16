@@ -43,11 +43,11 @@ class ControllersRegisterService
             GenerateAwbController::class,
             AddNewPickupPointController::class,
             DeletePickupPointController::class,
+            AllImportController::class,
+            RefreshCityController::class,
         ],
         self::AJAX_CONTROLLERS =>
         [
-            AllImportController::class,
-            RefreshCityController::class,
             GetCountiesController::class,
             GetCitiesController::class,
             ChangeLockerController::class,

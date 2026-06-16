@@ -9,10 +9,11 @@ use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use stdClass;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -24,6 +25,15 @@ final class RefreshCityController extends AbstractController
      * @var string
      */
     private const ACTION = 'import_cities';
+
+    /**
+     * @var array<string, string>
+     */
+    private const SETTINGS_REDIRECT_ARGS = [
+        'page' => 'wc-settings',
+        'tab' => 'shipping',
+        'section' => 'samedaycourier',
+    ];
 
     /**
      * @return string
@@ -53,9 +63,14 @@ final class RefreshCityController extends AbstractController
         $result = $refreshCity->execute();
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(
+                TranslatorHandler::translate($result->getNoticeMessage()),
                 $result->getNoticeType(),
-                $result->getNoticeMessage()
             );
         }
+
+        Redirector::to(
+            'admin.php',
+            self::SETTINGS_REDIRECT_ARGS
+        );
     }
 }

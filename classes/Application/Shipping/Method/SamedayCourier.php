@@ -491,6 +491,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $this->init_settings();
 
         add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
+        add_action('woocommerce_after_settings_shipping', array($this, 'renderSettingsActions'));
     }
 
     public function process_admin_options(): void
@@ -538,17 +539,58 @@ final class SamedayCourier extends WC_Shipping_Method
         }
     }
 
-    public function admin_options(): void
+    public function renderSettingsActions(): void
     {
+        if (!$this->isCurrentSettingsPage()) {
+            return;
+        }
+
         $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
         $pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
         $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
-        $buttons = '<a class="button-primary" id="import_all"> '. __('Import all') . ' </a> 
-                            <a href="' . $serviceUrl . '" class="button-primary"> '. __('Services') .' </a> 
-                            <a href="' . $pickupPointUrl . '" class="button-primary"> '. __('Pickup-point') .' </a> 
-                            <a href="' . $lockerUrl . '" class="button-primary"> '. __('Lockers') .' </a>
-                            <button id="import_cities" class="button-primary">Import Cities</button>';
 
-        echo parent::admin_options() . $buttons;
+        echo '
+            <form id="sameday-all-import-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
+                <input type="hidden" name="action" value="all_import">
+                <input type="hidden" name="_wpnonce" value="' . esc_attr(wp_create_nonce('all_import')) . '">
+            </form>
+            <form id="sameday-import-cities-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
+                <input type="hidden" name="action" value="import_cities">
+                <input type="hidden" name="_wpnonce" value="' . esc_attr(wp_create_nonce('import_cities')) . '">
+            </form>
+            <div class="sameday-settings-actions">
+                <button type="submit" form="sameday-all-import-form" class="button-primary">'
+                    . esc_html(__('Import all', SamedayConstants::TEXT_DOMAIN)) .
+                '</button>
+                <a href="' . esc_url($serviceUrl) . '" class="button-primary">' . esc_html(__('Services', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <a href="' . esc_url($pickupPointUrl) . '" class="button-primary">' . esc_html(__('Pickup-point', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <a href="' . esc_url($lockerUrl) . '" class="button-primary">' . esc_html(__('Lockers', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <button type="submit" form="sameday-import-cities-form" class="button-primary">'
+                    . esc_html(__('Import Cities', SamedayConstants::TEXT_DOMAIN)) .
+                '</button>
+            </div>
+            <script>
+                (function () {
+                    const actions = document.querySelector(".sameday-settings-actions");
+                    const submitRow = document.querySelector("#mainform p.submit");
+                    if (actions && submitRow) {
+                        submitRow.insertAdjacentElement("afterend", actions);
+                    }
+                })();
+            </script>';
+    }
+
+    private function isCurrentSettingsPage(): bool
+    {
+        global $current_section;
+
+        if (isset($current_section) && $this->id === $current_section) {
+            return true;
+        }
+
+        return isset($_GET['page'], $_GET['tab'], $_GET['section'])
+            && 'wc-settings' === $_GET['page']
+            && 'shipping' === $_GET['tab']
+            && $this->id === $_GET['section'];
     }
 }
