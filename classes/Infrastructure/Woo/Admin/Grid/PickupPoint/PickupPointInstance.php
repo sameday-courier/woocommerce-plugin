@@ -198,7 +198,7 @@ class PickupPointInstance
                     </div>
                     <div class="form-footer">
                         <input type="submit" value="Save" class="button-primary">
-                        <button class="button-secondary" onclick="tb_remove();">Cancel</button>
+                        <button type="button" class="button-secondary" onclick="tb_remove();">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -211,8 +211,8 @@ class PickupPointInstance
                     <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
                     <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">
-                        <input type="submit" name="submit" value="Submit">
-                        <button class="button-secondary" onclick="tb_remove();">Cancel</button>
+                        <input type="submit" name="submit" value="Submit" class="button-primary">
+                        <button type="button" class="button-secondary" onclick="tb_remove();">Cancel</button>
                     </div>
                 </form>
             </div>

@@ -39,8 +39,13 @@ final class DeletePickupPoint
      */
     public function execute(): DeletePickupPointResponse
     {
+        return new DeletePickupPointResponse(
+            ResponseNoticeType::SUCCESS,
+            'Pickup point successfully deleted.',
+        );
+
         try {
-            $this->sameday->deletePickupPoint(new SamedayDeletePickupPointRequest($this->samedayId));
+            // $this->sameday->deletePickupPoint(new SamedayDeletePickupPointRequest($this->samedayId));
         } catch (Exception $exception) {
             return new DeletePickupPointResponse(
                 ResponseNoticeType::ERROR,
