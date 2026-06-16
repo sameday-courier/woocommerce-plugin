@@ -519,8 +519,14 @@ final class SamedayCourier extends WC_Shipping_Method
                         $isLogged = true;
 
                         // If already exist a token from previews auth, cancel it
-                        update_option('woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN, [SamedayClient::KEY_TOKEN => null]);
-                        update_option('woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN_EXPIRES, [SamedayClient::KEY_TOKEN_EXPIRES => null]);
+                        OptionsHandler::setOption(
+                            'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN,
+                            [SamedayClient::KEY_TOKEN => null]
+                        );
+                        OptionsHandler::setOption(
+                            'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN_EXPIRES,
+                            [SamedayClient::KEY_TOKEN_EXPIRES => null]
+                        );
 
                         break;
                     }

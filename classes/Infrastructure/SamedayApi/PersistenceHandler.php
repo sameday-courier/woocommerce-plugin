@@ -26,6 +26,9 @@ class PersistenceHandler implements SamedayPersistentDataInterface
 
 	public function set($key, $value): void
 	{
-		update_option('woocommerce_samedaycourier_settings_' . self::KEYS[$key], [self::KEYS[$key] => $value]);
+		OptionsHandler::setOption(
+			'woocommerce_samedaycourier_settings_' . self::KEYS[$key],
+			[self::KEYS[$key] => $value]
+		);
 	}
 }
