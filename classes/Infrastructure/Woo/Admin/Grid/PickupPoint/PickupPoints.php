@@ -70,7 +70,7 @@ class PickupPoints extends WP_List_Table
 			case 'default_pickup_point':
 				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
-                return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="button-secondary delete-pickup-point thickbox" data-id="' . $item['sameday_id'] . '">Delete</a>';
+                return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="sameday_admin_button delete-pickup-point thickbox" data-id="' . $item['sameday_id'] . '">Delete</a>';
 			default:
 				return $item[$column_name];
 		}
@@ -314,7 +314,7 @@ class PickupPoints extends WP_List_Table
                 </script>
 
                 <?php if (array_filter($this->get_search_params())): ?>
-                    <a href="?page=<?php echo esc_attr($_GET['page']); ?>" class="button">Clear Search</a>
+                    <a href="?page=<?php echo esc_attr($_GET['page']); ?>" class="sameday_admin_button">Clear Search</a>
                 <?php endif; ?>
             </div>
             <?php

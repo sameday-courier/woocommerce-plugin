@@ -1,0 +1,41 @@
+.sameday-settings-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 20px;
+    padding: 0;
+}
+
+.sameday_admin_button {
+    display: inline-block;
+    background: linear-gradient(90deg, #ed2224, #b21f24);
+    color: #fff !important;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: none;
+    vertical-align: middle;
+}
+
+.sameday_admin_button:hover,
+.sameday_admin_button:focus {
+    background: linear-gradient(135deg, #d50b15, #8f3614);
+    color: #fff !important;
+    box-shadow: 0 2px 4px rgba(178, 31, 36, 0.25);
+}
+
+.sameday_admin_button:focus {
+    outline: 2px solid #ed2224;
+    outline-offset: 1px;
+}
+
+.sameday_admin_button:active {
+    transform: translateY(1px);
+}

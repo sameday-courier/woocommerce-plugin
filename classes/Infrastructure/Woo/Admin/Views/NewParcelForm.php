@@ -76,7 +76,7 @@ class NewParcelForm extends AwbForm
                              </td>
                         </tr>
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" form="addNewParcelForm"> ' . __("Add new parcel", SamedayConstants::TEXT_DOMAIN) . ' </button> </th>
+                            <th><button class="sameday_admin_button" type="submit" value="Submit" form="addNewParcelForm"> ' . __("Add new parcel", SamedayConstants::TEXT_DOMAIN) . ' </button> </th>
                         </tr>
 					</tbody>
 				</table>';

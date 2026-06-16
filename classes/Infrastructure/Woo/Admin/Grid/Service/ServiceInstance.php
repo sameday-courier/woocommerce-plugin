@@ -63,13 +63,13 @@ class ServiceInstance
                         <?php if(!isset($_GET['action']) || $_GET['action'] !== 'edit') { ?>
                         <div class="meta-box-sortables ui-sortable">
                             <div>
-                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="button-primary">
+                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
 		                            <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
                                     <input type="hidden" name="action" value="refresh_services">
                                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_services')); ?>">
-                                    <input type="submit" class="button-primary" value="Refresh Services">
+                                    <input type="submit" class="sameday_admin_button" value="Refresh Services">
                                 </form>
                             </div>
                             <form method="post">
@@ -174,7 +174,7 @@ class ServiceInstance
                             </td>
                         </tr>
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" >  '.__('Edit Service', SamedayConstants::TEXT_DOMAIN).'</button> </th>
+                            <th><button class="sameday_admin_button" type="submit" value="Submit" >  '.__('Edit Service', SamedayConstants::TEXT_DOMAIN).'</button> </th>
                         </tr>
                      </tbody>
                 </table>

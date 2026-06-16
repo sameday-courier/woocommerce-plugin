@@ -72,6 +72,31 @@ add_action('admin_notices', static function (): void {
     NoticerHandler::showFlashNotice();
 });
 
+add_action('admin_enqueue_scripts', static function (): void {
+    if (!is_admin()) {
+        return;
+    }
+
+    global $pagenow;
+
+    $pluginAdminPages = ['sameday_pickup_points', 'sameday_lockers', 'sameday_services'];
+    $isPluginAdminPage = isset($_GET['page']) && in_array($_GET['page'], $pluginAdminPages, true);
+    $isSettingsPage = isset($_GET['page'], $_GET['tab'], $_GET['section'])
+        && 'wc-settings' === $_GET['page']
+        && 'shipping' === $_GET['tab']
+        && 'samedaycourier' === $_GET['section'];
+    $isOrderAdminPage = ('post.php' === $pagenow || 'admin.php' === $pagenow);
+
+    if (!$isPluginAdminPage && !$isSettingsPage && !$isOrderAdminPage) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'sameday-admin-button-style',
+        plugin_dir_url(__FILE__) . 'assets/css/sameday_admin_button.css'
+    );
+});
+
 // Add Module Custom Actions
 add_action('admin_init','load_lockers_sync');
 function load_lockers_sync() {
@@ -477,21 +502,21 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
     if ($_GET['action'] === 'edit') {
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="button-primary button-samll thickbox"> ' . __('Generate awb') . ' </a>
+                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="sameday_admin_button button-samll thickbox"> ' . __('Generate awb') . ' </a>
             </p>';
 
         $_showAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="button-primary button-samll thickbox"> ' . __('Add new parcel') . ' </a>
-                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="button-primary button-samll thickbox"> ' . __('Awb history') . ' </a>
+                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="sameday_admin_button button-samll thickbox"> ' . __('Add new parcel') . ' </a>
+                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="sameday_admin_button button-samll thickbox"> ' . __('Awb history') . ' </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="showAsPdf" formtarget="_blank" class="button-primary button-samll">'.  __('Show as pdf', SamedayConstants::TEXT_DOMAIN) . ' </button>
+                <button type="submit" form="showAsPdf" formtarget="_blank" class="sameday_admin_button button-samll">'.  __('Show as pdf', SamedayConstants::TEXT_DOMAIN) . ' </button>
             </p>';
 
         $_removeAwb = '
             <p class="form-field form-field-wide wc-customer-user">
                 <input type="hidden" form="removeAwb" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="removeAwb" class="button button-samll">'.  __('Remove Awb') . ' </button>
+                <button type="submit" form="removeAwb" class="sameday_admin_button button-samll">'.  __('Remove Awb') . ' </button>
             </p>';
 
         $buttons = '
@@ -533,7 +558,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
 
                 $_goTo_eAWB = '
                     <p class="form-field form-field-wide wc-customer-user">
-                        <a href="' . $redirectToEawbSite . '" target="_blank" class="button-secondary button-samll">'.  __('Sameday eAwb') . ' </a>
+                        <a href="' . $redirectToEawbSite . '" target="_blank" class="sameday_admin_button button-samll">'.  __('Sameday eAwb') . ' </a>
                     </p>
                 ';
             }

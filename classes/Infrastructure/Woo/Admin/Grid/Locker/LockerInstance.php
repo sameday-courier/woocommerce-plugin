@@ -53,13 +53,13 @@ class LockerInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="button-primary">
+                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
 									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_lockers">
 									<input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_lockers')); ?>">
-									<input type="submit" class="button-primary" value="Refresh Lockers">
+									<input type="submit" class="sameday_admin_button" value="Refresh Lockers">
 								</form>
 							</div>
 							<form method="post">

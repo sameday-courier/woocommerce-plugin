@@ -101,15 +101,15 @@ class PickupPointInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="button-primary">
+                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
                                     <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:fit-content; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_pickup_points">
 									<input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_pickup_points')); ?>">
-									<input type="submit" class="button-primary" value="Refresh Pickup point">
+									<input type="submit" class="sameday_admin_button" value="Refresh Pickup point">
 								</form>
-                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="button-primary button-samll thickbox">
+                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="sameday_admin_button button-samll thickbox">
                                     <?php echo __('Add Pickup Point', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 							</div>
@@ -197,8 +197,8 @@ class PickupPointInstance
                         </div>
                     </div>
                     <div class="form-footer">
-                        <input type="submit" value="Save" class="button-primary">
-                        <button type="button" class="button-secondary" onclick="tb_remove();">Cancel</button>
+                        <input type="submit" value="Save" class="sameday_admin_button">
+                        <button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -211,8 +211,8 @@ class PickupPointInstance
                     <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
                     <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">
-                        <input type="submit" name="submit" value="Submit" class="button-primary">
-                        <button type="button" class="button-secondary" onclick="tb_remove();">Cancel</button>
+                        <input type="submit" name="submit" value="Submit" class="sameday_admin_button">
+                        <button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
                     </div>
                 </form>
             </div>

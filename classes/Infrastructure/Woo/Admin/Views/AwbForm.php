@@ -233,7 +233,7 @@ class AwbForm
                                 <input readonly type="text" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . OptionsHandler::getOption('woocommerce_weight_unit', 'kg') . '">
                              </td>
                              <td>
-                                <button class="button-primary" id="addParcelButton">+</button>
+                                <button class="sameday_admin_button" id="addParcelButton">+</button>
                              </td>
                         </tr>
                         <tr valign="middle" class="rowPackageDimension">
@@ -252,7 +252,7 @@ class AwbForm
                              <td class="forminp forminp-text">
                                 <input type="number" form="addAwbForm" name="samedaycourier-package-width1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . __("Package Width", SamedayConstants::TEXT_DOMAIN) . '">
                              </td>
-                             <td><button class="deleteParcelButton">✖</button></td>
+                             <td><button class="sameday_admin_button deleteParcelButton">✖</button></td>
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc"> 
@@ -312,12 +312,11 @@ class AwbForm
                                 <td class="forminp forminp-text">';
         $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
         $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
-                                    <button class="button-primary" 
+                                    <button class="sameday_admin_button"
                                         data-username="'.$username.'" 
                                         data-country="'.$hostCountry.'" 
                                         data-dest_city="'.$destCity.'" 
                                         data-dest_country="'.$destCountry.'" 
-                                        class="button alt sameday_select_locker" 
                                         type="button" 
                                         id="select_locker"> ' . __("Change location", SamedayConstants::TEXT_DOMAIN) . ' 
                                     </button> 
@@ -350,7 +349,7 @@ class AwbForm
                              </td>
                         </tr>                  
                         <tr>
-                            <th><button class="button-primary" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb", SamedayConstants::TEXT_DOMAIN) . ' </button> </th>
+                            <th><button class="sameday_admin_button" type="submit" value="Submit" form="addAwbForm"> ' . __("Generate Awb", SamedayConstants::TEXT_DOMAIN) . ' </button> </th>
                         </tr>
                     </tbody>
                 </table>

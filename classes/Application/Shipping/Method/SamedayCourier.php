@@ -565,13 +565,13 @@ final class SamedayCourier extends WC_Shipping_Method
                 <input type="hidden" name="_wpnonce" value="' . esc_attr(wp_create_nonce('import_cities')) . '">
             </form>
             <div class="sameday-settings-actions">
-                <button type="submit" form="sameday-all-import-form" class="button-primary">'
+                <button type="submit" form="sameday-all-import-form" class="sameday_admin_button">'
                     . esc_html(__('Import all', SamedayConstants::TEXT_DOMAIN)) .
                 '</button>
-                <a href="' . esc_url($serviceUrl) . '" class="button-primary">' . esc_html(__('Services', SamedayConstants::TEXT_DOMAIN)) . '</a>
-                <a href="' . esc_url($pickupPointUrl) . '" class="button-primary">' . esc_html(__('Pickup-point', SamedayConstants::TEXT_DOMAIN)) . '</a>
-                <a href="' . esc_url($lockerUrl) . '" class="button-primary">' . esc_html(__('Lockers', SamedayConstants::TEXT_DOMAIN)) . '</a>
-                <button type="submit" form="sameday-import-cities-form" class="button-primary">'
+                <a href="' . esc_url($serviceUrl) . '" class="sameday_admin_button">' . esc_html(__('Services', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <a href="' . esc_url($pickupPointUrl) . '" class="sameday_admin_button">' . esc_html(__('Pickup-point', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <a href="' . esc_url($lockerUrl) . '" class="sameday_admin_button">' . esc_html(__('Lockers', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
                     . esc_html(__('Import Cities', SamedayConstants::TEXT_DOMAIN)) .
                 '</button>
             </div>
