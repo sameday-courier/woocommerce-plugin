@@ -39,10 +39,10 @@ class AddNewPickupPointController extends AbstractController
      */
     public function processPostAction(array $inputParams): void
     {
-        if (null === $formData = $inputParams['data'] ?? null) {
+        if (empty($inputParams)) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Unable to process the request."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to('edit.php',
@@ -57,8 +57,8 @@ class AddNewPickupPointController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to('edit.php',
@@ -82,7 +82,7 @@ class AddNewPickupPointController extends AbstractController
 
         $requiredFieldsErrors = [];
         foreach ($requiredFields as $field) {
-            if (empty($formData[$field])) {
+            if (empty($inputParams[$field])) {
                 // WIP treat form error ::
                 $requiredFieldsErrors[] = sprintf("%s is required.", $field);
             }
@@ -91,8 +91,8 @@ class AddNewPickupPointController extends AbstractController
         if (!empty($requiredFieldsErrors)) {
             $errorMessage = implode(" <br/> ", $requiredFieldsErrors);
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate($errorMessage),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to('edit.php',
@@ -105,15 +105,15 @@ class AddNewPickupPointController extends AbstractController
 
         $request = new AddNewPickupPointRequest(
             new AddNewPickupPointItem(
-                $formData['pickupPointCountry'],
-                $formData['pickupPointCounty'],
-                $formData['pickupPointCity'],
-                $formData['pickupPointAddress'],
-                $formData['pickupPointPostalCode'],
-                $formData['pickupPointAlias'],
-                $formData['pickupPointContactPersonName'],
-                $formData['pickupPointContactPersonPhone'],
-                (bool) $formData['isDefault'],
+                $inputParams['pickupPointCountry'],
+                $inputParams['pickupPointCounty'],
+                $inputParams['pickupPointCity'],
+                $inputParams['pickupPointAddress'],
+                $inputParams['pickupPointPostalCode'],
+                $inputParams['pickupPointAlias'],
+                $inputParams['pickupPointContactPersonName'],
+                $inputParams['pickupPointContactPersonPhone'],
+                (bool) ($inputParams['pickupPointDefault'] ?? false),
             ),
             $samedayApiClient
         );

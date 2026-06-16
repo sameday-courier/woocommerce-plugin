@@ -126,7 +126,9 @@ class PickupPointInstance
 		</div>
         <div id="smd-thickbox" class="smd-modal" style="display: none;">
             <div class="smd-modal-container">
-                <form id="thickbox-form" data-url="send_pickup_point" method="POST">
+                <form id="thickbox-form" method="POST" action="<?php echo admin_url('admin-post.php'); ?>" >
+                    <input type="hidden" name="action" value="send_pickup_point">
+                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('send_pickup_point'); ?>">
                     <h3><?= __("Add New Pickup Point", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-group">
                         <label for="pickupPointCountry">Country</label>
@@ -203,8 +205,10 @@ class PickupPointInstance
         </div>
         <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
             <div class="smd-modal-container">
-                <form id="form-deletePickupPoint" data-url="delete_pickup_point">
+                <form id="form-deletePickupPoint" method="POST" action="<?php echo admin_url('admin-post.php'); ?>">
                     <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
+                    <input type="hidden" name="action" value="delete_pickup_point">
+                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
                     <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
                     <div class="form-footer">
                         <input type="submit" name="submit" value="Submit">

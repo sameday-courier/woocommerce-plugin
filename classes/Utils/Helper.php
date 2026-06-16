@@ -181,6 +181,10 @@ class Helper
 			if (is_string($input)) {
 				$data[$key] = self::sanitizeInput($input);
 			}
+
+            if (is_array($input)) {
+                $data[$key] = self::sanitizeInputs($input);
+            }
 		}
 
 		return $data;
@@ -188,9 +192,9 @@ class Helper
 
     /**
      * @param array $locker
-     *
      * @return string
      *
+     * @throws JsonException
      */
     public static function sanitizeLocker(array $locker): string
     {
@@ -200,7 +204,7 @@ class Helper
             }
         }
 
-        return json_encode($locker, JSON_UNESCAPED_UNICODE);
+        return json_encode($locker, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
 	/**

@@ -44,7 +44,7 @@ final class AddNewPickupPoint
             $this->addNewPickupPointItem->getPickupPointCountyId(),
             $this->addNewPickupPointItem->getPickupPointCityId(),
             $this->addNewPickupPointItem->getPickupPointAddress(),
-            $this->addNewPickupPointItem->getPickupPointAddress(),
+            $this->addNewPickupPointItem->getPickupPointPostalCode(),
             $this->addNewPickupPointItem->getPickupPointAlias(),
             [
                 new PickupPointContactPersonObject(
@@ -59,7 +59,7 @@ final class AddNewPickupPoint
             $this->sameday->postPickupPoint($request);
         } catch (Exception $exception) {
             return new AddNewPickupPointResponse(
-                $exception->getCode(),
+                ResponseNoticeType::ERROR,
                 $exception->getMessage(),
             );
         }

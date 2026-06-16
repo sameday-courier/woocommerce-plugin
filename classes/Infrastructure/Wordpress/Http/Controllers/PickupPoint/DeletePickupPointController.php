@@ -38,10 +38,10 @@ final class DeletePickupPointController extends AbstractController
      */
     public function processPostAction(array $inputParams): void
     {
-        if (null === $form = $inputParams['data'] ?? null) {
+        if (empty($inputParams)) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Unable to process the request."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to('edit.php',
@@ -56,8 +56,8 @@ final class DeletePickupPointController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to(
@@ -69,10 +69,10 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
-        if (null === $samedayId = $form['sameday_id'] ?? null) {
+        if (null === $samedayId = $inputParams['sameday_id'] ?? null) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Invalid data format."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to(

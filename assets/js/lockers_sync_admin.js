@@ -77,6 +77,7 @@ function openLockers() {
                     'action': 'change_locker',
                     'orderId': jQuery('#samedaycourier-order-id').val(),
                     'locker': _locker,
+                    '_wpnonce': samedayLockerAdmin.nonces.change_locker,
                 },
                 success: () => {
                     document.querySelector('#sameday_locker_name').innerHTML = locker.name + " - " + locker.address;
