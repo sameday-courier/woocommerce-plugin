@@ -612,22 +612,22 @@ function enqueue_button_scripts(): void
                 ]
             );
             $cachedCities = (new SamedayCityRepository())->getCachedCities();
-            $citiesForCheckout = [];
-            foreach ($cachedCities as $countryCode => $cityModels) {
-                $citiesForCheckout[$countryCode] = array_map(
-                    static function ($city) {
-                        if ($city instanceof SamedayCity) {
-                            return $city->toCheckoutLegacyArray();
-                        }
+            $citiesForCheckout = array_map(static function ($cityModels) {
+                return array_map(
+                        static function ($city) {
+                            if ($city instanceof SamedayCity) {
+                                return $city->toArray();
+                            }
 
-                        return [
-                            'city_name' => $city['city_name'] ?? null,
-                            'county_code' => $city['county_code'] ?? null,
-                        ];
-                    },
-                    $cityModels
+                            return
+                            [
+                                'city_name' => $city['city_name'] ?? null,
+                                'county_code' => $city['county_code'] ?? null,
+                            ];
+                        },
+                        $cityModels
                 );
-            }
+            }, $cachedCities);
 
 	        wp_localize_script('county-city-handle',
                 'samedayCourierData',
