@@ -67,14 +67,12 @@ final class RemoveAwb
         if (isset($errors)) {
 
             return new RemoveAwbResponse(
-                $awb->getOrderId(),
                 Helper::parseAwbErrors($errors),
                 ResponseNoticeType::ERROR,
             );
         }
 
         return new RemoveAwbResponse(
-            $awb->getOrderId(),
             "Awb removed with success.",
             ResponseNoticeType::SUCCESS,
         );

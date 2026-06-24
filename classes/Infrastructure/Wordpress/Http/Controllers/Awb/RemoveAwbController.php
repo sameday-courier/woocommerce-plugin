@@ -6,10 +6,12 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
@@ -49,8 +51,21 @@ final class RemoveAwbController extends AbstractController
      */
     protected function processPostAction(array $inputParams): void
     {
-        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId((int) $inputParams['order-id'])) {
-            Redirector::to('index.php');
+        $orderId = (int) $inputParams['order-id'];
+        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId)
+        ) {
+            NoticerHandler::addFlashNotice(
+                TranslatorHandler::translate("Unable to remove awb for order $orderId"),
+                ResponseNoticeType::ERROR,
+            );
+
+            Redirector::to(
+                'post.php',
+                [
+                    'post' => $orderId,
+                    'action' => 'edit',
+                ]
+            );
         }
 
         $removeAwb = new RemoveAwb(new RemoveAwbRequest($awb));
@@ -67,9 +82,8 @@ final class RemoveAwbController extends AbstractController
         Redirector::to(
             'post.php',
             [
-                'post' => $result->getOrderId(),
+                'post' => $orderId,
                 'action' => 'edit',
-                'remove-awb' => $result->getNoticeType(),
             ]
         );
     }
