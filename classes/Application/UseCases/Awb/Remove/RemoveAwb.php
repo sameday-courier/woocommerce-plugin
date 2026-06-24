@@ -68,15 +68,15 @@ final class RemoveAwb
 
             return new RemoveAwbResponse(
                 $awb->getOrderId(),
-                ResponseNoticeType::ERROR,
                 Helper::parseAwbErrors($errors),
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new RemoveAwbResponse(
             $awb->getOrderId(),
-            ResponseNoticeType::SUCCESS,
             "Awb removed with success.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

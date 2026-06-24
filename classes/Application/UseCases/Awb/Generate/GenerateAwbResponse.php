@@ -16,14 +16,14 @@ final class GenerateAwbResponse implements ResponseInterface
     use NoticerTrait;
 
     /**
-     * @param string $noticeType
      * @param string|null $noticeMessage
+     * @param string $noticeType
      */
     public function __construct(
-        string $noticeType,
-        ?string $noticeMessage = null
+        ?string $noticeMessage,
+        string $noticeType
     ) {
-        $this->noticeType = $noticeType;
         $this->noticeMessage = $noticeMessage;
+        $this->noticeType = $noticeType;
     }
 }

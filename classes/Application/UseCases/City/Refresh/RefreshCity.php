@@ -62,8 +62,8 @@ final class RefreshCity
         $cities = FileReadHandler::readJsonFile("cities");
         if (null === $cities) {
             return new RefreshCityResponse(
-                ResponseNoticeType::ERROR,
                 'Unable to get cities',
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -83,8 +83,8 @@ final class RefreshCity
         );
 
         return new RefreshCityResponse(
-            ResponseNoticeType::SUCCESS,
             "All cities have been refreshed",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

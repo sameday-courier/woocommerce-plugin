@@ -41,15 +41,15 @@ final class ChangeLocker
     {
         if ($this->orderId <= 0) {
             return new ChangeLockerResponse(
-                ResponseNoticeType::ERROR,
                 'Invalid order id.',
+                ResponseNoticeType::ERROR,
             );
         }
 
         if (null === $this->locker || '' === $this->locker) {
             return new ChangeLockerResponse(
-                ResponseNoticeType::ERROR,
                 'Locker data is required.',
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -57,14 +57,14 @@ final class ChangeLocker
             Helper::addLockerToOrderData($this->orderId, $this->locker);
         } catch (JsonException|Exception $exception) {
             return new ChangeLockerResponse(
-                ResponseNoticeType::ERROR,
                 $exception->getMessage(),
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new ChangeLockerResponse(
-            ResponseNoticeType::SUCCESS,
             'Locker successfully updated.',
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

@@ -37,14 +37,14 @@ final class GetCounties
                 ->getCounties();
         } catch (Exception $exception) {
             return new GetCountiesResponse(
-                ResponseNoticeType::ERROR,
                 $exception->getMessage(),
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new GetCountiesResponse(
-            ResponseNoticeType::SUCCESS,
             null,
+            ResponseNoticeType::SUCCESS,
             array_map(
                 static function (CountyObject $county): array {
                     return [

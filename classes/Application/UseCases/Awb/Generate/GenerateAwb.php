@@ -79,15 +79,15 @@ final class GenerateAwb
 
         if (empty(OptionsHandler::getSamedayOptions())) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
                 "No sameday options available.",
+                ResponseNoticeType::ERROR,
             );
         }
 
         if (empty($item->getShippingLines())) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
-                "No shipping lines for this awb item."
+                "No shipping lines for this awb item.",
+                ResponseNoticeType::ERROR
             );
         }
 
@@ -95,8 +95,8 @@ final class GenerateAwb
 
         if (null === $service) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
                 "Selected service could not be found.",
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -182,8 +182,8 @@ final class GenerateAwb
 
         if (!empty($inputErrors)) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
                 implode('<br />', $inputErrors),
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -346,8 +346,8 @@ final class GenerateAwb
 
         if (null !== $errors && null === $awb) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
                 Helper::parseAwbErrors($errors),
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -403,14 +403,14 @@ final class GenerateAwb
             );
         } catch (Exception $exception) {
             return new GenerateAwbResponse(
-                ResponseNoticeType::ERROR,
                 $exception->getMessage(),
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new GenerateAwbResponse(
-            ResponseNoticeType::SUCCESS,
             "Awb generated successfully.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

@@ -51,8 +51,8 @@ final class ShowAsPdfAwb
         if (null === $awb) {
             return new ShowAsPdfAwbResponse(
                 $orderId,
-                ResponseNoticeType::ERROR,
                 'AWB not found for this order.',
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -76,15 +76,15 @@ final class ShowAsPdfAwb
         if (null !== $errorMessage && (null === $pdf || '' === $pdf)) {
             return new ShowAsPdfAwbResponse(
                 $orderId,
-                ResponseNoticeType::ERROR,
                 $errorMessage,
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new ShowAsPdfAwbResponse(
             $orderId,
-            ResponseNoticeType::SUCCESS,
             null,
+            ResponseNoticeType::SUCCESS,
             $pdf,
         );
     }

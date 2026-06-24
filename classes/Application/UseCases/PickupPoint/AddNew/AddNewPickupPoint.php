@@ -59,14 +59,14 @@ final class AddNewPickupPoint
             $this->sameday->postPickupPoint($request);
         } catch (Exception $exception) {
             return new AddNewPickupPointResponse(
-                ResponseNoticeType::ERROR,
                 $exception->getMessage(),
+                ResponseNoticeType::ERROR,
             );
         }
 
         return new AddNewPickupPointResponse(
-            ResponseNoticeType::SUCCESS,
             'Successfully added new pickup point.',
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

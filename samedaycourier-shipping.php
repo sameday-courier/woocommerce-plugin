@@ -480,7 +480,7 @@ add_action('wp_head', 'wps_locker_style');
 
 add_action('admin_head', static function () {
     echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'">
-                <input type="hidden" name="action" value="add_awb">
+                <input type="hidden" name="action" value="add-awb">
                 <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('add-awb').'">
           </form>
           <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'">

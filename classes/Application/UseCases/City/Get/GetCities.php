@@ -48,8 +48,8 @@ final class GetCities
                 $cities = $this->sameday->getCities($request);
             } catch (Exception $exception) {
                 return new GetCitiesResponse(
-                    ResponseNoticeType::ERROR,
                     $exception->getMessage(),
+                    ResponseNoticeType::ERROR,
                 );
             }
 
@@ -59,8 +59,8 @@ final class GetCities
         } while ($page <= $cities->getPages());
 
         return new GetCitiesResponse(
-            ResponseNoticeType::SUCCESS,
             null,
+            ResponseNoticeType::SUCCESS,
             array_map(
                 static function (CityObject $city): array {
                     return [

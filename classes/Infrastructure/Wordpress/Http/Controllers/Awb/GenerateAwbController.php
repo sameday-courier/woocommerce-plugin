@@ -49,7 +49,19 @@ final class GenerateAwbController extends AbstractController
         $orderData = WcHandler::getShippingOrderById($orderId);
 
         if (empty($orderData)) {
-            Redirector::to('index.php');
+            NoticerHandler::addFlashNotice(
+                TranslatorHandler::translate("There is no data to process."),
+                ResponseNoticeType::ERROR,
+            );
+
+            Redirector::to(
+                'post.php',
+                [
+                    'id' => $orderId,
+                    'post' => $orderId,
+                    'action' => 'edit',
+                ]
+            );
         }
 
         $data = array_merge($inputParams, $orderData);

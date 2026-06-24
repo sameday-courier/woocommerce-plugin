@@ -75,8 +75,8 @@ final class EditService
         if (!empty($errors)) {
             return new EditServiceResponse(
                 $serviceId,
-                ResponseNoticeType::ERROR,
                 implode(' ', $errors),
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -89,8 +89,8 @@ final class EditService
         if (null === $currentService) {
             return new EditServiceResponse(
                 $serviceId,
-                ResponseNoticeType::ERROR,
                 "Unable to find service $serviceId",
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -121,8 +121,8 @@ final class EditService
 
         return new EditServiceResponse(
             $serviceId,
-            ResponseNoticeType::SUCCESS,
             "Service has been edited",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

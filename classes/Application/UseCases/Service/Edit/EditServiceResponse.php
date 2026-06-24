@@ -22,17 +22,17 @@ final class EditServiceResponse implements ResponseInterface
 
     /**
      * @param int $serviceId
-     * @param string $noticeType
      * @param string|null $noticeMessage
+     * @param string $noticeType
      */
     public function __construct(
         int $serviceId,
-        string $noticeType,
-        ?string $noticeMessage = null
+        ?string $noticeMessage,
+        string $noticeType
     ) {
         $this->serviceId = $serviceId;
-        $this->noticeType = $noticeType;
         $this->noticeMessage = $noticeMessage;
+        $this->noticeType = $noticeType;
     }
 
     /**

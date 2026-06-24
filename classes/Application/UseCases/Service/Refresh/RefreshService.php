@@ -55,8 +55,8 @@ final class RefreshService
                 $services = $this->sameday->getServices($request);
             } catch (Exception $e) {
                 return new RefreshServiceResponse(
-                    ResponseNoticeType::ERROR,
                     $e->getMessage(),
+                    ResponseNoticeType::ERROR,
                 );
             }
 
@@ -106,8 +106,8 @@ final class RefreshService
         }
 
         return new RefreshServiceResponse(
-            ResponseNoticeType::SUCCESS,
             "Service successfully refreshed.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

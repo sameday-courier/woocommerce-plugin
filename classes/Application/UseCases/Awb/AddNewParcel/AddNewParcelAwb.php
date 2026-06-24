@@ -54,8 +54,8 @@ final class AddNewParcelAwb
         if (null === $awb) {
             return new AddNewParcelAwbResponse(
                 $this->addNewParcelAwbRequest->getOrderId(),
-                ResponseNoticeType::ERROR,
                 'AWB not found for this order.',
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -96,8 +96,8 @@ final class AddNewParcelAwb
 
             return new AddNewParcelAwbResponse(
                 $this->addNewParcelAwbRequest->getOrderId(),
-                ResponseNoticeType::ERROR,
                 Helper::parseAwbErrors($errors),
+                ResponseNoticeType::ERROR,
             );
         }
 
@@ -115,8 +115,8 @@ final class AddNewParcelAwb
 
         return new AddNewParcelAwbResponse(
             $this->addNewParcelAwbRequest->getOrderId(),
-            ResponseNoticeType::SUCCESS,
             "AWB added new parcel successfully.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 

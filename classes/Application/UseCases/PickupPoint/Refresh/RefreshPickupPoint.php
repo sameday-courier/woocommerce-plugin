@@ -53,8 +53,8 @@ final class RefreshPickupPoint
             } catch (Exception $e) {
 
                 return new RefreshPickupPointResponse(
-                    ResponseNoticeType::ERROR,
                     $e->getMessage(),
+                    ResponseNoticeType::ERROR,
                 );
             }
 
@@ -87,8 +87,8 @@ final class RefreshPickupPoint
         }
 
         return new RefreshPickupPointResponse(
-            ResponseNoticeType::SUCCESS,
             "Pickup points successfully refreshed.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 }

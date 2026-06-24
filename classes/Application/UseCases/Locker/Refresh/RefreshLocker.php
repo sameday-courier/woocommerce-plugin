@@ -54,8 +54,8 @@ final class RefreshLocker
             } catch (Exception $e) {
 
                 return new RefreshLockerResponse(
-                    ResponseNoticeType::ERROR,
                     $e->getMessage(),
+                    ResponseNoticeType::ERROR,
                 );
             }
 
@@ -90,8 +90,8 @@ final class RefreshLocker
         $this->updateLastSyncTimestamp();
 
         return new RefreshLockerResponse(
-            ResponseNoticeType::SUCCESS,
             "Lockers successfully refreshed.",
+            ResponseNoticeType::SUCCESS,
         );
     }
 

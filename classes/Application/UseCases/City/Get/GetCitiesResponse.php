@@ -21,18 +21,18 @@ final class GetCitiesResponse implements ResponseInterface
     private array $cities;
 
     /**
-     * @param string $noticeType
      * @param string|null $noticeMessage
+     * @param string $noticeType
      * @param array<int, array{id: int, name: string}> $cities
      */
     public function __construct(
+        ?string $noticeMessage,
         string $noticeType,
-        ?string $noticeMessage = null,
         array $cities = []
     )
     {
-        $this->noticeType = $noticeType;
         $this->noticeMessage = $noticeMessage;
+        $this->noticeType = $noticeType;
         $this->cities = $cities;
     }
 

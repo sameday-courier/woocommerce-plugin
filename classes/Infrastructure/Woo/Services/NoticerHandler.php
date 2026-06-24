@@ -21,16 +21,16 @@ class NoticerHandler
      * @return void
      */
     public static function addFlashNotice(
-        string $notice_message = "",
-        string $type = "warning",
+        string $noticeMessage = "",
+        string $noticeType = "warning",
         bool $dismissible = true
     ): void
     {
         OptionsHandler::setOption(
             self::NOTICE_KEY,
             [
-                "message" => $notice_message,
-                "type" => $type,
+                "message" => $noticeMessage,
+                "type" => $noticeType,
                 "dismissible" => $dismissible
             ]
         );
