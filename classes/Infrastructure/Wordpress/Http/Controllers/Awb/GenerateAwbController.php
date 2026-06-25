@@ -14,6 +14,8 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRep
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbResolutionFactoryBuilder;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
@@ -85,13 +87,16 @@ final class GenerateAwbController extends AbstractController
         }
 
         $dbHandler = new DbHandler();
+        $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
         $generateAwb = new GenerateAwb(
             new GenerateAwbRequest(
                 GenerateAwbItem::fromArray($data),
                 $samedayApiClient,
                 $dbHandler,
-                new SamedayServiceRepository($dbHandler),
+                $samedayServiceRepository,
                 new SamedayAwbRepository($dbHandler),
+                new GenerateAwbValidator($samedayServiceRepository),
+                GenerateAwbResolutionFactoryBuilder::build($samedayServiceRepository),
             )
         );
 

@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\Awb\Generate\GenerateAwbResolutionFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
@@ -15,49 +16,35 @@ if (!defined('ABSPATH')) {
 
 final class GenerateAwbRequest
 {
-    /**
-     * @var GenerateAwbItem $generateAwbItem
-     */
     public GenerateAwbItem $generateAwbItem;
 
-    /**
-     * @var Sameday $sameday
-     */
     public Sameday $sameday;
 
-    /**
-     * @var DbHandler $dbHandler
-     */
     public DbHandler $dbHandler;
 
-    /**
-     * @var SamedayServiceRepository $samedayServiceRepository
-     */
     public SamedayServiceRepository $samedayServiceRepository;
 
-    /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
     public SamedayAwbRepository $samedayAwbRepository;
 
-    /**
-     * @param GenerateAwbItem $generateAwbItem
-     * @param Sameday $sameday
-     * @param DbHandler $dbHandler
-     * @param SamedayServiceRepository $samedayServiceRepository
-     * @param SamedayAwbRepository $samedayAwbRepository
-     */
+    public GenerateAwbValidator $generateAwbValidator;
+
+    public GenerateAwbResolutionFactory $generateAwbResolutionFactory;
+
     public function __construct(
         GenerateAwbItem $generateAwbItem,
         Sameday $sameday,
         DbHandler $dbHandler,
         SamedayServiceRepository $samedayServiceRepository,
-        SamedayAwbRepository $samedayAwbRepository
+        SamedayAwbRepository $samedayAwbRepository,
+        GenerateAwbValidator $generateAwbValidator,
+        GenerateAwbResolutionFactory $generateAwbResolutionFactory
     ) {
         $this->generateAwbItem = $generateAwbItem;
         $this->sameday = $sameday;
         $this->dbHandler = $dbHandler;
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;
+        $this->generateAwbValidator = $generateAwbValidator;
+        $this->generateAwbResolutionFactory = $generateAwbResolutionFactory;
     }
 }

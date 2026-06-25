@@ -278,32 +278,6 @@ class Helper
     }
 
     /**
-     * @param array $errors
-     *
-     * @return string
-     */
-    public static function parseAwbErrors(array $errors): string
-    {
-        $allErrors = array();
-        foreach ($errors as $error) {
-            if (isset($error['errors'])) {
-                foreach ($error['errors'] as $message) {
-                    $allErrors[] = implode('.', $error['key']) . ': ' . $message;
-                }
-            } else {
-                $allErrors[] = sprintf('%s : %s',
-                    $error['code'] ?? 'Generic Error',
-                    $error['message'] ?? 'Something went wrong'
-                );
-            }
-        }
-
-        return implode('<br/>', $allErrors);
-    }
-
-
-
-    /**
      * @param $string
      *
      * @return string|string[]
