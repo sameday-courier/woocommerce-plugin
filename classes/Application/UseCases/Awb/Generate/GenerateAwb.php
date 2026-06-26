@@ -20,6 +20,8 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
+use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -32,9 +34,9 @@ if (!defined('ABSPATH')) {
 final class GenerateAwb
 {
     /**
-     * @var GenerateAwbRequest
+     * @var GenerateAwbItem $awbItem
      */
-    private GenerateAwbRequest $generateAwbRequest;
+    private GenerateAwbItem $awbItem;
 
     /**
      * @var Sameday $sameday
@@ -56,9 +58,11 @@ final class GenerateAwb
      */
     private DbHandler $dbHandler;
 
-    public function __construct(GenerateAwbRequest $generateAwbRequest)
+    public function __construct(
+        GenerateAwbRequest $generateAwbRequest
+    )
     {
-        $this->generateAwbRequest = $generateAwbRequest;
+        $this->awbItem = $generateAwbRequest->generateAwbItem;
         $this->sameday = $generateAwbRequest->sameday;
         $this->dbHandler = $generateAwbRequest->dbHandler;
         $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
@@ -73,30 +77,22 @@ final class GenerateAwb
      */
     public function execute(): GenerateAwbResponse
     {
-        $item = $this->generateAwbRequest->generateAwbItem;
+        $item = $this->awbItem;
         $shipping = $item->getShipping();
         $billing = $item->getBilling();
 
-        if (empty(OptionsHandler::getSamedayOptions())) {
-            return new GenerateAwbResponse(
-                "No sameday options available.",
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        if (empty($item->getShippingLines())) {
-            return new GenerateAwbResponse(
-                "No shipping lines for this awb item.",
-                ResponseNoticeType::ERROR
-            );
-        }
-
         $service = $this->samedayServiceRepository->getServiceSameday($item->getServiceId());
+        $awbValidator = (new GenerateAwbValidator(
+            new GenerateAwbValidatorRequest(
+                $service,
+                $item
+            )
+        ))->validate();
 
-        if (null === $service) {
+        if ($awbValidator->hasErrors()) {
             return new GenerateAwbResponse(
-                "Selected service could not be found.",
-                ResponseNoticeType::ERROR,
+                $awbValidator->toString(),
+                ResponseNoticeType::ERROR
             );
         }
 
@@ -170,22 +166,6 @@ final class GenerateAwb
             ltrim($shipping->getFirstName() ?? ''),
             ltrim($shipping->getLastName() ?? '')
         );
-
-        $inputErrors = null;
-        if ('' === $phone = $billing->getPhone() ?? '') {
-            $inputErrors[] = __('Must complete phone number!', SamedayConstants::TEXT_DOMAIN);
-        }
-
-        if ('' === $email = $billing->getEmail() ?? '') {
-            $inputErrors[] = __('Must complete email!', SamedayConstants::TEXT_DOMAIN);
-        }
-
-        if (!empty($inputErrors)) {
-            return new GenerateAwbResponse(
-                implode('<br />', $inputErrors),
-                ResponseNoticeType::ERROR,
-            );
-        }
 
         $lockerId = null;
         $oohLastMile = null;
@@ -346,7 +326,7 @@ final class GenerateAwb
 
         if (null !== $errors && null === $awb) {
             return new GenerateAwbResponse(
-                Helper::parseAwbErrors($errors),
+                $this->parseAwbErrors($errors),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -412,5 +392,29 @@ final class GenerateAwb
             "Awb generated successfully.",
             ResponseNoticeType::SUCCESS,
         );
+    }
+
+    /**
+     * @param array $errors
+     *
+     * @return string
+     */
+    private function parseAwbErrors(array $errors): string
+    {
+        $allErrors = array();
+        foreach ($errors as $error) {
+            if (isset($error['errors'])) {
+                foreach ($error['errors'] as $message) {
+                    $allErrors[] = implode('.', $error['key']) . ': ' . $message;
+                }
+            } else {
+                $allErrors[] = sprintf('%s : %s',
+                    $error['code'] ?? 'Generic Error',
+                    $error['message'] ?? 'Something went wrong'
+                );
+            }
+        }
+
+        return implode('<br/>', $allErrors);
     }
 }

@@ -30,6 +30,9 @@ final class GenerateAwbController extends AbstractController
 {
     private const ACTION = "add-awb";
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
