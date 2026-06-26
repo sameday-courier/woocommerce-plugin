@@ -19,6 +19,8 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
@@ -78,8 +80,6 @@ final class GenerateAwb
     public function execute(): GenerateAwbResponse
     {
         $item = $this->awbItem;
-        $shipping = $item->getShipping();
-        $billing = $item->getBilling();
 
         $service = $this->samedayServiceRepository->getServiceSameday($item->getServiceId());
         $awbValidator = (new GenerateAwbValidator(
@@ -96,76 +96,15 @@ final class GenerateAwb
             );
         }
 
-        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes(
-            $service->getSamedayId()
-        );
-        $serviceTaxIds = [];
+        $serviceTaxIds = (new AwbGenerateServiceTaxResolver(
+            $service,
+            $this->samedayServiceRepository,
+            $item,
+        ))->resolve();
 
-        if ($item->hasOpenPackage()) {
-            foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $item->getPackageType()
-                ) {
-                    $serviceTaxIds[] = SamedayConstants::OPEN_PACKAGE_OPTION_CODE;
-
-                    break;
-                }
-            }
-        }
-
-        if ($item->hasLockerFirstMile()) {
-            foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $item->getPackageType()
-                ) {
-                    $serviceTaxIds[] = SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE;
-                    break;
-                }
-            }
-        }
-
-        $city = $shipping->getCity();
-        if ('' === $city || null === $city) {
-            $city = $billing->getCity();
-        }
-
-        $state = $shipping->getState();
-        if ('' === $state || null === $state) {
-            $state = $billing->getState();
-        }
-
-        $country = $shipping->getCountry();
-        if ('' === $country || null === $country) {
-            $country = $billing->getCountry();
-        }
-
-        $postalCode = $shipping->getPostcode();
-        if ('' === $postalCode || null === $postalCode) {
-            $postalCode = $billing->getPostcode();
-        }
-        if (false === Helper::validatePostalCode($postalCode, $state)) {
-            $postalCode = null;
-        }
-
-        $county = Helper::convertStateCodeToName(
-            $country,
-            $state
-        );
-
-        $address = sprintf(
-            '%s %s',
-            ltrim($shipping->getAddress1() ?? ''),
-            ltrim($shipping->getAddress2() ?? '')
-        );
-
-        $address_1 = $shipping->getAddress1();
-        $address_2 = $shipping->getAddress2();
-
-        $name = sprintf(
-            '%s %s',
-            ltrim($shipping->getFirstName() ?? ''),
-            ltrim($shipping->getLastName() ?? '')
-        );
+        $awbRecipient = (new AwbGenerateRecipientResolver(
+            $item
+        ))->resolve();
 
         $lockerId = null;
         $oohLastMile = null;
@@ -235,16 +174,7 @@ final class GenerateAwb
             }
         }
 
-        $companyObject = null;
-        if ('' !== ($shipping->getCompany() ?? '')) {
-            $companyObject = new CompanyEntityObject(
-                $shipping->getCompany(),
-                '',
-                '',
-                '',
-                ''
-            );
-        }
+
 
         $request = new SamedayPostAwbRequest(
             $item->getPickupPointId(),
@@ -253,16 +183,7 @@ final class GenerateAwb
             $item->getParcelsDimensions(),
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
-            new AwbRecipientEntityObject(
-                $city,
-                $county,
-                $address,
-                $name,
-                $phone,
-                $email,
-                $companyObject,
-                $postalCode
-            ),
+            $awbRecipient,
             $item->getInsuranceValue(),
             $item->getRepayment(),
             new CodCollectorType(CodCollectorType::CLIENT),
