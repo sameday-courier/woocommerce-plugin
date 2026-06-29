@@ -555,7 +555,8 @@ class Helper
 			update_post_meta($orderId, $key, $value, false);
 		}
 
-        WooOrderAddressRepository::updateWcOrderAddress(
+        $wooOrderAddressRepository = new WooOrderAddressRepository();
+        $wooOrderAddressRepository->updateWcOrderAddress(
             $orderId,
             [
                 'address_1' => $address1,

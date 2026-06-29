@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class ShippingObject
+final class ShippingDto
 {
     use AddressObjectTrait;
 }

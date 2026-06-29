@@ -19,6 +19,7 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
@@ -111,27 +112,21 @@ final class GenerateAwb
         if (null !== ($locker = $item->getLocker())
             && Helper::isOohDeliveryOption($service->getSamedayCode())
         ) {
-            $locker = json_decode(
-                $locker,
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-
             if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $lockerId = $locker['id'] ?? $locker['lockerId'];
+                $lockerId = $locker->getLockerId();
             }
 
             if ($service->getSamedayCode() === SamedayConstants::PUDO_CODE) {
-                $oohLastMile = $locker['id'] ?? $locker['lockerId'];
+                $oohLastMile = $locker->getLockerId();
             }
 
-            $city = $locker['city'] ?? $city;
-            $county = $locker['county'] ?? $county;
-            $address = $locker['address'] ?? $address;
-            $postalCode = $locker['postalCode'] ?? $postalCode;
+            $city = $locker->getCity();
+            $county = $locker->getCounty();
+            $address = $locker->getAddress();
+            $postalCode = $locker->getPostalCode();
             $address_1 = $address;
-            $address_2 = $locker['name'];
+            $address_2 = $locker->getName();
+            $country = $item->getShipping()->getCountry() ?? $item->getBilling()->getCountry();
             $state = Helper::convertStateNameToCode($country, $county);
         }
 

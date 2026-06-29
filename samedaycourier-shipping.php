@@ -292,11 +292,12 @@ function wps_locker_row_layout() {
             <?php } ?>
         <?php } else { ?>
             <?php
-                $cities = SamedayLockerRepository::getCitiesWithLockers();
+                $samedayLockerRepository = new SamedayLockerRepository();
+                $cities = $samedayLockerRepository->getCitiesWithLockers();
                 $lockers = array();
                 foreach ($cities as $city) {
                     if (null !== $city->getCity()) {
-                        $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = SamedayLockerRepository::getLockersByCity(
+                        $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = $samedayLockerRepository->getLockersByCity(
                             (string) $city->getCity()
                         );
                     }

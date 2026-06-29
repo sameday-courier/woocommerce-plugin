@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class BillingObject
+final class BillingDto
 {
     use AddressObjectTrait;
 }

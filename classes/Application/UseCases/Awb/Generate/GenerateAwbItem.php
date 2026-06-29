@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
+use JsonException;
 use Sameday\Objects\ParcelDimensionsObject;
-use SamedayCourier\Shipping\Domain\DTOs\BillingObject;
-use SamedayCourier\Shipping\Domain\DTOs\ShippingObject;
+use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -23,11 +25,14 @@ final class GenerateAwbItem
      */
     private array $shippingLines;
 
-    private ShippingObject $shipping;
+    private ShippingDto $shipping;
 
-    private BillingObject $billing;
+    private BillingDto $billing;
 
-    private ?string $locker;
+    /**
+     * @var LockerDto|null
+     */
+    private LockerDto $locker;
 
     private bool $hasOpenPackage;
 
@@ -62,9 +67,9 @@ final class GenerateAwbItem
      * @param int $orderId
      * @param int $serviceId
      * @param array<int, mixed> $shippingLines
-     * @param ShippingObject $shipping
-     * @param BillingObject $billing
-     * @param string|null $locker
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     * @param LockerDto $locker
      * @param bool $hasOpenPackage
      * @param bool $hasLockerFirstMile
      * @param int $packageType
@@ -80,9 +85,9 @@ final class GenerateAwbItem
         int $orderId,
         int $serviceId,
         array $shippingLines,
-        ShippingObject $shipping,
-        BillingObject $billing,
-        ?string $locker,
+        ShippingDto $shipping,
+        BillingDto $billing,
+        LockerDto $locker,
         bool $hasOpenPackage,
         bool $hasLockerFirstMile,
         int $packageType,
@@ -151,13 +156,22 @@ final class GenerateAwbItem
             );
         }
 
+        if ('' !== $lockerData = $data['locker']) {
+            try {
+                $lockerData = json_decode($lockerData, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $lockerData = [];
+            }
+        }
+
+
         return new self(
             (int) $data['samedaycourier-order-id'],
             (int) $data['samedaycourier-service'],
             (array) ($data['shipping_lines'] ?? []),
-            ShippingObject::fromArray((array) ($data['shipping'] ?? [])),
-            BillingObject::fromArray((array) ($data['billing'] ?? [])),
-            '' !== ($data['locker'] ?? '') ? (string) $data['locker'] : null,
+            ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
+            BillingDto::fromArray((array) ($data['billing'] ?? [])),
+            LockerDto::fromArray((array) $lockerData),
             isset($data['samedaycourier-open-package-status']),
             isset($data['samedaycourier-locker_first_mile']),
             (int) $data['samedaycourier-package-type'],
@@ -190,25 +204,25 @@ final class GenerateAwbItem
     }
 
     /**
-     * @return ShippingObject
+     * @return ShippingDto
      */
-    public function getShipping(): ShippingObject
+    public function getShipping(): ShippingDto
     {
         return $this->shipping;
     }
 
     /**
-     * @return BillingObject
+     * @return BillingDto
      */
-    public function getBilling(): BillingObject
+    public function getBilling(): BillingDto
     {
         return $this->billing;
     }
 
     /**
-     * @return string|null
+     * @return LockerDto|null
      */
-    public function getLocker(): ?string
+    public function getLocker(): ?LockerDto
     {
         return $this->locker;
     }
