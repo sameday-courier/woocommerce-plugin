@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateServiceTaxResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 
 if (!defined('ABSPATH')) {
@@ -42,9 +43,9 @@ class AwbGenerateServiceTaxResolver
     }
 
     /**
-     * @return array
+     * @return AwbGenerateServiceTaxResponse
      */
-    public function resolve(): array
+    public function resolve(): AwbGenerateServiceTaxResponse
     {
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes(
             $this->samedayService->getSamedayId()
@@ -76,6 +77,6 @@ class AwbGenerateServiceTaxResolver
             }
         }
 
-        return $serviceTaxIds;
+        return new AwbGenerateServiceTaxResponse($serviceTaxIds);
     }
 }

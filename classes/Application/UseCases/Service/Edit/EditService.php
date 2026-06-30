@@ -85,7 +85,7 @@ final class EditService
             $priceFree = (float) $postFields['price_free']['value'];
         }
 
-        $currentService = $this->samedayServiceRepository->getService($serviceId);
+        $currentService = $this->samedayServiceRepository->getServiceById($serviceId);
         if (null === $currentService) {
             return new EditServiceResponse(
                 $serviceId,

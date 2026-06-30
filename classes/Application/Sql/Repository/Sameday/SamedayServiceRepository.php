@@ -94,7 +94,7 @@ class SamedayServiceRepository extends AbstractRepository
      *
      * @return SamedayService|null
      */
-    public function getService(int $id): ?SamedayService
+    public function getServiceById(int $id): ?SamedayService
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE id = %d LIMIT 1",

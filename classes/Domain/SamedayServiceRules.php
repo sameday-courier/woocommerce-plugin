@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Utils\Helper;
 
@@ -23,7 +22,9 @@ final class SamedayServiceRules
     /**
      * @param SamedayServiceRepository $samedayServiceRepository
      */
-    public function __construct(SamedayServiceRepository $samedayServiceRepository)
+    public function __construct(
+        SamedayServiceRepository $samedayServiceRepository
+    )
     {
         $this->samedayServiceRepository = $samedayServiceRepository;
     }
@@ -44,6 +45,15 @@ final class SamedayServiceRules
         }
 
         return false;
+    }
+
+    /**
+     * @param SamedayService $samedayService
+     * @return bool
+     */
+    public function isOohDeliveryOption(SamedayService $samedayService): bool
+    {
+        return in_array($samedayService->getSamedayCode(), SamedayConstants::OOH_SERVICES, true);
     }
 
     /**

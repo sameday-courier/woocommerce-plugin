@@ -6,7 +6,12 @@ namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\DTOs\OohDto;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
@@ -31,9 +36,9 @@ class AwbGenerateRecipientResolver
     }
 
     /**
-     * @return AwbRecipientEntityObject
+     * @return AwbGenerateRecipientResponse
      */
-    public function resolve(): AwbRecipientEntityObject
+    public function resolve(): AwbGenerateRecipientResponse
     {
         $shipping = $this->awbItem->getShipping();
         $billing = $this->awbItem->getBilling();
@@ -78,7 +83,7 @@ class AwbGenerateRecipientResolver
             ltrim($lastName)
         );
 
-        return new AwbRecipientEntityObject(
+        $awbRecipient = new AwbRecipientEntityObject(
             $city,
             $county,
             $address,
@@ -88,6 +93,84 @@ class AwbGenerateRecipientResolver
             $companyObject,
             $postalCode
         );
+
+        $service = $this->awbItem->getService();
+
+        $lockerId = null;
+        $oohLastMile = null;
+        if ($this->isOohDeliveryType() && $this->hasLocker($locker = $this->awbItem->getLocker())) {
+            if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+                $lockerId = $locker->getLockerId();
+            }
+
+            if ($service->getSamedayCode() === SamedayConstants::PUDO_CODE) {
+                $oohLastMile = $locker->getLockerId();
+            }
+
+            // Overwrite recipient data with OOH data for the delivery
+            $awbRecipient->setCity($locker->getCity());
+            $awbRecipient->setCounty($locker->getCounty());
+            $awbRecipient->setAddress($locker->getAddress());
+            $awbRecipient->setPostalCode($locker->getPostalCode());
+        }
+
+        $post_meta_samedaycourier_address_hd = Helper::parsePostMetaSamedaycourierAddressHd($this->awbItem->getOrderId());
+
+        if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
+            $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
+            $county = Helper::convertStateCodeToName(
+                $post_meta_samedaycourier_address_hd['country'],
+                $post_meta_samedaycourier_address_hd['state']
+            );
+            $awbRecipient->setCounty($county);
+            $address = sprintf(
+                '%s %s',
+                $post_meta_samedaycourier_address_hd['address_1'],
+                $post_meta_samedaycourier_address_hd['address_2']
+            );
+            $awbRecipient->setAddress($address);
+            $awbRecipient->setPostalCode($post_meta_samedaycourier_address_hd['postcode']);
+        }
+
+        $ooh = new OohDto(
+            $lockerId,
+            $oohLastMile
+        );
+
+        return new AwbGenerateRecipientResponse(
+            $ooh,
+            $awbRecipient
+        );
+    }
+
+    /**
+     * @param string|null $locker
+     *
+     * @return bool
+     */
+    private function hasLocker(?string $locker): bool
+    {
+        return $locker !== null;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isOohDeliveryType(): bool
+    {
+        return (new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOption($this->awbItem->getService());
+    }
+
+    /**
+     * @return bool
+     */
+    private function isHomeDeliveryType(): bool
+    {
+        $post_meta_samedaycourier_address_hd = Helper::parsePostMetaSamedaycourierAddressHd(
+            $this->awbItem->getOrderId()
+        );
+
+        return $post_meta_samedaycourier_address_hd !== null;
     }
 }
 

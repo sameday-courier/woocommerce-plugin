@@ -585,10 +585,7 @@ class Helper
         }
     }
 
-    public static function isOohDeliveryOption(string $samedayServiceCode): bool
-    {
-        return in_array($samedayServiceCode, SamedayConstants::OOH_SERVICES, true);
-    }
+
 
     public static function isInUseServices(string $samedayServiceCode): bool
     {

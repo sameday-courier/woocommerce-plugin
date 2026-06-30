@@ -97,79 +97,14 @@ final class GenerateAwb
             );
         }
 
-        $serviceTaxIds = (new AwbGenerateServiceTaxResolver(
+        $serviceTaxResponse = (new AwbGenerateServiceTaxResolver(
             $service,
             $this->samedayServiceRepository,
             $item,
         ))->resolve();
 
-        $awbRecipient = (new AwbGenerateRecipientResolver(
-            $item
-        ))->resolve();
-
-        $lockerId = null;
-        $oohLastMile = null;
-        if (null !== ($locker = $item->getLocker())
-            && Helper::isOohDeliveryOption($service->getSamedayCode())
-        ) {
-            if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $lockerId = $locker->getLockerId();
-            }
-
-            if ($service->getSamedayCode() === SamedayConstants::PUDO_CODE) {
-                $oohLastMile = $locker->getLockerId();
-            }
-
-            $city = $locker->getCity();
-            $county = $locker->getCounty();
-            $address = $locker->getAddress();
-            $postalCode = $locker->getPostalCode();
-            $address_1 = $address;
-            $address_2 = $locker->getName();
-            $country = $item->getShipping()->getCountry() ?? $item->getBilling()->getCountry();
-            $state = Helper::convertStateNameToCode($country, $county);
-        }
-
-        $post_meta_samedaycourier_address_hd = Helper::parsePostMetaSamedaycourierAddressHd(
-            $item->getOrderId()
-        );
-        if (!Helper::isOohDeliveryOption($service->getSamedayCode())) {
-            if (null !== $post_meta_samedaycourier_address_hd) {
-                $city = $post_meta_samedaycourier_address_hd['city'];
-                $county = Helper::convertStateCodeToName(
-                    $post_meta_samedaycourier_address_hd['country'],
-                    $post_meta_samedaycourier_address_hd['state']
-                );
-                $address = sprintf(
-                    '%s %s',
-                    $post_meta_samedaycourier_address_hd['address_1'],
-                    $post_meta_samedaycourier_address_hd['address_2']
-                );
-                $postalCode = $post_meta_samedaycourier_address_hd['postcode'];
-
-                $address_1 = $post_meta_samedaycourier_address_hd['address_1'];
-                $address_2 = $post_meta_samedaycourier_address_hd['address_2'];
-                $state = $post_meta_samedaycourier_address_hd['state'];
-            } else {
-                $city = $billing->getCity();
-                $address_1 = $billing->getAddress1();
-                $address_2 = $billing->getAddress2();
-                $address = sprintf(
-                    '%s %s',
-                    $address_1,
-                    $address_2
-                );
-                $country = $billing->getCountry();
-                $state = $billing->getState();
-                $county = Helper::convertStateCodeToName(
-                    $country,
-                    $state
-                );
-                $postalCode = $billing->getPostcode();
-            }
-        }
-
-
+        $awbRecipientResolver = new AwbGenerateRecipientResolver($item);
+        $awbRecipient = $awbRecipientResolver->resolve();
 
         $request = new SamedayPostAwbRequest(
             $item->getPickupPointId(),
@@ -178,21 +113,21 @@ final class GenerateAwb
             $item->getParcelsDimensions(),
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
-            $awbRecipient,
+            $awbRecipient->getRecipient(),
             $item->getInsuranceValue(),
             $item->getRepayment(),
             new CodCollectorType(CodCollectorType::CLIENT),
             null,
-            $serviceTaxIds,
+            $serviceTaxResponse->getServiceTaxIds(),
             null,
             $item->getClientReference(),
             $item->getObservation(),
             '',
             '',
             null,
-            $lockerId,
+            $awbRecipient->getOoh()->getLockerId(),
             null,
-            $oohLastMile,
+            $awbRecipient->getOoh()->getOohLastMile(),
             SamedayConstants::CURRENCY_MAPPER[$country]
         );
 

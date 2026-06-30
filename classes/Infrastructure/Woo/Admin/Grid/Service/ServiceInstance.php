@@ -106,12 +106,11 @@ class ServiceInstance
     /**
      * @param $id
      *
-     * @return string|void
-     *
+     * @return string
      */
-	private function createServiceForm($id)
+	private function createServiceForm($id): string
     {
-        $service = $this->samedayServiceRepository->getService((int) $id);
+        $service = $this->samedayServiceRepository->getServiceById((int) $id);
 
         if (null === $service) {
 	        WC_Admin_Settings::add_error('No service available !');

@@ -6,9 +6,11 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use JsonException;
 use Sameday\Objects\ParcelDimensionsObject;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
+use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,7 +20,10 @@ final class GenerateAwbItem
 {
     private int $orderId;
 
-    private int $serviceId;
+    /**
+     * @var SamedayService $service
+     */
+    private SamedayService $service;
 
     /**
      * @var array<int, mixed>
@@ -65,7 +70,7 @@ final class GenerateAwbItem
 
     /**
      * @param int $orderId
-     * @param int $serviceId
+     * @param SamedayService $service
      * @param array<int, mixed> $shippingLines
      * @param ShippingDto $shipping
      * @param BillingDto $billing
@@ -83,7 +88,7 @@ final class GenerateAwbItem
      */
     public function __construct(
         int $orderId,
-        int $serviceId,
+        SamedayService $service,
         array $shippingLines,
         ShippingDto $shipping,
         BillingDto $billing,
@@ -100,7 +105,7 @@ final class GenerateAwbItem
         array $parcelsDimensions
     ) {
         $this->orderId = $orderId;
-        $this->serviceId = $serviceId;
+        $this->service = $service;
         $this->shippingLines = $shippingLines;
         $this->shipping = $shipping;
         $this->billing = $billing;
@@ -164,10 +169,12 @@ final class GenerateAwbItem
             }
         }
 
+        $serviceRepository = new SamedayServiceRepository();
+        $service = $serviceRepository->getServiceById($data['samedaycourier-service']);
 
         return new self(
             (int) $data['samedaycourier-order-id'],
-            (int) $data['samedaycourier-service'],
+            $service,
             (array) ($data['shipping_lines'] ?? []),
             ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
             BillingDto::fromArray((array) ($data['billing'] ?? [])),
@@ -190,9 +197,12 @@ final class GenerateAwbItem
         return $this->orderId;
     }
 
-    public function getServiceId(): int
+    /**
+     * @return SamedayService
+     */
+    public function getService(): SamedayService
     {
-        return $this->serviceId;
+        return $this->service;
     }
 
     /**
