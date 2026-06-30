@@ -29,6 +29,8 @@ class ControllersRegisterService
 {
     private const POST_CONTROLLERS = 'admin_post_';
     private const AJAX_CONTROLLERS = 'wp_ajax_';
+    private const METHOD = 'handle';
+
     private const CONTROLLERS =
     [
         self::POST_CONTROLLERS =>
@@ -66,7 +68,6 @@ class ControllersRegisterService
                     self::addHook($controllersType, $controller);
                 }
             }
-
         }
     }
 
@@ -82,7 +83,7 @@ class ControllersRegisterService
             $hookName . $controller->getAction(),
             [
                 $controller,
-                'handle'
+                self::METHOD
             ]
         );
     }
