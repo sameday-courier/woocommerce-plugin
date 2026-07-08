@@ -9,9 +9,12 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
+use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
+use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
 use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
@@ -50,7 +53,11 @@ class AwbGenerateRecipientResolver
         $lastName = $shipping->getLastName() ?? $billing->getLastName();
         $address_1 = $shipping->getAddress1() ?? $billing->getAddress1();
         $address_2 = $shipping->getAddress2() ?? $billing->getAddress2();
-        $postalCode = $shipping->getPostcode() ?? $billing->getPostcode();
+        $postalCode = PostalCode::tryCreate(
+            $shipping->getPostcode() ?? $billing->getPostcode(),
+            $state,
+            $country
+        )->getCode();
         $phone = $shipping->getPhone() ?? $billing->getPhone();
         $email = $shipping->getEmail() ?? $billing->getEmail();
         $companyObject = null;
@@ -62,36 +69,18 @@ class AwbGenerateRecipientResolver
             );
         }
 
-        if (false === Helper::validatePostalCode($postalCode, $state)) {
-            $postalCode = null;
-        }
-
-        $county = Helper::convertStateCodeToName(
-            $country,
-            $state
-        );
-
-        $address = sprintf(
-            '%s %s',
-            ltrim($address_1),
-            ltrim($address_2)
-        );
-
-        $name = sprintf(
-            '%s %s',
-            ltrim($firstName),
-            ltrim($lastName)
-        );
-
-        $awbRecipient = new AwbRecipientEntityObject(
-            $city,
-            $county,
-            $address,
-            $name,
-            $phone,
-            $email,
+        $awbRecipient = new RecipientDto(
+            $firstName,
+            $lastName,
             $companyObject,
-            $postalCode
+            $address_1,
+            $address_2,
+            $city,
+            $state,
+            $postalCode,
+            $country,
+            $email,
+            $phone,
         );
 
         $service = $this->awbItem->getService();
@@ -118,10 +107,10 @@ class AwbGenerateRecipientResolver
 
         if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
-            $county = Helper::convertStateCodeToName(
+            $county = County::tryCreate(
                 $post_meta_samedaycourier_address_hd['country'],
                 $post_meta_samedaycourier_address_hd['state']
-            );
+            )->getName();
             $awbRecipient->setCounty($county);
             $address = sprintf(
                 '%s %s',
@@ -137,9 +126,12 @@ class AwbGenerateRecipientResolver
             $oohLastMile
         );
 
+        $currency = SamedayConstants::CURRENCY_MAPPER[$country];
+
         return new AwbGenerateRecipientResponse(
             $ooh,
-            $awbRecipient
+            $awbRecipient,
+            $currency
         );
     }
 

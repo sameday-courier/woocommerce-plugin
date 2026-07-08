@@ -93,11 +93,25 @@ trait AddressObjectTrait
         );
     }
 
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return sprintf('%s %s', ltrim($this->firstName), ltrim($this->lastName));
+    }
+
+    /**
+     * @return string|null
+     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -106,6 +120,11 @@ trait AddressObjectTrait
     public function getCompany(): ?string
     {
         return $this->company;
+    }
+
+    public function getAddress(): string
+    {
+        return sprintf('%s %s', ltrim($this->address1), ltrim($this->address2));
     }
 
     public function getAddress1(): ?string

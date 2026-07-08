@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses;
 
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
+use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -14,32 +15,40 @@ if (!defined('ABSPATH')) {
 class AwbGenerateRecipientResponse
 {
     /**
-     * @var AwbRecipientEntityObject $recipient
-     */
-    private AwbRecipientEntityObject $recipient;
-
-    /**
      * @var OohDto $oohDto
      */
     private OohDto $oohDto;
 
     /**
+     * @var RecipientDto $recipient
+     */
+    private RecipientDto $recipient;
+
+    /**
+     * @var string $currency
+     */
+    private string $currency;
+
+    /**
      * @param OohDto $oohDto
-     * @param AwbRecipientEntityObject $recipient
+     * @param RecipientDto $recipient
+     * @param string $currency
      */
     public function __construct(
         OohDto $oohDto,
-        AwbRecipientEntityObject $recipient
+        RecipientDto $recipient,
+        string $currency
     )
     {
         $this->oohDto = $oohDto;
         $this->recipient = $recipient;
+        $this->currency = $currency;
     }
 
     /**
-     * @return AwbRecipientEntityObject
+     * @return RecipientDto
      */
-    public function getRecipient(): AwbRecipientEntityObject
+    public function getRecipient(): RecipientDto
     {
         return $this->recipient;
     }
@@ -50,5 +59,13 @@ class AwbGenerateRecipientResponse
     public function getOoh(): OohDto
     {
         return $this->oohDto;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
     }
 }

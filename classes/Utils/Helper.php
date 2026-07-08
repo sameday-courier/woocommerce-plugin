@@ -14,7 +14,6 @@ use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
@@ -123,21 +122,6 @@ class Helper
 				'value' => AwbPaymentType::CLIENT
 			)
 		);
-	}
-
-	/**
-	 * @param $countryCode
-	 * @param $stateCode
-	 *
-	 * @return string
-	 */
-	public static function convertStateCodeToName($countryCode, $stateCode): string
-	{
-		if (! isset($countryCode, $stateCode) || ('' === $countryCode) || ('' === $stateCode)) {
-			return '';
-		}
-
-		return html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode] ?? '');
 	}
 
     /**
@@ -375,7 +359,8 @@ class Helper
 
         // If you don't use lockerMap but dropdown option
         if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
-            $lockerModel = SamedayLockerRepository::getLockerSameday((int) $postMetaLocker);
+            $lockerRepository = new SamedayLockerRepository();
+            $lockerModel = $lockerRepository->getLockerSameday((int) $postMetaLocker);
 
             if (null === $lockerModel) {
                 return;
@@ -604,22 +589,4 @@ class Helper
         return '';
     }
 
-	/**
-	 * @param string $postalCode
-	 * @param string $countyCode
-	 *
-	 * @return bool
-	 */
-	public static function validatePostalCode(string $postalCode, string $countyCode): bool
-	{
-		if (null === $code = SamedayCityRepository::getPostalForSpecificCounty($countyCode, self::getHostCountry())) {
-			return false;
-		}
-
-		if (mb_strlen($code) !== mb_strlen($postalCode)) {
-			return false;
-		}
-
-		return $postalCode[0] === $code[0];
-	}
 }

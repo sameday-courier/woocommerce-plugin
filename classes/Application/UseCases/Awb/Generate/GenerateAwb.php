@@ -82,7 +82,7 @@ final class GenerateAwb
     {
         $item = $this->awbItem;
 
-        $service = $this->samedayServiceRepository->getServiceSameday($item->getServiceId());
+        $service = $this->samedayServiceRepository->getServiceSameday($item->getService()->getId());
         $awbValidator = (new GenerateAwbValidator(
             new GenerateAwbValidatorRequest(
                 $service,
@@ -113,7 +113,14 @@ final class GenerateAwb
             $item->getParcelsDimensions(),
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
-            $awbRecipient->getRecipient(),
+            new AwbRecipientEntityObject(
+                $awbRecipient->getRecipient()->getCity(),
+                $awbRecipient->getRecipient()->getState(),
+                $awbRecipient->getRecipient()->getAddress(),
+                $awbRecipient->getRecipient()->getName(),
+                $awbRecipient->getRecipient()->getPhone(),
+                $awbRecipient->getRecipient()->getEmail(),
+            ),
             $item->getInsuranceValue(),
             $item->getRepayment(),
             new CodCollectorType(CodCollectorType::CLIENT),
@@ -128,7 +135,7 @@ final class GenerateAwb
             $awbRecipient->getOoh()->getLockerId(),
             null,
             $awbRecipient->getOoh()->getOohLastMile(),
-            SamedayConstants::CURRENCY_MAPPER[$country]
+            $awbRecipient->getCurrency()
         );
 
         $errors = null;
@@ -208,13 +215,13 @@ final class GenerateAwb
         try {
             Helper::updateAddressFields(
                 $item->getOrderId(),
-                $address_1,
-                $address_2,
-                $name,
-                $city,
-                $state,
-                $postalCode,
-                $country
+                $awbRecipient->getRecipient()->getAddress1(),
+                $awbRecipient->getRecipient()->getAddress2(),
+                $awbRecipient->getRecipient()->getName(),
+                $awbRecipient->getRecipient()->getCity(),
+                $awbRecipient->getRecipient()->getState(),
+                $awbRecipient->getRecipient()->getPostcode(),
+                $awbRecipient->getRecipient()->getCountry(),
             );
         } catch (Exception $exception) {}
 
