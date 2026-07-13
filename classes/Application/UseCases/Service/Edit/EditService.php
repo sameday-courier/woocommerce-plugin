@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -96,7 +96,7 @@ final class EditService
 
         $service = [
             'id' => $serviceId,
-            'name' => Helper::sanitizeInput($postFields['name']['value']),
+            'name' => InputSanitizer::sanitizeInput($postFields['name']['value']),
             'price' => (float) $postFields['price']['value'],
             'price_free' => $priceFree,
             'status' => (int) $postFields['status']['value'],

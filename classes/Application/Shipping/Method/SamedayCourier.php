@@ -31,6 +31,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WeightHandler;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use WC_Admin_Settings;
@@ -251,7 +252,7 @@ final class SamedayCourier extends WC_Shipping_Method
     private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
-        $weight = Helper::convertWeight(WC()->cart->get_cart_contents_weight()) ?: .1;
+        $weight = WeightHandler::convert(WC()->cart->get_cart_contents_weight()) ?: .1;
         $state = County::tryCreate($address['country'], $address['state'])->getName();
         $city = Helper::removeAccents($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];

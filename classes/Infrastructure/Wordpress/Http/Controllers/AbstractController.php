@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
-use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -22,7 +22,7 @@ abstract class AbstractController implements ControllerInterface
      */
     public function handle(): void
     {
-        $inputParams = Helper::sanitizeInputs($_POST);
+        $inputParams = InputSanitizer::sanitizeInputs($_POST);
         if (!UserPermissionChecker::hasAllowedRole()) {
             throw new AccessDeniedException(
                 TranslatorHandler::translate("Not enough permission to access this page.")

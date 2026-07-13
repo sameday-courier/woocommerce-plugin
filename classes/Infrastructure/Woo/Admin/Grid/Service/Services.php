@@ -9,6 +9,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
@@ -31,6 +32,11 @@ class Services extends WP_List_Table
      */
     private SamedayServiceRepository $samedayRepository;
 
+    /**
+     * @var SamedayServiceRules $samedayServiceRules
+     */
+    private SamedayServiceRules $samedayServiceRules;
+
 	/**
      * Class constructor
      */
@@ -46,6 +52,7 @@ class Services extends WP_List_Table
 
         $this->dbHandler = new DbHandler();
         $this->samedayRepository = new SamedayServiceRepository($this->dbHandler);
+        $this->samedayServiceRules = new SamedayServiceRules($this->samedayRepository);
 	}
 
 	private const ACCEPTED_FILTERS = [
@@ -67,8 +74,8 @@ class Services extends WP_List_Table
 
         $services = array_filter(
             $this->dbHandler->getRows($sql),
-            static function ($service) {
-                return Helper::isInUseServices($service['sameday_code']);
+            function ($service) {
+                return $this->samedayServiceRules->isInUseService($service['sameday_code']);
             }
         );
 

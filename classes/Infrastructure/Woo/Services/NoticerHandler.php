@@ -10,12 +10,11 @@ if (!defined('ABSPATH')) {
 
 class NoticerHandler
 {
-    public const NOTICE_DOMAIN = 'sameday';
     private const NOTICE_KEY = 'samedaycourier_notice_key';
 
     /**
-     * @param string $notice_message
-     * @param string $type
+     * @param string $noticeMessage
+     * @param string $noticeType
      * @param bool $dismissible
      *
      * @return void

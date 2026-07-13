@@ -15,8 +15,10 @@ use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 
 class Helper
 {
@@ -147,58 +149,6 @@ class Helper
 		}
 
 		return '';
-	}
-
-	/**
-	 * @param array $inputs
-	 *
-	 * @return array
-	 */
-	public static function sanitizeInputs(array $inputs): array
-	{
-		$data = [];
-		foreach ($inputs as $key => $input) {
-			if (is_int($input) || is_bool($input)) {
-				$data[$key] = $input;
-			}
-
-			if (is_string($input)) {
-				$data[$key] = self::sanitizeInput($input);
-			}
-
-            if (is_array($input)) {
-                $data[$key] = self::sanitizeInputs($input);
-            }
-		}
-
-		return $data;
-	}
-
-    /**
-     * @param array $locker
-     * @return string
-     *
-     * @throws JsonException
-     */
-    public static function sanitizeLocker(array $locker): string
-    {
-        if (!empty( $locker)) {
-            foreach ($locker as $key => $value) {
-                $locker[$key] = self::sanitizeInput($value);
-            }
-        }
-
-        return json_encode($locker, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-    }
-
-	/**
-	 * @param string $input
-	 *
-	 * @return string
-	 */
-	public static function sanitizeInput(string $input): string
-	{
-		return stripslashes(strip_tags(str_replace("'", '&#39;', $input)));
 	}
 
 	/**
@@ -344,7 +294,7 @@ class Helper
 	public static function updateLockerOrderPostMeta(int $order_id): void
 	{
 		$postMetaLocker = self::fixJson(
-			self::sanitizeInput(
+			InputSanitizer::sanitizeInput(
 				(string) get_post_meta(
 					$order_id,
 					SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
@@ -394,7 +344,9 @@ class Helper
 			$lockerFields['county']
 		);
 
-		self::updateAddressFields(
+		(new WooOrderShippingAddressUpdater(
+			new WooOrderAddressRepository(),
+		))->update(
 			$order_id,
 			$lockerFields['address'],
 			$lockerFields['name'],
@@ -491,90 +443,6 @@ class Helper
         }
 
         return $fields;
-    }
-
-	/**
-	 * @param $orderId
-	 * @param $address1
-	 * @param $address2
-	 * @param $name
-	 * @param $city
-	 * @param $state
-	 * @param $postalCode
-	 * @param $country
-	 *
-	 * @return void
-	 */
-	public static function updateAddressFields(
-		$orderId,
-		$address1,
-		$address2,
-		$name,
-		$city,
-		$state,
-		$postalCode,
-		$country
-	): void
-	{
-        $address1 = str_replace("\"", "", self::sanitizeInput($address1));
-        $address2 = str_replace("\"", "", self::sanitizeInput($address2));
-		$addressFieldsMapper = [
-			'_shipping_address_1' => $address1,
-			'_shipping_address_2' => $address2,
-			'_shipping_city' => $city,
-			'_shipping_state' => $state,
-			'_shipping_postcode' => $postalCode,
-			'_shipping_address_index' => sprintf(
-				'%s %s %s %s %s %s %s',
-				$name,
-				$address1,
-				$address2,
-				$city,
-				$state,
-				$postalCode,
-				$country
-			)
-		];
-
-		foreach ($addressFieldsMapper as $key => $value) {
-			update_post_meta($orderId, $key, $value, false);
-		}
-
-        $wooOrderAddressRepository = new WooOrderAddressRepository();
-        $wooOrderAddressRepository->updateWcOrderAddress(
-            $orderId,
-            [
-                'address_1' => $address1,
-                'address_2' => $address2,
-                'city' => $city,
-                'state' => $state,
-                'postcode' => $postalCode,
-                'country' => $country,
-            ]
-        );
-	}
-
-    public static function convertWeight(float $weight): float
-    {
-        $weightUnit = OptionsHandler::getOption('woocommerce_weight_unit', 'kg');
-
-        switch ($weightUnit) {
-            case 'g':
-                return ($weight / 1000);
-            case 'lbs':
-                return ($weight * 0.45);
-            case 'oz':
-                return ($weight * 0.028);
-            default:
-                return $weight;
-        }
-    }
-
-
-
-    public static function isInUseServices(string $samedayServiceCode): bool
-    {
-        return in_array($samedayServiceCode, SamedayConstants::IN_USE_SERVICES, true);
     }
 
     /**

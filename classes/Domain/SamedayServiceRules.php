@@ -57,6 +57,16 @@ final class SamedayServiceRules
     }
 
     /**
+     * @param string $samedayServiceCode
+     *
+     * @return bool
+     */
+    public function isInUseService(string $samedayServiceCode): bool
+    {
+        return in_array($samedayServiceCode, SamedayConstants::IN_USE_SERVICES, true);
+    }
+
+    /**
      * @param SamedayService $samedayService
      * @param string $stateName
      *

@@ -28,7 +28,7 @@ use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorR
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -61,6 +61,11 @@ final class GenerateAwb
      */
     private DbHandler $dbHandler;
 
+    /**
+     * @var WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater
+     */
+    private WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater;
+
     public function __construct(
         GenerateAwbRequest $generateAwbRequest
     )
@@ -70,6 +75,7 @@ final class GenerateAwb
         $this->dbHandler = $generateAwbRequest->dbHandler;
         $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
         $this->samedayAwbRepository = $generateAwbRequest->samedayAwbRepository;
+        $this->wooOrderShippingAddressUpdater = $generateAwbRequest->wooOrderShippingAddressUpdater;
     }
 
     /**
@@ -213,15 +219,16 @@ final class GenerateAwb
         ];
 
         try {
-            Helper::updateAddressFields(
+            $recipient = $awbRecipient->getRecipient();
+            $this->wooOrderShippingAddressUpdater->update(
                 $item->getOrderId(),
-                $awbRecipient->getRecipient()->getAddress1(),
-                $awbRecipient->getRecipient()->getAddress2(),
-                $awbRecipient->getRecipient()->getName(),
-                $awbRecipient->getRecipient()->getCity(),
-                $awbRecipient->getRecipient()->getState(),
-                $awbRecipient->getRecipient()->getPostcode(),
-                $awbRecipient->getRecipient()->getCountry(),
+                $recipient->getAddress1() ?? '',
+                $recipient->getAddress2() ?? '',
+                $recipient->getName() ?? '',
+                $recipient->getCity() ?? '',
+                $recipient->getState() ?? '',
+                $recipient->getPostcode() ?? '',
+                $recipient->getCountry() ?? '',
             );
         } catch (Exception $exception) {}
 

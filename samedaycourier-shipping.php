@@ -30,6 +30,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRep
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
@@ -212,7 +213,7 @@ function woo_sameday_post_ajax_data(): void {
 
     if (null !== $locker = $_POST['locker'] ?? null) {
         if (is_array($locker)) {
-            WC()->session->set('locker', Helper::sanitizeLocker($locker));
+            WC()->session->set('locker', InputSanitizer::sanitizeData($locker));
         } else {
             WC()->session->set('locker', (int) $locker);
         }
@@ -221,13 +222,13 @@ function woo_sameday_post_ajax_data(): void {
     }
 
     if (null !== $openPackage = $_POST['open_package'] ?? null) {
-	    WC()->session->set('open_package', Helper::sanitizeInput($openPackage));
+	    WC()->session->set('open_package', InputSanitizer::sanitizeInput($openPackage));
 
         return;
     }
 
     if (isset($_POST['payment_method'])) {
-	    WC()->session->set('payment_method', Helper::sanitizeInput($_POST['payment_method']));
+	    WC()->session->set('payment_method', InputSanitizer::sanitizeInput($_POST['payment_method']));
 
         return;
     }

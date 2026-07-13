@@ -13,9 +13,9 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Utils\Helper;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Utils\Helper;
 
 class AwbForm
 {
@@ -38,7 +38,7 @@ class AwbForm
             $locker = $postMetaLocker;
         } else if (is_string($postMetaLocker)) {
             $lockerDetailsForm = Helper::fixJson(
-                Helper::sanitizeInput($postMetaLocker)
+                InputSanitizer::sanitizeInput($postMetaLocker)
             );
 
             try {
