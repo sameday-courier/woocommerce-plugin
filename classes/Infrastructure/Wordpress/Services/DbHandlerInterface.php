@@ -19,10 +19,11 @@ interface DbHandlerInterface
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return null|string
      */
-    public function getVar(string $queryString): ?string;
+    public function getVar(string $queryString, array $queryParams = []): ?string;
 
     /**
      * @param string $queryString

@@ -10,6 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RequestSanitizer;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 class ServiceInstance
@@ -60,7 +61,7 @@ class ServiceInstance
             <div id="poststuff">
                 <div id="post-body" class="metabox-holder columns-3">
                     <div id="post-body-content">
-                        <?php if(!isset($_GET['action']) || $_GET['action'] !== 'edit') { ?>
+                        <?php if(!isset($_GET['action']) || RequestSanitizer::getAction() !== 'edit') { ?>
                         <div class="meta-box-sortables ui-sortable">
                             <div>
                                 <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
@@ -80,7 +81,7 @@ class ServiceInstance
                             </form>
                         </div>
                         <?php } else { ?>
-                        <div> <?php echo $this->createServiceForm( $_GET['id'] ); ?> </div>
+                        <div> <?php echo $this->createServiceForm(RequestSanitizer::getIntId()); ?> </div>
                         <?php } {?>
                     </div>
                 </div>
@@ -136,7 +137,7 @@ class ServiceInstance
                 <input type="hidden" name="action" value="sameday_edit_service">
                 <table class="form-table editServiceForm">
                     <tbody>
-                        <input type="hidden" name="samedaycourier-service-id" value="'.esc_html($id).'">
+                        <input type="hidden" name="samedaycourier-service-id" value="'.esc_attr((string) $id).'">
                         <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('edit-service').'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 

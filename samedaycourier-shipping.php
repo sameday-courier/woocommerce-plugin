@@ -267,8 +267,8 @@ function wps_locker_row_layout() {
 
         $shipTo = sprintf(
                 '%s <br/> %s',
-            $lockerSession->name ?? '',
-            $lockerSession->address ?? ''
+            esc_html($lockerSession->name ?? ''),
+            esc_html($lockerSession->address ?? '')
         );
     }
 
@@ -279,8 +279,8 @@ function wps_locker_row_layout() {
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
-                        data-username='<?php echo OptionsHandler::getSamedayOptions()['user']; ?>'
-                        data-country='<?php echo OptionsHandler::getSamedayOptions()['host_country']; ?>'
+                        data-username='<?php echo esc_attr(OptionsHandler::getSamedayOptions()['user'] ?? ''); ?>'
+                        data-country='<?php echo esc_attr(OptionsHandler::getSamedayOptions()['host_country'] ?? ''); ?>'
                     >
                         <?php echo __('Show Locations Map', SamedayConstants::TEXT_DOMAIN) ?>
                     </button>
@@ -289,7 +289,7 @@ function wps_locker_row_layout() {
             <?php if (null !== $shipTo) { ?>
                 <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
                     <td><strong> <?= __('Ship to', SamedayConstants::TEXT_DOMAIN) ?> </strong></td>
-                    <th><span id="showLockerDetails"><?= $shipTo ?></span></th>
+                    <th><span id="showLockerDetails"><?php echo wp_kses_post($shipTo); ?></span></th>
                 </tr>
             <?php } ?>
         <?php } else { ?>
@@ -307,17 +307,17 @@ function wps_locker_row_layout() {
 
                 $lockerOptions = '';
                 foreach ($lockers as $city => $cityLockers) {
-                    $optionGroup = "<optgroup label='$city' style='font-size: 13px;'></optgroup>";
+                    $optionGroup = '<optgroup label="' . esc_attr($city) . '" style="font-size: 13px;"></optgroup>';
                     $options = '';
                     foreach ($cityLockers as $locker) {
-                        $lockerDetails = "<span>" . $locker->getName() . ' - ' . $locker->getAddress() . "</span>";
+                        $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
                         $isSelected = null;
                         if ((int) WC()->session->get('locker') === (int) $locker->getLockerId()) {
                             $isSelected = "selected='selected'";
                         }
                         $options .= sprintf(
-                            "<option value='%s' style='font-size: 9px' %s> %s </option>",
-                            $locker->getLockerId(),
+                            '<option value="%s" style="font-size: 9px" %s> %s </option>',
+                            esc_attr((string) $locker->getLockerId()),
                             $isSelected,
                             $lockerDetails
                         );
@@ -502,7 +502,7 @@ add_action('admin_head', static function () {
 
 add_action( 'woocommerce_admin_order_data_after_shipping_address', static function ( $order ) {
     add_thickbox();
-    if ($_GET['action'] === 'edit') {
+    if (isset($_GET['action']) && 'edit' === $_GET['action']) {
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
                 <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="sameday_admin_button button-samll thickbox"> ' . __('Generate awb') . ' </a>

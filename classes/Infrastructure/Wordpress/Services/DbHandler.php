@@ -32,12 +32,15 @@ class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $queryString
+     * @param array $queryParams
      *
      * @return null|string
      */
-    public function getVar(string $queryString): ?string
+    public function getVar(string $queryString, array $queryParams = []): ?string
     {
-        return $this->db->get_var($queryString);
+        return $this->db->get_var(
+            $this->prepareQuery($queryString, $queryParams)
+        );
     }
 
     /**

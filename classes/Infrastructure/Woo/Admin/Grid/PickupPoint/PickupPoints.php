@@ -8,6 +8,8 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
@@ -48,6 +50,30 @@ class PickupPoints extends WP_List_Table
 
 	private const GRID_PER_PAGE_VALUE = 10;
 
+	private const ACCEPTED_ORDER_BY_COLUMNS = [
+		'sameday_id',
+		'sameday_alias',
+	];
+
+	private const ACCEPTED_SEARCH_COLUMNS = [
+		'sameday_id',
+		'sameday_alias',
+		'city',
+		'county',
+		'address',
+		'contactPersons',
+		'default_pickup_point',
+	];
+
+	private const SEARCH_PARAM_TO_COLUMN = [
+		'search_sameday_id' => 'sameday_id',
+		'search_sameday_alias' => 'sameday_alias',
+		'search_city' => 'city',
+		'search_county' => 'county',
+		'search_address' => 'address',
+		'search_contactPersons' => 'contactPersons',
+	];
+
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
@@ -70,7 +96,7 @@ class PickupPoints extends WP_List_Table
 			case 'default_pickup_point':
 				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
-                return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="sameday_admin_button delete-pickup-point thickbox" data-id="' . $item['sameday_id'] . '">Delete</a>';
+                return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="sameday_admin_button delete-pickup-point thickbox" data-id="' . esc_attr((string) (int) $item['sameday_id']) . '">Delete</a>';
 			default:
 				return $item[$column_name];
 		}
@@ -127,24 +153,70 @@ class PickupPoints extends WP_List_Table
     {
         $this->_column_headers = $this->get_column_info();
 
-        // Get search parameters
-        $search_params = $this->get_search_params();
+        $searchParams = $this->get_search_params();
+        [$likeFilters, $exactFilters] = $this->buildSearchFilters($searchParams);
 
-        // Get filtered data
-        $filtered_data = $this->getPickupPoints($search_params);
-
-        $per_page     = $this->get_items_per_page( 'pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
+        $per_page = $this->get_items_per_page('pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
         $current_page = $this->get_pagenum();
-        $total_items  = count($filtered_data);
+
+        $countQuery = GridQueryBuilder::buildCount(
+            $this->samedayPickupPointRepository->getTableName(),
+            Helper::isTesting(),
+            null,
+            null,
+            self::ACCEPTED_SEARCH_COLUMNS,
+            $likeFilters,
+            $exactFilters,
+        );
 
         $this->set_pagination_args([
-            'total_items' => $total_items,
+            'total_items' => (int) $this->dbHandler->getVar($countQuery['sql'], $countQuery['params']),
             'per_page'    => $per_page,
         ]);
 
-        // Apply pagination to filtered data
-        $offset = ($current_page - 1) * $per_page;
-        $this->items = array_slice($filtered_data, $offset, $per_page);
+        $dataQuery = GridQueryBuilder::build(
+            $this->samedayPickupPointRepository->getTableName(),
+            Helper::isTesting(),
+            self::ACCEPTED_ORDER_BY_COLUMNS,
+            RequestSanitizer::getOrderBy(self::ACCEPTED_ORDER_BY_COLUMNS),
+            RequestSanitizer::getOrder(),
+            $per_page,
+            $current_page,
+            null,
+            null,
+            self::ACCEPTED_SEARCH_COLUMNS,
+            $likeFilters,
+            $exactFilters,
+        );
+
+        $this->items = $this->dbHandler->getRows($dataQuery['sql'], $dataQuery['params']);
+    }
+
+    /**
+     * @param array<string, string> $searchParams
+     *
+     * @return array{0: array<string, string>, 1: array<string, int>}
+     */
+    private function buildSearchFilters(array $searchParams): array
+    {
+        $likeFilters = [];
+
+        foreach (self::SEARCH_PARAM_TO_COLUMN as $searchKey => $column) {
+            if ('' !== ($searchParams[$searchKey] ?? '')) {
+                $likeFilters[$column] = $searchParams[$searchKey];
+            }
+        }
+
+        $exactFilters = [];
+        $defaultPickupPointFilter = $searchParams['search_default_pickup_point'] ?? '';
+
+        if ('yes' === $defaultPickupPointFilter) {
+            $exactFilters['default_pickup_point'] = 1;
+        } elseif ('no' === $defaultPickupPointFilter) {
+            $exactFilters['default_pickup_point'] = 0;
+        }
+
+        return [$likeFilters, $exactFilters];
     }
 
     // Add search parameter handling
@@ -161,62 +233,6 @@ class PickupPoints extends WP_List_Table
         ];
     }
 
-    // Update data query to accept search filters
-    private function getPickupPoints($search_params = [])
-    {
-        $where_conditions = [];
-        $query_params = [];
-
-        // Add testing condition
-        $where_conditions[] = "is_testing = %d";
-        $query_params[] = Helper::isTesting();
-
-        // Add search conditions
-        if (!empty($search_params['search_sameday_id'])) {
-            $where_conditions[] = "sameday_id LIKE %s";
-            $query_params[] = '%' . $search_params['search_sameday_id'] . '%';
-        }
-
-        if (!empty($search_params['search_sameday_alias'])) {
-            $where_conditions[] = "sameday_alias LIKE %s";
-            $query_params[] = '%' . $search_params['search_sameday_alias'] . '%';
-        }
-
-        if (!empty($search_params['search_city'])) {
-            $where_conditions[] = "city LIKE %s";
-            $query_params[] = '%' . $search_params['search_city'] . '%';
-        }
-
-        if (!empty($search_params['search_county'])) {
-            $where_conditions[] = "county LIKE %s";
-            $query_params[] = '%' . $search_params['search_county'] . '%';
-        }
-
-        if (!empty($search_params['search_address'])) {
-            $where_conditions[] = "address LIKE %s";
-            $query_params[] = '%' . $search_params['search_address'] . '%';
-        }
-
-        if (!empty($search_params['search_contactPersons'])) {
-            $where_conditions[] = "contactPersons LIKE %s";
-            $query_params[] = '%' . $search_params['search_contactPersons'] . '%';
-        }
-
-        if (!empty($search_params['search_default_pickup_point'])) {
-            if ($search_params['search_default_pickup_point'] === 'yes') {
-                $where_conditions[] = "default_pickup_point = 1";
-            } elseif ($search_params['search_default_pickup_point'] === 'no') {
-                $where_conditions[] = "default_pickup_point = 0";
-            }
-        }
-
-        $sql = "SELECT * FROM " . $this->samedayPickupPointRepository->getTableName();
-        if (!empty($where_conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $where_conditions);
-        }
-
-        return $this->dbHandler->getRows($sql, $query_params);
-    }
     protected function extra_tablenav($which) {
         if ($which === 'top') {
             ?>
@@ -247,13 +263,22 @@ class PickupPoints extends WP_List_Table
                                 const currentValue = new URLSearchParams(window.location.search).get('search_' + columnKey) || '';
 
                                 if (columnKey === 'default_pickup_point') {
-                                    td.innerHTML = `
-                                <select name="search_${columnKey}" onchange="searchTable()" style="width:100%;padding:4px;">
-                                    <option value="">All</option>
-                                    <option value="yes" ${currentValue === 'yes' ? 'selected' : ''}>Yes</option>
-                                    <option value="no" ${currentValue === 'no' ? 'selected' : ''}>No</option>
-                                </select>
-                            `;
+                                    const select = document.createElement('select');
+                                    select.name = 'search_' + columnKey;
+                                    select.style.cssText = 'width:100%;padding:4px;';
+                                    select.onchange = searchTable;
+
+                                    ['', 'yes', 'no'].forEach(function(optionValue) {
+                                        const option = document.createElement('option');
+                                        option.value = optionValue;
+                                        option.textContent = optionValue === '' ? 'All' : (optionValue === 'yes' ? 'Yes' : 'No');
+                                        if (currentValue === optionValue) {
+                                            option.selected = true;
+                                        }
+                                        select.appendChild(option);
+                                    });
+
+                                    td.appendChild(select);
                                 } else {
                                     const placeholder = {
                                         'sameday_id': 'ID...',
@@ -264,14 +289,19 @@ class PickupPoints extends WP_List_Table
                                         'contactPersons': 'Contact...'
                                     }[columnKey] || 'Search...';
 
-                                    td.innerHTML = `
-                                <input type="text"
-                                       name="search_${columnKey}"
-                                       value="${currentValue}"
-                                       placeholder="${placeholder}"
-                                       onkeypress="if(event.key==='Enter') searchTable()"
-                                       style="width:100%;padding:4px;font-size:12px;">
-                            `;
+                                    const input = document.createElement('input');
+                                    input.type = 'text';
+                                    input.name = 'search_' + columnKey;
+                                    input.value = currentValue;
+                                    input.placeholder = placeholder;
+                                    input.style.cssText = 'width:100%;padding:4px;font-size:12px;';
+                                    input.onkeypress = function(event) {
+                                        if (event.key === 'Enter') {
+                                            searchTable();
+                                        }
+                                    };
+
+                                    td.appendChild(input);
                                 }
                             }
 
@@ -290,7 +320,7 @@ class PickupPoints extends WP_List_Table
                         // Add page parameter
                         const pageInput = document.createElement('input');
                         pageInput.name = 'page';
-                        pageInput.value = '<?php echo esc_js($_GET['page'] ?? ''); ?>';
+                        pageInput.value = <?php echo wp_json_encode(RequestSanitizer::getPageSlug()); ?>;
                         form.appendChild(pageInput);
 
                         // Add search parameters
@@ -314,7 +344,7 @@ class PickupPoints extends WP_List_Table
                 </script>
 
                 <?php if (array_filter($this->get_search_params())): ?>
-                    <a href="?page=<?php echo esc_attr($_GET['page']); ?>" class="sameday_admin_button">Clear Search</a>
+                    <a href="?page=<?php echo esc_attr(RequestSanitizer::getPageSlug()); ?>" class="sameday_admin_button">Clear Search</a>
                 <?php endif; ?>
             </div>
             <?php

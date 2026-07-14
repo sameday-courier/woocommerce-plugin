@@ -8,11 +8,12 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RequestSanitizer;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -54,36 +55,34 @@ class Lockers extends WP_List_Table
 	];
 
     /**
-     * @return array
-     */
-    private function getLockers(): array
-    {
-        $is_testing = Helper::isTesting();
-
-        $sql = Helper::buildGridQuery(
-            $this->samedayLockerRepository->getTableName(),
-            $is_testing,
-            self::ACCEPTED_FILTERS,
-        );
-
-        return $this->dbHandler->getRows($sql);
-    }
-
-    /**
      * @param int $perPage
      * @param int $pageNumber
      *
      * @return array
      */
-    private function buildGrid(
-        int $perPage = self::GRID_PER_PAGE_VALUE,
-        int $pageNumber = 1
-    ): array
+    private function getLockers(int $perPage, int $pageNumber): array
     {
-        return array_chunk(
-            $this->getLockers(),
-            $perPage
-        )[$pageNumber - 1] ?? [];
+        $query = GridQueryBuilder::build(
+            $this->samedayLockerRepository->getTableName(),
+            Helper::isTesting(),
+            self::ACCEPTED_FILTERS,
+            RequestSanitizer::getOrderBy(self::ACCEPTED_FILTERS),
+            RequestSanitizer::getOrder(),
+            $perPage,
+            $pageNumber,
+        );
+
+        return $this->dbHandler->getRows($query['sql'], $query['params']);
+    }
+
+    private function getLockersCount(): int
+    {
+        $query = GridQueryBuilder::buildCount(
+            $this->samedayLockerRepository->getTableName(),
+            Helper::isTesting(),
+        );
+
+        return (int) $this->dbHandler->getVar($query['sql'], $query['params']);
     }
 
 	/** Text displayed when no lockers data is available */
@@ -150,13 +149,13 @@ class Lockers extends WP_List_Table
 
         $per_page     = $this->get_items_per_page( 'lockers_per_page', self::GRID_PER_PAGE_VALUE);
         $current_page = $this->get_pagenum();
-        $total_items  = count($this->getLockers());
+        $total_items  = $this->getLockersCount();
 
         $this->set_pagination_args([
             'total_items' => $total_items,
             'per_page'    => $per_page,
         ]);
 
-        $this->items = $this->buildGrid($per_page, $current_page);
+        $this->items = $this->getLockers($per_page, $current_page);
 	}
 }

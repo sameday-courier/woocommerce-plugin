@@ -344,13 +344,13 @@ class AwbForm
                                     <label for="samedaycourier-locker-details"> ' . __("Location details", SamedayConstants::TEXT_DOMAIN) . ' </label>
                                 </th> 
                                 <td class="forminp forminp-text">';
-        $form .= "<input type='hidden' form='addAwbForm' id='locker' name='locker' value='$lockerDetailsForm'>";
-        $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . $lockerDetails .' </textarea><br/>
+        $form .= '<input type="hidden" form="addAwbForm" id="locker" name="locker" value="' . esc_attr((string) $lockerDetailsForm) . '">';
+        $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . esc_html((string) $lockerDetails) . '</textarea><br/>
                                     <button class="sameday_admin_button"
-                                        data-username="'.$username.'" 
-                                        data-country="'.$hostCountry.'" 
-                                        data-dest_city="'.$destCity.'" 
-                                        data-dest_country="'.$destCountry.'" 
+                                        data-username="' . esc_attr((string) $username) . '"
+                                        data-country="' . esc_attr((string) $hostCountry) . '"
+                                        data-dest_city="' . esc_attr($destCity) . '"
+                                        data-dest_country="' . esc_attr($destCountry) . '"
                                         type="button" 
                                         id="select_locker"> ' . __("Change location", SamedayConstants::TEXT_DOMAIN) . ' 
                                     </button> 

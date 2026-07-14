@@ -8,11 +8,12 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RequestSanitizer;
 use SamedayCourier\Shipping\Utils\Helper;
 use WP_List_Table;
 
@@ -32,11 +33,6 @@ class Services extends WP_List_Table
      */
     private SamedayServiceRepository $samedayRepository;
 
-    /**
-     * @var SamedayServiceRules $samedayServiceRules
-     */
-    private SamedayServiceRules $samedayServiceRules;
-
 	/**
      * Class constructor
      */
@@ -52,7 +48,6 @@ class Services extends WP_List_Table
 
         $this->dbHandler = new DbHandler();
         $this->samedayRepository = new SamedayServiceRepository($this->dbHandler);
-        $this->samedayServiceRules = new SamedayServiceRules($this->samedayRepository);
 	}
 
 	private const ACCEPTED_FILTERS = [
@@ -62,22 +57,26 @@ class Services extends WP_List_Table
 	private const GRID_PER_PAGE_VALUE = 10;
 
     /**
+     * @param int $perPage
+     * @param int $pageNumber
+     *
      * @return array
      */
-	private function getServices(): array
+	private function getServices(int $perPage, int $pageNumber): array
 	{
-		$sql = Helper::buildGridQuery(
+		$query = GridQueryBuilder::build(
 			$this->samedayRepository->getTableName(),
 			Helper::isTesting(),
-			self::ACCEPTED_FILTERS
+			self::ACCEPTED_FILTERS,
+			RequestSanitizer::getOrderBy(self::ACCEPTED_FILTERS),
+			RequestSanitizer::getOrder(),
+			$perPage,
+			$pageNumber,
+			'sameday_code',
+			SamedayConstants::IN_USE_SERVICES,
 		);
 
-        $services = array_filter(
-            $this->dbHandler->getRows($sql),
-            function ($service) {
-                return $this->samedayServiceRules->isInUseService($service['sameday_code']);
-            }
-        );
+        $services = $this->dbHandler->getRows($query['sql'], $query['params']);
 
         foreach ($services as &$service) {
             if ($service['sameday_code'] === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
@@ -95,21 +94,16 @@ class Services extends WP_List_Table
         return $services;
 	}
 
-    /**
-     * @param int $perPage
-     * @param int $pageNumber
-     *
-     * @return array
-     */
-    private function buildGrid(
-        int $perPage = self::GRID_PER_PAGE_VALUE,
-        int $pageNumber = 1
-    ): array
+    private function getServicesCount(): int
     {
-        return array_chunk(
-            $this->getServices(),
-            $perPage
-        )[$pageNumber - 1] ?? [];
+        $query = GridQueryBuilder::buildCount(
+            $this->samedayRepository->getTableName(),
+            Helper::isTesting(),
+            'sameday_code',
+            SamedayConstants::IN_USE_SERVICES,
+        );
+
+        return (int) $this->dbHandler->getVar($query['sql'], $query['params']);
     }
 
 	/**
@@ -215,14 +209,15 @@ class Services extends WP_List_Table
 		$this->_column_headers = $this->get_column_info();
 
 		$per_page = $this->get_items_per_page('services_per_page', self::GRID_PER_PAGE_VALUE);
+		$current_page = $this->get_pagenum();
 
 		$this->set_pagination_args(
 			[
-				'total_items' => count($this->getServices()),
+				'total_items' => $this->getServicesCount(),
 				'per_page'    => $per_page,
 			]
 		);
 
-		$this->items = $this->buildGrid($per_page, $this->get_pagenum());
+		$this->items = $this->getServices($per_page, $current_page);
 	}
 }

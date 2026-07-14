@@ -192,42 +192,6 @@ class Helper
         return str_replace($from, $to, $string);
     }
 
-	public static function buildGridQuery(
-		string $tableName,
-		bool $is_testing,
-		array $filters,
-		?int $perPage = null,
-		?int $pageNumber = null
-	): string
-	{
-		$sql = sprintf(
-			"SELECT * FROM %s WHERE is_testing='%s' ",
-            $tableName,
-			$is_testing
-		);
-
-		$orderBy = $_REQUEST['orderby'] ?? null;
-		$order = $_REQUEST['order'] ?? null;
-		if (null !== $orderBy && in_array($orderBy, $filters, true)) {
-			$sql .= sprintf(
-				" ORDER BY %s ",
-				esc_sql($orderBy)
-			);
-		}
-
-		if (null !== $order && in_array(strtoupper($order), SamedayConstants::ORDER_BY_TYPES, true)) {
-			$sql .= $order;
-		}
-
-        if (null !== $perPage && null !== $pageNumber) {
-            $sql .= " LIMIT $perPage";
-            $calculatePage = ($pageNumber - 1) * $perPage;
-            $sql .= " OFFSET $calculatePage ";
-        }
-
-		return $sql;
-	}
-
     /**
      * @param $orderId
      *
@@ -289,7 +253,7 @@ class Helper
             ];
         }
 
-		$postsMeta = $_POST;
+		$postsMeta = InputSanitizer::sanitizeInputs($_POST);
 
 		$shippingInputs = [];
 		foreach ($postsMeta as $key => $value) {
