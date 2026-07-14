@@ -53,7 +53,17 @@ final class SamedayServiceRules
      */
     public function isOohDeliveryOption(SamedayService $samedayService): bool
     {
-        return in_array($samedayService->getSamedayCode(), SamedayConstants::OOH_SERVICES, true);
+        return $this->isOohDeliveryOptionByCode($samedayService->getSamedayCode());
+    }
+
+    /**
+     * @param string $samedayServiceCode
+     *
+     * @return bool
+     */
+    public function isOohDeliveryOptionByCode(string $samedayServiceCode): bool
+    {
+        return in_array($samedayServiceCode, SamedayConstants::OOH_SERVICES, true);
     }
 
     /**

@@ -132,7 +132,7 @@ final class SamedayCourier extends WC_Shipping_Method
 //                continue;
 //            }
 
-            if (Helper::isOohDeliveryOption($service->getSamedayCode())) {
+            if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
                 if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
                     $lockerMaxItems = SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
                 }

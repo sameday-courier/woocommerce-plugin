@@ -88,7 +88,7 @@ class AwbForm
 
             if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
                 if ('' !== $postMetaLocker && isset($locker['oohType']) && $locker['oohType'] === '1'
-                    && $this->samedayServiceRules->isOohDeliveryOption($serviceCode)) {
+                    && $this->samedayServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
                     $serviceCode = SamedayConstants::OOH_TYPES['1'] ;
                 }
 

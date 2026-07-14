@@ -29,11 +29,14 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\Shipping\ShippingMethodCodeParser;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
@@ -145,7 +148,7 @@ function wps_sameday_shipping_options_layout() {
     }
 
     $samedayServiceRepository = new SamedayServiceRepository();
-    $service = $samedayServiceRepository->getServiceSamedayByCode(Helper::getChosenShippingMethodCode());
+    $service = $samedayServiceRepository->getServiceSamedayByCode(WooShippingMethodProvider::getChosenServiceCode());
 
     /** @var OptionalTaxObject[] $optionalTaxes */
     $optionalTaxes = [];
@@ -257,7 +260,7 @@ function checkout_repayment_tax() {
 
 // LOCKER :
 function wps_locker_row_layout() {
-    $serviceCode = Helper::getChosenShippingMethodCode();
+    $serviceCode = WooShippingMethodProvider::getChosenServiceCode();
 
     $shipTo = null;
     if (null !== $lockerSession = WC()->session->get('locker')) {
@@ -272,7 +275,7 @@ function wps_locker_row_layout() {
         );
     }
 
-    if ((Helper::isOohDeliveryOption($serviceCode)) && is_checkout()) { ?>
+    if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode) && is_checkout()) { ?>
         <?php if ((OptionsHandler::getSamedayOptions()['lockers_map'] ?? null) === "yes") { ?>
             <tr class="shipping-pickup-store">
                 <td><strong><?php echo __('Sameday Locker', SamedayConstants::TEXT_DOMAIN) ?></strong></td>
@@ -345,7 +348,7 @@ add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 // When POST Order Form
 add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
 
-    if (Helper::isOohDeliveryOption(Helper::getChosenShippingMethodCode())) {
+    if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
             Helper::addLockerToOrderData(
                 $order->get_id(),
@@ -363,7 +366,7 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
 
 add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
 
-    if (Helper::isOohDeliveryOption(Helper::getChosenShippingMethodCode())) {
+    if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
             Helper::addLockerToOrderData(
                 $orderId,
@@ -581,8 +584,8 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
 add_action('woocommerce_checkout_process', static function () {
     $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
     if ($chosen_methods !== null) {
-        $serviceCode = Helper::parseShippingMethodCode($chosen_methods[0]);
-        if (Helper::isOohDeliveryOption($serviceCode) && null === WC()->session->get('locker')) {
+        $serviceCode = ShippingMethodCodeParser::parse($chosen_methods[0]);
+        if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode) && null === WC()->session->get('locker')) {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }

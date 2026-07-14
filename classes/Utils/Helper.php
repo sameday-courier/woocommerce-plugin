@@ -140,18 +140,6 @@ class Helper
     }
 
     /**
-     * @param string $shippingMethodInput
-     *
-     * @return string
-     */
-    public static function parseShippingMethodCode(string $shippingMethodInput): string
-    {
-        $serviceCode = explode(":", $shippingMethodInput, 3);
-
-        return $serviceCode[2] ?? '';
-    }
-
-    /**
      * @param $orderId
      *
      * @param $locker
@@ -330,18 +318,6 @@ class Helper
         }
 
         return $fields;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getChosenShippingMethodCode(): string
-    {
-        if (null !== $chosenShippingMethod = WC()->session->get('chosen_shipping_methods')[0] ?? null) {
-            return self::parseShippingMethodCode($chosenShippingMethod);
-        }
-
-        return '';
     }
 
 }
