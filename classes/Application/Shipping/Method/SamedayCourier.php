@@ -24,6 +24,7 @@ use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
+use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
@@ -254,7 +255,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
         $weight = WeightHandler::convert(WC()->cart->get_cart_contents_weight()) ?: .1;
         $state = County::tryCreate($address['country'], $address['state'])->getName();
-        $city = Helper::removeAccents($address['city']);
+        $city = RomanianDiacriticsNormalizer::normalize($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int) $serviceId);

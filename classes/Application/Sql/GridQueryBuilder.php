@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\Sql;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\SqlSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SqlSanitizer;
 
 if (!defined('ABSPATH')) {
     exit;

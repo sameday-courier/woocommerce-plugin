@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RequestSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Utils\Helper;
 use WC_Admin_Settings;
 class ServiceInstance

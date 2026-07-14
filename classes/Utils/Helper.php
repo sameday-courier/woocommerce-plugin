@@ -13,6 +13,7 @@ use JsonException;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
@@ -106,7 +107,7 @@ class Helper
 
 		if ($states) {
 			foreach ($states as $key => $value) {
-				if (self::removeAccents($value) === self::removeAccents($stateName)) {
+				if (RomanianDiacriticsNormalizer::normalize($value) === RomanianDiacriticsNormalizer::normalize($stateName)) {
 					return $key;
 				}
 			}
@@ -173,23 +174,6 @@ class Helper
         $serviceCode = explode(":", $shippingMethodInput, 3);
 
         return $serviceCode[2] ?? '';
-    }
-
-
-
-
-
-    /**
-     * @param $string
-     *
-     * @return string|string[]
-     */
-    public static function removeAccents($string)
-    {
-        $from = ['Ă', 'ă', 'Â', 'â', 'Î', 'î', 'Ș', 'ș', 'Ț', 'ț'];
-        $to =   ['A', 'a', 'A', 'a', 'I', 'i', 'S', 's', 'T', 't'];
-
-        return str_replace($from, $to, $string);
     }
 
     /**

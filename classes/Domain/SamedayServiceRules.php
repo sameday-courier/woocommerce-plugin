@@ -8,9 +8,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Utils\Helper;
 
 final class SamedayServiceRules
 {
@@ -76,7 +76,7 @@ final class SamedayServiceRules
     {
         $is6HCode = $samedayService->getSamedayCode() === SamedayConstants::SAMEDAY_6H_CODE;
         $isEligibleRegionFor6H = in_array(
-            Helper::removeAccents($stateName),
+            RomanianDiacriticsNormalizer::normalize($stateName),
             SamedayConstants::ELIGIBLE_TO_6H_SERVICE,
             true
         );
