@@ -13,18 +13,52 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Utils\Helper;
+use WC_Order;
 
 class AwbForm
 {
     /**
-     * @param $order
-     *
+     * @var SamedayServiceRules $samedayServiceRules
+     */
+    private SamedayServiceRules $samedayServiceRules;
+
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    private SamedayServiceRepository $samedayServiceRepository;
+
+    /**
+     * @var SamedayLockerRepository $samedayLockerRepository
+     */
+    private SamedayLockerRepository $samedayLockerRepository;
+
+    /**
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
+     */
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
+
+    public function __construct(
+        SamedayServiceRepository $samedayServiceRepository,
+        SamedayLockerRepository $samedayLockerRepository,
+        SamedayPickupPointRepository $samedayPickupPointRepository
+    )
+    {
+        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->samedayLockerRepository = $samedayLockerRepository;
+        $this->samedayPickupPointRepository = $samedayPickupPointRepository;
+        $this->samedayServiceRules = new SamedayServiceRules($this->samedayServiceRepository);
+    }
+
+    /**
+     * @param WC_Order $order
      * @return string
      */
-    public static function samedaycourierAddAwbForm($order): string
+    public function samedaycourierAddAwbForm(WC_Order $order): string
     {
         $postMetaLocker = get_post_meta(
             $order->get_id(),
@@ -53,7 +87,8 @@ class AwbForm
             }
 
             if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
-                if ('' !== $postMetaLocker && isset($locker['oohType']) && $locker['oohType'] === '1' && Helper::isOohDeliveryOption($serviceCode)) {
+                if ('' !== $postMetaLocker && isset($locker['oohType']) && $locker['oohType'] === '1'
+                    && $this->samedayServiceRules->isOohDeliveryOption($serviceCode)) {
                     $serviceCode = SamedayConstants::OOH_TYPES['1'] ;
                 }
 
@@ -76,20 +111,20 @@ class AwbForm
         $total_weight = $total_weight ?: 1;
 
         $pickupPointOptions = '';
-        $pickupPoints = (new SamedayPickupPointRepository())->getPickupPoints();
+        $pickupPoints = $this->samedayPickupPointRepository->getPickupPoints();
         foreach ($pickupPoints as $pickupPoint) {
             $checked = true === $pickupPoint->getDefaultPickupPoint() ? "selected" : "";
             $pickupPointOptions .= "<option value='{$pickupPoint->getSamedayId()}' {$checked}> {$pickupPoint->getSamedayAlias()} </option>" ;
         }
 
         $packageTypeOptions = '';
-        $packagesType = Helper::getPackageTypeOptions();
+        $packagesType = AwbFormOptionsProvider::getPackageTypeOptions();
         foreach ($packagesType as $packageType) {
             $packageTypeOptions .= "<option value='{$packageType['value']}'>{$packageType['name']}</option>";
         }
 
         $awbPaymentTypeOptions = '';
-        $awbPaymentsType = Helper::getAwbPaymentTypeOptions();
+        $awbPaymentsType = AwbFormOptionsProvider::getAwbPaymentTypeOptions();
         foreach ($awbPaymentsType as $awbPaymentType) {
             $awbPaymentTypeOptions .= "<option value='{$awbPaymentType['value']}'>{$awbPaymentType['name']}</option>";
         }
@@ -108,7 +143,7 @@ class AwbForm
 
         if (is_int($locker)) {
             // Get locker from local import
-            $localLockerSameday = SamedayLockerRepository::getLockerSameday((int) $postMetaLocker);
+            $localLockerSameday = $this->samedayLockerRepository->getLockerSameday((int) $postMetaLocker);
             if (null !== $localLockerSameday) {
                 try {
                     $lockerDetailsForm = json_encode([
@@ -167,14 +202,13 @@ class AwbForm
         ";
         }
 
-        $samedayServices = (new SamedayServiceRepository())->getAvailableServices();
-        $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository());
+        $samedayServices = $this->samedayServiceRepository->getAvailableServices();
 
         $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
         $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
         $servicesOptions = '';
         foreach ($samedayServices as $samedayService) {
-            $firstMileId = $samedayServiceRules->isEligibleToLockerFirstMile($samedayService)
+            $firstMileId = $this->samedayServiceRules->isEligibleToLockerFirstMile($samedayService)
                 ? $samedayService->getSamedayId()
                 : 0;
 
@@ -185,7 +219,7 @@ class AwbForm
             }
 
             $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-            if (Helper::isOohDeliveryOption($samedayService->getSamedayCode())) {
+            if ($this->samedayServiceRules->isOohDeliveryOption($samedayService)) {
                 $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 

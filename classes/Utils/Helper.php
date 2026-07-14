@@ -10,8 +10,6 @@ if (!defined( 'ABSPATH')) {
 
 use Exception;
 use JsonException;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
@@ -90,40 +88,6 @@ class Helper
 	public static function getApiUrl(): string
 	{
 		return self::getEnvModes()[self::getHostCountry()][self::isTesting()];
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function getPackageTypeOptions(): array
-	{
-		return array(
-			array(
-				'name' => __("Parcel", SamedayConstants::TEXT_DOMAIN),
-				'value' => PackageType::PARCEL
-			),
-			array(
-				'name' => __("Envelope", SamedayConstants::TEXT_DOMAIN),
-				'value' => PackageType::ENVELOPE
-			),
-			array(
-				'name' => __("Large package", SamedayConstants::TEXT_DOMAIN),
-				'value' => PackageType::LARGE
-			)
-		);
-	}
-
-    /**
-     * @return array[]
-     */
-	public static function getAwbPaymentTypeOptions(): array
-	{
-		return array(
-			array(
-				'name' => __("Client", SamedayConstants::TEXT_DOMAIN),
-				'value' => AwbPaymentType::CLIENT
-			)
-		);
 	}
 
     /**

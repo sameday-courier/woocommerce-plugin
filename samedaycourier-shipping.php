@@ -26,6 +26,7 @@ use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
@@ -566,7 +567,11 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             }
         }
 
-        $awbModal = AwbForm::samedaycourierAddAwbForm($order);
+        $awbModal = (new AwbForm(
+            new SamedayServiceRepository(),
+            new SamedayLockerRepository(),
+            new SamedayPickupPointRepository()
+        ))->samedaycourierAddAwbForm($order);
 
         echo $buttons . $awbModal . $newParcelModal . $historyModal . $_goTo_eAWB;
     }
