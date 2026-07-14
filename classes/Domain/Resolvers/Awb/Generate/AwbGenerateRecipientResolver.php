@@ -8,6 +8,7 @@ use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\Ports\StateNameResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
@@ -29,13 +30,21 @@ class AwbGenerateRecipientResolver
     private GenerateAwbItem $awbItem;
 
     /**
+     * @var StateNameResolverInterface $stateNameResolver
+     */
+    private StateNameResolverInterface $stateNameResolver;
+
+    /**
      * @param GenerateAwbItem $awbItem
+     * @param StateNameResolverInterface $stateNameResolver
      */
     public function __construct(
-        GenerateAwbItem $awbItem
+        GenerateAwbItem $awbItem,
+        StateNameResolverInterface $stateNameResolver
     )
     {
         $this->awbItem = $awbItem;
+        $this->stateNameResolver = $stateNameResolver;
     }
 
     /**
@@ -107,9 +116,11 @@ class AwbGenerateRecipientResolver
 
         if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
-            $county = County::tryCreate(
-                $post_meta_samedaycourier_address_hd['country'],
-                $post_meta_samedaycourier_address_hd['state']
+            $county = County::fromName(
+                $this->stateNameResolver->resolveNameFromCode(
+                    $post_meta_samedaycourier_address_hd['country'],
+                    $post_meta_samedaycourier_address_hd['state']
+                )
             )->getName();
             $awbRecipient->setCounty($county);
             $address = sprintf(

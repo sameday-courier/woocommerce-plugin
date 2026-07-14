@@ -32,7 +32,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WeightHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use WC_Admin_Settings;
@@ -120,9 +120,11 @@ final class SamedayCourier extends WC_Shipping_Method
             $cartValue = WC()->cart->get_cart_contents_total();
         }
 
-        $stateName = County::tryCreate(
-            $package['destination']['country'],
-            $package['destination']['state']
+        $stateName = County::fromName(
+            (new WooStateCodeResolver())->resolveNameFromCode(
+                $package['destination']['country'],
+                $package['destination']['state']
+            )
         )->getName();
 
         foreach ($eligibleServices as $service) {
@@ -254,7 +256,12 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
         $weight = WeightHandler::convert(WC()->cart->get_cart_contents_weight()) ?: .1;
-        $state = County::tryCreate($address['country'], $address['state'])->getName();
+        $state = County::fromName(
+            (new WooStateCodeResolver())->resolveNameFromCode(
+                $address['country'],
+                $address['state']
+            )
+        )->getName();
         $city = RomanianDiacriticsNormalizer::normalize($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
 

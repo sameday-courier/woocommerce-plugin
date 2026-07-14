@@ -13,10 +13,10 @@ use JsonException;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 
 class Helper
@@ -92,32 +92,7 @@ class Helper
 	}
 
     /**
-     * @param string $countryCode
-     * @param string $stateName
-     *
-     * @return string
-     */
-	public static function convertStateNameToCode(string $countryCode, string $stateName): string
-	{
-		if (! isset($countryCode, $stateName) || ('' === $countryCode) || ('' === $stateName)) {
-			return '';
-		}
-
-		$states = WC()->countries->get_states()[$countryCode];
-
-		if ($states) {
-			foreach ($states as $key => $value) {
-				if (RomanianDiacriticsNormalizer::normalize($value) === RomanianDiacriticsNormalizer::normalize($stateName)) {
-					return $key;
-				}
-			}
-		}
-
-		return '';
-	}
-
-	/**
-	 * @param string $jsonString
+     * @param string $jsonString
 	 *
 	 * @return string
 	 */
@@ -251,7 +226,7 @@ class Helper
 
 		$country = $shippingInputs['shipping_country'] ?? $postsMeta['billing_country'] ?? self::getHostCountry();
 		$firstName = $shippingInputs['shipping_first_name'] ?? $postsMeta['billing_first_name'] ?? '';
-		$state = self::convertStateNameToCode(
+		$state = WooStateCodeResolver::resolveFromName(
 			$country,
 			$lockerFields['county']
 		);

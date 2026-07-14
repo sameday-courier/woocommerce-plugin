@@ -29,6 +29,7 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -109,7 +110,10 @@ final class GenerateAwb
             $item,
         ))->resolve();
 
-        $awbRecipientResolver = new AwbGenerateRecipientResolver($item);
+        $awbRecipientResolver = new AwbGenerateRecipientResolver(
+            $item,
+            new WooStateCodeResolver(),
+        );
         $awbRecipient = $awbRecipientResolver->resolve();
 
         $request = new SamedayPostAwbRequest(
