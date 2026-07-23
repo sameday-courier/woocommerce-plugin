@@ -30,8 +30,14 @@ final class GenerateAwbItem
      */
     private array $shippingLines;
 
+    /**
+     * @var ShippingDto $shipping
+     */
     private ShippingDto $shipping;
 
+    /**
+     * @var BillingDto $billing
+     */
     private BillingDto $billing;
 
     /**
@@ -170,11 +176,10 @@ final class GenerateAwbItem
         }
 
         $serviceRepository = new SamedayServiceRepository();
-        $service = $serviceRepository->getServiceById($data['samedaycourier-service']);
 
         return new self(
             (int) $data['samedaycourier-order-id'],
-            $service,
+            $serviceRepository->getServiceById((int) $data['samedaycourier-service-id']),
             (array) ($data['shipping_lines'] ?? []),
             ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
             BillingDto::fromArray((array) ($data['billing'] ?? [])),
