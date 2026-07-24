@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 

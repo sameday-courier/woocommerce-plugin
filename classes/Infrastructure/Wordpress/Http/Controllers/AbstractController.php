@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
 

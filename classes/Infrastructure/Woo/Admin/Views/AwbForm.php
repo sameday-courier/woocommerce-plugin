@@ -15,10 +15,10 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\JsonStringHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use WC_Order;
 
 class AwbForm

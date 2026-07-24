@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;

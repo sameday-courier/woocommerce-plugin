@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WcHandler
+class WooHandler
 {
     /**
      * @return WooCommerce

@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 use Sameday\Exceptions\SamedaySDKException;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\NoticerHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;

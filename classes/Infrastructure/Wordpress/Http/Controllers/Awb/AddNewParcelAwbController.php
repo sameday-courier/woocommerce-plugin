@@ -10,8 +10,8 @@ use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain;
 
 use Sameday\Objects\Types\AwbPdfType;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;

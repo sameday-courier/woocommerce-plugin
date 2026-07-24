@@ -12,7 +12,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 
 /**
  * Class Api
@@ -51,8 +51,8 @@ final class SdkInitiator
 			$username,
 			$password,
 			$apiUrl,
-			'WOOCOMMERCE ' . WcHandler::getPlatformVersion(),
-			WcHandler::getPlatformVersion(),
+			'WOOCOMMERCE ' . WooHandler::getPlatformVersion(),
+			WooHandler::getPlatformVersion(),
 			'curl',
 			new PersistenceHandler()
 		);

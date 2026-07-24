@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use \Sameday\PersistentData\SamedayPersistentDataInterface;
 use \Sameday\SamedayClient;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 class PersistenceHandler implements SamedayPersistentDataInterface
 {

@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services;
 
 use SamedayCourier\Shipping\Domain\SamedayAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\SamedayPackageTypes;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
 if (!defined('ABSPATH')) {
     exit;

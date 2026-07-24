@@ -15,7 +15,7 @@ final class WooCountriesHandler
      */
     public static function getShippingCountries(): array
     {
-        return WcHandler::getWC()->countries->get_shipping_countries();
+        return WooHandler::getWC()->countries->get_shipping_countries();
     }
 
     /**
@@ -23,7 +23,7 @@ final class WooCountriesHandler
      */
     public static function getAllStates(): array
     {
-        return WcHandler::getWC()->countries->get_states();
+        return WooHandler::getWC()->countries->get_states();
     }
 
     /**

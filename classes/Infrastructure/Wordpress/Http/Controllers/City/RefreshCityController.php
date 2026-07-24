@@ -8,8 +8,8 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;

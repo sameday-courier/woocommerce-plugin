@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 
 final class WooOrderShippingAddressUpdater
 {

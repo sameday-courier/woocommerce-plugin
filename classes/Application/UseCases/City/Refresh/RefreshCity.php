@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\FileReadHandler;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;

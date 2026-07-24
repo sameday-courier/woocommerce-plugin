@@ -11,8 +11,8 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickup
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointItem;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 

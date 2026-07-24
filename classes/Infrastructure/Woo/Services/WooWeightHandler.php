@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WeightHandler
+final class WooWeightHandler
 {
     private const KEY = 'woocommerce_weight_unit';
 

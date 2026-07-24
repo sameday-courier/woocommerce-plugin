@@ -10,7 +10,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCities;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
 if (!defined('ABSPATH')) {

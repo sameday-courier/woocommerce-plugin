@@ -29,13 +29,13 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WeightHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
@@ -118,10 +118,10 @@ final class SamedayCourier extends WC_Shipping_Method
         $useEstimatedCost = SamedaySettings::getEstimatedCost();
         $estimatedCostExtraFee = SamedaySettings::getEstimatedCostExtraFee();
         $useLockerMap = SamedaySettings::isLockersMapEnabled();
-        $cartValue = WcHandler::getWC()->cart->get_subtotal();
+        $cartValue = WooHandler::getWC()->cart->get_subtotal();
 
         if (true === SamedaySettings::isDiscountFreeShippingEnabled()) {
-            $cartValue = WcHandler::getWC()->cart->get_cart_contents_total();
+            $cartValue = WooHandler::getWC()->cart->get_cart_contents_total();
         }
 
         $stateName = County::fromName(
@@ -139,7 +139,7 @@ final class SamedayCourier extends WC_Shipping_Method
             if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
                 $lockerMaxItems = SamedaySettings::getLockerMaxItems();
 
-                if (count(WcHandler::getWC()->cart->get_cart()) > $lockerMaxItems) {
+                if (count(WooHandler::getWC()->cart->get_cart()) > $lockerMaxItems) {
                     continue;
                 }
             }
@@ -257,7 +257,7 @@ final class SamedayCourier extends WC_Shipping_Method
     private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
-        $weight = WeightHandler::convert(WcHandler::getWC()->cart->get_cart_contents_weight()) ?: .1;
+        $weight = WooWeightHandler::convert(WooHandler::getWC()->cart->get_cart_contents_weight()) ?: .1;
         $state = County::fromName(
             (new WooStateCodeResolver())->resolveNameFromCode(
                 $address['country'],
@@ -281,7 +281,7 @@ final class SamedayCourier extends WC_Shipping_Method
         }
 
         // Check if the client has to pay anything as repayment value
-        $repaymentAmount = WcHandler::getWC()->cart->subtotal;
+        $repaymentAmount = WooHandler::getWC()->cart->subtotal;
         $paymentMethod = WooSessionHandler::get(SamedaySessionKeys::PAYMENT_METHOD);
         if (isset($paymentMethod) && ($paymentMethod !== SamedayConstants::CASH_ON_DELIVERY)) {
             $repaymentAmount = 0;

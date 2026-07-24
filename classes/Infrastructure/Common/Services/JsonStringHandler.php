@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Common\Services;
 
 if (!defined('ABSPATH')) {
     exit;

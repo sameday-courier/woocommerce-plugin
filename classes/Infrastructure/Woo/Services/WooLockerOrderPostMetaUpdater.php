@@ -11,6 +11,8 @@ if (!defined('ABSPATH')) {
 use Exception;
 use JsonException;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 

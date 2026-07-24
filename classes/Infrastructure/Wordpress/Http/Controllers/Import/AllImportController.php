@@ -22,8 +22,8 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;

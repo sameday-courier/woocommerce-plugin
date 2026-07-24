@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 
 if (!defined('ABSPATH')) {
     exit;
