@@ -14,7 +14,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRep
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 use WP_List_Table;
 
 if (!class_exists( 'WP_List_Table' )) {
@@ -66,7 +66,7 @@ class Services extends WP_List_Table
 	{
 		$query = GridQueryBuilder::build(
 			$this->samedayRepository->getTableName(),
-			Helper::isTesting(),
+			SamedaySettings::isTesting(),
 			self::ACCEPTED_FILTERS,
 			RequestSanitizer::getOrderBy(self::ACCEPTED_FILTERS),
 			RequestSanitizer::getOrder(),
@@ -81,7 +81,7 @@ class Services extends WP_List_Table
         foreach ($services as &$service) {
             if ($service['sameday_code'] === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
                 $service['name'] = __(
-                    SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()],
+                    SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()],
                     SamedayConstants::TEXT_DOMAIN
                 );
                 $service['sameday_name'] = __(
@@ -98,7 +98,7 @@ class Services extends WP_List_Table
     {
         $query = GridQueryBuilder::buildCount(
             $this->samedayRepository->getTableName(),
-            Helper::isTesting(),
+            SamedaySettings::isTesting(),
             'sameday_code',
             SamedayConstants::IN_USE_SERVICES,
         );
@@ -145,7 +145,7 @@ class Services extends WP_List_Table
                 SamedayConstants::TEXT_DOMAIN
             )
         ) {
-            $title = SamedayConstants::OOH_POPUP_TITLE[Helper::getHostCountry()];
+            $title = SamedayConstants::OOH_POPUP_TITLE[SamedaySettings::getHostCountry()];
             return sprintf(
                 "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
                 $title,

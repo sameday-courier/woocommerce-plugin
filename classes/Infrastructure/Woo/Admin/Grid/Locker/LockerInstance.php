@@ -9,7 +9,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 class LockerInstance
 {
@@ -53,7 +53,7 @@ class LockerInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
+                                <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
 									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">

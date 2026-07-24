@@ -16,8 +16,9 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPoin
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\JsonStringHandler;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
-use SamedayCourier\Shipping\Utils\Helper;
 use WC_Order;
 
 class AwbForm
@@ -71,7 +72,7 @@ class AwbForm
         if (is_int($postMetaLocker)) {
             $locker = $postMetaLocker;
         } else if (is_string($postMetaLocker)) {
-            $lockerDetailsForm = Helper::fixJson(
+            $lockerDetailsForm = JsonStringHandler::fixJson(
                 InputSanitizer::sanitizeInput($postMetaLocker)
             );
 
@@ -174,8 +175,8 @@ class AwbForm
             $lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
         }
 
-        $username = OptionsHandler::getSamedayOptions()['user'] ?? null;
-        $hostCountry = OptionsHandler::getSamedayOptions()['host_country'] ?? null;
+        $username = SamedaySettings::getUser();
+        $hostCountry = SamedaySettings::getHostCountry();
         $destCity = $order->get_data()['shipping']['city'] ?? '';
         $destCountry = $order->get_data()['shipping']['country'] ?? '';
 

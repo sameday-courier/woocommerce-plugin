@@ -28,14 +28,19 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
-use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderSamedayShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Domain\Shipping\ShippingMethodCodeParser;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
@@ -167,7 +172,7 @@ function wps_sameday_shipping_options_layout() {
     }
 
     if ($taxOpenPackage
-        && OptionsHandler::getSamedayOptions()['open_package_status'] === "yes"
+        && SamedaySettings::isOpenPackageStatusEnabled()
     ) {
         ?>
             <tr class="shipping-pickup-store">
@@ -181,10 +186,10 @@ function wps_sameday_shipping_options_layout() {
                                     'type' => 'checkbox',
                                     'class' => array('input-checkbox'),
                                     'id' => 'sameday_open_package',
-                                    'label' => OptionsHandler::getSamedayOptions()['open_package_label'],
+                                    'label' => SamedaySettings::getOpenPackageLabel(),
                                     'required' => false,
                                 ],
-                                WC()->session->get('open_package') === 'yes'
+                                'yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)
                                 );
                             ?>
                         </li>
@@ -201,7 +206,7 @@ add_action( 'woocommerce_checkout_update_order_review', 'refresh_sameday_shippin
 function refresh_sameday_shipping_methods() {
     foreach (WC()->cart->get_shipping_packages() as $package_key => $package) {
 	    $package['package_hash'] = 'wc_ship_' . md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'));
-        WC()->session->set('shipping_for_package_' . $package_key, $package);
+        WooSessionHandler::set(SamedaySessionKeys::shippingForPackage((int) $package_key), $package);
     }
 
     WC()->cart->calculate_shipping();
@@ -217,22 +222,22 @@ function woo_sameday_post_ajax_data(): void {
 
     if (null !== $locker = $_POST['locker'] ?? null) {
         if (is_array($locker)) {
-            WC()->session->set('locker', InputSanitizer::sanitizeData($locker));
+            WooSessionHandler::set(SamedaySessionKeys::LOCKER, InputSanitizer::sanitizeData($locker));
         } else {
-            WC()->session->set('locker', (int) $locker);
+            WooSessionHandler::set(SamedaySessionKeys::LOCKER, (int) $locker);
         }
 
         return;
     }
 
     if (null !== $openPackage = $_POST['open_package'] ?? null) {
-	    WC()->session->set('open_package', InputSanitizer::sanitizeInput($openPackage));
+	    WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, InputSanitizer::sanitizeInput($openPackage));
 
         return;
     }
 
     if (isset($_POST['payment_method'])) {
-	    WC()->session->set('payment_method', InputSanitizer::sanitizeInput($_POST['payment_method']));
+	    WooSessionHandler::set(SamedaySessionKeys::PAYMENT_METHOD, InputSanitizer::sanitizeInput($_POST['payment_method']));
 
         return;
     }
@@ -248,12 +253,12 @@ function checkout_repayment_tax() {
 		return;
     }
 
-	$repayment_tax = (int) (OptionsHandler::getSamedayOptions()['repayment_tax'] ?? null);
+	$repayment_tax = SamedaySettings::getRepaymentTax() ?? 0;
 
     if ($repayment_tax > 0
-        && SamedayConstants::CASH_ON_DELIVERY === WC()->session->get('chosen_payment_method')
+        && SamedayConstants::CASH_ON_DELIVERY === WooSessionHandler::get(SamedaySessionKeys::CHOSEN_PAYMENT_METHOD)
     ) {
-        $repayment_tax_label = OptionsHandler::getSamedayOptions()['repayment_tax_label'] ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
+        $repayment_tax_label = SamedaySettings::getRepaymentTaxLabel() ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
@@ -263,7 +268,7 @@ function wps_locker_row_layout() {
     $serviceCode = WooShippingMethodProvider::getChosenServiceCode();
 
     $shipTo = null;
-    if (null !== $lockerSession = WC()->session->get('locker')) {
+    if (null !== $lockerSession = WooSessionHandler::get(SamedaySessionKeys::LOCKER)) {
         try {
             $lockerSession = json_decode($lockerSession, false, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $exception) {}
@@ -276,14 +281,14 @@ function wps_locker_row_layout() {
     }
 
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode) && is_checkout()) { ?>
-        <?php if ((OptionsHandler::getSamedayOptions()['lockers_map'] ?? null) === "yes") { ?>
+        <?php if (SamedaySettings::isLockersMapEnabled()) { ?>
             <tr class="shipping-pickup-store">
                 <td><strong><?php echo __('Sameday Locker', SamedayConstants::TEXT_DOMAIN) ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
-                        data-username='<?php echo esc_attr(OptionsHandler::getSamedayOptions()['user'] ?? ''); ?>'
-                        data-country='<?php echo esc_attr(OptionsHandler::getSamedayOptions()['host_country'] ?? ''); ?>'
+                        data-username='<?php echo esc_attr(SamedaySettings::getUser() ?? ''); ?>'
+                        data-country='<?php echo esc_attr(SamedaySettings::getHostCountry()); ?>'
                     >
                         <?php echo __('Show Locations Map', SamedayConstants::TEXT_DOMAIN) ?>
                     </button>
@@ -315,7 +320,7 @@ function wps_locker_row_layout() {
                     foreach ($cityLockers as $locker) {
                         $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
                         $isSelected = null;
-                        if ((int) WC()->session->get('locker') === (int) $locker->getLockerId()) {
+                        if ((int) WooSessionHandler::get(SamedaySessionKeys::LOCKER) === (int) $locker->getLockerId()) {
                             $isSelected = "selected='selected'";
                         }
                         $options .= sprintf(
@@ -350,17 +355,24 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
 
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
-            Helper::addLockerToOrderData(
+            (new WooLockerOrderDataHandler(
+                new WooLockerOrderPostMetaUpdater(
+                    new SamedayLockerRepository(),
+                    new WooOrderShippingAddressUpdater(
+                        new WooOrderAddressRepository(),
+                    ),
+                ),
+            ))->add(
                 $order->get_id(),
-                WC()->session->get('locker')
+                WooSessionHandler::get(SamedaySessionKeys::LOCKER)
             );
         } catch (Exception $exception) {}
     }
 
-    if ("yes" === WC()->session->get('open_package')) {
+    if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
         update_post_meta($order->get_id(), '_sameday_shipping_open_package_option', 1, true);
         // After store, remove it from Session
-        WC()->session->set('open_package', 'no');
+        WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
     }
 });
 
@@ -368,17 +380,24 @@ add_action('woocommerce_checkout_order_processed', static function ($orderId): v
 
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
-            Helper::addLockerToOrderData(
+            (new WooLockerOrderDataHandler(
+                new WooLockerOrderPostMetaUpdater(
+                    new SamedayLockerRepository(),
+                    new WooOrderShippingAddressUpdater(
+                        new WooOrderAddressRepository(),
+                    ),
+                ),
+            ))->add(
                 $orderId,
-                WC()->session->get('locker')
+                WooSessionHandler::get(SamedaySessionKeys::LOCKER)
             );
         } catch (Exception $exception) {}
     }
 
-    if ("yes" === WC()->session->get('open_package')) {
+    if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
         update_post_meta($orderId, '_sameday_shipping_open_package_option', 1, true);
         // After store, remove it from Session
-        WC()->session->set('open_package', 'no');
+        WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
     }
 });
 
@@ -530,7 +549,9 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
                     ' . $_generateAwb . '
                 </div>';
 
-        $shipping_method_sameday = Helper::getShippingMethodSameday($order->get_id());
+        $shipping_method_sameday = (new WooOrderSamedayShippingMethodProvider(
+            new SamedayAwbRepository(),
+        ))->get($order->get_id());
 
         $newParcelModal = '';
         $historyModal = '';
@@ -558,7 +579,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             if (null !== $awb && null !== $awb->getAwbNumber()) {
                 $redirectToEawbSite = sprintf(
                         '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                        SamedayConstants::EAWB_INSTANCES[Helper::getHostCountry()],
+                        SamedayConstants::EAWB_INSTANCES[SamedaySettings::getHostCountry()],
                         $awb->getAwbNumber()
                 );
 
@@ -582,10 +603,12 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
 
 // Revision order before Submit
 add_action('woocommerce_checkout_process', static function () {
-    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-    if ($chosen_methods !== null) {
-        $serviceCode = ShippingMethodCodeParser::parse($chosen_methods[0]);
-        if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode) && null === WC()->session->get('locker')) {
+    $serviceCode = WooShippingMethodProvider::getChosenServiceCode();
+    if ('' !== $serviceCode) {
+        $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository());
+        $isOOhDelivery = $samedayServiceRules->isOohDeliveryOptionByCode($serviceCode);
+        $isOOhButUserNotSelectLocker = $isOOhDelivery && (null === WooSessionHandler::get(SamedaySessionKeys::LOCKER));
+        if ($isOOhButUserNotSelectLocker) {
             wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
         }
     }
@@ -613,7 +636,7 @@ function enqueue_button_scripts(): void
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
         wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
 
-        if (Helper::isUseSamedayNomenclator()) {
+        if (SamedaySettings::isUseSamedayNomenclator()) {
 	        wp_enqueue_script('county-city-handle',
                 plugins_url( 'assets/js/county-city-handle.js', __FILE__ ),
                 [
@@ -649,8 +672,8 @@ function enqueue_button_scripts(): void
 
         // Localize the script with your dynamic PHP values
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => OptionsHandler::getSamedayOptions()['user'] ?? null,
-            'country'  => OptionsHandler::getSamedayOptions()['host_country'] ?? null,
+            'username' => SamedaySettings::getUser(),
+            'country'  => SamedaySettings::getHostCountry(),
             'buttonText' => __('Show Locations Map', SamedayConstants::TEXT_DOMAIN),
         ));
     }

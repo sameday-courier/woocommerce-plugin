@@ -9,7 +9,6 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
 class NewParcelForm extends AwbForm
 {
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\Shipping\ShippingMethodCodeParser;
 
 if (!defined('ABSPATH')) {
@@ -14,7 +15,8 @@ final class WooShippingMethodProvider
 {
     public static function getChosenServiceCode(): string
     {
-        $chosenShippingMethod = WC()->session->get('chosen_shipping_methods')[0] ?? null;
+        $chosenShippingMethods = WooSessionHandler::get(SamedaySessionKeys::CHOSEN_SHIPPING_METHODS);
+        $chosenShippingMethod = is_array($chosenShippingMethods) ? ($chosenShippingMethods[0] ?? null) : null;
 
         if (null === $chosenShippingMethod) {
             return '';

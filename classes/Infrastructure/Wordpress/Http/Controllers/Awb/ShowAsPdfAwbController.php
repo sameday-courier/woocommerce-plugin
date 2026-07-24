@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\Types\AwbPdfType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
@@ -41,7 +40,7 @@ final class ShowAsPdfAwbController extends AbstractController
         $showAsPdf = new ShowAsPdfAwb(
             new ShowAsPdfAwbRequest(
                 (int) $inputParams['order-id'],
-                OptionsHandler::getSamedayOptions()['default_label_format'] ?? AwbPdfType::A4
+                SamedaySettings::getDefaultLabelFormat()
             )
         );
         $result = $showAsPdf->execute();

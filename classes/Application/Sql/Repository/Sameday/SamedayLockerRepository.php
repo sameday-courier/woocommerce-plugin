@@ -12,7 +12,7 @@ use Sameday\Objects\Locker\LockerObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 class SamedayLockerRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_locker';
@@ -30,7 +30,7 @@ class SamedayLockerRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT city, county FROM {$this->getTableName()} WHERE is_testing = %s GROUP BY city",
             [
-                Helper::isTesting()
+                SamedaySettings::isTesting()
             ]
         );
 
@@ -45,7 +45,7 @@ class SamedayLockerRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -63,7 +63,7 @@ class SamedayLockerRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE city = %s AND is_testing = %s",
             [
                 $city,
-                Helper::isTesting()
+                SamedaySettings::isTesting()
             ]
         );
 
@@ -81,7 +81,7 @@ class SamedayLockerRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                Helper::isTesting()
+                SamedaySettings::isTesting()
             ]
         );
 
@@ -106,7 +106,7 @@ class SamedayLockerRepository extends AbstractRepository
                 'lng' => $lockerObject->getLong(),
                 'postal_code' => $lockerObject->getPostalCode(),
                 'boxes' => serialize($lockerObject->getBoxes()),
-                'is_testing' => Helper::isTesting(),
+                'is_testing' => SamedaySettings::isTesting(),
             ]
         );
     }

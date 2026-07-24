@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -41,7 +41,7 @@ final class EditServiceController extends AbstractController
     {
         $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
         if (null === $serviceName) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
         }
 
         $editService = new EditService(

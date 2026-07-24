@@ -10,7 +10,6 @@ if (!defined( 'ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
 class AwbHistoryTable
 {
     /**

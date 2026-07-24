@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 use Exception;
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -26,12 +26,18 @@ final class ChangeLocker
     private $locker;
 
     /**
+     * @var LockerOrderDataHandlerInterface $lockerOrderDataHandler
+     */
+    private LockerOrderDataHandlerInterface $lockerOrderDataHandler;
+
+    /**
      * @param ChangeLockerRequest $changeLockerRequest
      */
     public function __construct(ChangeLockerRequest $changeLockerRequest)
     {
         $this->orderId = $changeLockerRequest->orderId;
         $this->locker = $changeLockerRequest->locker;
+        $this->lockerOrderDataHandler = $changeLockerRequest->lockerOrderDataHandler;
     }
 
     /**
@@ -54,7 +60,7 @@ final class ChangeLocker
         }
 
         try {
-            Helper::addLockerToOrderData($this->orderId, $this->locker);
+            $this->lockerOrderDataHandler->add($this->orderId, $this->locker);
         } catch (JsonException|Exception $exception) {
             return new ChangeLockerResponse(
                 $exception->getMessage(),

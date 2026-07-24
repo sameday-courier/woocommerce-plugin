@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 final class SamedayServiceSelector
 {
@@ -31,7 +31,7 @@ final class SamedayServiceSelector
      */
     public function getEligibleServices(string $destinationCountry): array
     {
-        $hostCountry = Helper::getHostCountry();
+        $hostCountry = SamedaySettings::getHostCountry();
         $eligibleShippingServices = SamedayConstants::ELIGIBLE_SERVICES;
         if ($destinationCountry !== $hostCountry) {
             $eligibleShippingServices = SamedayConstants::CROSSBORDER_ELIGIBLE_SERVICES;

@@ -6,10 +6,12 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use JsonException;
 use Sameday\Objects\ParcelDimensionsObject;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
+use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
 if (!defined('ABSPATH')) {
@@ -24,6 +26,11 @@ final class GenerateAwbItem
      * @var SamedayService $service
      */
     private SamedayService $service;
+
+    /**
+     * @var SamedayPickupPoint $pickupPoint
+     */
+    private SamedayPickupPoint $pickupPoint;
 
     /**
      * @var array<int, mixed>
@@ -45,14 +52,24 @@ final class GenerateAwbItem
      */
     private LockerDto $locker;
 
+    /**
+     * @var bool $hasOpenPackage
+     */
     private bool $hasOpenPackage;
 
+    /**
+     * @var bool $hasLockerFirstMile
+     */
     private bool $hasLockerFirstMile;
 
+    /**
+     * @var int $packageType
+     */
     private int $packageType;
 
-    private int $pickupPointId;
-
+    /**
+     * @var int $awbPayment
+     */
     private int $awbPayment;
 
     /**
@@ -65,8 +82,14 @@ final class GenerateAwbItem
      */
     private $repayment;
 
+    /**
+     * @var string|null $clientReference
+     */
     private ?string $clientReference;
 
+    /**
+     * @var string|null $observation
+     */
     private ?string $observation;
 
     /**
@@ -77,24 +100,25 @@ final class GenerateAwbItem
     /**
      * @param int $orderId
      * @param SamedayService $service
-     * @param array<int, mixed> $shippingLines
+     * @param SamedayPickupPoint $pickupPoint
+     * @param array $shippingLines
      * @param ShippingDto $shipping
      * @param BillingDto $billing
      * @param LockerDto $locker
      * @param bool $hasOpenPackage
      * @param bool $hasLockerFirstMile
      * @param int $packageType
-     * @param int $pickupPointId
      * @param int $awbPayment
-     * @param float|string $insuranceValue
-     * @param float|string $repayment
+     * @param $insuranceValue
+     * @param $repayment
      * @param string|null $clientReference
      * @param string|null $observation
-     * @param ParcelDimensionsObject[] $parcelsDimensions
+     * @param array $parcelsDimensions
      */
     public function __construct(
         int $orderId,
         SamedayService $service,
+        SamedayPickupPoint $pickupPoint,
         array $shippingLines,
         ShippingDto $shipping,
         BillingDto $billing,
@@ -102,7 +126,6 @@ final class GenerateAwbItem
         bool $hasOpenPackage,
         bool $hasLockerFirstMile,
         int $packageType,
-        int $pickupPointId,
         int $awbPayment,
         $insuranceValue,
         $repayment,
@@ -112,6 +135,7 @@ final class GenerateAwbItem
     ) {
         $this->orderId = $orderId;
         $this->service = $service;
+        $this->pickupPoint = $pickupPoint;
         $this->shippingLines = $shippingLines;
         $this->shipping = $shipping;
         $this->billing = $billing;
@@ -119,7 +143,6 @@ final class GenerateAwbItem
         $this->hasOpenPackage = $hasOpenPackage;
         $this->hasLockerFirstMile = $hasLockerFirstMile;
         $this->packageType = $packageType;
-        $this->pickupPointId = $pickupPointId;
         $this->awbPayment = $awbPayment;
         $this->insuranceValue = $insuranceValue;
         $this->repayment = $repayment;
@@ -176,10 +199,18 @@ final class GenerateAwbItem
         }
 
         $serviceRepository = new SamedayServiceRepository();
+        $pickupPointRepository = new SamedayPickupPointRepository();
+        $samedayService = $serviceRepository->getServiceById(
+            (int) $data['samedaycourier-service']
+        );
+        $samedayPickupPoint = $pickupPointRepository->getPickupPointSameday(
+            (int) $data['samedaycourier-package-pickup-point']
+        );
 
         return new self(
             (int) $data['samedaycourier-order-id'],
-            $serviceRepository->getServiceById((int) $data['samedaycourier-service-id']),
+            $samedayService,
+            $samedayPickupPoint,
             (array) ($data['shipping_lines'] ?? []),
             ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
             BillingDto::fromArray((array) ($data['billing'] ?? [])),
@@ -187,7 +218,6 @@ final class GenerateAwbItem
             isset($data['samedaycourier-open-package-status']),
             isset($data['samedaycourier-locker_first_mile']),
             (int) $data['samedaycourier-package-type'],
-            (int) $data['samedaycourier-package-pickup-point'],
             (int) $data['samedaycourier-package-awb-payment'],
             $data['samedaycourier-package-insurance-value'],
             $data['samedaycourier-package-repayment'],
@@ -208,6 +238,14 @@ final class GenerateAwbItem
     public function getService(): SamedayService
     {
         return $this->service;
+    }
+
+    /**
+     * @return SamedayPickupPoint
+     */
+    public function getPickupPoint(): SamedayPickupPoint
+    {
+        return $this->pickupPoint;
     }
 
     /**
@@ -252,16 +290,17 @@ final class GenerateAwbItem
         return $this->hasLockerFirstMile;
     }
 
+    /**
+     * @return int
+     */
     public function getPackageType(): int
     {
         return $this->packageType;
     }
 
-    public function getPickupPointId(): int
-    {
-        return $this->pickupPointId;
-    }
-
+    /**
+     * @return int
+     */
     public function getAwbPayment(): int
     {
         return $this->awbPayment;

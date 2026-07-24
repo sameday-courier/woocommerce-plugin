@@ -11,9 +11,9 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -67,7 +67,7 @@ final class RemoveAwb
         if (isset($errors)) {
 
             return new RemoveAwbResponse(
-                Helper::parseAwbErrors($errors),
+                AwbErrorParser::parse($errors),
                 ResponseNoticeType::ERROR,
             );
         }

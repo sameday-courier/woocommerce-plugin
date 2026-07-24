@@ -12,7 +12,7 @@ use Sameday\Objects\PickupPoint\PickupPointObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 class SamedayPickupPointRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_pickup_point';
@@ -33,7 +33,7 @@ class SamedayPickupPointRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -52,7 +52,7 @@ class SamedayPickupPointRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -67,7 +67,7 @@ class SamedayPickupPointRepository extends AbstractRepository
         $result = $this->dbHandler->getRow(
             "SELECT sameday_id FROM {$this->getTableName()} WHERE default_pickup_point = 1 AND is_testing = %s LIMIT 1",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -86,7 +86,7 @@ class SamedayPickupPointRepository extends AbstractRepository
             [
                 'sameday_id' => $pickupPointObject->getId(),
                 'sameday_alias' => $pickupPointObject->getAlias(),
-                'is_testing' => Helper::isTesting(),
+                'is_testing' => SamedaySettings::isTesting(),
                 'city' => $pickupPointObject->getCity()->getName(),
                 'county' => $pickupPointObject->getCounty()->getName(),
                 'address' => $pickupPointObject->getAddress(),

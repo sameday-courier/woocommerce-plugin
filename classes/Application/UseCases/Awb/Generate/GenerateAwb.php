@@ -16,6 +16,7 @@ use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -27,8 +28,8 @@ use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 
 if (!defined('ABSPATH')) {
@@ -89,7 +90,8 @@ final class GenerateAwb
     {
         $item = $this->awbItem;
 
-        $service = $this->samedayServiceRepository->getServiceSameday($item->getService()->getId());
+        $service = $item->getService();
+        $pickupPoint = $item->getPickupPoint();
         $awbValidator = (new GenerateAwbValidator(
             new GenerateAwbValidatorRequest(
                 $service,
@@ -113,11 +115,12 @@ final class GenerateAwb
         $awbRecipientResolver = new AwbGenerateRecipientResolver(
             $item,
             new WooStateCodeResolver(),
+            new WooSamedayShippingHdAddressParser(),
         );
         $awbRecipient = $awbRecipientResolver->resolve();
 
         $request = new SamedayPostAwbRequest(
-            $item->getPickupPointId(),
+            $pickupPoint->getSamedayId(),
             null,
             new PackageType($item->getPackageType()),
             $item->getParcelsDimensions(),
@@ -194,7 +197,7 @@ final class GenerateAwb
 
         if (null !== $errors && null === $awb) {
             return new GenerateAwbResponse(
-                $this->parseAwbErrors($errors),
+                AwbErrorParser::parse($errors),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -261,29 +264,5 @@ final class GenerateAwb
             "Awb generated successfully.",
             ResponseNoticeType::SUCCESS,
         );
-    }
-
-    /**
-     * @param array $errors
-     *
-     * @return string
-     */
-    private function parseAwbErrors(array $errors): string
-    {
-        $allErrors = array();
-        foreach ($errors as $error) {
-            if (isset($error['errors'])) {
-                foreach ($error['errors'] as $message) {
-                    $allErrors[] = implode('.', $error['key']) . ': ' . $message;
-                }
-            } else {
-                $allErrors[] = sprintf('%s : %s',
-                    $error['code'] ?? 'Generic Error',
-                    $error['message'] ?? 'Something went wrong'
-                );
-            }
-        }
-
-        return implode('<br/>', $allErrors);
     }
 }

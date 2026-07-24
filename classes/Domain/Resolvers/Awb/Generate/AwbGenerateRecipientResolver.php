@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateNameResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
@@ -16,7 +16,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
-use SamedayCourier\Shipping\Utils\Helper;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -35,16 +34,24 @@ class AwbGenerateRecipientResolver
     private StateNameResolverInterface $stateNameResolver;
 
     /**
+     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     */
+    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+
+    /**
      * @param GenerateAwbItem $awbItem
      * @param StateNameResolverInterface $stateNameResolver
+     * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
     public function __construct(
         GenerateAwbItem $awbItem,
-        StateNameResolverInterface $stateNameResolver
+        StateNameResolverInterface $stateNameResolver,
+        SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
     )
     {
         $this->awbItem = $awbItem;
         $this->stateNameResolver = $stateNameResolver;
+        $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
     }
 
     /**
@@ -112,7 +119,9 @@ class AwbGenerateRecipientResolver
             $awbRecipient->setPostalCode($locker->getPostalCode());
         }
 
-        $post_meta_samedaycourier_address_hd = Helper::parsePostMetaSamedaycourierAddressHd($this->awbItem->getOrderId());
+        $post_meta_samedaycourier_address_hd = $this->samedayShippingHdAddressParser->parse(
+            $this->awbItem->getOrderId()
+        );
 
         if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
@@ -169,11 +178,9 @@ class AwbGenerateRecipientResolver
      */
     private function isHomeDeliveryType(): bool
     {
-        $post_meta_samedaycourier_address_hd = Helper::parsePostMetaSamedaycourierAddressHd(
+        return null !== $this->samedayShippingHdAddressParser->parse(
             $this->awbItem->getOrderId()
         );
-
-        return $post_meta_samedaycourier_address_hd !== null;
     }
 }
 

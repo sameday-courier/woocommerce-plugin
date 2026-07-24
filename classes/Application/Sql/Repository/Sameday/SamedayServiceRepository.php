@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 class SamedayServiceRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_service';
@@ -34,7 +34,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s AND status > 0",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -49,7 +49,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -66,7 +66,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT service_optional_taxes FROM {$this->getTableName()} WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
             [
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
                 $samedayServiceId,
             ]
         );
@@ -121,7 +121,7 @@ class SamedayServiceRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -143,7 +143,7 @@ class SamedayServiceRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
             [
                 $samedayCode,
-                Helper::isTesting(),
+                SamedaySettings::isTesting(),
             ]
         );
 
@@ -169,7 +169,7 @@ class SamedayServiceRepository extends AbstractRepository
                 'sameday_id' => $service->getId(),
                 'sameday_name' => $service->getName(),
                 'sameday_code' => $service->getCode(),
-                'is_testing' => Helper::isTesting(),
+                'is_testing' => SamedaySettings::isTesting(),
                 'status' => 0,
                 'service_optional_taxes' => !empty($optionalTaxes) ? serialize($optionalTaxes) : null,
             ]
@@ -205,7 +205,7 @@ class SamedayServiceRepository extends AbstractRepository
     {
         $serviceName = $serviceObject->getName();
         if ($serviceObject->getCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[Helper::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
         }
 
         $this->dbHandler->updateRow(

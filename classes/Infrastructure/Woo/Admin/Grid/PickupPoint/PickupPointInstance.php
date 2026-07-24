@@ -9,7 +9,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Utils\Helper;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 class PickupPointInstance
 {
@@ -101,7 +101,7 @@ class PickupPointInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-                                <a href="<?php echo Helper::getPathToSettingsPage(); ?>" class="sameday_admin_button">
+                                <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
                                     <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:fit-content; display:inline-block;top: -2px !important; position: relative;">
@@ -134,7 +134,7 @@ class PickupPointInstance
                         <label for="pickupPointCountry">Country</label>
                         <div class="form-input">
                             <select name="pickupPointCountry" id="pickupPointCountry">
-                                <option value="<?php echo SamedayConstants::DEFAULT_COUNTRIES[Helper::getHostCountry()]['value']; ?>"><?php echo SamedayConstants::DEFAULT_COUNTRIES[Helper::getHostCountry()]['label']; ?></option>
+                                <option value="<?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['value']; ?>"><?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['label']; ?></option>
                             </select>
                         </div>
                     </div>

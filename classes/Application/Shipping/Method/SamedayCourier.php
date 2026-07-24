@@ -13,7 +13,6 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayPostAwbEstimationRequest;
 use Sameday\Responses\SamedayPostAwbEstimationResponse;
@@ -21,6 +20,7 @@ use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\SamedayAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
@@ -28,12 +28,15 @@ use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WeightHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
-use SamedayCourier\Shipping\Utils\Helper;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
@@ -99,7 +102,7 @@ final class SamedayCourier extends WC_Shipping_Method
      */
     public function calculate_shipping($package = array()): void
     {
-        if ($this->settings['enabled'] === 'no') {
+        if (!SamedaySettings::isEnabled()) {
             return;
         }
 
@@ -111,12 +114,12 @@ final class SamedayCourier extends WC_Shipping_Method
             return;
         }
 
-        $useEstimatedCost = $this->settings['estimated_cost'];
-        $estimatedCostExtraFee = (int) $this->settings['estimated_cost_extra_fee'];
-        $useLockerMap = $this->settings['lockers_map'] === 'yes';
+        $useEstimatedCost = SamedaySettings::getEstimatedCost();
+        $estimatedCostExtraFee = SamedaySettings::getEstimatedCostExtraFee();
+        $useLockerMap = SamedaySettings::isLockersMapEnabled();
         $cartValue = WC()->cart->get_subtotal();
 
-        if (true === Helper::isApplyFreeShippingAfterDiscount()) {
+        if (true === SamedaySettings::isDiscountFreeShippingEnabled()) {
             $cartValue = WC()->cart->get_cart_contents_total();
         }
 
@@ -133,11 +136,9 @@ final class SamedayCourier extends WC_Shipping_Method
 //            }
 
             if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
-                if (null === $lockerMaxItems = $this->settings['locker_max_items'] ?? null) {
-                    $lockerMaxItems = SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
-                }
+                $lockerMaxItems = SamedaySettings::getLockerMaxItems();
 
-                if (count(WC()->cart->get_cart()) > ((int) $lockerMaxItems)) {
+                if (count(WC()->cart->get_cart()) > $lockerMaxItems) {
                     continue;
                 }
             }
@@ -165,7 +166,7 @@ final class SamedayCourier extends WC_Shipping_Method
                         // Business logic for Bulgaria Currency Rules
                         $storeCurrency = get_woocommerce_currency();
                         if (($storeCurrency !== $estimatedCurrency)
-                            && (Helper::getHostCountry() === SamedayConstants::API_HOST_LOCALE_BG)
+                            && (SamedaySettings::getHostCountry() === SamedayConstants::API_HOST_LOCALE_BG)
                         ) {
                             try {
                                 $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
@@ -237,12 +238,12 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         $time = time();
 
-        $ltSync = $this->settings['sameday_sync_lockers_ts'];
+        $ltSync = SamedaySettings::getSamedaySyncLockersTs();
 
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
-                new RefreshLockerRequest(!empty(OptionsHandler::getSamedayOptions()), true)
-            ))->execute();
+                new RefreshLockerRequest(new SamedayLockerRepository(), new Sameday(SdkInitiator::init())))
+            )->execute();
         }
     }
 
@@ -267,7 +268,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int) $serviceId);
         $serviceTaxIds = array();
-        if (WC()->session->get('open_package') === 'yes') {
+        if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === PackageType::PARCEL
@@ -280,7 +281,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         // Check if the client has to pay anything as repayment value
         $repaymentAmount = WC()->cart->subtotal;
-        $paymentMethod = WC()->session->get('payment_method');
+        $paymentMethod = WooSessionHandler::get(SamedaySessionKeys::PAYMENT_METHOD);
         if (isset($paymentMethod) && ($paymentMethod !== SamedayConstants::CASH_ON_DELIVERY)) {
             $repaymentAmount = 0;
         }
@@ -327,6 +328,12 @@ final class SamedayCourier extends WC_Shipping_Method
 
     private function init(): void
     {
+        $labelFormatOptions = [];
+
+        foreach (SamedayAwbPdfTypes::getLabelKeys() as $value => $labelKey) {
+            $labelFormatOptions[$value] = __($labelKey, SamedayConstants::TEXT_DOMAIN);
+        }
+
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable', SamedayConstants::TEXT_DOMAIN),
@@ -360,10 +367,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 'title'   => __('Default label format', SamedayConstants::TEXT_DOMAIN) . ' *',
                 'default' => 'A4',
                 'type'    => 'select',
-                'options' => [
-                    'A4' => __(AwbPdfType::A4, SamedayConstants::TEXT_DOMAIN),
-                    'A6' => __(AwbPdfType::A6, SamedayConstants::TEXT_DOMAIN),
-                ],
+                'options' => $labelFormatOptions,
                 'description' => __('Awb paper format', SamedayConstants::TEXT_DOMAIN)
             ),
 
@@ -495,8 +499,8 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         // Show on checkout:
-        $this->enabled = $this->settings['enabled'] ?? 'yes';
-        $this->title = $this->settings['title'] ?? __('SamedayCourier', SamedayConstants::TEXT_DOMAIN);
+        $this->enabled = SamedaySettings::isEnabled() ? 'yes' : 'no';
+        $this->title = SamedaySettings::getTitle();
 
         $this->init_settings();
 
@@ -509,7 +513,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $post_data = $this->get_post_data();
 
         $isLogged = false;
-        $envModes = Helper::getEnvModes();
+        $envModes = SdkInitiator::getEnvModes();
         foreach ($envModes as $hostCountry => $envModesByHosts) {
             if ($isLogged === true) {
                 break;

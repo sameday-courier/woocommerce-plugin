@@ -10,7 +10,7 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\OptionsHandler;
+use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -100,9 +100,6 @@ final class RefreshLocker
      */
     private function updateLastSyncTimestamp(): void
     {
-        $samedayOptions = OptionsHandler::getSamedayOptions();
-        $samedayOptions['sameday_sync_lockers_ts'] = time();
-
-        OptionsHandler::setSamedayOptions($samedayOptions);
+        SamedaySettings::setSamedaySyncLockersTs(time());
     }
 }

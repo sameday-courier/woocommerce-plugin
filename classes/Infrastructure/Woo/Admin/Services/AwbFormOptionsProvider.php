@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services;
 
-use SamedayCourier\Shipping\Domain\AwbPaymentTypes;
-use SamedayCourier\Shipping\Domain\PackageTypes;
+use SamedayCourier\Shipping\Domain\SamedayAwbPaymentTypes;
+use SamedayCourier\Shipping\Domain\SamedayPackageTypes;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 
 if (!defined('ABSPATH')) {
@@ -21,7 +21,7 @@ final class AwbFormOptionsProvider
     {
         $options = [];
 
-        foreach (PackageTypes::getLabelKeys() as $value => $labelKey) {
+        foreach (SamedayPackageTypes::getLabelKeys() as $value => $labelKey) {
             $options[] = [
                 'name' => TranslatorHandler::translate($labelKey),
                 'value' => $value,
@@ -38,7 +38,7 @@ final class AwbFormOptionsProvider
     {
         $options = [];
 
-        foreach (AwbPaymentTypes::getLabelKeys() as $value => $labelKey) {
+        foreach (SamedayAwbPaymentTypes::getLabelKeys() as $value => $labelKey) {
             $options[] = [
                 'name' => TranslatorHandler::translate($labelKey),
                 'value' => $value,

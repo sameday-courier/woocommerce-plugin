@@ -10,6 +10,10 @@ if (!defined('ABSPATH')) {
 
 final class ShippingMethodCodeParser
 {
+    /**
+     * @param string $shippingMethodInput
+     * @return string
+     */
     public static function parse(string $shippingMethodInput): string
     {
         $serviceCode = explode(':', $shippingMethodInput, 3);
