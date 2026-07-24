@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\MapperInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\DbHandlerInterface;
 
 abstract class AbstractRepository implements RepositoryInterface
 {

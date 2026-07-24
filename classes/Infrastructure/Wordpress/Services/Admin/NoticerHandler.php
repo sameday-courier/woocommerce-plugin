@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
+
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;
