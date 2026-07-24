@@ -361,7 +361,6 @@ add_action('woocommerce_review_order_after_shipping', 'wps_locker_row_layout');
 
 // When POST Order Form
 add_action('woocommerce_blocks_checkout_order_processed', static function ($order): void {
-
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
             (new WooLockerOrderDataHandler(
