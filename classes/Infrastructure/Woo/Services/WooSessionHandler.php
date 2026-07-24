@@ -17,7 +17,7 @@ final class WooSessionHandler
      */
     public static function get(string $key, $default = null)
     {
-        return WC()->session->get($key, $default);
+        return WcHandler::getWC()->session->get($key, $default);
     }
 
     /**
@@ -25,6 +25,6 @@ final class WooSessionHandler
      */
     public static function set(string $key, $value): void
     {
-        WC()->session->set($key, $value);
+        WcHandler::getWC()->session->set($key, $value);
     }
 }

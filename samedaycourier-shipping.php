@@ -40,6 +40,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderSamedayShippingM
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
@@ -204,12 +205,12 @@ add_action('woocommerce_review_order_after_shipping', 'wps_sameday_shipping_opti
 // Enabling, disabling and refreshing session shipping methods data
 add_action( 'woocommerce_checkout_update_order_review', 'refresh_sameday_shipping_methods', 10, 1);
 function refresh_sameday_shipping_methods() {
-    foreach (WC()->cart->get_shipping_packages() as $package_key => $package) {
+    foreach (WcHandler::getWC()->cart->get_shipping_packages() as $package_key => $package) {
 	    $package['package_hash'] = 'wc_ship_' . md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'));
         WooSessionHandler::set(SamedaySessionKeys::shippingForPackage((int) $package_key), $package);
     }
 
-    WC()->cart->calculate_shipping();
+    WcHandler::getWC()->cart->calculate_shipping();
 }
 
 add_action('wp_ajax_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');

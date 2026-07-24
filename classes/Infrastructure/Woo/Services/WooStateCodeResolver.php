@@ -19,7 +19,7 @@ final class WooStateCodeResolver implements StateNameResolverInterface
             return null;
         }
 
-        $name = html_entity_decode(WC()->countries->get_states()[$countryCode][$stateCode] ?? '');
+        $name = html_entity_decode(WooCountriesHandler::getStateName($countryCode, $stateCode));
 
         return '' === $name ? null : $name;
     }
@@ -30,7 +30,7 @@ final class WooStateCodeResolver implements StateNameResolverInterface
             return '';
         }
 
-        $states = WC()->countries->get_states()[$countryCode] ?? null;
+        $states = WooCountriesHandler::getStatesForCountry($countryCode);
 
         if (null === $states) {
             return '';

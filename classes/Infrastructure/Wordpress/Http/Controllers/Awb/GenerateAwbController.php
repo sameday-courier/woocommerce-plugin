@@ -20,6 +20,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WcHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
@@ -51,7 +52,7 @@ final class GenerateAwbController extends AbstractController
     protected function processPostAction(array $inputParams): void
     {
         $orderId = (int) $inputParams['samedaycourier-order-id'];
-        $orderData = WcHandler::getShippingOrderById($orderId);
+        $orderData = WooShippingHandler::getShippingOrderById($orderId);
 
         if (empty($orderData)) {
             NoticerHandler::addFlashNotice(

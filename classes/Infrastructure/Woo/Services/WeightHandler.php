@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-
 if (!defined('ABSPATH')) {
     exit;
 }
