@@ -18,6 +18,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProv
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use WC_Order;
 
@@ -137,7 +138,7 @@ class AwbForm
             $repayment = 0;
         }
 
-        $openPackage = get_post_meta($order->get_id(), '_sameday_shipping_open_package_option', true) !== '' ? 'checked' : '';
+        $openPackage = WooOpenPackageOrderDataHandler::isEnabled($order->get_id()) ? 'checked' : '';
 
         $lockerName = null;
         $lockerAddress = null;

@@ -31,11 +31,13 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRep
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderSamedayShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
@@ -223,7 +225,13 @@ function woo_sameday_post_ajax_data(): void {
 
     if (null !== $locker = $_POST['locker'] ?? null) {
         if (is_array($locker)) {
-            WooSessionHandler::set(SamedaySessionKeys::LOCKER, InputSanitizer::sanitizeData($locker));
+            try {
+                $locker = InputSanitizer::sanitizeData($locker);
+            } catch (JsonException $e) {
+                return;
+            }
+
+            WooSessionHandler::set(SamedaySessionKeys::LOCKER, $locker);
         } else {
             WooSessionHandler::set(SamedaySessionKeys::LOCKER, (int) $locker);
         }
@@ -370,11 +378,7 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
         } catch (Exception $exception) {}
     }
 
-    if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
-        update_post_meta($order->get_id(), '_sameday_shipping_open_package_option', 1, true);
-        // After store, remove it from Session
-        WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
-    }
+    WooOpenPackageOrderDataHandler::saveFromSession($order->get_id());
 });
 
 add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
@@ -395,11 +399,7 @@ add_action('woocommerce_checkout_order_processed', static function ($orderId): v
         } catch (Exception $exception) {}
     }
 
-    if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
-        update_post_meta($orderId, '_sameday_shipping_open_package_option', 1, true);
-        // After store, remove it from Session
-        WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
-    }
+    WooOpenPackageOrderDataHandler::saveFromSession($orderId);
 });
 
 /**
@@ -575,8 +575,8 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
             $historyModal = '<div id="sameday-shipping-content-awb-history" style="display: none;">
                             ' . $awbHistoryTable . ' 
                          </div>';
-
-            $awb = SamedayAwbRepository::getAwbForOrderId((int) sanitize_key($order->get_id()));
+            $samedayAwbRepository = new SamedayAwbRepository();
+            $awb = $samedayAwbRepository->getAwbForOrderId((int) sanitize_key($order->get_id()));
             if (null !== $awb && null !== $awb->getAwbNumber()) {
                 $redirectToEawbSite = sprintf(
                         '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
