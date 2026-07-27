@@ -9,6 +9,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use JsonException;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
@@ -20,6 +21,7 @@ use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use WC_Order;
 
 class AwbForm
@@ -62,10 +64,9 @@ class AwbForm
      */
     public function samedaycourierAddAwbForm(WC_Order $order): string
     {
-        $postMetaLocker = get_post_meta(
+        $postMetaLocker = PostMetaHandler::get(
             $order->get_id(),
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
-            true
         );
 
         $locker = null;
@@ -84,7 +85,7 @@ class AwbForm
 
         $serviceCode = null;
         foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
-            if ($shippingLine->get_method_id() !== 'samedaycourier') {
+            if ($shippingLine->get_method_id() !== SamedayConstants::PLUGIN_NAME) {
                 continue;
             }
 

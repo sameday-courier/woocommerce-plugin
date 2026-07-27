@@ -72,7 +72,7 @@ define('SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 // Shipping Method init.
 add_filter('woocommerce_shipping_methods', static function (array $methods): array {
-    $methods['samedaycourier'] = SamedayCourier::class;
+    $methods[SamedayConstants::PLUGIN_NAME] = SamedayCourier::class;
 
     return $methods;
 });
@@ -95,7 +95,7 @@ add_action('admin_enqueue_scripts', static function (): void {
     $isSettingsPage = isset($_GET['page'], $_GET['tab'], $_GET['section'])
         && 'wc-settings' === $_GET['page']
         && 'shipping' === $_GET['tab']
-        && 'samedaycourier' === $_GET['section'];
+        && SamedayConstants::PLUGIN_NAME === $_GET['section'];
     $isOrderAdminPage = ('post.php' === $pagenow || 'admin.php' === $pagenow);
 
     if (!$isPluginAdminPage && !$isSettingsPage && !$isOrderAdminPage) {
@@ -114,7 +114,7 @@ function load_lockers_sync() {
     global $pagenow;
 
     $section = $_GET['section'] ?? null;
-    if ('samedaycourier' === $section) {
+    if (SamedayConstants::PLUGIN_NAME === $section) {
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
         wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );

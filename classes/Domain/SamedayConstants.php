@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 
 final class SamedayConstants
 {
+    public const PLUGIN_NAME = 'samedaycourier';
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
     public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
     public const CASH_ON_DELIVERY = 'cod';

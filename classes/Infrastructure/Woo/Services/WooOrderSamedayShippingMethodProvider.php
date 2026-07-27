@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -42,7 +43,7 @@ final class WooOrderSamedayShippingMethodProvider
             $serviceMethod = $shippingLines[$index]->get_data()['method_id'];
         }
 
-        if ($serviceMethod !== 'samedaycourier') {
+        if ($serviceMethod !== SamedayConstants::PLUGIN_NAME) {
             return null;
         }
 

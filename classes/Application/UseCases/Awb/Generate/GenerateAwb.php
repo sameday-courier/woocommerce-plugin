@@ -244,7 +244,7 @@ final class GenerateAwb
         }
         $shippingLine->save_meta_data();
 
-        $shippingLine->set_method_id('samedaycourier');
+        $shippingLine->set_method_id(SamedayConstants::PLUGIN_NAME);
         $shippingLine->save();
 
         try {

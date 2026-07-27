@@ -156,7 +156,7 @@ class PickupPoints extends WP_List_Table
         $searchParams = $this->get_search_params();
         [$likeFilters, $exactFilters] = $this->buildSearchFilters($searchParams);
 
-        $per_page = $this->get_items_per_page('pickup-points_per_page', self::GRID_PER_PAGE_VALUE);
+        $per_page = $this->get_items_per_page('pickuppoints_per_page', self::GRID_PER_PAGE_VALUE);
         $current_page = $this->get_pagenum();
 
         $countQuery = GridQueryBuilder::buildCount(
@@ -169,8 +169,10 @@ class PickupPoints extends WP_List_Table
             $exactFilters,
         );
 
+        $total_items = (int) $this->dbHandler->getVar($countQuery['sql'], $countQuery['params']);
+
         $this->set_pagination_args([
-            'total_items' => (int) $this->dbHandler->getVar($countQuery['sql'], $countQuery['params']),
+            'total_items' => $total_items,
             'per_page'    => $per_page,
         ]);
 
@@ -219,136 +221,146 @@ class PickupPoints extends WP_List_Table
         return [$likeFilters, $exactFilters];
     }
 
-    // Add search parameter handling
     public function get_search_params(): array
     {
         return [
-            'search_sameday_id' => sanitize_text_field($_GET['search_sameday_id'] ?? ''),
-            'search_sameday_alias' => sanitize_text_field($_GET['search_sameday_alias'] ?? ''),
-            'search_city' => sanitize_text_field($_GET['search_city'] ?? ''),
-            'search_county' => sanitize_text_field($_GET['search_county'] ?? ''),
-            'search_address' => sanitize_text_field($_GET['search_address'] ?? ''),
-            'search_contactPersons' => sanitize_text_field($_GET['search_contactPersons'] ?? ''),
-            'search_default_pickup_point' => sanitize_text_field($_GET['search_default_pickup_point'] ?? ''),
+            'search_sameday_id' => sanitize_text_field(wp_unslash($_GET['search_sameday_id'] ?? '')),
+            'search_sameday_alias' => sanitize_text_field(wp_unslash($_GET['search_sameday_alias'] ?? '')),
+            'search_city' => sanitize_text_field(wp_unslash($_GET['search_city'] ?? '')),
+            'search_county' => sanitize_text_field(wp_unslash($_GET['search_county'] ?? '')),
+            'search_address' => sanitize_text_field(wp_unslash($_GET['search_address'] ?? '')),
+            'search_contactPersons' => sanitize_text_field(wp_unslash($_GET['search_contactPersons'] ?? '')),
+            'search_default_pickup_point' => sanitize_text_field(wp_unslash($_GET['search_default_pickup_point'] ?? '')),
         ];
     }
 
-    protected function extra_tablenav($which) {
-        if ($which === 'top') {
-            ?>
-            <div class="alignleft actions">
-                <script>
-                    function addSearchToHeaders() {
-                        const table = document.querySelector('.wp-list-table');
-                        if (!table) return;
+    public function render_request_preservation_fields(): void
+    {
+        $searchParams = $this->get_search_params();
 
-                        const headerRow = table.querySelector('thead tr');
-                        if (!headerRow) return;
-
-                        // Check if search row already exists
-                        if (headerRow.nextElementSibling && headerRow.nextElementSibling.classList.contains('search-row')) {
-                            return;
-                        }
-
-                        // Create search row
-                        const searchRow = document.createElement('tr');
-                        searchRow.classList.add('search-row');
-
-                        const headers = headerRow.querySelectorAll('th');
-                        headers.forEach((header) => {
-                            const td = document.createElement('td');
-                            const columnKey = header.id;
-
-                            if (columnKey && columnKey !== 'cb' && columnKey !== 'delete') {
-                                const currentValue = new URLSearchParams(window.location.search).get('search_' + columnKey) || '';
-
-                                if (columnKey === 'default_pickup_point') {
-                                    const select = document.createElement('select');
-                                    select.name = 'search_' + columnKey;
-                                    select.style.cssText = 'width:100%;padding:4px;';
-                                    select.onchange = searchTable;
-
-                                    ['', 'yes', 'no'].forEach(function(optionValue) {
-                                        const option = document.createElement('option');
-                                        option.value = optionValue;
-                                        option.textContent = optionValue === '' ? 'All' : (optionValue === 'yes' ? 'Yes' : 'No');
-                                        if (currentValue === optionValue) {
-                                            option.selected = true;
-                                        }
-                                        select.appendChild(option);
-                                    });
-
-                                    td.appendChild(select);
-                                } else {
-                                    const placeholder = {
-                                        'sameday_id': 'ID...',
-                                        'sameday_alias': 'Name...',
-                                        'city': 'City...',
-                                        'county': 'County...',
-                                        'address': 'Address...',
-                                        'contactPersons': 'Contact...'
-                                    }[columnKey] || 'Search...';
-
-                                    const input = document.createElement('input');
-                                    input.type = 'text';
-                                    input.name = 'search_' + columnKey;
-                                    input.value = currentValue;
-                                    input.placeholder = placeholder;
-                                    input.style.cssText = 'width:100%;padding:4px;font-size:12px;';
-                                    input.onkeypress = function(event) {
-                                        if (event.key === 'Enter') {
-                                            searchTable();
-                                        }
-                                    };
-
-                                    td.appendChild(input);
-                                }
-                            }
-
-                            searchRow.appendChild(td);
-                        });
-
-                        // Insert search row after header row
-                        headerRow.parentNode.insertBefore(searchRow, headerRow.nextSibling);
-                    }
-
-                    function searchTable() {
-                        const form = document.createElement('form');
-                        form.method = 'GET';
-                        form.style.display = 'none';
-
-                        // Add page parameter
-                        const pageInput = document.createElement('input');
-                        pageInput.name = 'page';
-                        pageInput.value = <?php echo wp_json_encode(RequestSanitizer::getPageSlug()); ?>;
-                        form.appendChild(pageInput);
-
-                        // Add search parameters
-                        document.querySelectorAll('.search-row input, .search-row select').forEach(input => {
-                            if (input.value.trim() !== '') {
-                                const searchInput = document.createElement('input');
-                                searchInput.name = input.name;
-                                searchInput.value = input.value;
-                                form.appendChild(searchInput);
-                            }
-                        });
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-
-                    // Add search fields when page loads
-                    document.addEventListener('DOMContentLoaded', addSearchToHeaders);
-                    // Also add when table is updated via AJAX
-                    setTimeout(addSearchToHeaders, 100);
-                </script>
-
-                <?php if (array_filter($this->get_search_params())): ?>
-                    <a href="?page=<?php echo esc_attr(RequestSanitizer::getPageSlug()); ?>" class="sameday_admin_button">Clear Search</a>
-                <?php endif; ?>
-            </div>
-            <?php
+        if ('' !== $searchParams['search_default_pickup_point']) {
+            printf(
+                '<input type="hidden" name="search_default_pickup_point" value="%s" />',
+                esc_attr($searchParams['search_default_pickup_point'])
+            );
         }
+
+        $orderBy = RequestSanitizer::getOrderBy(self::ACCEPTED_ORDER_BY_COLUMNS);
+        $order = RequestSanitizer::getOrder();
+
+        if (null !== $orderBy) {
+            printf('<input type="hidden" name="orderby" value="%s" />', esc_attr($orderBy));
+        }
+
+        if (null !== $order) {
+            printf('<input type="hidden" name="order" value="%s" />', esc_attr($order));
+        }
+    }
+
+    protected function get_views(): array
+    {
+        $searchParams = $this->get_search_params();
+        $currentDefault = $searchParams['search_default_pickup_point'];
+
+        return $this->get_views_links([
+            'all' => [
+                'url' => $this->get_filter_url(['search_default_pickup_point' => '']),
+                'label' => __('All', SamedayConstants::TEXT_DOMAIN),
+                'current' => '' === $currentDefault,
+            ],
+            'yes' => [
+                'url' => $this->get_filter_url(['search_default_pickup_point' => 'yes']),
+                'label' => __('Default', SamedayConstants::TEXT_DOMAIN),
+                'current' => 'yes' === $currentDefault,
+            ],
+            'no' => [
+                'url' => $this->get_filter_url(['search_default_pickup_point' => 'no']),
+                'label' => __('No', SamedayConstants::TEXT_DOMAIN),
+                'current' => 'no' === $currentDefault,
+            ],
+        ]);
+    }
+
+    protected function extra_tablenav($which): void
+    {
+        if ('top' !== $which) {
+            return;
+        }
+
+        $searchParams = $this->get_search_params();
+        $textFilters = [
+            'search_sameday_id' => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
+            'search_sameday_alias' => __('Name', SamedayConstants::TEXT_DOMAIN),
+            'search_city' => __('City', SamedayConstants::TEXT_DOMAIN),
+            'search_county' => __('County', SamedayConstants::TEXT_DOMAIN),
+            'search_address' => __('Address', SamedayConstants::TEXT_DOMAIN),
+            'search_contactPersons' => __('Contact Persons', SamedayConstants::TEXT_DOMAIN),
+        ];
+        ?>
+        <div class="alignleft actions">
+            <?php foreach ($textFilters as $name => $label) : ?>
+                <label class="screen-reader-text" for="<?php echo esc_attr($name); ?>">
+                    <?php echo esc_html($label); ?>
+                </label>
+                <input
+                    type="search"
+                    id="<?php echo esc_attr($name); ?>"
+                    name="<?php echo esc_attr($name); ?>"
+                    value="<?php echo esc_attr($searchParams[$name]); ?>"
+                    placeholder="<?php echo esc_attr($label); ?>"
+                />
+            <?php endforeach; ?>
+
+            <?php submit_button(__('Filter'), '', 'filter_action', false, ['id' => 'pickup-point-query-submit']); ?>
+
+            <?php if ($this->has_active_filters()) : ?>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>" class="button">
+                    <?php esc_html_e('Reset', SamedayConstants::TEXT_DOMAIN); ?>
+                </a>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    private function has_active_filters(): bool
+    {
+        return (bool) array_filter($this->get_search_params());
+    }
+
+    /**
+     * @param array<string, string> $overrides
+     */
+    private function get_filter_url(array $overrides = []): string
+    {
+        $args = ['page' => RequestSanitizer::getPageSlug()];
+
+        foreach ($this->get_search_params() as $key => $value) {
+            if ('' !== $value) {
+                $args[$key] = $value;
+            }
+        }
+
+        foreach ($overrides as $key => $value) {
+            if ('' === $value) {
+                unset($args[$key]);
+                continue;
+            }
+
+            $args[$key] = $value;
+        }
+
+        $orderBy = RequestSanitizer::getOrderBy(self::ACCEPTED_ORDER_BY_COLUMNS);
+        $order = RequestSanitizer::getOrder();
+
+        if (null !== $orderBy) {
+            $args['orderby'] = $orderBy;
+        }
+
+        if (null !== $order) {
+            $args['order'] = $order;
+        }
+
+        return add_query_arg($args, admin_url('admin.php'));
     }
 }
 

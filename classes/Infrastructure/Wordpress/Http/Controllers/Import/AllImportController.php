@@ -21,6 +21,7 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
@@ -46,7 +47,7 @@ final class AllImportController extends AbstractController
     private const SETTINGS_REDIRECT_ARGS = [
         'page' => 'wc-settings',
         'tab' => 'shipping',
-        'section' => 'samedaycourier',
+        'section' => SamedayConstants::PLUGIN_NAME,
     ];
 
     /**

@@ -10,6 +10,7 @@ if (!defined( 'ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
 
 class PickupPointInstance
 {
@@ -21,55 +22,7 @@ class PickupPointInstance
 	{
 		add_filter( 'set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3 );
 		add_action( 'admin_menu', [ $this, 'plugin_menu' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
-
-	/**
-	 * @return void
-	 */
-    public function enqueue_scripts(string $hook): void
-    {
-        if (!isset($_GET['page']) || 'sameday_pickup_points' !== $_GET['page']) {
-            return;
-        }
-
-	    add_thickbox();
-
-        $pluginMainFile = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'samedaycourier-shipping.php';
-
-        wp_enqueue_style(
-            'sameday-thickboxform-style',
-            plugins_url('assets/css/tickbox-form.css', $pluginMainFile),
-            [],
-            time()
-        );
-        wp_enqueue_script(
-            'sameday-admin-helper',
-            plugins_url('assets/js/helper.js', $pluginMainFile),
-            ['jquery'],
-            time(),
-            true
-        );
-        wp_enqueue_script(
-            'sameday-admin-script',
-            plugins_url('assets/js/adminPickupPoints.js', $pluginMainFile),
-            ['jquery'],
-            time(),
-            true
-        );
-        wp_localize_script(
-            'sameday-admin-script',
-            'samedayPickupPointsAdmin',
-            [
-                'nonces' => [
-                    'get_counties' => wp_create_nonce('get_counties'),
-                    'get_cities' => wp_create_nonce('get_cities'),
-                    'send_pickup_point' => wp_create_nonce('send_pickup_point'),
-                    'delete_pickup_point' => wp_create_nonce('delete_pickup_point'),
-                ],
-            ]
-        );
-    }
 
 	public static function set_screen( $status, $option, $value )
 	{
@@ -100,23 +53,26 @@ class PickupPointInstance
 				<div id="post-body" class="metabox-holder columns-3">
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
-							<div>
+							<div class="sameday-settings-actions">
                                 <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
-                                    <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
+									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
                                 </a>
-								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:fit-content; display:inline-block;top: -2px !important; position: relative;">
+								<form action="<?php echo admin_url('admin-post.php') ?>" method="post">
 									<input type="hidden" name="action" value="refresh_pickup_points">
 									<input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_pickup_points')); ?>">
 									<input type="submit" class="sameday_admin_button" value="Refresh Pickup point">
 								</form>
-                                <a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="sameday_admin_button button-samll thickbox">
-                                    <?php echo __('Add Pickup Point', SamedayConstants::TEXT_DOMAIN) ?>
-                                </a>
+								<a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="sameday_admin_button button-samll thickbox">
+									<?php echo __('Add Pickup Point', SamedayConstants::TEXT_DOMAIN) ?>
+								</a>
 							</div>
-							<form method="post">
+							<form method="get">
+								<input type="hidden" name="page" value="sameday_pickup_points" />
 								<?php
-								$this->pickuppoints_obj->prepare_items();
-								$this->pickuppoints_obj->display();
+									$this->pickuppoints_obj->prepare_items();
+									$this->pickuppoints_obj->render_request_preservation_fields();
+									$this->pickuppoints_obj->views();
+									$this->pickuppoints_obj->display();
 								?>
 							</form>
 						</div>
@@ -124,107 +80,15 @@ class PickupPointInstance
 				</div>
 			</div>
 		</div>
-        <div id="smd-thickbox" class="smd-modal" style="display: none;">
-            <div class="smd-modal-container">
-                <form id="thickbox-form" method="POST" action="<?php echo admin_url('admin-post.php'); ?>" >
-                    <input type="hidden" name="action" value="send_pickup_point">
-                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('send_pickup_point'); ?>">
-                    <h3><?= __("Add New Pickup Point", SamedayConstants::TEXT_DOMAIN)?></h3>
-                    <div class="form-group">
-                        <label for="pickupPointCountry">Country</label>
-                        <div class="form-input">
-                            <select name="pickupPointCountry" id="pickupPointCountry">
-                                <option value="<?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['value']; ?>"><?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['label']; ?></option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointCounty"><?= __("County", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <select name="pickupPointCounty" id="pickupPointCounty" required disabled>
-                            <!-- // Bind data from server via ajax request -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointCity"><?= __("City", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <select name="pickupPointCity" id="pickupPointCity" required disabled>
-                            <!-- // Bind data from server via ajax request -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointAddress"><?= __("Address", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="text" name="pickupPointAddress" id="pickupPointAddress" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointDefault"><?= __("Default", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="checkbox" name="pickupPointDefault" id="pickupPointDefault" value="1">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointPostalCode"><?= __("Postal Code", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="number" name="pickupPointPostalCode" id="pickupPointPostalCode" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointAlias"><?= __("Alias", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="text" name="pickupPointAlias" id="pickupPointAlias" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointContactPersonName"><?= __("Contact Person Name", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="text" name="pickupPointContactPersonName" id="pickupPointContactPersonName" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointContactPersonPhone"><?= __("Contact Person Phone", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="number" name="pickupPointContactPersonPhone" id="pickupPointContactPersonPhone" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="pickupPointEmail"><?= __("Email", SamedayConstants::TEXT_DOMAIN)?></label>
-                        <div class="form-input">
-                            <input type="email" name="pickupPointEmail" id="pickupPointEmail" required>
-                        </div>
-                    </div>
-                    <div class="form-footer">
-                        <input type="submit" value="Save" class="sameday_admin_button">
-                        <button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div id="smd-thickbox-delete" class="smd-modal" style="display: none">
-            <div class="smd-modal-container">
-                <form id="form-deletePickupPoint" method="POST" action="<?php echo admin_url('admin-post.php'); ?>">
-                    <input type="hidden" name="sameday_id" id="input-deletePickupPoint">
-                    <input type="hidden" name="action" value="delete_pickup_point">
-                    <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('delete_pickup_point'); ?>">
-                    <h3><?= __("Are you sure you want to delete this pickup point?", SamedayConstants::TEXT_DOMAIN)?></h3>
-                    <div class="form-footer">
-                        <input type="submit" name="submit" value="Submit" class="sameday_admin_button">
-                        <button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
 		<?php
+		PickupPointForm::renderModals();
 	}
 
 	/**
 	 * Screen options
 	 */
-	public function screen_option(): void
-    {
+	public function screen_option() {
+		add_action('admin_enqueue_scripts', [PickupPointForm::class, 'enqueueScripts']);
 
 		$option = 'per_page';
 		$args   = [
@@ -239,13 +103,11 @@ class PickupPointInstance
 	}
 
 	/** Singleton instance */
-	public static function get_instance(): self
-    {
-		if (!isset( self::$instance ) ) {
+	public static function get_instance() {
+		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self();
 		}
 
 		return self::$instance;
 	}
 }
-

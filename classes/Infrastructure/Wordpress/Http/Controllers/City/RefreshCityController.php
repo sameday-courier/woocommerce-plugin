@@ -8,6 +8,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityReposi
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -32,7 +33,7 @@ final class RefreshCityController extends AbstractController
     private const SETTINGS_REDIRECT_ARGS = [
         'page' => 'wc-settings',
         'tab' => 'shipping',
-        'section' => 'samedaycourier',
+        'section' => SamedayConstants::PLUGIN_NAME,
     ];
 
     /**

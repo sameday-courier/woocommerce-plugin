@@ -73,7 +73,7 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         parent::__construct($instance_id);
 
-        $this->id = 'samedaycourier';
+        $this->id = SamedayConstants::PLUGIN_NAME;
         $this->method_title = __('SamedayCourier', SamedayConstants::TEXT_DOMAIN);
         $this->method_description = __(
             'Custom Shipping Method for SamedayCourier',

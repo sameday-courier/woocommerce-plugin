@@ -7,6 +7,19 @@
     padding: 0;
 }
 
+.sameday-settings-actions form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+
+.tablenav.top .alignleft.actions input[type="search"] {
+    width: 130px;
+    max-width: 100%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
 .sameday_admin_button {
     display: inline-block;
     background: linear-gradient(90deg, #ed2224, #b21f24);
