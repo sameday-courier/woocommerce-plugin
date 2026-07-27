@@ -37,7 +37,7 @@ final class EditServiceController extends AbstractController
      *
      * @return void
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
         if (null === $serviceName) {

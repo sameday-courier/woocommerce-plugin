@@ -35,7 +35,7 @@ final class ShowAsPdfAwbController extends AbstractController
      *
      * @throws SamedaySDKException
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $showAsPdf = new ShowAsPdfAwb(
             new ShowAsPdfAwbRequest(

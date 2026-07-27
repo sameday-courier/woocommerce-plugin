@@ -4,11 +4,29 @@
 const FIELD_TYPE_OF_BILLING = 'billing';
 const FIELD_TYPE_OF_SHIPPING = 'shipping';
 
-const doAjaxCall = (params = {}, reloadCheckout = true) => {
-    // Predefined Params
-    if (null !== params.action) {
-        params.action = 'woo_sameday_post_ajax_data';
+const resolveCheckoutAjaxAction = (params) => {
+    if (Object.prototype.hasOwnProperty.call(params, 'locker')) {
+        return 'store_sameday_locker_in_session';
     }
+
+    if (Object.prototype.hasOwnProperty.call(params, 'open_package')) {
+        return 'store_sameday_open_package_in_session';
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, 'payment_method')) {
+        return 'store_sameday_payment_method_in_session';
+    }
+
+    return null;
+};
+
+const doAjaxCall = (params = {}, reloadCheckout = true) => {
+    params.action = resolveCheckoutAjaxAction(params);
+
+    if (null === params.action) {
+        return;
+    }
+
     params.samedayNonce = samedayVars.samedayNonce;
 
     jQuery.ajax({

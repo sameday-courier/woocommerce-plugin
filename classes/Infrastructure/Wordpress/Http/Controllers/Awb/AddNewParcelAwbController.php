@@ -39,7 +39,7 @@ final class AddNewParcelAwbController extends AbstractController
      * @throws SamedaySDKException
      * @throws JsonException
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $addNewParcelAwb = new AddNewParcelAwb(
             new AddNewParcelAwbRequest(

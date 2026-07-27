@@ -39,7 +39,7 @@ final class ChangeLockerController extends AbstractController
      *
      * @return void
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $orderId = isset($inputParams['orderId']) ? (int) $inputParams['orderId'] : 0;
         $locker = $inputParams['locker'] ?? null;

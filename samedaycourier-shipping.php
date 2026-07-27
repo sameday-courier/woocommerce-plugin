@@ -33,7 +33,6 @@ use SamedayCourier\Shipping\Application\Sql\PluginHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
@@ -50,7 +49,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
 /**
  * Check if WooCommerce plugin is enabled
  */
@@ -213,45 +211,6 @@ function refresh_sameday_shipping_methods() {
     }
 
     WooHandler::getWC()->cart->calculate_shipping();
-}
-
-add_action('wp_ajax_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
-add_action('wp_ajax_nopriv_woo_sameday_post_ajax_data', 'woo_sameday_post_ajax_data');
-
-function woo_sameday_post_ajax_data(): void {
-    if (!NonceVerifier::verify($_POST['samedayNonce'], 'sameday-post-data')) {
-        die('Invalid Request !');
-    }
-
-    if (null !== $locker = $_POST['locker'] ?? null) {
-        if (is_array($locker)) {
-            try {
-                $locker = InputSanitizer::sanitizeData($locker);
-            } catch (JsonException $e) {
-                return;
-            }
-
-            WooSessionHandler::set(SamedaySessionKeys::LOCKER, $locker);
-        } else {
-            WooSessionHandler::set(SamedaySessionKeys::LOCKER, (int) $locker);
-        }
-
-        return;
-    }
-
-    if (null !== $openPackage = $_POST['open_package'] ?? null) {
-	    WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, InputSanitizer::sanitizeInput($openPackage));
-
-        return;
-    }
-
-    if (isset($_POST['payment_method'])) {
-	    WooSessionHandler::set(SamedaySessionKeys::PAYMENT_METHOD, InputSanitizer::sanitizeInput($_POST['payment_method']));
-
-        return;
-    }
-
-    die();
 }
 
 add_action('woocommerce_cart_calculate_fees', 'checkout_repayment_tax', 100);

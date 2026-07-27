@@ -49,7 +49,7 @@ final class GenerateAwbController extends AbstractController
      * @throws JsonException
      * @throws SamedaySDKException
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $orderId = (int) $inputParams['samedaycourier-order-id'];
         $orderData = WooShippingHandler::getShippingOrderById($orderId);

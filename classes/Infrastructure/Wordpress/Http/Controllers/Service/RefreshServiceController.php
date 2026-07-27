@@ -40,7 +40,7 @@ final class RefreshServiceController extends AbstractController
      *
      * @return void
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         try {
             $samedayApiClient = new Sameday(SdkInitiator::init());

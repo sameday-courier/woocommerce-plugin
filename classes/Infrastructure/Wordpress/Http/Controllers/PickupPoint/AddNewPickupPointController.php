@@ -37,7 +37,7 @@ class AddNewPickupPointController extends AbstractController
      *
      * @return void
      */
-    public function processPostAction(array $inputParams): void
+    public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {
             NoticerHandler::addFlashNotice(

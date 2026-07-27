@@ -14,7 +14,7 @@ if (!defined("ABSPATH")) {
     exit;
 }
 
-abstract class AbstractController implements ControllerInterface
+abstract class AbstractNoPrivController implements ControllerInterface
 {
     /**
      * @return void
@@ -23,11 +23,6 @@ abstract class AbstractController implements ControllerInterface
     public function handle(): void
     {
         $inputParams = InputSanitizer::sanitizeInputs($_POST);
-        if (!UserPermissionChecker::hasAllowedRole()) {
-            throw new AccessDeniedException(
-                TranslatorHandler::translate("Not enough permission to access this content.")
-            );
-        }
 
         if (!NonceVerifier::verify($inputParams['_wpnonce'], $this->getAction())) {
             throw new AccessDeniedException(
@@ -35,7 +30,7 @@ abstract class AbstractController implements ControllerInterface
             );
         }
 
-        $this->processAction($inputParams);
+        $this->processNoPrivAction($inputParams);
     }
 
     /**
@@ -43,5 +38,5 @@ abstract class AbstractController implements ControllerInterface
      *
      * @return void
      */
-    abstract protected function processAction(array $inputParams): void;
+    abstract protected function processNoPrivAction(array $inputParams): void;
 }

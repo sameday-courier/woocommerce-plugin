@@ -34,7 +34,7 @@ final class GetCitiesController extends AbstractController
      *
      * @return void
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         if (!isset($inputParams['countyId'])) {
             wp_send_json_error(

@@ -49,7 +49,7 @@ final class RemoveAwbController extends AbstractController
      * @throws JsonException
      * @throws SamedaySDKException
      */
-    protected function processPostAction(array $inputParams): void
+    protected function processAction(array $inputParams): void
     {
         $orderId = (int) $inputParams['order-id'];
         if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId)

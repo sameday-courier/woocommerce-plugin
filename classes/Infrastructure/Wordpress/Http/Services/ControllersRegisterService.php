@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StoreLockerInSessionController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StoreOpenPackageInSessionController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StorePaymentMethodInSessionController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ControllerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\GenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
@@ -29,6 +32,7 @@ class ControllersRegisterService
 {
     private const POST_CONTROLLERS = 'admin_post_';
     private const AJAX_CONTROLLERS = 'wp_ajax_';
+    private const NO_PRIV_AJAX_CONTROLLERS = 'wp_ajax_nopriv_';
     private const METHOD = 'handle';
 
     private const CONTROLLERS =
@@ -53,6 +57,15 @@ class ControllersRegisterService
             GetCountiesController::class,
             GetCitiesController::class,
             ChangeLockerController::class,
+            StoreLockerInSessionController::class,
+            StoreOpenPackageInSessionController::class,
+            StorePaymentMethodInSessionController::class,
+        ],
+        self::NO_PRIV_AJAX_CONTROLLERS =>
+        [
+            StoreLockerInSessionController::class,
+            StoreOpenPackageInSessionController::class,
+            StorePaymentMethodInSessionController::class,
         ]
     ];
 
@@ -64,23 +77,23 @@ class ControllersRegisterService
         foreach (self::CONTROLLERS as $controllersType => $controllers) {
             foreach ($controllers as $controller) {
                 $controller = new $controller();
-                if ($controller instanceof AbstractController) {
-                    self::addHook($controllersType, $controller);
+                if ($controller instanceof ControllerInterface) {
+                    self::addAction($controllersType, $controller);
                 }
             }
         }
     }
 
     /**
-     * @param string $hookName
-     * @param AbstractController $controller
+     * @param string $actionName
+     * @param ControllerInterface $controller
      *
      * @return void
      */
-    private static function addHook(string $hookName, AbstractController $controller): void
+    private static function addAction(string $actionName, ControllerInterface $controller): void
     {
         add_action(
-            $hookName . $controller->getAction(),
+            $actionName . $controller->getAction(),
             [
                 $controller,
                 self::METHOD
