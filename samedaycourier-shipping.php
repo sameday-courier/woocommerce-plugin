@@ -20,11 +20,9 @@ if (!defined( 'ABSPATH')) {
  */
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -50,6 +48,8 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPoin
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CssStylesheetsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\JsScriptsHandler;
 
 /**
  * Check if WooCommerce plugin is enabled
@@ -80,64 +80,12 @@ add_filter('woocommerce_shipping_methods', static function (array $methods): arr
 });
 
 ControllersRegisterService::register();
+CssStylesheetsHandler::register();
+JsScriptsHandler::register();
 
 add_action('admin_notices', static function (): void {
     NoticerHandler::showFlashNotice();
 });
-
-add_action('admin_enqueue_scripts', static function (): void {
-    if (!is_admin()) {
-        return;
-    }
-
-    global $pagenow;
-
-    $pluginAdminPages = ['sameday_pickup_points', 'sameday_lockers', 'sameday_services'];
-    $isPluginAdminPage = isset($_GET['page']) && in_array($_GET['page'], $pluginAdminPages, true);
-    $isSettingsPage = isset($_GET['page'], $_GET['tab'], $_GET['section'])
-        && 'wc-settings' === $_GET['page']
-        && 'shipping' === $_GET['tab']
-        && SamedayConstants::PLUGIN_NAME === $_GET['section'];
-    $isOrderAdminPage = ('post.php' === $pagenow || 'admin.php' === $pagenow);
-
-    if (!$isPluginAdminPage && !$isSettingsPage && !$isOrderAdminPage) {
-        return;
-    }
-
-    wp_enqueue_style(
-        'sameday-admin-button-style',
-        plugin_dir_url(__FILE__) . 'assets/css/sameday_admin_button.css'
-    );
-});
-
-// Add Module Custom Actions
-add_action('admin_init','load_lockers_sync');
-function load_lockers_sync() {
-    global $pagenow;
-
-    $section = $_GET['section'] ?? null;
-    if (SamedayConstants::PLUGIN_NAME === $section) {
-        wp_enqueue_script('jquery');
-        wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
-        wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
-        wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
-    }
-
-    if ($pagenow === 'post.php' || $pagenow === 'admin.php') {
-        wp_enqueue_script('jquery');
-        wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
-        wp_enqueue_script( 'lockers-sync-admin', plugin_dir_url( __FILE__ ). 'assets/js/lockers_sync_admin.js', ['jquery']);
-        wp_localize_script('lockers-sync-admin', 'samedayLockerAdmin', [
-            'nonces' => [
-                'change_locker' => wp_create_nonce('change_locker'),
-            ],
-        ]);
-        wp_enqueue_script( 'select2-script', plugin_dir_url( __FILE__ ). 'assets/js/select2.js', ['jquery']);
-        wp_enqueue_script( 'add-awb', plugin_dir_url( __FILE__ ). 'assets/js/add-awb.js', ['jquery']);
-        wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_admin.css' );
-        wp_enqueue_style( 'select2-style', plugin_dir_url( __FILE__ ). 'assets/css/select2.css' );
-    }
-}
 
 // Plugin settings.
 add_action('plugins_loaded', static function () {
@@ -181,7 +129,7 @@ function wps_sameday_shipping_options_layout() {
             <tr class="shipping-pickup-store">
                 <th></th>
                 <td>
-                    <ul id="shipping_method" class="woocommerce-shipping-methods" style="list-style-type:none;">
+                    <ul id="shipping_method" class="woocommerce-shipping-methods sameday-shipping-methods">
                         <li>
                             <?php
                                 woocommerce_form_field('open_package',
@@ -285,7 +233,7 @@ function wps_locker_row_layout() {
 
                 $lockerOptions = '';
                 foreach ($lockers as $city => $cityLockers) {
-                    $optionGroup = '<optgroup label="' . esc_attr($city) . '" style="font-size: 13px;"></optgroup>';
+                    $optionGroup = '<optgroup label="' . esc_attr($city) . '" class="sameday-locker-optgroup"></optgroup>';
                     $options = '';
                     foreach ($cityLockers as $locker) {
                         $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
@@ -294,7 +242,7 @@ function wps_locker_row_layout() {
                             $isSelected = "selected='selected'";
                         }
                         $options .= sprintf(
-                            '<option value="%s" style="font-size: 9px" %s> %s </option>',
+                            '<option value="%s" class="sameday-locker-option" %s> %s </option>',
                             esc_attr((string) $locker->getLockerId()),
                             $isSelected,
                             $lockerDetails
@@ -307,8 +255,8 @@ function wps_locker_row_layout() {
                 <tr>
                     <th><label for="shipping-pickup-store-select"></label></th>
                     <td>
-                        <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 25px; font-size: 14px">
-                            <option value="" style="font-size: 13px">
+                        <select name="locker_id" id="shipping-pickup-store-select">
+                            <option value="" class="sameday-locker-placeholder">
                                 <?= TranslatorHandler::translate('Select easyBox') ?>
                             </option>
                             <?php echo $lockerOptions; ?>
@@ -361,108 +309,6 @@ add_action('woocommerce_checkout_order_processed', static function ($orderId): v
 
     WooOpenPackageOrderDataHandler::saveFromSession($orderId);
 });
-
-/**
- ** Add external JS file for Lockers
- **/
-add_action(
-    'wp_enqueue_scripts',
-    static function () {
-        global $wp;
-        if (empty($wp->query_vars['order-pay'] )
-            && !isset($wp->query_vars['order-received'])
-            && is_checkout()
-        ) {
-            wp_enqueue_script(
-                'prod-locker-plugin',
-                'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js'
-            );
-            wp_enqueue_script(
-                'helper',
-                plugin_dir_url( __FILE__ ) . 'assets/js/helper.js',
-                ['jquery'],
-                false,
-                true
-            );
-            wp_enqueue_script(
-                'lockers_script',
-                plugin_dir_url( __FILE__ ) . 'assets/js/lockers_sync.js',
-                ['jquery'],
-                false,
-                true
-            );
-            wp_enqueue_script(
-                'open_package_script',
-                plugin_dir_url( __FILE__ ) . 'assets/js/open_package_script.js',
-                ['jquery'],
-                false,
-                true
-            );
-
-            wp_localize_script('helper', 'samedayVars', [
-                'samedayNonce' => wp_create_nonce('sameday-post-data'),
-            ]);
-        }
-    },
-    99999
-);
-
-/**
- ** Order detail styles
- **/
-function wps_locker_style() {
-    ?>
-    <style type="text/css">
-        #showLockerDetails{
-            font-size: 13px; 
-            font-weight: bold;
-            line-height: 22px;
-        }
-        .shipping-pickup-store td .title {
-            float: left;
-            line-height: 30px;
-        }
-        .shipping-pickup-store td span.text {
-            float: right;
-        }
-        .shipping-pickup-store td span.description {
-            clear: both;
-        }
-        .shipping-pickup-store td > span:not([class*="select"]) {
-            display: block;
-            font-size: 11px;
-            font-weight: normal;
-            line-height: 1.3;
-            margin-bottom: 0;
-            padding: 6px 0;
-            text-align: justify;
-        }
-
-        [aria-labelledby="select2-shipping-pickup-store-select-container"]{
-            height: 100% !important;
-        }
-        #locker_name, #locker_address{
-            width:100%;
-            border:0;
-            pointer-events: none;
-            resize: none;
-        }
-        #select2-shipping-pickup-store-select-container{
-            word-wrap: break-word !important;
-            text-overflow: inherit !important;
-            white-space: normal !important;
-        }
-
-        #select2-shipping-pickup-store-select-results{
-            max-height: 250px;
-            overflow-y: auto;
-            font-size: 12px;
-        }
-    </style>
-    <?php
-}
-add_action('wp_head', 'wps_locker_style');
-// Locker !
 
 add_action('admin_head', static function () {
     echo '<form id="addAwbForm" method="POST" action="'.admin_url('admin-post.php').'">
@@ -589,57 +435,6 @@ add_filter('plugin_row_meta', static function ($links, $pluginFileName) {
 
 register_activation_hook(__FILE__, [PluginHandler::class, 'install']);
 register_uninstall_hook(__FILE__, [PluginHandler::class, 'uninstall']);
-
-function enqueue_button_scripts(): void
-{
-    if (is_checkout()) {
-        wp_enqueue_script( 'lockerpluginsdk','https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js', ['jquery']);
-        wp_enqueue_style( 'sameday-admin-style', plugin_dir_url( __FILE__ ). 'assets/css/sameday_front_button.css' );
-        wp_enqueue_script( 'custom-checkout-button', plugins_url( 'assets/js/custom-checkout-button.js', __FILE__ ), array( 'jquery' ), time(), true );
-
-        if (SamedaySettings::isUseSamedayNomenclator()) {
-	        wp_enqueue_script('county-city-handle',
-                plugins_url( 'assets/js/county-city-handle.js', __FILE__ ),
-                [
-                    'jquery',
-                    'select2'
-                ]
-            );
-            $cachedCities = (new SamedayCityRepository())->getCachedCities();
-            $citiesForCheckout = array_map(static function ($cityModels) {
-                return array_map(
-                        static function ($city) {
-                            if ($city instanceof SamedayCity) {
-                                return $city->toArray();
-                            }
-
-                            return
-                            [
-                                'city_name' => $city['city_name'] ?? null,
-                                'county_code' => $city['county_code'] ?? null,
-                            ];
-                        },
-                        $cityModels
-                );
-            }, $cachedCities);
-
-	        wp_localize_script('county-city-handle',
-                'samedayCourierData',
-                [
-		            'cities' => $citiesForCheckout,
-                ]
-            );
-        }
-
-        // Localize the script with your dynamic PHP values
-        wp_localize_script( 'custom-checkout-button', 'samedayData', array(
-            'username' => SamedaySettings::getUser(),
-            'country'  => SamedaySettings::getHostCountry(),
-            'buttonText' => TranslatorHandler::translate('Show Locations Map'),
-        ));
-    }
-}
-add_action( 'wp_enqueue_scripts', 'enqueue_button_scripts');
 
 add_filter('woocommerce_cart_shipping_method_full_label', static function ($label, $method) {
     return $method->get_meta_data()['currency_conversion_label'] ?? $label;

@@ -1,0 +1,74 @@
+#showLockerDetails {
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 22px;
+}
+
+.shipping-pickup-store td .title {
+    float: left;
+    line-height: 30px;
+}
+
+.shipping-pickup-store td span.text {
+    float: right;
+}
+
+.shipping-pickup-store td span.description {
+    clear: both;
+}
+
+.shipping-pickup-store td > span:not([class*="select"]) {
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    line-height: 1.3;
+    margin-bottom: 0;
+    padding: 6px 0;
+    text-align: justify;
+}
+
+.sameday-shipping-methods {
+    list-style-type: none;
+}
+
+#shipping-pickup-store-select {
+    width: 100%;
+    height: 25px;
+    font-size: 14px;
+}
+
+#shipping-pickup-store-select option.sameday-locker-placeholder {
+    font-size: 13px;
+}
+
+.sameday-locker-optgroup {
+    font-size: 13px;
+}
+
+.sameday-locker-option {
+    font-size: 9px;
+}
+
+[aria-labelledby="select2-shipping-pickup-store-select-container"] {
+    height: 100% !important;
+}
+
+#locker_name,
+#locker_address {
+    width: 100%;
+    border: 0;
+    pointer-events: none;
+    resize: none;
+}
+
+#select2-shipping-pickup-store-select-container {
+    word-wrap: break-word !important;
+    text-overflow: inherit !important;
+    white-space: normal !important;
+}
+
+#select2-shipping-pickup-store-select-results {
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 12px;
+}

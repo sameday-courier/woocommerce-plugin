@@ -90,8 +90,6 @@ class PickupPointInstance
 	 * Screen options
 	 */
 	public function screen_option() {
-		add_action('admin_enqueue_scripts', [PickupPointForm::class, 'enqueueScripts']);
-
 		$option = 'per_page';
 		$args   = [
 			'label'   => 'pickuppoints',

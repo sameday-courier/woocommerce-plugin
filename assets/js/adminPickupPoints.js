@@ -67,3 +67,7 @@ jQuery('body').on('click', '.delete-pickup-point', function (e) {
     e.preventDefault();
     jQuery('#form-deletePickupPoint #input-deletePickupPoint').val(jQuery(this).data('id'));
 });
+
+jQuery('body').on('click', '.sameday-thickbox-cancel', function () {
+    tb_remove();
+});

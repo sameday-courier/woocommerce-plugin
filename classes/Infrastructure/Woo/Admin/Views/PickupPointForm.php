@@ -15,50 +15,6 @@ use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class PickupPointForm
 {
-	public static function enqueueScripts(): void
-	{
-		if (!isset($_GET['page']) || 'sameday_pickup_points' !== $_GET['page']) {
-			return;
-		}
-
-		add_thickbox();
-
-		$pluginMainFile = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'samedaycourier-shipping.php';
-
-		wp_enqueue_style(
-			'sameday-thickboxform-style',
-			plugins_url('assets/css/tickbox-form.css', $pluginMainFile),
-			[],
-			time()
-		);
-		wp_enqueue_script(
-			'sameday-admin-helper',
-			plugins_url('assets/js/helper.js', $pluginMainFile),
-			['jquery'],
-			time(),
-			true
-		);
-		wp_enqueue_script(
-			'sameday-admin-script',
-			plugins_url('assets/js/adminPickupPoints.js', $pluginMainFile),
-			['jquery'],
-			time(),
-			true
-		);
-		wp_localize_script(
-			'sameday-admin-script',
-			'samedayPickupPointsAdmin',
-			[
-				'nonces' => [
-					'get_counties' => wp_create_nonce('get_counties'),
-					'get_cities' => wp_create_nonce('get_cities'),
-					'send_pickup_point' => wp_create_nonce('send_pickup_point'),
-					'delete_pickup_point' => wp_create_nonce('delete_pickup_point'),
-				],
-			]
-		);
-	}
-
 	public static function renderModals(): void
 	{
 		?>
@@ -136,7 +92,7 @@ class PickupPointForm
 					</div>
 					<div class="form-footer">
 						<input type="submit" value="Save" class="sameday_admin_button">
-						<button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
+						<button type="button" class="sameday_admin_button sameday-thickbox-cancel">Cancel</button>
 					</div>
 				</form>
 			</div>
@@ -150,7 +106,7 @@ class PickupPointForm
 					<h3><?= TranslatorHandler::translate("Are you sure you want to delete this pickup point?")?></h3>
 					<div class="form-footer">
 						<input type="submit" name="submit" value="Submit" class="sameday_admin_button">
-						<button type="button" class="sameday_admin_button" onclick="tb_remove();">Cancel</button>
+						<button type="button" class="sameday_admin_button sameday-thickbox-cancel">Cancel</button>
 					</div>
 				</form>
 			</div>

@@ -589,16 +589,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
                     . TranslatorHandler::translate('Import Cities') .
                 '</button>
-            </div>
-            <script>
-                (function () {
-                    const actions = document.querySelector(".sameday-settings-actions");
-                    const submitRow = document.querySelector("#mainform p.submit");
-                    if (actions && submitRow) {
-                        submitRow.insertAdjacentElement("afterend", actions);
-                    }
-                })();
-            </script>';
+            </div>';
     }
 
     private function isCurrentSettingsPage(): bool

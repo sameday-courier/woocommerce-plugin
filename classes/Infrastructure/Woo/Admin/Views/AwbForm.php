@@ -392,12 +392,7 @@ class AwbForm
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            <script>
-                jQuery(document).ready(function() {
-                    jQuery("#samedaycourier-package-pickup-point").select2();
-                });
-            </script>';
+            </div>';
 
         return $form;
     }
