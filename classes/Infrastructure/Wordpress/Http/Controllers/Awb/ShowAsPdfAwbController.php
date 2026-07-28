@@ -46,11 +46,18 @@ final class ShowAsPdfAwbController extends AbstractController
         $result = $showAsPdf->execute();
 
         if ($result->hasPdf()) {
-            header('Content-type: application/pdf');
-            header('Cache-Control: no-cache');
-            header('Pragma: no-cache');
+            $pdf = $result->getPdf();
 
-            echo $result->getPdf();
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
+            nocache_headers();
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: inline; filename="awb-' . $result->getOrderId() . '.pdf"');
+            header('Content-Length: ' . strlen($pdf));
+
+            echo $pdf;
 
             exit;
         }

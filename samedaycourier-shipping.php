@@ -316,7 +316,7 @@ add_action('admin_head', static function () {
                 <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('add-awb').'">
           </form>
           <form id="showAsPdf"  method="POST" action="'.admin_url('admin-post.php').'">
-                <input type="hidden" name="action" value="show-awb-pdf">
+                <input type="hidden" name="action" value="show-as-pdf">
                 <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('show-as-pdf').'">
             </form>
           <form id="addNewParcelForm"  method="POST" action="'.admin_url('admin-post.php').'">

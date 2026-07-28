@@ -41,18 +41,20 @@ final class AddNewParcelAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
+        $orderId = (int) ($inputParams['samedaycourier-order-id'] ?? 0);
+
         $addNewParcelAwb = new AddNewParcelAwb(
             new AddNewParcelAwbRequest(
-                $inputParams['sameday_order_id'],
+                $orderId,
                 new AddNewParcelAwbItem(
                     new ParcelDimensionsObject(
-                        (float) number_format((float) $inputParams['samedaycourier-parcel-weight'], 2),
-                        (float) number_format((float) $inputParams['samedaycourier-parcel-length'], 2),
-                        (float) number_format((float) $inputParams['samedaycourier-parcel-height'],2),
-                        (float) number_format((float) $inputParams['samedaycourier-parcel-width'], 2)
+                        (float) number_format((float) ($inputParams['samedaycourier-parcel-weight'] ?? 1), 2),
+                        (float) number_format((float) ($inputParams['samedaycourier-parcel-length'] ?? 0), 2),
+                        (float) number_format((float) ($inputParams['samedaycourier-parcel-height'] ?? 0), 2),
+                        (float) number_format((float) ($inputParams['samedaycourier-parcel-width'] ?? 0), 2)
                     ),
-                    $inputParams['samedaycourier-parcel-observation'],
-                    (bool) $inputParams['samedaycourier-parcel-is-last']
+                    (string) ($inputParams['samedaycourier-parcel-observation'] ?? ''),
+                    (bool) ($inputParams['samedaycourier-parcel-is-last'] ?? false)
                 )
             ),
         );
