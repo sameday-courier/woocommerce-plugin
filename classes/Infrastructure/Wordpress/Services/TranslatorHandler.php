@@ -19,6 +19,6 @@ class TranslatorHandler
      */
     public static function translate(string $text): string
     {
-        return __($text, SamedayConstants::TEXT_DOMAIN);
+        return esc_html(__($text, SamedayConstants::TEXT_DOMAIN));
     }
 }

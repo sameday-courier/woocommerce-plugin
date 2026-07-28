@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
 
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class AwbHistoryTable
 {
     /**
@@ -19,7 +21,7 @@ class AwbHistoryTable
      */
     public static function addAwbHistoryTable($packages): string
     {
-        $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . __("Awb History", SamedayConstants::TEXT_DOMAIN) . '</strong> </h3>';
+        $return = '<h3 style="text-align: center; color: #0A246A"> <strong> ' . TranslatorHandler::translate("Awb History") . '</strong> </h3>';
 
         $style = '<style>
                 .packages {
@@ -73,7 +75,7 @@ class AwbHistoryTable
 
         $packageRows = '';
         if (empty($packages)) {
-            $packageRows = '<tr><td colspan="7" style="text-align: center">'. __("No data found", SamedayConstants::TEXT_DOMAIN) .'</td></tr>';
+            $packageRows = '<tr><td colspan="7" style="text-align: center">'. TranslatorHandler::translate("No data found") .'</td></tr>';
         }
 
         foreach ($packages as $package) {
@@ -113,13 +115,13 @@ class AwbHistoryTable
                     <td colspan="7">
                         <table class="history" id="history-'.$summary->getParcelAwbNumber().'" style="width: 100%; display: none; text-align: center">
                           <tr>
-                            <th style="width: 15%">' . __("Status", SamedayConstants::TEXT_DOMAIN) . '</th>
-                            <th style="width: 20%">' . __("Label", SamedayConstants::TEXT_DOMAIN) . '</th>
-                            <th style="width: 15%">' . __("State", SamedayConstants::TEXT_DOMAIN) . '</th>
-                            <th style="width: 15%">' . __("Date", SamedayConstants::TEXT_DOMAIN) . '</th>
-                            <th style="width: 10%">' . __("County", SamedayConstants::TEXT_DOMAIN) . '</th>	
-                            <th style="width: 15%">' . __("Translation", SamedayConstants::TEXT_DOMAIN) . '</th>		
-                            <th style="width: 10%">' . __("Reason", SamedayConstants::TEXT_DOMAIN) . '</th>		    
+                            <th style="width: 15%">' . TranslatorHandler::translate("Status") . '</th>
+                            <th style="width: 20%">' . TranslatorHandler::translate("Label") . '</th>
+                            <th style="width: 15%">' . TranslatorHandler::translate("State") . '</th>
+                            <th style="width: 15%">' . TranslatorHandler::translate("Date") . '</th>
+                            <th style="width: 10%">' . TranslatorHandler::translate("County") . '</th>	
+                            <th style="width: 15%">' . TranslatorHandler::translate("Translation") . '</th>		
+                            <th style="width: 10%">' . TranslatorHandler::translate("Reason") . '</th>		    
                           </tr>
                           '.$historyRows.' 
                         </table>
@@ -131,12 +133,12 @@ class AwbHistoryTable
         $return .= '<table class="packages" style="width: 100%">
                   <tr>
                     <th></th>
-                    <th>' . __("Parcel number", SamedayConstants::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Parcel weight", SamedayConstants::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Delivered", SamedayConstants::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Delivery attempts", SamedayConstants::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Is picked up", SamedayConstants::TEXT_DOMAIN) . '</th>
-                    <th>' . __("Picked up at", SamedayConstants::TEXT_DOMAIN) . '</th>				    
+                    <th>' . TranslatorHandler::translate("Parcel number") . '</th>
+                    <th>' . TranslatorHandler::translate("Parcel weight") . '</th>
+                    <th>' . TranslatorHandler::translate("Delivered") . '</th>
+                    <th>' . TranslatorHandler::translate("Delivery attempts") . '</th>
+                    <th>' . TranslatorHandler::translate("Is picked up") . '</th>
+                    <th>' . TranslatorHandler::translate("Picked up at") . '</th>				    
                   </tr>
                   '.$packageRows.'		  
                 </table>';

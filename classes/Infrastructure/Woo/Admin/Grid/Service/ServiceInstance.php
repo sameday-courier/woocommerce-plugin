@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
@@ -13,6 +14,7 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRep
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use WC_Admin_Settings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class ServiceInstance
 {
 	static $instance;
@@ -65,7 +67,7 @@ class ServiceInstance
                         <div class="meta-box-sortables ui-sortable">
                             <div>
                                 <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
-		                            <?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
+		                            <?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
                                     <input type="hidden" name="action" value="refresh_services">
@@ -95,11 +97,11 @@ class ServiceInstance
 		return array(
 			array(
 				'value' => 0,
-				'text' => __('Disabled', SamedayConstants::TEXT_DOMAIN)
+				'text' => TranslatorHandler::translate('Disabled')
 			),
 			array(
 				'value' => 1,
-				'text' => __('Always', SamedayConstants::TEXT_DOMAIN)
+				'text' => TranslatorHandler::translate('Always')
 			)
 		);
 	}
@@ -141,7 +143,7 @@ class ServiceInstance
                         <input type="hidden" name="_wpnonce" value="'.wp_create_nonce('edit-service').'">
                         <tr valign="top">
                             <th scope="row" class="titledesc"> 
-                                <label for="samedaycourier-service-name">  '.__('Service Name', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span>  </label>
+                                <label for="samedaycourier-service-name">  '.TranslatorHandler::translate('Service Name').'<span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="text" name="samedaycourier-service-name" style="width: 297px; height: 36px;" ' . $greyedOut . ' id="samedaycourier-service-name" value="'.esc_html($serviceName).'">
@@ -149,7 +151,7 @@ class ServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-price">  '.__('Price', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-price">  '.TranslatorHandler::translate('Price').'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-price" value="'.esc_attr((string) ($service->getPrice() ?? '')).'"> 
@@ -157,7 +159,7 @@ class ServiceInstance
                         </tr>
                         <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-free-delivery-price">  '.__('Free delivery price', SamedayConstants::TEXT_DOMAIN).' </label>
+                                <label for="samedaycourier-free-delivery-price">  '.TranslatorHandler::translate('Free delivery price').' </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <input type="number" name="samedaycourier-free-delivery-price" step="any" style="width: 297px; height: 36px;" id="samedaycourier-free-delivery-price" value="'.esc_attr((string) ($service->getPriceFree() ?? '')).'"> 
@@ -165,7 +167,7 @@ class ServiceInstance
                         </tr>
                        <tr valign="top">
                             <th scope="row"> 
-                                <label for="samedaycourier-status">  '.__('Status', SamedayConstants::TEXT_DOMAIN).'<span style="color: #ff2222"> * </span> </label>
+                                <label for="samedaycourier-status">  '.TranslatorHandler::translate('Status').'<span style="color: #ff2222"> * </span> </label>
                             </th> 
                             <td class="forminp forminp-text">
                                 <select name="samedaycourier-status" style="width: 297px; height: 36px;" id="samedaycourier-status">
@@ -174,7 +176,7 @@ class ServiceInstance
                             </td>
                         </tr>
                         <tr>
-                            <th><button class="sameday_admin_button" type="submit" value="Submit" >  '.__('Edit Service', SamedayConstants::TEXT_DOMAIN).'</button> </th>
+                            <th><button class="sameday_admin_button" type="submit" value="Submit" >  '.TranslatorHandler::translate('Edit Service').'</button> </th>
                         </tr>
                      </tbody>
                 </table>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
@@ -12,6 +13,7 @@ use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
@@ -40,8 +42,8 @@ class Services extends WP_List_Table
 
 		parent::__construct(
             [
-                'singular' => __('Service', SamedayConstants::TEXT_DOMAIN),
-                'plural' => __('Services', SamedayConstants::TEXT_DOMAIN),
+                'singular' => TranslatorHandler::translate('Service'),
+                'plural' => TranslatorHandler::translate('Services'),
                 'ajax' => false
 		    ]
         );
@@ -80,14 +82,8 @@ class Services extends WP_List_Table
 
         foreach ($services as &$service) {
             if ($service['sameday_code'] === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $service['name'] = __(
-                    SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()],
-                    SamedayConstants::TEXT_DOMAIN
-                );
-                $service['sameday_name'] = __(
-                    SamedayConstants::SAMEDAY_OOH_LABEL,
-                    SamedayConstants::TEXT_DOMAIN
-                );
+                $service['name'] = TranslatorHandler::translate(SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()]);
+                $service['sameday_name'] = TranslatorHandler::translate(SamedayConstants::SAMEDAY_OOH_LABEL);
             }
         }
 
@@ -122,7 +118,7 @@ class Services extends WP_List_Table
      */
     public function no_items(): void
     {
-        __( 'No services available!', SamedayConstants::TEXT_DOMAIN);
+        echo TranslatorHandler::translate('No services available!');
     }
 
 	/**
@@ -140,10 +136,7 @@ class Services extends WP_List_Table
         }
 
         if (("sameday_name" === $column_name)
-            && $item[$column_name] === __(
-                SamedayConstants::SAMEDAY_OOH_LABEL,
-                SamedayConstants::TEXT_DOMAIN
-            )
+            && $item[$column_name] === TranslatorHandler::translate(SamedayConstants::SAMEDAY_OOH_LABEL)
         ) {
             $title = SamedayConstants::OOH_POPUP_TITLE[SamedaySettings::getHostCountry()];
             return sprintf(
@@ -179,13 +172,13 @@ class Services extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id'    => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
-			'sameday_name' => __('Sameday name', SamedayConstants::TEXT_DOMAIN),
-			'name'    => __('Name', SamedayConstants::TEXT_DOMAIN),
-			'price'    => __('Price', SamedayConstants::TEXT_DOMAIN),
-			'price_free'    => __('Price free', SamedayConstants::TEXT_DOMAIN),
-			'status'    => __('Status', SamedayConstants::TEXT_DOMAIN),
-			'edit' => __('Edit', SamedayConstants::TEXT_DOMAIN)
+			'sameday_id'    => TranslatorHandler::translate('Sameday ID'),
+			'sameday_name' => TranslatorHandler::translate('Sameday name'),
+			'name'    => TranslatorHandler::translate('Name'),
+			'price'    => TranslatorHandler::translate('Price'),
+			'price_free'    => TranslatorHandler::translate('Price free'),
+			'status'    => TranslatorHandler::translate('Status'),
+			'edit' => TranslatorHandler::translate('Edit')
 		];
 	}
 

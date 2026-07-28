@@ -49,6 +49,8 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+
 /**
  * Check if WooCommerce plugin is enabled
  */
@@ -226,7 +228,7 @@ function checkout_repayment_tax() {
     if ($repayment_tax > 0
         && SamedayConstants::CASH_ON_DELIVERY === WooSessionHandler::get(SamedaySessionKeys::CHOSEN_PAYMENT_METHOD)
     ) {
-        $repayment_tax_label = SamedaySettings::getRepaymentTaxLabel() ?? __('Repayment tax', SamedayConstants::TEXT_DOMAIN);
+        $repayment_tax_label = SamedaySettings::getRepaymentTaxLabel() ?? TranslatorHandler::translate('Repayment tax');
         $woocommerce->cart->add_fee($repayment_tax_label, $repayment_tax, true, '');
     }
 }
@@ -251,20 +253,20 @@ function wps_locker_row_layout() {
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode) && is_checkout()) { ?>
         <?php if (SamedaySettings::isLockersMapEnabled()) { ?>
             <tr class="shipping-pickup-store">
-                <td><strong><?php echo __('Sameday Locker', SamedayConstants::TEXT_DOMAIN) ?></strong></td>
+                <td><strong><?php echo TranslatorHandler::translate('Sameday Locker') ?></strong></td>
                 <th>
                     <button type="button" class="button alt sameday_select_locker"
                         id="select_locker"
                         data-username='<?php echo esc_attr(SamedaySettings::getUser() ?? ''); ?>'
                         data-country='<?php echo esc_attr(SamedaySettings::getHostCountry()); ?>'
                     >
-                        <?php echo __('Show Locations Map', SamedayConstants::TEXT_DOMAIN) ?>
+                        <?php echo TranslatorHandler::translate('Show Locations Map') ?>
                     </button>
                 </th>
             </tr>
             <?php if (null !== $shipTo) { ?>
                 <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
-                    <td><strong> <?= __('Ship to', SamedayConstants::TEXT_DOMAIN) ?> </strong></td>
+                    <td><strong> <?= TranslatorHandler::translate('Ship to') ?> </strong></td>
                     <th><span id="showLockerDetails"><?php echo wp_kses_post($shipTo); ?></span></th>
                 </tr>
             <?php } ?>
@@ -307,7 +309,7 @@ function wps_locker_row_layout() {
                     <td>
                         <select name="locker_id" id="shipping-pickup-store-select" style="width: 100%; height: 25px; font-size: 14px">
                             <option value="" style="font-size: 13px">
-                                <?= __('Select easyBox', SamedayConstants::TEXT_DOMAIN) ?>
+                                <?= TranslatorHandler::translate('Select easyBox') ?>
                             </option>
                             <?php echo $lockerOptions; ?>
                         </select>
@@ -486,21 +488,21 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
     if (isset($_GET['action']) && 'edit' === $_GET['action']) {
         $_generateAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="sameday_admin_button button-samll thickbox"> ' . __('Generate awb') . ' </a>
+                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="sameday_admin_button button-samll thickbox"> ' . TranslatorHandler::translate('Generate awb') . ' </a>
             </p>';
 
         $_showAwb = '
             <p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="sameday_admin_button button-samll thickbox"> ' . __('Add new parcel') . ' </a>
-                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="sameday_admin_button button-samll thickbox"> ' . __('Awb history') . ' </a>
+                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="sameday_admin_button button-samll thickbox"> ' . TranslatorHandler::translate('Add new parcel') . ' </a>
+                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="sameday_admin_button button-samll thickbox"> ' . TranslatorHandler::translate('Awb history') . ' </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="showAsPdf" formtarget="_blank" class="sameday_admin_button button-samll">'.  __('Show as pdf', SamedayConstants::TEXT_DOMAIN) . ' </button>
+                <button type="submit" form="showAsPdf" formtarget="_blank" class="sameday_admin_button button-samll">'.  TranslatorHandler::translate('Show as pdf') . ' </button>
             </p>';
 
         $_removeAwb = '
             <p class="form-field form-field-wide wc-customer-user">
                 <input type="hidden" form="removeAwb" name="order-id" value="' . $order->get_id() . '">
-                <button type="submit" form="removeAwb" class="sameday_admin_button button-samll">'.  __('Remove Awb') . ' </button>
+                <button type="submit" form="removeAwb" class="sameday_admin_button button-samll">'.  TranslatorHandler::translate('Remove Awb') . ' </button>
             </p>';
 
         $buttons = '
@@ -544,7 +546,7 @@ add_action( 'woocommerce_admin_order_data_after_shipping_address', static functi
 
                 $_goTo_eAWB = '
                     <p class="form-field form-field-wide wc-customer-user">
-                        <a href="' . $redirectToEawbSite . '" target="_blank" class="sameday_admin_button button-samll">'.  __('Sameday eAwb') . ' </a>
+                        <a href="' . $redirectToEawbSite . '" target="_blank" class="sameday_admin_button button-samll">'.  TranslatorHandler::translate('Sameday eAwb') . ' </a>
                     </p>
                 ';
             }
@@ -568,7 +570,7 @@ add_action('woocommerce_checkout_process', static function () {
         $isOOhDelivery = $samedayServiceRules->isOohDeliveryOptionByCode($serviceCode);
         $isOOhButUserNotSelectLocker = $isOOhDelivery && (null === WooSessionHandler::get(SamedaySessionKeys::LOCKER));
         if ($isOOhButUserNotSelectLocker) {
-            wc_add_notice(__('Please choose your EasyBox Locker !'), 'error');
+            wc_add_notice(TranslatorHandler::translate('Please choose your EasyBox Locker !'), 'error');
         }
     }
 });
@@ -633,7 +635,7 @@ function enqueue_button_scripts(): void
         wp_localize_script( 'custom-checkout-button', 'samedayData', array(
             'username' => SamedaySettings::getUser(),
             'country'  => SamedaySettings::getHostCountry(),
-            'buttonText' => __('Show Locations Map', SamedayConstants::TEXT_DOMAIN),
+            'buttonText' => TranslatorHandler::translate('Show Locations Map'),
         ));
     }
 }

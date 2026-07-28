@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
@@ -12,6 +13,7 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class PickupPointInstance
 {
 	static $instance;
@@ -55,7 +57,7 @@ class PickupPointInstance
 						<div class="meta-box-sortables ui-sortable">
 							<div class="sameday-settings-actions">
                                 <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
-									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
+									<?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post">
 									<input type="hidden" name="action" value="refresh_pickup_points">
@@ -63,7 +65,7 @@ class PickupPointInstance
 									<input type="submit" class="sameday_admin_button" value="Refresh Pickup point">
 								</form>
 								<a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="sameday_admin_button button-samll thickbox">
-									<?php echo __('Add Pickup Point', SamedayConstants::TEXT_DOMAIN) ?>
+									<?php echo TranslatorHandler::translate('Add Pickup Point') ?>
 								</a>
 							</div>
 							<form method="get">

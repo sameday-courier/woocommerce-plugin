@@ -13,6 +13,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use WP_List_Table;
@@ -38,8 +39,8 @@ class PickupPoints extends WP_List_Table
 	{
 		parent::__construct(
             [
-                'singular' => __('Pickup-point', SamedayConstants::TEXT_DOMAIN),
-                'plural' => __('Pickup-points', SamedayConstants::TEXT_DOMAIN),
+                'singular' => TranslatorHandler::translate('Pickup-point'),
+                'plural' => TranslatorHandler::translate('Pickup-points'),
                 'ajax' => false
 		    ]
         );
@@ -77,7 +78,7 @@ class PickupPoints extends WP_List_Table
 	/** Text displayed when no pickup-points data is available */
 	public function no_items(): void
 	{
-		__( 'No pickup-points available.', SamedayConstants::TEXT_DOMAIN);
+		echo TranslatorHandler::translate('No pickup-points available.');
 	}
 
 	/**
@@ -125,14 +126,14 @@ class PickupPoints extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'sameday_id' => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
-			'sameday_alias' => __('Name', SamedayConstants::TEXT_DOMAIN),
-			'city' => __('City', SamedayConstants::TEXT_DOMAIN),
-			'county' => __('County', SamedayConstants::TEXT_DOMAIN),
-			'address' => __('Address', SamedayConstants::TEXT_DOMAIN),
-			'contactPersons' => __('Contact Persons', SamedayConstants::TEXT_DOMAIN),
-			'default_pickup_point' => __('Is default ', SamedayConstants::TEXT_DOMAIN),
-            'delete' => __('Actions', SamedayConstants::TEXT_DOMAIN),
+			'sameday_id' => TranslatorHandler::translate('Sameday ID'),
+			'sameday_alias' => TranslatorHandler::translate('Name'),
+			'city' => TranslatorHandler::translate('City'),
+			'county' => TranslatorHandler::translate('County'),
+			'address' => TranslatorHandler::translate('Address'),
+			'contactPersons' => TranslatorHandler::translate('Contact Persons'),
+			'default_pickup_point' => TranslatorHandler::translate('Is default '),
+            'delete' => TranslatorHandler::translate('Actions'),
 		];
 	}
 
@@ -265,17 +266,17 @@ class PickupPoints extends WP_List_Table
         return $this->get_views_links([
             'all' => [
                 'url' => $this->get_filter_url(['search_default_pickup_point' => '']),
-                'label' => __('All', SamedayConstants::TEXT_DOMAIN),
+                'label' => TranslatorHandler::translate('All'),
                 'current' => '' === $currentDefault,
             ],
             'yes' => [
                 'url' => $this->get_filter_url(['search_default_pickup_point' => 'yes']),
-                'label' => __('Default', SamedayConstants::TEXT_DOMAIN),
+                'label' => TranslatorHandler::translate('Default'),
                 'current' => 'yes' === $currentDefault,
             ],
             'no' => [
                 'url' => $this->get_filter_url(['search_default_pickup_point' => 'no']),
-                'label' => __('No', SamedayConstants::TEXT_DOMAIN),
+                'label' => TranslatorHandler::translate('No'),
                 'current' => 'no' === $currentDefault,
             ],
         ]);
@@ -289,12 +290,12 @@ class PickupPoints extends WP_List_Table
 
         $searchParams = $this->get_search_params();
         $textFilters = [
-            'search_sameday_id' => __('Sameday ID', SamedayConstants::TEXT_DOMAIN),
-            'search_sameday_alias' => __('Name', SamedayConstants::TEXT_DOMAIN),
-            'search_city' => __('City', SamedayConstants::TEXT_DOMAIN),
-            'search_county' => __('County', SamedayConstants::TEXT_DOMAIN),
-            'search_address' => __('Address', SamedayConstants::TEXT_DOMAIN),
-            'search_contactPersons' => __('Contact Persons', SamedayConstants::TEXT_DOMAIN),
+            'search_sameday_id' => TranslatorHandler::translate('Sameday ID'),
+            'search_sameday_alias' => TranslatorHandler::translate('Name'),
+            'search_city' => TranslatorHandler::translate('City'),
+            'search_county' => TranslatorHandler::translate('County'),
+            'search_address' => TranslatorHandler::translate('Address'),
+            'search_contactPersons' => TranslatorHandler::translate('Contact Persons'),
         ];
         ?>
         <div class="alignleft actions">
@@ -311,7 +312,7 @@ class PickupPoints extends WP_List_Table
                 />
             <?php endforeach; ?>
 
-            <?php submit_button(__('Filter'), '', 'filter_action', false, ['id' => 'pickup-point-query-submit']); ?>
+            <?php submit_button(TranslatorHandler::translate('Filter'), '', 'filter_action', false, ['id' => 'pickup-point-query-submit']); ?>
 
             <?php if ($this->has_active_filters()) : ?>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>" class="button">

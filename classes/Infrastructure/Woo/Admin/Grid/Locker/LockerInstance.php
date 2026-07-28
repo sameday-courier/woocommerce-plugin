@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
@@ -11,6 +12,7 @@ if (!defined( 'ABSPATH')) {
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class LockerInstance
 {
 	static $instance;
@@ -54,7 +56,7 @@ class LockerInstance
 						<div class="meta-box-sortables ui-sortable">
 							<div>
                                 <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
-									<?php echo __('Back', SamedayConstants::TEXT_DOMAIN) ?>
+									<?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
 									<input type="hidden" name="action" value="refresh_lockers">

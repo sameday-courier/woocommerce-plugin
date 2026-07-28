@@ -29,6 +29,7 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -39,6 +40,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
@@ -74,11 +76,8 @@ final class SamedayCourier extends WC_Shipping_Method
         parent::__construct($instance_id);
 
         $this->id = SamedayConstants::PLUGIN_NAME;
-        $this->method_title = __('SamedayCourier', SamedayConstants::TEXT_DOMAIN);
-        $this->method_description = __(
-            'Custom Shipping Method for SamedayCourier',
-            SamedayConstants::TEXT_DOMAIN
-        );
+        $this->method_title = TranslatorHandler::translate('SamedayCourier');
+        $this->method_description = TranslatorHandler::translate('Custom Shipping Method for SamedayCourier');
 
         $this->supports = array(
             'settings',
@@ -329,172 +328,170 @@ final class SamedayCourier extends WC_Shipping_Method
 
     private function init(): void
     {
-        $labelFormatOptions = [];
-
-        foreach (SamedayAwbPdfTypes::getLabelKeys() as $value => $labelKey) {
-            $labelFormatOptions[$value] = __($labelKey, SamedayConstants::TEXT_DOMAIN);
-        }
+        $labelFormatOptions = array_map(
+            static function ($labelKey) {
+                return TranslatorHandler::translate($labelKey);
+            },
+            SamedayAwbPdfTypes::getLabelKeys()
+        );
 
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('Enable', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Enable'),
                 'type' => 'checkbox',
-                'description' => __('Enable this shipping.', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('Enable this shipping.'),
                 'default' => 'yes'
             ),
 
             'title' => array(
-                'title' => __('Title', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Title'),
                 'type' => 'text',
-                'description' => __('Title to be display on site', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('SamedayCourier Shipping', SamedayConstants::TEXT_DOMAIN)
+                'description' => TranslatorHandler::translate('Title to be display on site'),
+                'default' => TranslatorHandler::translate('SamedayCourier Shipping')
             ),
 
             'user' => array(
-                'title' => __('Username', SamedayConstants::TEXT_DOMAIN) . ' *',
+                'title' => TranslatorHandler::translate('Username') . ' *',
                 'type' => 'text',
-                'description' => __('Username', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('')
+                'description' => TranslatorHandler::translate('Username'),
+                'default' => TranslatorHandler::translate('')
             ),
 
             'password' => array(
-                'title' => __('Password', SamedayConstants::TEXT_DOMAIN) . ' *',
+                'title' => TranslatorHandler::translate('Password') . ' *',
                 'type' => 'password',
-                'description' => __('Password', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('')
+                'description' => TranslatorHandler::translate('Password'),
+                'default' => TranslatorHandler::translate('')
             ),
 
             'default_label_format' => array(
-                'title'   => __('Default label format', SamedayConstants::TEXT_DOMAIN) . ' *',
+                'title'   => TranslatorHandler::translate('Default label format') . ' *',
                 'default' => 'A4',
                 'type'    => 'select',
                 'options' => $labelFormatOptions,
-                'description' => __('Awb paper format', SamedayConstants::TEXT_DOMAIN)
+                'description' => TranslatorHandler::translate('Awb paper format')
             ),
 
             'estimated_cost' => array(
-                'title'   => __('Use estimated cost', SamedayConstants::TEXT_DOMAIN) . ' *',
+                'title'   => TranslatorHandler::translate('Use estimated cost') . ' *',
                 'default' => 'no',
                 'type'    => 'select',
                 'options' => [
-                    'no' => __('Never', SamedayConstants::TEXT_DOMAIN),
-                    'yes' => __('Always', SamedayConstants::TEXT_DOMAIN),
-                    'btfp' => __('If its cost is bigger than fixed price', SamedayConstants::TEXT_DOMAIN)
+                    'no' => TranslatorHandler::translate('Never'),
+                    'yes' => TranslatorHandler::translate('Always'),
+                    'btfp' => TranslatorHandler::translate('If its cost is bigger than fixed price')
                 ],
-                'description' => __('This is the shipping cost calculated by Sameday Api for each service. <br/> 
+                'description' => TranslatorHandler::translate('This is the shipping cost calculated by Sameday Api for each service. <br/> 
                             Never* You choose to display only the fixed price that you set for each service<br/>
                             Always* You choose to display only the price estimated by SamedayCourier API<br/>
                             If its cost is bigger than fixed price* You choose to display the cost estimated by 
                             SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
-                        ', SamedayConstants::TEXT_DOMAIN)
+                        ')
             ),
 
             'estimated_cost_extra_fee' => array(
-                'title' => __('Extra fee', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Extra fee'),
                 'type' => 'number',
                 'css' => 'width:100px;',
-                'description' => __('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0'),
                 'custom_attributes' => array(
                     'min' => 0,
                     'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
-                    'data-placeholder' => __('Extra fee', SamedayConstants::TEXT_DOMAIN)
+                    'data-placeholder' => TranslatorHandler::translate('Extra fee')
                 ),
                 'default' => 0
             ),
 
             'repayment_tax_label' => array(
-                'title' => __('Repayment tax label', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Repayment tax label'),
                 'type' => 'text',
-                'description' => __('Label for repayment tax. This appear in checkout page.', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('', SamedayConstants::TEXT_DOMAIN)
+                'description' => TranslatorHandler::translate('Label for repayment tax. This appear in checkout page.'),
+                'default' => TranslatorHandler::translate('')
             ),
 
             'repayment_tax' => array(
-                'title' => __('Repayment tax', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Repayment tax'),
                 'type' => 'number',
-                'description' => __('Add extra fee on checkout.', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('', SamedayConstants::TEXT_DOMAIN)
+                'description' => TranslatorHandler::translate('Add extra fee on checkout.'),
+                'default' => TranslatorHandler::translate('')
             ),
 
 
             'open_package_status' => array(
-                'title' => __('Open package status', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Open package status'),
                 'type' => 'checkbox',
-                'description' => __('Enable this option if you want to offer your customers the opening of the package at delivery time.', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('Enable this option if you want to offer your customers the opening of the package at delivery time.'),
                 'default' => 'no'
             ),
 
             'discount_free_shipping' => array(
-                'title' => __('Free shipping after discount', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Free shipping after discount'),
                 'type' => 'checkbox',
-                'description' => __(
-                    'Enable this option if you want to apply free shipping to be calculated after discount.
+                'description' => TranslatorHandler::translate('Enable this option if you want to apply free shipping to be calculated after discount.
                             Otherwise the free shipping will be apply without taking into account the applied discount.
-                            This field is relevant if you choose free delivery price option.',
-                    SamedayConstants::TEXT_DOMAIN
-                ),
+                            This field is relevant if you choose free delivery price option.'),
                 'default' => 'no'
             ),
 
             'open_package_label' => array(
-                'title' => __('Open package label', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Open package label'),
                 'type' => 'text',
-                'description' => __('This appear in checkout page', SamedayConstants::TEXT_DOMAIN),
-                'default' => __('', SamedayConstants::TEXT_DOMAIN)
+                'description' => TranslatorHandler::translate('This appear in checkout page'),
+                'default' => TranslatorHandler::translate('')
             ),
 
             'locker_max_items' => array(
-                'title' => __('Locker max. items', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Locker max. items'),
                 'type' => 'number',
-                'description' => __('The maximum amount of items accepted inside the locker', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('The maximum amount of items accepted inside the locker'),
                 'default' => SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS
             ),
 
             'lockers_map' => array(
-                'title'   => __('Show locker map method', SamedayConstants::TEXT_DOMAIN),
+                'title'   => TranslatorHandler::translate('Show locker map method'),
                 'default' => 'yes',
                 'type'    => 'select',
                 'options' => [
-                    'no' => __('Drop-down list', SamedayConstants::TEXT_DOMAIN),
-                    'yes' => __('Interactive Map', SamedayConstants::TEXT_DOMAIN),
+                    'no' => TranslatorHandler::translate('Drop-down list'),
+                    'yes' => TranslatorHandler::translate('Interactive Map'),
                 ]
             ),
 
             'is_testing' => array(
-                'title' => __('Env. Mode', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Env. Mode'),
                 'type' => 'select',
-                'description' => __('The value of this field will be appear automatically after you complete the authentication', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('The value of this field will be appear automatically after you complete the authentication'),
                 'default' => 2,
                 'disabled' => true,
                 'options' => array(
-                    SamedayConstants::API_PROD => __('Prod', SamedayConstants::TEXT_DOMAIN),
-                    SamedayConstants::API_DEMO => __('Demo', SamedayConstants::TEXT_DOMAIN),
+                    SamedayConstants::API_PROD => TranslatorHandler::translate('Prod'),
+                    SamedayConstants::API_DEMO => TranslatorHandler::translate('Demo'),
                     2 => '',
                 ),
             ),
 
             'host_country' => array(
-                'title' => __('Env. Host Country', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Env. Host Country'),
                 'type' => 'select',
-                'description' => __('The value of this field will be appear automatically after you complete the authentication', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('The value of this field will be appear automatically after you complete the authentication'),
                 'default' => 'none',
                 'disabled' => true,
                 'options' => array(
-                    SamedayConstants::API_HOST_LOCALE_RO => __(SamedayConstants::API_HOST_LOCALE_RO, SamedayConstants::TEXT_DOMAIN),
-                    SamedayConstants::API_HOST_LOCALE_HU => __(SamedayConstants::API_HOST_LOCALE_HU, SamedayConstants::TEXT_DOMAIN),
-                    SamedayConstants::API_HOST_LOCALE_BG => __(SamedayConstants::API_HOST_LOCALE_BG, SamedayConstants::TEXT_DOMAIN),
+                    SamedayConstants::API_HOST_LOCALE_RO => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_RO),
+                    SamedayConstants::API_HOST_LOCALE_HU => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_HU),
+                    SamedayConstants::API_HOST_LOCALE_BG => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_BG),
                     'none' => '',
                 ),
             ),
 
             'use_nomenclator' => array(
-                'title' => __('Use Nomenclator', SamedayConstants::TEXT_DOMAIN),
+                'title' => TranslatorHandler::translate('Use Nomenclator'),
                 'type' => 'select',
-                'description' => __('Use the imported cities during checkout for faster processing', SamedayConstants::TEXT_DOMAIN),
+                'description' => TranslatorHandler::translate('Use the imported cities during checkout for faster processing'),
                 'default' => 'no',
                 'options' => [
-                    'no' => __('No', SamedayConstants::TEXT_DOMAIN),
-                    'yes' => __('Yes', SamedayConstants::TEXT_DOMAIN),
+                    'no' => TranslatorHandler::translate('No'),
+                    'yes' => TranslatorHandler::translate('Yes'),
                 ]
             )
         );
@@ -509,6 +506,9 @@ final class SamedayCourier extends WC_Shipping_Method
         add_action('woocommerce_after_settings_shipping', array($this, 'renderSettingsActions'));
     }
 
+    /**
+     * @return void
+     */
     public function process_admin_options(): void
     {
         $post_data = $this->get_post_data();
@@ -556,7 +556,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
             parent::process_admin_options();
         } else {
-            WC_Admin_Settings::add_error( __( 'Invalid username/password combination provided! Settings have not been changed!'));
+            WC_Admin_Settings::add_error( TranslatorHandler::translate('Invalid username/password combination provided! Settings have not been changed!'));
         }
     }
 
@@ -573,21 +573,21 @@ final class SamedayCourier extends WC_Shipping_Method
         echo '
             <form id="sameday-all-import-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
                 <input type="hidden" name="action" value="all_import">
-                <input type="hidden" name="_wpnonce" value="' . esc_attr(wp_create_nonce('all_import')) . '">
+                <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('all_import') . '">
             </form>
             <form id="sameday-import-cities-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
                 <input type="hidden" name="action" value="import_cities">
-                <input type="hidden" name="_wpnonce" value="' . esc_attr(wp_create_nonce('import_cities')) . '">
+                <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('import_cities') . '">
             </form>
             <div class="sameday-settings-actions">
                 <button type="submit" form="sameday-all-import-form" class="sameday_admin_button">'
-                    . esc_html(__('Import all', SamedayConstants::TEXT_DOMAIN)) .
+                    . TranslatorHandler::translate('Import all') .
                 '</button>
-                <a href="' . esc_url($serviceUrl) . '" class="sameday_admin_button">' . esc_html(__('Services', SamedayConstants::TEXT_DOMAIN)) . '</a>
-                <a href="' . esc_url($pickupPointUrl) . '" class="sameday_admin_button">' . esc_html(__('Pickup-point', SamedayConstants::TEXT_DOMAIN)) . '</a>
-                <a href="' . esc_url($lockerUrl) . '" class="sameday_admin_button">' . esc_html(__('Lockers', SamedayConstants::TEXT_DOMAIN)) . '</a>
+                <a href="' . esc_url($serviceUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Services') . '</a>
+                <a href="' . esc_url($pickupPointUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Pickup-point') . '</a>
+                <a href="' . esc_url($lockerUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Lockers') . '</a>
                 <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
-                    . esc_html(__('Import Cities', SamedayConstants::TEXT_DOMAIN)) .
+                    . TranslatorHandler::translate('Import Cities') .
                 '</button>
             </div>
             <script>

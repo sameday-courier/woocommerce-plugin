@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceVerifier;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
 
 if (!defined("ABSPATH")) {
@@ -29,7 +29,7 @@ abstract class AbstractController implements ControllerInterface
             );
         }
 
-        if (!NonceVerifier::verify($inputParams['_wpnonce'], $this->getAction())) {
+        if (!NonceHandler::verify($inputParams['_wpnonce'], $this->getAction())) {
             throw new AccessDeniedException(
                 TranslatorHandler::translate("Invalid nonce.")
             );

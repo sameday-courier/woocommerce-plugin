@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
+
 if (!defined( 'ABSPATH')) {
     exit;
 }
@@ -12,6 +13,7 @@ use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
@@ -38,8 +40,8 @@ class Lockers extends WP_List_Table
 
 		parent::__construct(
             [
-                'singular' => __('Locker', SamedayConstants::TEXT_DOMAIN),
-                'plural' => __('Lockers', SamedayConstants::TEXT_DOMAIN),
+                'singular' => TranslatorHandler::translate('Locker'),
+                'plural' => TranslatorHandler::translate('Lockers'),
                 'ajax' => false
 		    ]
         );
@@ -113,14 +115,14 @@ class Lockers extends WP_List_Table
 	public function get_columns(): array
 	{
 		return [
-			'locker_id' => __('Locker ID', SamedayConstants::TEXT_DOMAIN),
-			'name' => __('Name', SamedayConstants::TEXT_DOMAIN),
-			'city' => __('City', SamedayConstants::TEXT_DOMAIN),
-			'county' => __('County', SamedayConstants::TEXT_DOMAIN),
-			'address' => __('Address', SamedayConstants::TEXT_DOMAIN),
-			'lat' => __('Latitude', SamedayConstants::TEXT_DOMAIN),
-			'lng' => __('Longitude', SamedayConstants::TEXT_DOMAIN),
-			'postal_code' => __('Postal code', SamedayConstants::TEXT_DOMAIN)
+			'locker_id' => TranslatorHandler::translate('Locker ID'),
+			'name' => TranslatorHandler::translate('Name'),
+			'city' => TranslatorHandler::translate('City'),
+			'county' => TranslatorHandler::translate('County'),
+			'address' => TranslatorHandler::translate('Address'),
+			'lat' => TranslatorHandler::translate('Latitude'),
+			'lng' => TranslatorHandler::translate('Longitude'),
+			'postal_code' => TranslatorHandler::translate('Postal code')
 		];
 	}
 
