@@ -200,7 +200,7 @@ final class GenerateAwbItem
 
         $serviceRepository = new SamedayServiceRepository();
         $pickupPointRepository = new SamedayPickupPointRepository();
-        $samedayService = $serviceRepository->getServiceById(
+        $samedayService = $serviceRepository->getServiceSameday(
             (int) $data['samedaycourier-service']
         );
         $samedayPickupPoint = $pickupPointRepository->getPickupPointSameday(
@@ -280,11 +280,17 @@ final class GenerateAwbItem
         return $this->locker;
     }
 
+    /**
+     * @return bool
+     */
     public function hasOpenPackage(): bool
     {
         return $this->hasOpenPackage;
     }
 
+    /**
+     * @return bool
+     */
     public function hasLockerFirstMile(): bool
     {
         return $this->hasLockerFirstMile;

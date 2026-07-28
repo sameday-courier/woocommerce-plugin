@@ -13,20 +13,20 @@ final class OohDto
     /**
      * @var string|null $lockerId
      */
-    public string $lockerId;
+    public ?string $lockerId;
 
     /**
      * @var string|null $oohLastMile
      */
-    public string $oohLastMile;
+    public ?string $oohLastMile;
 
     /**
-     * @param string $lockerId
-     * @param string $oohLastMile
+     * @param string|null $lockerId
+     * @param string|null $oohLastMile
      */
     public function __construct(
-        string $lockerId,
-        string $oohLastMile
+        ?string $lockerId = null,
+        ?string $oohLastMile = null
     )
     {
         $this->lockerId = $lockerId;
@@ -34,17 +34,17 @@ final class OohDto
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLockerId(): string
+    public function getLockerId(): ?string
     {
         return $this->lockerId;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getOohLastMile(): string
+    public function getOohLastMile(): ?string
     {
         return $this->oohLastMile;
     }

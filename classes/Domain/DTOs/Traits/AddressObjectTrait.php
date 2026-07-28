@@ -22,7 +22,7 @@ trait AddressObjectTrait
 
     private ?string $city;
 
-    private ?string $state;
+    private ?string $county;
 
     private ?string $postcode;
 
@@ -39,7 +39,7 @@ trait AddressObjectTrait
      * @param string|null $address1
      * @param string|null $address2
      * @param string|null $city
-     * @param string|null $state
+     * @param string|null $county
      * @param string|null $postcode
      * @param string|null $country
      * @param string|null $email
@@ -52,7 +52,7 @@ trait AddressObjectTrait
         ?string $address1 = null,
         ?string $address2 = null,
         ?string $city = null,
-        ?string $state = null,
+        ?string $county = null,
         ?string $postcode = null,
         ?string $country = null,
         ?string $email = null,
@@ -64,7 +64,7 @@ trait AddressObjectTrait
         $this->address1 = $address1;
         $this->address2 = $address2;
         $this->city = $city;
-        $this->state = $state;
+        $this->county = $county;
         $this->postcode = $postcode;
         $this->country = $country;
         $this->email = $email;
@@ -142,9 +142,14 @@ trait AddressObjectTrait
         return $this->city;
     }
 
+    public function getCounty(): ?string
+    {
+        return $this->county;
+    }
+
     public function getState(): ?string
     {
-        return $this->state;
+        return $this->county;
     }
 
     public function getPostcode(): ?string

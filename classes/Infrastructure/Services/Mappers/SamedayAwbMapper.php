@@ -25,7 +25,7 @@ final class SamedayAwbMapper extends AbstractMapper
         $awb->setOrderId((int) $row["order_id"]);
         $awb->setAwbNumber($row["awb_number"] ?? null);
         $awb->setParcels($row["parcels"] ?? null);
-        $awb->setAwbCost($row["awb_cost"] ?? null);
+        $awb->setAwbCost(isset($row['awb_cost']) ? (float) $row['awb_cost'] : null);
 
         return $awb;
     }

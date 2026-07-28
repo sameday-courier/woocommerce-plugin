@@ -114,7 +114,6 @@ final class GenerateAwb
 
         $awbRecipientResolver = new AwbGenerateRecipientResolver(
             $item,
-            new WooStateCodeResolver(),
             new WooSamedayShippingHdAddressParser(),
         );
         $awbRecipient = $awbRecipientResolver->resolve();
@@ -128,7 +127,7 @@ final class GenerateAwb
             new AwbPaymentType($item->getAwbPayment()),
             new AwbRecipientEntityObject(
                 $awbRecipient->getRecipient()->getCity(),
-                $awbRecipient->getRecipient()->getState(),
+                $awbRecipient->getRecipient()->getCounty(),
                 $awbRecipient->getRecipient()->getAddress(),
                 $awbRecipient->getRecipient()->getName(),
                 $awbRecipient->getRecipient()->getPhone(),
@@ -233,7 +232,10 @@ final class GenerateAwb
                 $recipient->getAddress2() ?? '',
                 $recipient->getName() ?? '',
                 $recipient->getCity() ?? '',
-                $recipient->getState() ?? '',
+                WooStateCodeResolver::resolveFromName(
+                    $recipient->getCountry() ?? '',
+                    $recipient->getCounty() ?? ''
+                ) ?: ($recipient->getCounty() ?? ''),
                 $recipient->getPostcode() ?? '',
                 $recipient->getCountry() ?? '',
             );

@@ -58,7 +58,7 @@ final class RecipientDto
 
     public function setState(?string $state): self
     {
-        $this->state = $state;
+        $this->county = $state;
 
         return $this;
     }

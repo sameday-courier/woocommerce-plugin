@@ -30,18 +30,18 @@ class AwbGenerateRecipientResponse
     private string $currency;
 
     /**
-     * @param OohDto $oohDto
      * @param RecipientDto $recipient
+     * @param OohDto $oohDto
      * @param string $currency
      */
     public function __construct(
-        OohDto $oohDto,
         RecipientDto $recipient,
+        OohDto $oohDto,
         string $currency
     )
     {
-        $this->oohDto = $oohDto;
         $this->recipient = $recipient;
+        $this->oohDto = $oohDto;
         $this->currency = $currency;
     }
 

@@ -123,12 +123,10 @@ final class SamedayCourier extends WC_Shipping_Method
             $cartValue = WooHandler::getWC()->cart->get_cart_contents_total();
         }
 
-        $stateName = County::fromName(
-            (new WooStateCodeResolver())->resolveNameFromCode(
-                $package['destination']['country'],
-                $package['destination']['state']
-            )
-        )->getName();
+        $stateName = WooStateCodeResolver::resolveNameFromCode(
+            $package['destination']['country'],
+            $package['destination']['state']
+        );
 
         foreach ($eligibleServices as $service) {
 //            if (!$this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
@@ -257,12 +255,10 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
         $weight = WooWeightHandler::convert(WooHandler::getWC()->cart->get_cart_contents_weight()) ?: .1;
-        $state = County::fromName(
-            (new WooStateCodeResolver())->resolveNameFromCode(
-                $address['country'],
-                $address['state']
-            )
-        )->getName();
+        $state = WooStateCodeResolver::resolveNameFromCode(
+            $address['country'],
+            $address['state']
+        );
         $city = RomanianDiacriticsNormalizer::normalize($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
 

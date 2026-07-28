@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use SamedayCourier\Shipping\Domain\Ports\StateNameResolverInterface;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooStateCodeResolver implements StateNameResolverInterface
+final class WooStateCodeResolver
 {
-    public function resolveNameFromCode(?string $countryCode, ?string $stateCode): ?string
+    public static function resolveNameFromCode(?string $countryCode, ?string $stateCode): ?string
     {
         if (null === $countryCode || null === $stateCode || '' === $countryCode || '' === $stateCode) {
             return null;

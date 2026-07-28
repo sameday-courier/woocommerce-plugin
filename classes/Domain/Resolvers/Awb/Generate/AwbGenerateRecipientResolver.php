@@ -7,15 +7,15 @@ namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
-use SamedayCourier\Shipping\Domain\Ports\StateNameResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -29,28 +29,20 @@ class AwbGenerateRecipientResolver
     private GenerateAwbItem $awbItem;
 
     /**
-     * @var StateNameResolverInterface $stateNameResolver
-     */
-    private StateNameResolverInterface $stateNameResolver;
-
-    /**
      * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
     private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
     /**
      * @param GenerateAwbItem $awbItem
-     * @param StateNameResolverInterface $stateNameResolver
      * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
     public function __construct(
         GenerateAwbItem $awbItem,
-        StateNameResolverInterface $stateNameResolver,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
     )
     {
         $this->awbItem = $awbItem;
-        $this->stateNameResolver = $stateNameResolver;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
     }
 
@@ -65,6 +57,7 @@ class AwbGenerateRecipientResolver
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
         $country = $shipping->getCountry() ?? $billing->getCountry();
+        $county = WooStateCodeResolver::resolveNameFromCode($country, $state) ?? '';
         $firstName = $shipping->getFirstName() ?? $billing->getFirstName();
         $lastName = $shipping->getLastName() ?? $billing->getLastName();
         $address_1 = $shipping->getAddress1() ?? $billing->getAddress1();
@@ -92,7 +85,7 @@ class AwbGenerateRecipientResolver
             $address_1,
             $address_2,
             $city,
-            $state,
+            $county,
             $postalCode,
             $country,
             $email,
@@ -125,12 +118,10 @@ class AwbGenerateRecipientResolver
 
         if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
-            $county = County::fromName(
-                $this->stateNameResolver->resolveNameFromCode(
-                    $post_meta_samedaycourier_address_hd['country'],
-                    $post_meta_samedaycourier_address_hd['state']
-                )
-            )->getName();
+            $county = WooStateCodeResolver::resolveNameFromCode(
+                $post_meta_samedaycourier_address_hd['country'],
+                $post_meta_samedaycourier_address_hd['state']
+            );
             $awbRecipient->setCounty($county);
             $address = sprintf(
                 '%s %s',
@@ -149,18 +140,18 @@ class AwbGenerateRecipientResolver
         $currency = SamedayConstants::CURRENCY_MAPPER[$country];
 
         return new AwbGenerateRecipientResponse(
-            $ooh,
             $awbRecipient,
+            $ooh,
             $currency
         );
     }
 
     /**
-     * @param string|null $locker
+     * @param LockerDto|null $locker
      *
      * @return bool
      */
-    private function hasLocker(?string $locker): bool
+    private function hasLocker(?LockerDto $locker): bool
     {
         return $locker !== null;
     }
