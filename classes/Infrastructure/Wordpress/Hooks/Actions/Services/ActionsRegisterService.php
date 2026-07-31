@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\Services;
+
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\AddExtraFeesAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\BlocksPostOrderPlacementAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\PostOrderPlacementAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RefreshShippingMethodsAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RenderAdminAwbFormsAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAdminOrderAwbActionsAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowLockerFieldAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowOpenPackageFieldAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateCheckoutLockerAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\ActionInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class ActionsRegisterService implements RegistryHandlerInterface
+{
+    private const ACTIONS = [
+        AddExtraFeesAction::class,
+        BlocksPostOrderPlacementAction::class,
+        PostOrderPlacementAction::class,
+        RefreshShippingMethodsAction::class,
+        RenderAdminAwbFormsAction::class,
+        ShowAdminOrderAwbActionsAction::class,
+        ShowLockerFieldAction::class,
+        ShowOpenPackageFieldAction::class,
+        ValidateCheckoutLockerAction::class,
+    ];
+
+    public static function register(): void
+    {
+        foreach (self::ACTIONS as $actionClass) {
+            $action = new $actionClass();
+            if ($action instanceof ActionInterface) {
+                add_action(
+                    $action->getActionName(),
+                    static function (...$args) use ($action): void {
+                        $action->handle(...$args);
+                    },
+                    $action->getPriority(),
+                    $action->getAcceptedArgs()
+                );
+            }
+        }
+    }
+}

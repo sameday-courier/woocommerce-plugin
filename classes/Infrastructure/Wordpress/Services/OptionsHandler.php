@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class OptionsHandler
+final class OptionsHandler
 {
     /**
      * @param string $key

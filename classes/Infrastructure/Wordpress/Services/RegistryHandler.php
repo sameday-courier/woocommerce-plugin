@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\Services\ActionsRegisterService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\Services\FiltersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
@@ -15,8 +17,8 @@ final class RegistryHandler implements RegistryHandlerInterface
 {
     private const Registers = [
         ControllersRegisterService::class,
-//        ActionsRegisterService::class,
-//        FiltersRegisterService::class,
+        ActionsRegisterService::class,
+        FiltersRegisterService::class,
         CssStylesheetsHandler::class,
         JsScriptsHandler::class,
     ];
@@ -27,7 +29,7 @@ final class RegistryHandler implements RegistryHandlerInterface
     public static function register(): void
     {
         foreach (self::Registers as $class) {
-            if ($class instanceof RegistryHandlerInterface) {
+            if (is_a($class, RegistryHandlerInterface::class, true)) {
                 $class::register();
             }
         }

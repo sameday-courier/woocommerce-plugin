@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
-class DbHandler implements DbHandlerInterface
+final class DbHandler implements DbHandlerInterface
 {
     /**
      * @var $db

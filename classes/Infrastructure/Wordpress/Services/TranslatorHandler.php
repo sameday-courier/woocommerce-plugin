@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class TranslatorHandler
+final class TranslatorHandler
 {
     /**
      * @param string $text

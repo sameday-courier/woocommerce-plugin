@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
-class CacheHandler implements CacheHandlerInterface
+final class CacheHandler implements CacheHandlerInterface
 {
     /**
      * @param string $key
