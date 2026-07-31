@@ -9,7 +9,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 
 class Uninstaller
 {

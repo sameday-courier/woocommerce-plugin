@@ -23,12 +23,13 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoin
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\RefreshPickupPointController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\EditServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class ControllersRegisterService
+class ControllersRegisterService implements RegistryHandlerInterface
 {
     private const POST_CONTROLLERS = 'admin_post_';
     private const AJAX_CONTROLLERS = 'wp_ajax_';

@@ -151,7 +151,6 @@ function refresh_sameday_shipping_methods() {
 add_action('woocommerce_cart_calculate_fees', 'checkout_repayment_tax', 100);
 function checkout_repayment_tax() {
   global $woocommerce;
-
 	if (!defined( 'DOING_AJAX') && is_admin()) {
 		return;
     }
@@ -275,7 +274,6 @@ add_action('woocommerce_blocks_checkout_order_processed', static function ($orde
 });
 
 add_action('woocommerce_checkout_order_processed', static function ($orderId): void {
-
     if ((new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode())) {
         try {
             (new WooLockerOrderDataHandler(

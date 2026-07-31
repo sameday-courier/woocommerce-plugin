@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\CacheHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
 if (!defined( 'ABSPATH')) {
     exit;

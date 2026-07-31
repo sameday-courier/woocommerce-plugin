@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\RegistryHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -15,6 +15,8 @@ final class RegistryHandler implements RegistryHandlerInterface
 {
     private const Registers = [
         ControllersRegisterService::class,
+//        ActionsRegisterService::class,
+//        FiltersRegisterService::class,
         CssStylesheetsHandler::class,
         JsScriptsHandler::class,
     ];
