@@ -4,15 +4,27 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class NoticerHandler
+class NoticerHandler implements RegistryHandlerInterface
 {
     private const NOTICE_KEY = 'samedaycourier_notice_key';
+
+
+    /**
+     * @return void
+     */
+    public static function register(): void
+    {
+        add_action('admin_notices', static function (): void {
+            self::showFlashNotice();
+        });
+    }
 
     /**
      * @param string $noticeMessage
@@ -40,7 +52,7 @@ class NoticerHandler
     /**
      * @return void
      */
-    public static function showFlashNotice(): void
+    private static function showFlashNotice(): void
     {
         $notices = OptionsHandler::getOption(self::NOTICE_KEY);
         if (!empty($notices)) {
@@ -58,7 +70,7 @@ class NoticerHandler
      *
      * @return void
      */
-    public static function printFlashNotice($type, $message, $dismissible): void
+    private static function printFlashNotice($type, $message, $dismissible): void
     {
         printf(
             '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',

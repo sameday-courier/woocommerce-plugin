@@ -47,6 +47,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker\LockerInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPointInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RegistryHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CssStylesheetsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\JsScriptsHandler;
@@ -78,23 +79,7 @@ add_filter('woocommerce_shipping_methods', static function (array $methods): arr
 
     return $methods;
 });
-
-ControllersRegisterService::register();
-CssStylesheetsHandler::register();
-JsScriptsHandler::register();
-
-add_action('admin_notices', static function (): void {
-    NoticerHandler::showFlashNotice();
-});
-
-// Plugin settings.
-add_action('plugins_loaded', static function () {
-    ServiceInstance::get_instance();
-    PickupPointInstance::get_instance();
-    LockerInstance::get_instance();
-});
-
-
+RegistryHandler::register();
 
 // Open Package :
 function wps_sameday_shipping_options_layout() {

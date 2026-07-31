@@ -10,12 +10,13 @@ use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\RegistryHandlerInterface;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class JsScriptsHandler
+final class JsScriptsHandler implements RegistryHandlerInterface
 {
     private const SCRIPT_PATH = 'path';
     private const SCRIPT_URL = 'url';

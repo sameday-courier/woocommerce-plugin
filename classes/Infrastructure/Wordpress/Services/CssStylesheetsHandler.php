@@ -7,12 +7,13 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 use InvalidArgumentException;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\RegistryHandlerInterface;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class CssStylesheetsHandler
+final class CssStylesheetsHandler implements RegistryHandlerInterface
 {
     private const STYLE_PATH = 'path';
     private const STYLE_CONTEXT = 'context';
