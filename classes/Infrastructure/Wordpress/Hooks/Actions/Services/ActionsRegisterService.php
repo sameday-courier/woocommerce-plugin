@@ -34,7 +34,7 @@ class ActionsRegisterService implements RegistryHandlerInterface
         ValidateCheckoutLockerAction::class,
     ];
 
-    public static function register(): void
+    public function register(): void
     {
         foreach (self::ACTIONS as $actionClass) {
             $action = new $actionClass();

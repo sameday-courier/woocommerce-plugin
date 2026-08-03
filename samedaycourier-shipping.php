@@ -20,7 +20,6 @@ if (!defined( 'ABSPATH')) {
  */
 
 use SamedayCourier\Shipping\Application\Sql\PluginHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RegistryHandler;
 
 /**

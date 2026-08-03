@@ -49,7 +49,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    public static function register(): void
+    public function register(): void
     {
         add_action('admin_enqueue_scripts', [self::class, 'enqueueAdmin']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueFrontend']);

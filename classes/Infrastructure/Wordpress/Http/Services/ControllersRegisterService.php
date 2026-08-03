@@ -73,7 +73,7 @@ class ControllersRegisterService implements RegistryHandlerInterface
     /**
      * @return void
      */
-    public static function register(): void
+    public function register(): void
     {
         foreach (self::CONTROLLERS as $controllersType => $controllers) {
             foreach ($controllers as $controller) {
@@ -93,8 +93,10 @@ class ControllersRegisterService implements RegistryHandlerInterface
      */
     private static function addAction(string $actionName, ControllerInterface $controller): void
     {
+        $hookName = $actionName . $controller->getAction();
+
         add_action(
-            $actionName . $controller->getAction(),
+            $hookName,
             [
                 $controller,
                 self::METHOD
