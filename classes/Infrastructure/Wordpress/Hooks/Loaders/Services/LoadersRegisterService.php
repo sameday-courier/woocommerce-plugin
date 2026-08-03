@@ -17,6 +17,9 @@ class LoadersRegisterService implements RegistryHandlerInterface
 {
     private const ACTION = 'plugins_loaded';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
