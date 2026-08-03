@@ -24,6 +24,7 @@ use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
@@ -114,6 +115,7 @@ final class GenerateAwb
 
         $awbRecipientResolver = new AwbGenerateRecipientResolver(
             $item,
+            new SamedayServiceRules($this->samedayServiceRepository),
             new WooSamedayShippingHdAddressParser(),
         );
         $awbRecipient = $awbRecipientResolver->resolve();
