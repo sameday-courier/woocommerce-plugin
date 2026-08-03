@@ -46,7 +46,7 @@ final class ShippingMethodFullLabelFilter extends AbstractFilter
         $label = $args[0] ?? '';
         $method = $args[1] ?? null;
 
-        if (null === $method || !is_object($method) || !method_exists($method, 'get_meta_data')) {
+        if (!is_object($method) || !method_exists($method, 'get_meta_data')) {
             return $label;
         }
 

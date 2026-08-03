@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Interfaces\RegistryHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
