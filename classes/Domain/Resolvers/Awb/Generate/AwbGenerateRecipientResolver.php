@@ -34,15 +34,23 @@ class AwbGenerateRecipientResolver
     private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
     /**
+     * @var SamedayServiceRules $samedayServiceRules
+     */
+    private SamedayServiceRules $samedayServiceRules;
+
+    /**
      * @param GenerateAwbItem $awbItem
+     * @param SamedayServiceRules $samedayServiceRules
      * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
     public function __construct(
         GenerateAwbItem $awbItem,
+        SamedayServiceRules $samedayServiceRules,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
     )
     {
         $this->awbItem = $awbItem;
+        $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
     }
 
@@ -161,7 +169,7 @@ class AwbGenerateRecipientResolver
      */
     private function isOohDeliveryType(): bool
     {
-        return (new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOption($this->awbItem->getService());
+        return $this->samedayServiceRules->isOohDeliveryOption($this->awbItem->getService());
     }
 
     /**

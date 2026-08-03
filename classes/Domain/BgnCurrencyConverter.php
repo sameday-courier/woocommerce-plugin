@@ -59,7 +59,7 @@ class BgnCurrencyConverter
         return sprintf(
             '%s: <span class="woocommerce-Price-amount amount"><bdi>%s&nbsp;<span class="woocommerce-Price-currencySymbol">%s</span> <span style="font-size: smaller"> %s </span></bdi></span>',
             $carrierName,
-            number_format($price, 2, '.', ''),
+            number_format((float) $price, 2, '.', ''),
             get_woocommerce_currency_symbol($storeCurrency),
             sprintf("(≈ %s %s)",
                 $estimatedPrice,
