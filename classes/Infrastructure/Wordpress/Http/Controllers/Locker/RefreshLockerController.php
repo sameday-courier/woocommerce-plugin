@@ -48,8 +48,8 @@ final class RefreshLockerController extends AbstractController
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
-                ResponseNoticeType::ERROR,
                 TranslatorHandler::translate("Could not instantiate Sameday client service."),
+                ResponseNoticeType::ERROR,
             );
 
             Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);

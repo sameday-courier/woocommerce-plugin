@@ -33,16 +33,24 @@ class PickupPointInstance
 
 	public function plugin_menu()
 	{
+		$parentSlug = 'edit.php?post_type=page';
+		$pageSlug = 'sameday_pickup_points';
+
 		$hook = add_submenu_page(
-			'',
+			$parentSlug,
 			'SamedayCourier PickupPoint Table',
 			'Sameday Pickup-points',
 			'manage_options',
-			'sameday_pickup_points',
+			$pageSlug,
 			[ $this, 'plugin_settings_page' ]
 		);
 
 		add_action("load-$hook", [ $this, 'screen_option' ]);
+
+		// Keep page out of the Pages menu while retaining a real parent so WP can resolve $title.
+		add_action('admin_head', static function () use ($parentSlug, $pageSlug): void {
+			remove_submenu_page($parentSlug, $pageSlug);
+		});
 	}
 
 	/**

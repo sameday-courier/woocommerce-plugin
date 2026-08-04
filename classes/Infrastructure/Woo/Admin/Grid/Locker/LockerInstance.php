@@ -32,16 +32,24 @@ class LockerInstance
 
 	public function plugin_menu()
 	{
+		$parentSlug = 'edit.php?post_type=page';
+		$pageSlug = 'sameday_lockers';
+
 		$hook = add_submenu_page(
-			'',
+			$parentSlug,
 			'SamedayCourier Locker Table',
 			'Sameday lockers',
 			'manage_options',
-			'sameday_lockers',
+			$pageSlug,
 			[ $this, 'plugin_settings_page' ]
 		);
 
 		add_action("load-$hook", [ $this, 'screen_option' ]);
+
+		// Keep page out of the Pages menu while retaining a real parent so WP can resolve $title.
+		add_action('admin_head', static function () use ($parentSlug, $pageSlug): void {
+			remove_submenu_page($parentSlug, $pageSlug);
+		});
 	}
 
 	/**

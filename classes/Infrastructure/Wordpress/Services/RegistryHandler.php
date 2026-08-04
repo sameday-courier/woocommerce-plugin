@@ -9,6 +9,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\Services\Filt
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Loaders\Services\LoadersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -23,6 +24,7 @@ final class RegistryHandler
         CssStylesheetsHandler::class,
         JsScriptsHandler::class,
         LoadersRegisterService::class,
+        NoticerHandler::class,
     ];
 
     /**

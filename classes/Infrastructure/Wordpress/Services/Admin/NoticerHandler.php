@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
 
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
@@ -11,43 +12,46 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class NoticerHandler implements RegistryHandlerInterface
+final class NoticerHandler implements RegistryHandlerInterface
 {
     private const NOTICE_KEY = 'samedaycourier_notice_key';
 
+    private const ALLOWED_TYPES = [
+        ResponseNoticeType::SUCCESS,
+        ResponseNoticeType::ERROR,
+    ];
 
     /**
      * @return void
      */
     public function register(): void
     {
-        add_action(
-            'admin_notices',
-            static function (): void {
-                self::showFlashNotice();
-            }
-        );
+        add_action('admin_notices', [self::class, 'showFlashNotices']);
     }
 
     /**
-     * @param string $noticeMessage
+     * @param string|null $noticeMessage
      * @param string $noticeType
      * @param bool $dismissible
      *
      * @return void
      */
     public static function addFlashNotice(
-        string $noticeMessage = "",
-        string $noticeType = "warning",
+        ?string $noticeMessage = '',
+        string $noticeType = ResponseNoticeType::ERROR,
         bool $dismissible = true
-    ): void
-    {
+    ): void {
+        $message = $noticeMessage ?? '';
+        if ($message === '') {
+            return;
+        }
+
         OptionsHandler::setOption(
             self::NOTICE_KEY,
             [
-                "message" => $noticeMessage,
-                "type" => $noticeType,
-                "dismissible" => $dismissible
+                'message' => $message,
+                'type' => self::sanitizeType($noticeType),
+                'dismissible' => $dismissible,
             ]
         );
     }
@@ -55,31 +59,62 @@ class NoticerHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    private static function showFlashNotice(): void
+    public static function showFlashNotices(): void
     {
-        $notices = OptionsHandler::getOption(self::NOTICE_KEY);
-        if (!empty($notices)) {
-            self::printFlashNotice($notices['type'], $notices['message'], $notices['dismissible']);
-
-            // After show flash message in page, remove it from db.
-            OptionsHandler::removeOption(self::NOTICE_KEY);
+        $notice = self::getNotice();
+        if ($notice === []) {
+            return;
         }
+
+        self::printFlashNotice(
+            (string) ($notice['type'] ?? ResponseNoticeType::ERROR),
+            (string) ($notice['message'] ?? ''),
+            (bool) ($notice['dismissible'] ?? true)
+        );
+
+        OptionsHandler::removeOption(self::NOTICE_KEY);
     }
 
     /**
-     * @param $type
-     * @param $dismissible
-     * @param $message
+     * @return array{message?: string, type?: string, dismissible?: bool}
+     */
+    private static function getNotice(): array
+    {
+        $notice = OptionsHandler::getOption(self::NOTICE_KEY, []);
+
+        return is_array($notice) ? $notice : [];
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    private static function sanitizeType(string $type): string
+    {
+        return in_array($type, self::ALLOWED_TYPES, true)
+            ? $type
+            : ResponseNoticeType::ERROR;
+    }
+
+    /**
+     * @param string $type
+     * @param string $message
+     * @param bool $dismissible
      *
      * @return void
      */
-    private static function printFlashNotice($type, $message, $dismissible): void
+    private static function printFlashNotice(string $type, string $message, bool $dismissible): void
     {
+        if ($message === '') {
+            return;
+        }
+
         printf(
-            '<div class="notice notice-%1$s %2$s"><p>%3$s</p></div>',
-            $type,
-            ($dismissible) ? "is-dismissible" : "",
-            $message
+            '<div class="notice notice-%1$s%2$s"><p>%3$s</p></div>',
+            esc_attr(self::sanitizeType($type)),
+            $dismissible ? ' is-dismissible' : '',
+            wp_kses_post($message)
         );
     }
 }

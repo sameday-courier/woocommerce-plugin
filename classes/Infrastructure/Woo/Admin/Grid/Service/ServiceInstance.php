@@ -41,16 +41,24 @@ class ServiceInstance
 
 	public function plugin_menu()
 	{
+		$parentSlug = 'edit.php?post_type=page';
+		$pageSlug = 'sameday_services';
+
 		$hook = add_submenu_page(
-            '',
+            $parentSlug,
             'SamedayCourier Service Table',
             'Sameday Services',
             'manage_options',
-            'sameday_services',
+            $pageSlug,
 		    [ $this, 'plugin_settings_page' ]
         );
 
 		add_action("load-$hook", [ $this, 'screen_option' ]);
+
+		// Keep page out of the Pages menu while retaining a real parent so WP can resolve $title.
+		add_action('admin_head', static function () use ($parentSlug, $pageSlug): void {
+			remove_submenu_page($parentSlug, $pageSlug);
+		});
 	}
 
 	/**
