@@ -27,7 +27,11 @@ const doAjaxCall = (params = {}, reloadCheckout = true) => {
         return;
     }
 
-    params.samedayNonce = samedayVars.samedayNonce;
+    params._wpnonce = samedayVars?.nonces?.[params.action] ?? '';
+
+    if ('' === params._wpnonce) {
+        return;
+    }
 
     jQuery.ajax({
         'type': 'POST',

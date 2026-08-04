@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -166,13 +167,13 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'lockers_script' => self::addScript(
                 'lockers_sync',
                 self::WP_CONTEXT['checkout_strict'],
-                ['jquery'],
+                ['jquery', 'helper'],
                 true
             ),
             'open_package_script' => self::addScript(
                 'open_package_script',
                 self::WP_CONTEXT['checkout_strict'],
-                ['jquery'],
+                ['jquery', 'helper'],
                 true
             ),
             'lockerpluginsdk_checkout' => self::withHandle(
@@ -506,7 +507,17 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 break;
             case 'helper':
                 wp_localize_script($handle, 'samedayVars', [
-                    'samedayNonce' => wp_create_nonce('sameday-post-data'),
+                    'nonces' => [
+                        'store_sameday_locker_in_session' => NonceHandler::createNonce(
+                            'store_sameday_locker_in_session'
+                        ),
+                        'store_sameday_open_package_in_session' => NonceHandler::createNonce(
+                            'store_sameday_open_package_in_session'
+                        ),
+                        'store_sameday_payment_method_in_session' => NonceHandler::createNonce(
+                            'store_sameday_payment_method_in_session'
+                        ),
+                    ],
                 ]);
                 break;
             case 'county-city-handle':

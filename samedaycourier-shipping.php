@@ -25,7 +25,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RegistryHandler;
 /**
  * Check if WooCommerce plugin is enabled
  */
-if (!in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' )), true)) {
+if (!in_array( 'woocommerce/woocommerce.php',
+    apply_filters( 'active_plugins', get_option( 'active_plugins' )), true)) {
     exit;
 }
 

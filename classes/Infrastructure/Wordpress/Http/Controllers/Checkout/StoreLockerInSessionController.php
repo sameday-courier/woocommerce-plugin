@@ -30,7 +30,7 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
      */
     protected function processNoPrivAction(array $inputParams): void
     {
-        if ($locker = $inputParams['locker'] ?? null) {
+        if (null === $locker = $inputParams['locker'] ?? null) {
             return;
         }
 
