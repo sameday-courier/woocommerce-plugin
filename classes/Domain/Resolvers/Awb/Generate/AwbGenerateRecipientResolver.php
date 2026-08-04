@@ -131,12 +131,8 @@ class AwbGenerateRecipientResolver
                 $post_meta_samedaycourier_address_hd['state']
             );
             $awbRecipient->setCounty($county);
-            $address = sprintf(
-                '%s %s',
-                $post_meta_samedaycourier_address_hd['address_1'],
-                $post_meta_samedaycourier_address_hd['address_2']
-            );
-            $awbRecipient->setAddress($address);
+            $awbRecipient->setAddress1($post_meta_samedaycourier_address_hd['address_1']);
+            $awbRecipient->setAddress2($post_meta_samedaycourier_address_hd['address_2']);
             $awbRecipient->setPostalCode($post_meta_samedaycourier_address_hd['postcode']);
         }
 

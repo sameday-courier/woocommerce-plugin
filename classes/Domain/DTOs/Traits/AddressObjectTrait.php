@@ -122,9 +122,15 @@ trait AddressObjectTrait
         return $this->company;
     }
 
+    /**
+     * @return string
+     */
     public function getAddress(): string
     {
-        return sprintf('%s %s', ltrim($this->address1), ltrim($this->address2));
+        $address1 = $this->address1 ?? "";
+        $address2 = $this->address2 ?? "";
+
+        return sprintf('%s %s', ltrim($address1), ltrim($address2));
     }
 
     public function getAddress1(): ?string

@@ -14,6 +14,16 @@ final class RecipientDto
 {
     use AddressObjectTrait;
 
+    /**
+     * @var string $address
+     */
+    public string $address;
+
+    /**
+     * @var string $name
+     */
+    public string $name;
+
     public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
@@ -28,6 +38,10 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $company
+     * @return $this
+     */
     public function setCompany(?string $company): self
     {
         $this->company = $company;
@@ -35,6 +49,10 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $address1
+     * @return $this
+     */
     public function setAddress1(?string $address1): self
     {
         $this->address1 = $address1;
@@ -42,6 +60,10 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $address2
+     * @return $this
+     */
     public function setAddress2(?string $address2): self
     {
         $this->address2 = $address2;
@@ -63,13 +85,11 @@ final class RecipientDto
         return $this;
     }
 
-    public function setPostcode(?string $postcode): self
-    {
-        $this->postcode = $postcode;
-
-        return $this;
-    }
-
+    /**
+     * @param string|null $country
+     *
+     * @return $this
+     */
     public function setCountry(?string $country): self
     {
         $this->country = $country;
@@ -77,6 +97,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $email
+     *
+     * @return $this
+     */
     public function setEmail(?string $email): self
     {
         $this->email = $email;
@@ -84,6 +109,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $phone
+     *
+     * @return $this
+     */
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
@@ -91,6 +121,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $county
+     *
+     * @return $this
+     */
     public function setCounty(?string $county): self
     {
         $this->county = $county;
@@ -98,20 +133,37 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param string|null $address
+     *
+     * @return $this
+     */
     public function setAddress(?string $address): self
     {
-        $this->address = $address;
+        $this->address1 = $address;
+        $this->address2 = null;
 
         return $this;
     }
 
+    /**
+     * @param string|null $name
+     *
+     * @return $this
+     */
     public function setName(?string $name): self
     {
-        $this->name = $name;
+        $this->firstName = $name;
+        $this->lastName = null;
 
         return $this;
     }
 
+    /**
+     * @param string|null $postalCode
+     *
+     * @return $this
+     */
     public function setPostalCode(?string $postalCode): self
     {
         $this->postcode = $postalCode;
