@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 
 final class WooOrderShippingAddressUpdater
 {
@@ -72,7 +73,7 @@ final class WooOrderShippingAddressUpdater
         ];
 
         foreach ($addressFieldsMapper as $key => $value) {
-            update_post_meta($orderId, $key, $value, false);
+            PostMetaHandler::update($orderId, $key, $value);
         }
 
         $this->wooOrderAddressRepository->updateWcOrderAddress(

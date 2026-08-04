@@ -21,4 +21,15 @@ class UrlBuilder
             admin_url($adminUrlPath)
         );
     }
+
+    /**
+     * @param string $adminUrlPath
+     * @param array $queryArgs
+     *
+     * @return string
+     */
+    public static function buildEscaped(string $adminUrlPath = "admin.php", array $queryArgs = []): string
+    {
+        return esc_url(self::build($adminUrlPath, $queryArgs));
+    }
 }

@@ -13,6 +13,7 @@ use JsonException;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 
@@ -51,7 +52,7 @@ final class WooLockerOrderPostMetaUpdater
     {
         $postMetaLocker = JsonStringHandler::fixJson(
             InputSanitizer::sanitizeInput(
-                (string) get_post_meta(
+                (string) PostMetaHandler::get(
                     $orderId,
                     SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
                     true
@@ -113,13 +114,13 @@ final class WooLockerOrderPostMetaUpdater
             $country
         );
 
-        if ('' === get_post_meta(
+        if ('' === PostMetaHandler::get(
             $orderId,
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             true
         )) {
             // Save HD Address
-            update_post_meta(
+            PostMetaHandler::update(
                 $orderId,
                 SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
                 json_encode($shippingInputs, JSON_THROW_ON_ERROR),

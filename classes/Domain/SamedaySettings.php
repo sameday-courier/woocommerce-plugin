@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain;
 
 use Sameday\Objects\Types\AwbPdfType;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
@@ -59,7 +60,11 @@ final class SamedaySettings
      */
     public static function getPathToSettingsPage(): string
     {
-        return admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
+        return UrlBuilder::build('admin.php', [
+            'page' => 'wc-settings',
+            'tab' => 'shipping',
+            'section' => 'samedaycourier',
+        ]);
     }
 
     /**

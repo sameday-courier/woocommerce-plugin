@@ -10,7 +10,6 @@ use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
-use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
@@ -20,14 +19,12 @@ use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
@@ -107,11 +104,12 @@ final class GenerateAwb
             );
         }
 
-        $serviceTaxResponse = (new AwbGenerateServiceTaxResolver(
+        $serviceTaxResolver = new AwbGenerateServiceTaxResolver(
             $service,
             $this->samedayServiceRepository,
             $item,
-        ))->resolve();
+        );
+        $serviceTax = $serviceTaxResolver->resolve();
 
         $awbRecipientResolver = new AwbGenerateRecipientResolver(
             $item,
@@ -139,7 +137,7 @@ final class GenerateAwb
             $item->getRepayment(),
             new CodCollectorType(CodCollectorType::CLIENT),
             null,
-            $serviceTaxResponse->getServiceTaxIds(),
+            $serviceTax->getServiceTaxIds(),
             null,
             $item->getClientReference(),
             $item->getObservation(),

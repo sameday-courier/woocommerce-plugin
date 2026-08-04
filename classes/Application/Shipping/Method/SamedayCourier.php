@@ -30,6 +30,7 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerReq
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -562,16 +563,26 @@ final class SamedayCourier extends WC_Shipping_Method
             return;
         }
 
-        $serviceUrl = admin_url() . 'edit.php?post_type=page&page=sameday_services';
-        $pickupPointUrl = admin_url() . 'edit.php?post_type=page&page=sameday_pickup_points';
-        $lockerUrl = admin_url() . 'edit.php?post_type=page&page=sameday_lockers';
+        $serviceUrl = UrlBuilder::buildEscaped('edit.php', [
+            'post_type' => 'page',
+            'page' => 'sameday_services',
+        ]);
+        $pickupPointUrl = UrlBuilder::buildEscaped('edit.php', [
+            'post_type' => 'page',
+            'page' => 'sameday_pickup_points',
+        ]);
+        $lockerUrl = UrlBuilder::buildEscaped('edit.php', [
+            'post_type' => 'page',
+            'page' => 'sameday_lockers',
+        ]);
+        $adminPostUrl = UrlBuilder::buildEscaped('admin-post.php');
 
         echo '
-            <form id="sameday-all-import-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
+            <form id="sameday-all-import-form" action="' . $adminPostUrl . '" method="post" hidden>
                 <input type="hidden" name="action" value="all_import">
                 <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('all_import') . '">
             </form>
-            <form id="sameday-import-cities-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post" hidden>
+            <form id="sameday-import-cities-form" action="' . $adminPostUrl . '" method="post" hidden>
                 <input type="hidden" name="action" value="import_cities">
                 <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('import_cities') . '">
             </form>
@@ -579,9 +590,9 @@ final class SamedayCourier extends WC_Shipping_Method
                 <button type="submit" form="sameday-all-import-form" class="sameday_admin_button">'
                     . TranslatorHandler::translate('Import all') .
                 '</button>
-                <a href="' . esc_url($serviceUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Services') . '</a>
-                <a href="' . esc_url($pickupPointUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Pickup-point') . '</a>
-                <a href="' . esc_url($lockerUrl) . '" class="sameday_admin_button">' . TranslatorHandler::translate('Lockers') . '</a>
+                <a href="' . $serviceUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Services') . '</a>
+                <a href="' . $pickupPointUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Pickup-point') . '</a>
+                <a href="' . $lockerUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Lockers') . '</a>
                 <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
                     . TranslatorHandler::translate('Import Cities') .
                 '</button>

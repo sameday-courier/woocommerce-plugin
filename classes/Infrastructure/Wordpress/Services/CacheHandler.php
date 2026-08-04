@@ -19,7 +19,9 @@ final class CacheHandler implements CacheHandlerInterface
      */
     public function getCachedData(string $key): array
     {
-        return get_transient($key);
+        $data = get_transient($key);
+
+        return is_array($data) ? $data : [];
     }
 
     /**

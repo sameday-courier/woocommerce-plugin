@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use JsonException;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -37,7 +38,7 @@ final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
      */
     public function add(int $orderId, $locker): void
     {
-        update_post_meta(
+        PostMetaHandler::update(
             $orderId,
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
             $locker,

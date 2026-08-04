@@ -12,6 +12,7 @@ use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use stdClass;
 class SamedayCityRepository extends AbstractRepository
 {
@@ -27,9 +28,12 @@ class SamedayCityRepository extends AbstractRepository
      */
     public function getCachedCities(): array
     {
-        if (false === $cities = get_transient(SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES)) {
+        $cacheHandler = new CacheHandler();
+        $cities = $cacheHandler->getCachedData(SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES);
+
+        if ([] === $cities) {
             $cities = $this->getCities();
-            set_transient(
+            $cacheHandler->refreshCachedData(
                 SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
                 $cities,
                 31556926
