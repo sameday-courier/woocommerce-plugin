@@ -19,11 +19,14 @@ class NoticerHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    public static function register(): void
+    public function register(): void
     {
-        add_action('admin_notices', static function (): void {
-            self::showFlashNotice();
-        });
+        add_action(
+            'admin_notices',
+            static function (): void {
+                self::showFlashNotice();
+            }
+        );
     }
 
     /**
