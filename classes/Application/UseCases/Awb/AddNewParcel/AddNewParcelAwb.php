@@ -26,7 +26,6 @@ if (!defined('ABSPATH')) {
 
 final class AddNewParcelAwb
 {
-
     /**
      * @var AddNewParcelAwbRequest $addNewParcelAwbRequest
      */
