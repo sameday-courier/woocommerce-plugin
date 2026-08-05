@@ -12,6 +12,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
@@ -101,6 +102,7 @@ final class GenerateAwbController extends AbstractController
                 new WooOrderShippingAddressUpdater(
                     new WooOrderAddressRepository($dbHandler),
                 ),
+                new AwbErrorParser(),
             )
         );
 

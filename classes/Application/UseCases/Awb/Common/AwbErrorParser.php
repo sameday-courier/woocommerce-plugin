@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Common;
+namespace SamedayCourier\Shipping\Application\UseCases\Awb\Common;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -15,7 +15,7 @@ final class AwbErrorParser
      *
      * @return string
      */
-    public static function parse(array $errors): string
+    public function parse(array $errors): string
     {
         $allErrors = [];
         foreach ($errors as $error) {

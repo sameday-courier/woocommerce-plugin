@@ -10,6 +10,7 @@ use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -55,7 +56,8 @@ final class AddNewParcelAwbController extends AbstractController
                     ),
                     (string) ($inputParams['samedaycourier-parcel-observation'] ?? ''),
                     (bool) ($inputParams['samedaycourier-parcel-is-last'] ?? false)
-                )
+                ),
+                new AwbErrorParser()
             ),
         );
 

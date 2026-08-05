@@ -16,10 +16,10 @@ use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbRemover;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
@@ -70,6 +70,11 @@ final class GenerateAwb
      */
     private WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater;
 
+    /**
+     * @var AwbErrorParser $awbErrorParser
+     */
+    private AwbErrorParser $awbErrorParser;
+
     public function __construct(
         GenerateAwbRequest $generateAwbRequest
     )
@@ -80,6 +85,7 @@ final class GenerateAwb
         $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
         $this->samedayAwbRepository = $generateAwbRequest->samedayAwbRepository;
         $this->wooOrderShippingAddressUpdater = $generateAwbRequest->wooOrderShippingAddressUpdater;
+        $this->awbErrorParser = $generateAwbRequest->awbErrorParser;
     }
 
     /**
@@ -198,7 +204,7 @@ final class GenerateAwb
 
         if (null !== $errors && null === $awb) {
             return new GenerateAwbResponse(
-                AwbErrorParser::parse($errors),
+                $this->awbErrorParser->parse($errors),
                 ResponseNoticeType::ERROR,
             );
         }

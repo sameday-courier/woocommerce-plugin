@@ -13,8 +13,8 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -34,10 +34,16 @@ final class AddNewParcelAwb
      */
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @var AwbErrorParser $awbErrorParser
+     */
+    private AwbErrorParser $awbErrorParser;
+
     public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
     {
         $this->addNewParcelAwbRequest = $addNewParcelAwbRequest;
         $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->awbErrorParser = $addNewParcelAwbRequest->getAwbErrorParser();
     }
 
     /**
@@ -96,7 +102,7 @@ final class AddNewParcelAwb
 
             return new AddNewParcelAwbResponse(
                 $this->addNewParcelAwbRequest->getOrderId(),
-                AwbErrorParser::parse($errors),
+                $this->awbErrorParser->parse($errors),
                 ResponseNoticeType::ERROR,
             );
         }

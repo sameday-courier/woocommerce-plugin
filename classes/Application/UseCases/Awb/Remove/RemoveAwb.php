@@ -10,8 +10,8 @@ use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbRemover;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
@@ -28,10 +28,16 @@ final class RemoveAwb
      */
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @var AwbErrorParser $awbErrorParser
+     */
+    private AwbErrorParser $awbErrorParser;
+
     public function __construct(RemoveAwbRequest $removeAwbRequest)
     {
         $this->removeAwbRequest = $removeAwbRequest;
         $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->awbErrorParser = $removeAwbRequest->getAwbErrorParser();
     }
 
     /**
@@ -66,7 +72,7 @@ final class RemoveAwb
         if (isset($errors)) {
 
             return new RemoveAwbResponse(
-                AwbErrorParser::parse($errors),
+                $this->awbErrorParser->parse($errors),
                 ResponseNoticeType::ERROR,
             );
         }
