@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderSamedayShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
@@ -102,15 +102,15 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
             $generateAwb
         );
 
-        $shippingMethodSameday = (new WooOrderSamedayShippingMethodProvider(
+        $awb = (new WooOrderAwbProvider(
             new SamedayAwbRepository(),
-        ))->get($order->get_id());
+        ))->get((int) $order->get_id());
 
         $newParcelModal = '';
         $historyModal = '';
         $goToEawb = '';
 
-        if (!empty($shippingMethodSameday)) {
+        if (null !== $awb) {
             $buttons = sprintf(
                 '<div class="address">%s%s</div>',
                 $showAwb,
@@ -130,22 +130,19 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                 $awbHistoryTable
             );
 
-            $awb = (new SamedayAwbRepository())->getAwbForOrderId((int) sanitize_key($order->get_id()));
-            if (null !== $awb && null !== $awb->getAwbNumber()) {
-                $redirectToEawbSite = sprintf(
-                    '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                    SamedayConstants::EAWB_INSTANCES[SamedaySettings::getHostCountry()],
-                    $awb->getAwbNumber()
-                );
+            $redirectToEawbSite = sprintf(
+                '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
+                SamedayConstants::EAWB_INSTANCES[SamedaySettings::getHostCountry()],
+                $awb->getAwbNumber()
+            );
 
-                $goToEawb = sprintf(
-                    '<p class="form-field form-field-wide wc-customer-user">
-                        <a href="%s" target="_blank" class="sameday_admin_button button-samll">%s </a>
-                    </p>',
-                    $redirectToEawbSite,
-                    TranslatorHandler::translate('Sameday eAwb')
-                );
-            }
+            $goToEawb = sprintf(
+                '<p class="form-field form-field-wide wc-customer-user">
+                    <a href="%s" target="_blank" class="sameday_admin_button button-samll">%s </a>
+                </p>',
+                $redirectToEawbSite,
+                TranslatorHandler::translate('Sameday eAwb')
+            );
         }
 
         $awbModal = (new AwbForm(

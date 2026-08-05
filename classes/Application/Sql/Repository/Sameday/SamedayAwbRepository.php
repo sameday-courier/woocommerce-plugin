@@ -8,6 +8,7 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use RuntimeException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
 use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
@@ -46,10 +47,14 @@ class SamedayAwbRepository extends AbstractRepository
      * @param array $awb
      *
      * @return void
+     *
+     * @throws RuntimeException When the AWB row could not be persisted.
      */
     public function saveAwb(array $awb): void
     {
-        $this->dbHandler->insertRow($this->getTableName(), $awb);
+        if (!$this->dbHandler->insertRow($this->getTableName(), $awb)) {
+            throw new RuntimeException('Unable to persist the generated AWB.');
+        }
     }
 
     /**

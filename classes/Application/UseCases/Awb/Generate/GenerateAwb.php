@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use Exception;
 use JsonException;
+use Throwable;
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
@@ -19,8 +20,11 @@ use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbRemover;
+use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
@@ -80,9 +84,7 @@ final class GenerateAwb
 
     /**
      * @return GenerateAwbResponse
-     *
      * @throws JsonException
-     * @throws SamedaySDKException
      */
     public function execute(): GenerateAwbResponse
     {
@@ -208,21 +210,60 @@ final class GenerateAwb
             'awb_cost' => $awb->getCost(),
         ];
 
-        $this->samedayAwbRepository->saveAwb($awbDetails);
-
-        $samedayOrderItemId = null;
-        $shippingLines = $item->getShippingLines();
-        foreach ($shippingLines as $id => $shippingLine) {
-            $samedayOrderItemId = $id;
-            if (null !== $samedayOrderItemId) {
-                break;
-            }
+        try {
+            $this->samedayAwbRepository->saveAwb($awbDetails);
+        } catch (Throwable $exception) {
+            return $this->rollbackRemoteAwb($awb->getAwbNumber());
         }
 
-        $metas = [
-            'service_id' => $service->getSamedayId(),
-            'service_code' => $service->getSamedayCode(),
-        ];
+        $this->applyOrderChanges($item, $service, $awbRecipient);
+
+        return new GenerateAwbResponse(
+            "Awb generated successfully.",
+            ResponseNoticeType::SUCCESS,
+        );
+    }
+
+    /**
+     * @param string $awbNumber
+     *
+     * @return GenerateAwbResponse
+     */
+    private function rollbackRemoteAwb(string $awbNumber): GenerateAwbResponse
+    {
+        try {
+            (new AwbRemover($this->sameday, $this->samedayAwbRepository))->removeRemote($awbNumber);
+
+            $message = 'The AWB was generated but could not be saved. So it has been cancelled, please try again.';
+        } catch (Throwable $rollbackException) {
+            $message = sprintf(
+                'The AWB %s was generated but could not be saved, and the automatic cancellation failed. 
+                Please remove it manually.',
+                $awbNumber
+            );
+        }
+
+        return new GenerateAwbResponse(
+            $message,
+            ResponseNoticeType::ERROR,
+        );
+    }
+
+    /**
+     * @param GenerateAwbItem $item
+     * @param SamedayService $service
+     * @param AwbGenerateRecipientResponse $awbRecipient
+     *
+     * @return void
+     */
+    private function applyOrderChanges(
+        GenerateAwbItem $item,
+        SamedayService $service,
+        AwbGenerateRecipientResponse $awbRecipient
+    ): void {
+        $shippingLines = $item->getShippingLines();
+        $samedayOrderItemId = array_key_first($shippingLines);
+        $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
 
         try {
             $recipient = $awbRecipient->getRecipient();
@@ -239,32 +280,27 @@ final class GenerateAwb
                 $recipient->getPostcode() ?? '',
                 $recipient->getCountry() ?? '',
             );
-        } catch (Exception $exception) {}
+        } catch (Throwable $exception) {}
 
-        foreach ($metas as $key => $value) {
-            $shippingLine->update_meta_data($key, $value);
-        }
-        $shippingLine->save_meta_data();
+        if (null !== $shippingLine) {
+            try {
+                $shippingLine->update_meta_data('service_id', $service->getSamedayId());
+                $shippingLine->update_meta_data('service_code', $service->getSamedayCode());
+                $shippingLine->save_meta_data();
 
-        $shippingLine->set_method_id(SamedayConstants::PLUGIN_NAME);
-        $shippingLine->save();
-
-        try {
-            $this->dbHandler->updateRow(
-                $this->dbHandler->buildTableName('woocommerce_order_items'),
-                ['order_item_name' => $service->getName() ?? $service->getSamedayName() ?? ''],
-                ['order_item_id' => $samedayOrderItemId]
-            );
-        } catch (Exception $exception) {
-            return new GenerateAwbResponse(
-                $exception->getMessage(),
-                ResponseNoticeType::ERROR,
-            );
+                $shippingLine->set_method_id(SamedayConstants::PLUGIN_NAME);
+                $shippingLine->save();
+            } catch (Throwable $exception) {}
         }
 
-        return new GenerateAwbResponse(
-            "Awb generated successfully.",
-            ResponseNoticeType::SUCCESS,
-        );
+        if (null !== $samedayOrderItemId) {
+            try {
+                $this->dbHandler->updateRow(
+                    $this->dbHandler->buildTableName('woocommerce_order_items'),
+                    ['order_item_name' => $service->getName() ?? $service->getSamedayName() ?? ''],
+                    ['order_item_id' => $samedayOrderItemId]
+                );
+            } catch (Throwable $exception) {}
+        }
     }
 }

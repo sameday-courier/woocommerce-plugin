@@ -8,11 +8,11 @@ use Exception;
 use JsonException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbRemover;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 if (!defined('ABSPATH')) {
@@ -43,11 +43,10 @@ final class RemoveAwb
     public function execute(): RemoveAwbResponse
     {
         $awb = $this->removeAwbRequest->getAwb();
-        $sameday = new Sameday(SdkInitiator::init());
+        $awbRemover = new AwbRemover(new Sameday(SdkInitiator::init()), $this->samedayAwbRepository);
 
         try {
-            $sameday->deleteAwb(new SamedayDeleteAwbRequest((string) $awb->getAwbNumber()));
-            $this->samedayAwbRepository->deleteAwbAndParcels($awb);
+            $awbRemover->remove($awb);
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {

@@ -45,9 +45,9 @@ interface DbHandlerInterface
      * @param string $tableName
      * @param array $params
      *
-     * @return void
+     * @return bool True when the row was inserted, false otherwise.
      */
-    public function insertRow(string $tableName, array $params): void;
+    public function insertRow(string $tableName, array $params): bool;
 
     /**
      * @param string $tableName
