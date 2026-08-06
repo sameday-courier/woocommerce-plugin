@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 
 if (!defined('ABSPATH')) {
     exit;

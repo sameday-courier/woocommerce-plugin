@@ -12,7 +12,9 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerReque
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
 if (!defined('ABSPATH')) {
@@ -50,9 +52,11 @@ final class ChangeLockerController extends AbstractController
                 $locker,
                 new WooLockerOrderDataHandler(
                     new WooLockerOrderPostMetaUpdater(
-                        new SamedayLockerRepository(),
                         new WooOrderShippingAddressUpdater(
                             new WooOrderAddressRepository(),
+                            new WooOrderShippingAddressArchive(),
+                            new SamedayLockerRepository(),
+                            new WooSamedayShippingHdAddressParser(),
                         ),
                     ),
                 ),

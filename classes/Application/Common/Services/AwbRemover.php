@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\UseCases\Awb\Common;
+namespace SamedayCourier\Shipping\Application\Common\Services;
 
 use Sameday\Exceptions\SamedayAuthenticationException;
 use Sameday\Exceptions\SamedayAuthorizationException;

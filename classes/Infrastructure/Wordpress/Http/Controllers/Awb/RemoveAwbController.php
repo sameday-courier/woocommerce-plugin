@@ -8,7 +8,7 @@ use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;

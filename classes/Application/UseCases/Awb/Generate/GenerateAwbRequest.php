@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 

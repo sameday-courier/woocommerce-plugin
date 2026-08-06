@@ -14,7 +14,7 @@ use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;

@@ -19,20 +19,19 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbErrorParser;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Common\AwbRemover;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -222,7 +221,7 @@ final class GenerateAwb
             return $this->rollbackRemoteAwb($awb->getAwbNumber());
         }
 
-        $this->applyOrderChanges($item, $service, $awbRecipient);
+        $this->applyOrderChanges($item, $service);
 
         return new GenerateAwbResponse(
             "Awb generated successfully.",
@@ -258,34 +257,25 @@ final class GenerateAwb
     /**
      * @param GenerateAwbItem $item
      * @param SamedayService $service
-     * @param AwbGenerateRecipientResponse $awbRecipient
      *
      * @return void
      */
     private function applyOrderChanges(
         GenerateAwbItem $item,
-        SamedayService $service,
-        AwbGenerateRecipientResponse $awbRecipient
+        SamedayService $service
     ): void {
         $shippingLines = $item->getShippingLines();
         $samedayOrderItemId = array_key_first($shippingLines);
         $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
 
         try {
-            $recipient = $awbRecipient->getRecipient();
-            $this->wooOrderShippingAddressUpdater->update(
-                $item->getOrderId(),
-                $recipient->getAddress1() ?? '',
-                $recipient->getAddress2() ?? '',
-                $recipient->getName() ?? '',
-                $recipient->getCity() ?? '',
-                WooStateCodeResolver::resolveFromName(
-                    $recipient->getCountry() ?? '',
-                    $recipient->getCounty() ?? ''
-                ) ?: ($recipient->getCounty() ?? ''),
-                $recipient->getPostcode() ?? '',
-                $recipient->getCountry() ?? '',
-            );
+            $samedayServiceRules = new SamedayServiceRules($this->samedayServiceRepository);
+
+            if ($samedayServiceRules->isOohDeliveryOption($service)) {
+                $this->wooOrderShippingAddressUpdater->activateOutOfHome($item->getOrderId());
+            } else {
+                $this->wooOrderShippingAddressUpdater->activateHomeDelivery($item->getOrderId());
+            }
         } catch (Throwable $exception) {}
 
         if (null !== $shippingLine) {

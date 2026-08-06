@@ -13,7 +13,9 @@ use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 
@@ -56,9 +58,11 @@ final class PostOrderPlacementAction extends AbstractAction
             try {
                 (new WooLockerOrderDataHandler(
                         new WooLockerOrderPostMetaUpdater(
-                            new SamedayLockerRepository(),
                             new WooOrderShippingAddressUpdater(
                                 new WooOrderAddressRepository(),
+                                new WooOrderShippingAddressArchive(),
+                                new SamedayLockerRepository(),
+                                new WooSamedayShippingHdAddressParser(),
                             ),
                         ),
                     )

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
 use Exception;
-use JsonException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
@@ -61,7 +60,7 @@ final class ChangeLocker
 
         try {
             $this->lockerOrderDataHandler->add($this->orderId, $this->locker);
-        } catch (JsonException|Exception $exception) {
+        } catch (Exception $exception) {
             return new ChangeLockerResponse(
                 $exception->getMessage(),
                 ResponseNoticeType::ERROR,
