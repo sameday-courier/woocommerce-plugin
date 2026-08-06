@@ -130,9 +130,9 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         foreach ($eligibleServices as $service) {
-//            if (!$this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
-//                continue;
-//            }
+            if (false === $this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
+                continue;
+            }
 
             if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
                 $lockerMaxItems = SamedaySettings::getLockerMaxItems();
