@@ -32,13 +32,37 @@ final class WooOrderShippingAddressArchive
             return;
         }
 
+        $this->updateHomeDeliverySnapshot($orderId);
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return void
+     *
+     * @throws JsonException
+     */
+    public function updateHomeDeliverySnapshot(int $orderId): void
+    {
         $order = wc_get_order($orderId);
         if (!$order instanceof WC_Order) {
             return;
         }
 
+        $this->updateHomeDeliverySnapshotFromOrder($order);
+    }
+
+    /**
+     * @param WC_Order $order
+     *
+     * @return void
+     *
+     * @throws JsonException
+     */
+    public function updateHomeDeliverySnapshotFromOrder(WC_Order $order): void
+    {
         PostMetaHandler::update(
-            $orderId,
+            $order->get_id(),
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             json_encode($this->buildSnapshotFromOrder($order), JSON_THROW_ON_ERROR),
             false

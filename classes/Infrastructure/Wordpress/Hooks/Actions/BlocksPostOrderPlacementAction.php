@@ -36,7 +36,7 @@ final class BlocksPostOrderPlacementAction extends AbstractAction
     public function handle(...$args): void
     {
         $order = $args[0] ?? null;
-        if (null === $order || !is_object($order) || !method_exists($order, 'get_id')) {
+        if (!is_object($order) || !method_exists($order, 'get_id')) {
             return;
         }
 

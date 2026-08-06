@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\AddExtraFeesAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\AdminOrderAddressUpdateAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\BlocksPostOrderPlacementAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\PostOrderPlacementAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RefreshShippingMethodsAction;
@@ -24,6 +25,7 @@ class ActionsRegisterService implements RegistryHandlerInterface
 {
     private const ACTIONS = [
         AddExtraFeesAction::class,
+        AdminOrderAddressUpdateAction::class,
         BlocksPostOrderPlacementAction::class,
         PostOrderPlacementAction::class,
         RefreshShippingMethodsAction::class,
