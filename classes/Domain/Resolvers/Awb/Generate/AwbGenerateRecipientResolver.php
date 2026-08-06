@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
@@ -178,5 +177,3 @@ class AwbGenerateRecipientResolver
         );
     }
 }
-
-

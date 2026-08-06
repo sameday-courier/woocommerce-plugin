@@ -32,7 +32,9 @@ final class ChangeLocker
     /**
      * @param ChangeLockerRequest $changeLockerRequest
      */
-    public function __construct(ChangeLockerRequest $changeLockerRequest)
+    public function __construct(
+        ChangeLockerRequest $changeLockerRequest
+    )
     {
         $this->orderId = $changeLockerRequest->orderId;
         $this->locker = $changeLockerRequest->locker;

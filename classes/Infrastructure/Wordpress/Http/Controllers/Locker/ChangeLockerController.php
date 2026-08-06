@@ -5,16 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderPostMetaUpdater;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
 if (!defined('ABSPATH')) {
@@ -50,16 +44,7 @@ final class ChangeLockerController extends AbstractController
             new ChangeLockerRequest(
                 $orderId,
                 $locker,
-                new WooLockerOrderDataHandler(
-                    new WooLockerOrderPostMetaUpdater(
-                        new WooOrderShippingAddressUpdater(
-                            new WooOrderAddressRepository(),
-                            new WooOrderShippingAddressArchive(),
-                            new SamedayLockerRepository(),
-                            new WooSamedayShippingHdAddressParser(),
-                        ),
-                    ),
-                ),
+                new WooLockerOrderDataHandler(),
             )
         ))->execute();
 
