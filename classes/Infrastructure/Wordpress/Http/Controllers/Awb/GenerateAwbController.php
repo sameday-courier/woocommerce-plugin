@@ -19,11 +19,12 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
@@ -56,7 +57,7 @@ final class GenerateAwbController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         $orderId = (int) $inputParams['samedaycourier-order-id'];
-        $orderData = WooShippingHandler::getShippingOrderById($orderId);
+        $orderData = (new WooShippingHandler())->getShippingOrderById($orderId);
 
         if (empty($orderData)) {
             NoticerHandler::addFlashNotice(
@@ -95,6 +96,8 @@ final class GenerateAwbController extends AbstractController
         }
 
         $dbHandler = new DbHandler();
+        $hdAddressParser = new WooSamedayShippingHdAddressParser();
+        $stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler());
         $generateAwb = new GenerateAwb(
             new GenerateAwbRequest(
                 GenerateAwbItem::fromArray($data),
@@ -106,9 +109,12 @@ final class GenerateAwbController extends AbstractController
                     new WooOrderAddressRepository($dbHandler),
                     new WooOrderShippingAddressArchive(),
                     new SamedayLockerRepository($dbHandler),
-                    new WooSamedayShippingHdAddressParser(),
+                    $hdAddressParser,
+                    $stateCodeResolver,
                 ),
                 new AwbErrorParser(),
+                $hdAddressParser,
+                $stateCodeResolver,
             )
         );
 

@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use WooCommerce;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class WooHandler
+final class WooHandler implements WooCommerceHandlerInterface
 {
     /**
      * @var string|null
      */
-    private static string $pluginVersion;
+    private ?string $pluginVersion = null;
 
     /**
      * @return WooCommerce
      */
-    public static function getWC(): WooCommerce
+    public function getWC(): object
     {
         return WC();
     }
@@ -28,15 +29,15 @@ class WooHandler
     /**
      * @return string
      */
-    public static function getPlatformVersion(): string
+    public function getPlatformVersion(): string
     {
-        return self::getWC()->version;
+        return $this->getWC()->version;
     }
 
     /**
      * @return string
      */
-    public static function getPluginMainFile(): string
+    public function getPluginMainFile(): string
     {
         return SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'samedaycourier-shipping.php';
     }
@@ -44,20 +45,20 @@ class WooHandler
     /**
      * @return string
      */
-    public static function getPluginVersion(): string
+    public function getPluginVersion(): string
     {
-        if (null !== self::$pluginVersion) {
-            return self::$pluginVersion;
+        if (null !== $this->pluginVersion) {
+            return $this->pluginVersion;
         }
 
         $pluginData = get_file_data(
-            self::getPluginMainFile(),
+            $this->getPluginMainFile(),
             ['Version' => 'Version'],
             'plugin'
         );
 
-        self::$pluginVersion = $pluginData['Version'] ?? '';
+        $this->pluginVersion = $pluginData['Version'] ?? '';
 
-        return self::$pluginVersion;
+        return $this->pluginVersion;
     }
 }

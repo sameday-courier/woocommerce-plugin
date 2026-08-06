@@ -32,7 +32,11 @@ final class ChangeLockerRequest
      * @param mixed $locker
      * @param LockerOrderDataHandlerInterface $lockerOrderDataHandler
      */
-    public function __construct(int $orderId, $locker, LockerOrderDataHandlerInterface $lockerOrderDataHandler)
+    public function __construct(
+        int $orderId,
+        $locker,
+        LockerOrderDataHandlerInterface $lockerOrderDataHandler
+    )
     {
         $this->orderId = $orderId;
         $this->locker = $locker;

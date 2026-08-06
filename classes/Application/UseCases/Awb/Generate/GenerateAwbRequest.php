@@ -8,7 +8,9 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
@@ -43,9 +45,9 @@ final class GenerateAwbRequest
     public SamedayAwbRepository $samedayAwbRepository;
 
     /**
-     * @var WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater
+     * @var OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
      */
-    public WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater;
+    public OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
 
     /**
      * @var AwbErrorParser $awbErrorParser
@@ -53,13 +55,25 @@ final class GenerateAwbRequest
     public AwbErrorParser $awbErrorParser;
 
     /**
+     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     */
+    public SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+
+    /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
+    public StateCodeResolverInterface $stateCodeResolver;
+
+    /**
      * @param GenerateAwbItem $generateAwbItem
      * @param Sameday $sameday
      * @param DbHandler $dbHandler
      * @param SamedayServiceRepository $samedayServiceRepository
      * @param SamedayAwbRepository $samedayAwbRepository
-     * @param WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater
+     * @param OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
      * @param AwbErrorParser $awbErrorParser
+     * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @param StateCodeResolverInterface $stateCodeResolver
      */
     public function __construct(
         GenerateAwbItem $generateAwbItem,
@@ -67,15 +81,19 @@ final class GenerateAwbRequest
         DbHandler $dbHandler,
         SamedayServiceRepository $samedayServiceRepository,
         SamedayAwbRepository $samedayAwbRepository,
-        WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater,
-        AwbErrorParser $awbErrorParser
+        OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
+        AwbErrorParser $awbErrorParser,
+        SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
+        StateCodeResolverInterface $stateCodeResolver
     ) {
         $this->generateAwbItem = $generateAwbItem;
         $this->sameday = $sameday;
         $this->dbHandler = $dbHandler;
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;
-        $this->wooOrderShippingAddressUpdater = $wooOrderShippingAddressUpdater;
+        $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
         $this->awbErrorParser = $awbErrorParser;
+        $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
+        $this->stateCodeResolver = $stateCodeResolver;
     }
 }

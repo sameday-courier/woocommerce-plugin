@@ -8,13 +8,13 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -38,19 +38,27 @@ class AwbGenerateRecipientResolver
     private SamedayServiceRules $samedayServiceRules;
 
     /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
+    private StateCodeResolverInterface $stateCodeResolver;
+
+    /**
      * @param GenerateAwbItem $awbItem
      * @param SamedayServiceRules $samedayServiceRules
      * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @param StateCodeResolverInterface $stateCodeResolver
      */
     public function __construct(
         GenerateAwbItem $awbItem,
         SamedayServiceRules $samedayServiceRules,
-        SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+        SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
+        StateCodeResolverInterface $stateCodeResolver
     )
     {
         $this->awbItem = $awbItem;
         $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
+        $this->stateCodeResolver = $stateCodeResolver;
     }
 
     /**
@@ -64,7 +72,7 @@ class AwbGenerateRecipientResolver
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
         $country = $shipping->getCountry() ?? $billing->getCountry();
-        $county = WooStateCodeResolver::resolveNameFromCode($country, $state) ?? '';
+        $county = $this->stateCodeResolver->resolveNameFromCode($country, $state) ?? '';
         $firstName = $shipping->getFirstName() ?? $billing->getFirstName();
         $lastName = $shipping->getLastName() ?? $billing->getLastName();
         $address_1 = $shipping->getAddress1() ?? $billing->getAddress1();
@@ -125,7 +133,7 @@ class AwbGenerateRecipientResolver
 
         if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
-            $county = WooStateCodeResolver::resolveNameFromCode(
+            $county = $this->stateCodeResolver->resolveNameFromCode(
                 $post_meta_samedaycourier_address_hd['country'],
                 $post_meta_samedaycourier_address_hd['state']
             );

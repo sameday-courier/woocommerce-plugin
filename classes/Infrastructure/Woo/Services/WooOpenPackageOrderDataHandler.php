@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
@@ -12,11 +14,29 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooOpenPackageOrderDataHandler
+final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandlerInterface
 {
-    public static function saveFromSession(int $orderId): void
+    /**
+     * @var SessionHandlerInterface $sessionHandler
+     */
+    private SessionHandlerInterface $sessionHandler;
+
+    /**
+     * @param SessionHandlerInterface|null $sessionHandler
+     */
+    public function __construct(?SessionHandlerInterface $sessionHandler = null)
     {
-        if ('yes' !== WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
+        $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return void
+     */
+    public function saveFromSession(int $orderId): void
+    {
+        if ('yes' !== $this->sessionHandler->get(SamedaySessionKeys::OPEN_PACKAGE)) {
             return;
         }
 
@@ -27,10 +47,15 @@ final class WooOpenPackageOrderDataHandler
             true
         );
 
-        WooSessionHandler::set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
+        $this->sessionHandler->set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
     }
 
-    public static function isEnabled(int $orderId): bool
+    /**
+     * @param int $orderId
+     *
+     * @return bool
+     */
+    public function isEnabled(int $orderId): bool
     {
         return '' !== PostMetaHandler::get(
             $orderId,

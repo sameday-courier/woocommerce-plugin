@@ -298,7 +298,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      */
     private static function getStyleUrl(string $relativePath): string
     {
-        return plugins_url($relativePath, WooHandler::getPluginMainFile());
+        return plugins_url($relativePath, (new WooHandler())->getPluginMainFile());
     }
 
     /**
@@ -314,6 +314,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
             return (string) filemtime($absolutePath);
         }
 
-        return WooHandler::getPluginVersion();
+        return (new WooHandler())->getPluginVersion();
     }
 }

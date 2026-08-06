@@ -32,7 +32,7 @@ final class StorePaymentMethodInSessionController extends AbstractNoPrivControll
             return;
         }
 
-        WooSessionHandler::set(
+        (new WooSessionHandler())->set(
             SamedaySessionKeys::PAYMENT_METHOD,
             $paymentMethod
         );

@@ -34,6 +34,8 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
             return;
         }
 
+        $sessionHandler = new WooSessionHandler();
+
         if (is_array($locker)) {
             try {
                 $locker = InputSanitizer::sanitizeData($locker);
@@ -41,11 +43,11 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
                 return;
             }
 
-            WooSessionHandler::set(SamedaySessionKeys::LOCKER, $locker);
+            $sessionHandler->set(SamedaySessionKeys::LOCKER, $locker);
 
             return;
         }
 
-        WooSessionHandler::set(SamedaySessionKeys::LOCKER, (int) $locker);
+        $sessionHandler->set(SamedaySessionKeys::LOCKER, (int) $locker);
     }
 }

@@ -60,11 +60,14 @@ final class SamedaySettings
      */
     public static function getPathToSettingsPage(): string
     {
-        return UrlBuilder::build('admin.php', [
-            'page' => 'wc-settings',
-            'tab' => 'shipping',
-            'section' => 'samedaycourier',
-        ]);
+        return UrlBuilder::build(
+            'admin.php',
+            [
+                'page' => 'wc-settings',
+                'tab' => 'shipping',
+                'section' => 'samedaycourier',
+            ]
+        );
     }
 
     /**

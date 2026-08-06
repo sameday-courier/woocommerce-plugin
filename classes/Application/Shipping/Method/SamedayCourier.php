@@ -36,9 +36,14 @@ use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepo
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
+use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
+use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
@@ -68,6 +73,26 @@ final class SamedayCourier extends WC_Shipping_Method
     private SamedayServiceRules $samedayServiceRules;
 
     /**
+     * @var StateCodeResolverInterface
+     */
+    private StateCodeResolverInterface $stateCodeResolver;
+
+    /**
+     * @var WooCommerceHandlerInterface
+     */
+    private WooCommerceHandlerInterface $wooCommerceHandler;
+
+    /**
+     * @var SessionHandlerInterface
+     */
+    private SessionHandlerInterface $sessionHandler;
+
+    /**
+     * @var WeightConverterInterface
+     */
+    private WeightConverterInterface $weightConverter;
+
+    /**
      * SamedayCourier_Shipping_Method constructor.
      *
      * @param int $instance_id
@@ -91,6 +116,10 @@ final class SamedayCourier extends WC_Shipping_Method
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
         $this->samedayServiceRepository = new SamedayServiceRepository();
         $this->samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
+        $this->wooCommerceHandler = new WooHandler();
+        $this->sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
+        $this->weightConverter = new WooWeightHandler();
+        $this->stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler($this->wooCommerceHandler));
 
         $this->init();
     }
@@ -118,13 +147,13 @@ final class SamedayCourier extends WC_Shipping_Method
         $useEstimatedCost = SamedaySettings::getEstimatedCost();
         $estimatedCostExtraFee = SamedaySettings::getEstimatedCostExtraFee();
         $useLockerMap = SamedaySettings::isLockersMapEnabled();
-        $cartValue = WooHandler::getWC()->cart->get_subtotal();
+        $cartValue = $this->wooCommerceHandler->getWC()->cart->get_subtotal();
 
         if (true === SamedaySettings::isDiscountFreeShippingEnabled()) {
-            $cartValue = WooHandler::getWC()->cart->get_cart_contents_total();
+            $cartValue = $this->wooCommerceHandler->getWC()->cart->get_cart_contents_total();
         }
 
-        $stateName = WooStateCodeResolver::resolveNameFromCode(
+        $stateName = $this->stateCodeResolver->resolveNameFromCode(
             $package['destination']['country'],
             $package['destination']['state']
         );
@@ -137,7 +166,7 @@ final class SamedayCourier extends WC_Shipping_Method
             if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
                 $lockerMaxItems = SamedaySettings::getLockerMaxItems();
 
-                if (count(WooHandler::getWC()->cart->get_cart()) > $lockerMaxItems) {
+                if (count($this->wooCommerceHandler->getWC()->cart->get_cart()) > $lockerMaxItems) {
                     continue;
                 }
             }
@@ -255,8 +284,10 @@ final class SamedayCourier extends WC_Shipping_Method
     private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
-        $weight = WooWeightHandler::convert(WooHandler::getWC()->cart->get_cart_contents_weight()) ?: .1;
-        $state = WooStateCodeResolver::resolveNameFromCode(
+        $weight = $this->weightConverter->convert(
+            $this->wooCommerceHandler->getWC()->cart->get_cart_contents_weight()
+        ) ?: .1;
+        $state = $this->stateCodeResolver->resolveNameFromCode(
             $address['country'],
             $address['state']
         );
@@ -265,7 +296,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int) $serviceId);
         $serviceTaxIds = array();
-        if ('yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)) {
+        if ('yes' === $this->sessionHandler->get(SamedaySessionKeys::OPEN_PACKAGE)) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === PackageType::PARCEL
@@ -277,8 +308,8 @@ final class SamedayCourier extends WC_Shipping_Method
         }
 
         // Check if the client has to pay anything as repayment value
-        $repaymentAmount = WooHandler::getWC()->cart->subtotal;
-        $paymentMethod = WooSessionHandler::get(SamedaySessionKeys::PAYMENT_METHOD);
+        $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
+        $paymentMethod = $this->sessionHandler->get(SamedaySessionKeys::PAYMENT_METHOD);
         if (isset($paymentMethod) && ($paymentMethod !== SamedayConstants::CASH_ON_DELIVERY)) {
             $repaymentAmount = 0;
         }

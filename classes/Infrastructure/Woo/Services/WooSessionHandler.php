@@ -4,27 +4,47 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooSessionHandler
+final class WooSessionHandler implements SessionHandlerInterface
 {
     /**
+     * @var WooCommerceHandlerInterface $wooCommerceHandler
+     */
+    private WooCommerceHandlerInterface $wooCommerceHandler;
+
+    /**
+     * @param WooCommerceHandlerInterface|null $wooCommerceHandler
+     */
+    public function __construct(?WooCommerceHandlerInterface $wooCommerceHandler = null)
+    {
+        $this->wooCommerceHandler = $wooCommerceHandler ?? new WooHandler();
+    }
+
+    /**
+     * @param string $key
      * @param mixed $default
      *
      * @return mixed
      */
-    public static function get(string $key, $default = null)
+    public function get(string $key, $default = null)
     {
-        return WooHandler::getWC()->session->get($key, $default);
+        return $this->wooCommerceHandler->getWC()->session->get($key, $default);
     }
 
     /**
+     * @param string $key
      * @param mixed $value
+     *
+     * @return void
      */
-    public static function set(string $key, $value): void
+    public function set(string $key, $value): void
     {
-        WooHandler::getWC()->session->set($key, $value);
+        $this->wooCommerceHandler->getWC()->session->set($key, $value);
     }
 }

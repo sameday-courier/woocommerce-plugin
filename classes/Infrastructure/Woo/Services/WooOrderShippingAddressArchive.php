@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use JsonException;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use WC_Order;
@@ -13,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooOrderShippingAddressArchive
+final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiveInterface
 {
     /**
      * @param int $orderId

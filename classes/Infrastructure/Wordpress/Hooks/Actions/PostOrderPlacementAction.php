@@ -52,12 +52,12 @@ final class PostOrderPlacementAction extends AbstractAction
             try {
                 (new WooLockerOrderDataHandler())->add(
                     $orderId,
-                    WooSessionHandler::get(SamedaySessionKeys::LOCKER)
+                    (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER)
                 );
             } catch (Exception $exception) {}
         }
 
-        WooOpenPackageOrderDataHandler::saveFromSession($orderId);
+        (new WooOpenPackageOrderDataHandler())->saveFromSession($orderId);
     }
 
     /**
@@ -66,7 +66,7 @@ final class PostOrderPlacementAction extends AbstractAction
     private function isOutOfHomeDelivery(): bool
     {
         return (new SamedayServiceRules(new SamedayServiceRepository()))
-            ->isOohDeliveryOptionByCode(WooShippingMethodProvider::getChosenServiceCode());
+            ->isOohDeliveryOptionByCode((new WooShippingMethodProvider())->getChosenServiceCode());
     }
 }
 

@@ -4,34 +4,42 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooCountriesHandler
+final class WooCountriesHandler implements CountriesHandlerInterface
 {
     /**
-     * @return array<string, string>
+     * @var WooCommerceHandlerInterface $wooCommerceHandler
      */
-    public static function getShippingCountries(): array
+    private WooCommerceHandlerInterface $wooCommerceHandler;
+
+    /**
+     * @param WooCommerceHandlerInterface|null $wooCommerceHandler
+     */
+    public function __construct(?WooCommerceHandlerInterface $wooCommerceHandler = null)
     {
-        return WooHandler::getWC()->countries->get_shipping_countries();
+        $this->wooCommerceHandler = $wooCommerceHandler ?? new WooHandler();
     }
 
     /**
-     * @return array<string, array<string, string>>
+     * @return array<string, string>
      */
-    public static function getAllStates(): array
+    public function getShippingCountries(): array
     {
-        return WooHandler::getWC()->countries->get_states();
+        return $this->wooCommerceHandler->getWC()->countries->get_shipping_countries();
     }
 
     /**
      * @return array<string, string>|null
      */
-    public static function getStatesForCountry(string $countryCode): ?array
+    public function getStatesForCountry(string $countryCode): ?array
     {
-        $states = self::getAllStates()[$countryCode] ?? null;
+        $states = $this->getAllStates()[$countryCode] ?? null;
 
         return is_array($states) ? $states : null;
     }
@@ -42,14 +50,22 @@ final class WooCountriesHandler
      *
      * @return string
      */
-    public static function getStateName(string $countryCode, string $stateCode): string
+    public function getStateName(string $countryCode, string $stateCode): string
     {
-        $states = self::getStatesForCountry($countryCode);
+        $states = $this->getStatesForCountry($countryCode);
 
         if (null === $states) {
             return '';
         }
 
         return ($states[$stateCode] ?? '');
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function getAllStates(): array
+    {
+        return $this->wooCommerceHandler->getWC()->countries->get_states();
     }
 }

@@ -34,14 +34,14 @@ final class ValidateCheckoutLockerAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        $serviceCode = WooShippingMethodProvider::getChosenServiceCode();
+        $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
         if ('' === $serviceCode) {
             return;
         }
 
         $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository());
         $isOohDelivery = $samedayServiceRules->isOohDeliveryOptionByCode($serviceCode);
-        $isOohButUserNotSelectLocker = $isOohDelivery && (null === WooSessionHandler::get(SamedaySessionKeys::LOCKER));
+        $isOohButUserNotSelectLocker = $isOohDelivery && (null === (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER));
 
         if ($isOohButUserNotSelectLocker) {
             wc_add_notice(TranslatorHandler::translate('Please choose your EasyBox Locker !'), 'error');

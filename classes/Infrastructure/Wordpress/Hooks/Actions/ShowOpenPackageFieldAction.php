@@ -40,7 +40,9 @@ final class ShowOpenPackageFieldAction extends AbstractAction
         }
 
         $samedayServiceRepository = new SamedayServiceRepository();
-        $service = $samedayServiceRepository->getServiceSamedayByCode(WooShippingMethodProvider::getChosenServiceCode());
+        $service = $samedayServiceRepository->getServiceSamedayByCode(
+            (new WooShippingMethodProvider())->getChosenServiceCode()
+        );
 
         /** @var OptionalTaxObject[] $optionalTaxes */
         $optionalTaxes = [];
@@ -92,7 +94,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'required' => false,
                 'return' => true,
             ],
-            'yes' === WooSessionHandler::get(SamedaySessionKeys::OPEN_PACKAGE)
+            'yes' === (new WooSessionHandler())->get(SamedaySessionKeys::OPEN_PACKAGE)
         );
     }
 

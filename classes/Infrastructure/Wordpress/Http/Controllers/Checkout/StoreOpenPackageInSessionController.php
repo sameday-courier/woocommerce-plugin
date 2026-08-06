@@ -32,7 +32,7 @@ final class StoreOpenPackageInSessionController extends AbstractNoPrivController
             return;
         }
 
-        WooSessionHandler::set(
+        (new WooSessionHandler())->set(
             SamedaySessionKeys::OPEN_PACKAGE,
             $openPackage
         );

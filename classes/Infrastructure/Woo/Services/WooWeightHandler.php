@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooWeightHandler
+final class WooWeightHandler implements WeightConverterInterface
 {
     private const KEY = 'woocommerce_weight_unit';
 
@@ -18,9 +19,10 @@ final class WooWeightHandler
 
     /**
      * @param float $weight
+     *
      * @return float
      */
-    public static function convert(float $weight): float
+    public function convert(float $weight): float
     {
         $weightUnit = OptionsHandler::getOption(self::KEY, self::DEFAULT_UNIT);
 

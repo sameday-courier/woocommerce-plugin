@@ -6,12 +6,13 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooOrderAwbProvider
+final class WooOrderAwbProvider implements OrderAwbProviderInterface
 {
     /**
      * @var SamedayAwbRepository $samedayAwbRepository

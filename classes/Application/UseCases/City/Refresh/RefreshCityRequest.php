@@ -6,9 +6,9 @@ namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use stdClass;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -37,21 +37,29 @@ final class RefreshCityRequest
     public DbHandler $dbHandler;
 
     /**
-     * @param CacheHandler $cacheHandler
-     * @param DbHandler $dbHandler
+     * @var CountriesHandlerInterface $countriesHandler
+     */
+    public CountriesHandlerInterface $countriesHandler;
+
+    /**
      * @param SchemaHandler $schemaHandler
+     * @param DbHandler $dbHandler
      * @param SamedayCityRepository $samedayCityRepository
+     * @param CacheHandler $cacheHandler
+     * @param CountriesHandlerInterface $countriesHandler
      */
     public function __construct(
         SchemaHandler $schemaHandler,
         DbHandler $dbHandler,
         SamedayCityRepository $samedayCityRepository,
-        CacheHandler $cacheHandler
+        CacheHandler $cacheHandler,
+        CountriesHandlerInterface $countriesHandler
     )
     {
         $this->samedayCityRepository = $samedayCityRepository;
         $this->cacheHandler = $cacheHandler;
         $this->schemaHandler = $schemaHandler;
         $this->dbHandler = $dbHandler;
+        $this->countriesHandler = $countriesHandler;
     }
 }

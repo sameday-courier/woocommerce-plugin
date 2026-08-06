@@ -47,12 +47,15 @@ final class SdkInitiator
             throw new SamedaySDKException("Please provide a valid credentials.");
         }
 
+        $wooHandler = new WooHandler();
+        $platformVersion = $wooHandler->getPlatformVersion();
+
 		return new SamedayClient(
 			$username,
 			$password,
 			$apiUrl,
-			'WOOCOMMERCE ' . WooHandler::getPlatformVersion(),
-			WooHandler::getPlatformVersion(),
+			'WOOCOMMERCE ' . $platformVersion,
+			$platformVersion,
 			'curl',
 			new PersistenceHandler()
 		);

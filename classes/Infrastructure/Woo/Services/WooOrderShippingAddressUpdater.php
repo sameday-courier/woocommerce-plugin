@@ -8,7 +8,10 @@ use Exception;
 use JsonException;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
@@ -20,7 +23,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooOrderShippingAddressUpdater
+final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdaterInterface
 {
     /**
      * @var WooOrderAddressRepository $wooOrderAddressRepository
@@ -28,9 +31,9 @@ final class WooOrderShippingAddressUpdater
     private WooOrderAddressRepository $wooOrderAddressRepository;
 
     /**
-     * @var WooOrderShippingAddressArchive $wooOrderShippingAddressArchive
+     * @var OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive
      */
-    private WooOrderShippingAddressArchive $wooOrderShippingAddressArchive;
+    private OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive;
 
     /**
      * @var SamedayLockerRepository $samedayLockerRepository
@@ -43,21 +46,29 @@ final class WooOrderShippingAddressUpdater
     private SamedayShippingHdAddressParserInterface $hdAddressParser;
 
     /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
+    private StateCodeResolverInterface $stateCodeResolver;
+
+    /**
      * @param WooOrderAddressRepository $wooOrderAddressRepository
-     * @param WooOrderShippingAddressArchive $wooOrderShippingAddressArchive
+     * @param OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive
      * @param SamedayLockerRepository $samedayLockerRepository
      * @param SamedayShippingHdAddressParserInterface $hdAddressParser
+     * @param StateCodeResolverInterface $stateCodeResolver
      */
     public function __construct(
         WooOrderAddressRepository $wooOrderAddressRepository,
-        WooOrderShippingAddressArchive $wooOrderShippingAddressArchive,
+        OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive,
         SamedayLockerRepository $samedayLockerRepository,
-        SamedayShippingHdAddressParserInterface $hdAddressParser
+        SamedayShippingHdAddressParserInterface $hdAddressParser,
+        StateCodeResolverInterface $stateCodeResolver
     ) {
         $this->wooOrderAddressRepository = $wooOrderAddressRepository;
         $this->wooOrderShippingAddressArchive = $wooOrderShippingAddressArchive;
         $this->samedayLockerRepository = $samedayLockerRepository;
         $this->hdAddressParser = $hdAddressParser;
+        $this->stateCodeResolver = $stateCodeResolver;
     }
 
     /**
@@ -189,7 +200,7 @@ final class WooOrderShippingAddressUpdater
             $country = $order->get_shipping_country() ?: $order->get_billing_country() ?: $hostCountry;
         }
 
-        $state = WooStateCodeResolver::resolveFromName(
+        $state = $this->stateCodeResolver->resolveFromName(
             $country,
             $lockerFields['county']
         );

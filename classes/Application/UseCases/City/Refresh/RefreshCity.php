@@ -7,9 +7,9 @@ namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
@@ -40,6 +40,11 @@ final class RefreshCity
     private SamedayCityRepository $samedayCityRepository;
 
     /**
+     * @var CountriesHandlerInterface $countriesHandler
+     */
+    private CountriesHandlerInterface $countriesHandler;
+
+    /**
      * @param RefreshCityRequest $refreshCitiesRequest
      */
     public function __construct(RefreshCityRequest $refreshCitiesRequest)
@@ -48,6 +53,7 @@ final class RefreshCity
         $this->dbHandler = $refreshCitiesRequest->dbHandler;
         $this->schemaHandler = $refreshCitiesRequest->schemaHandler;
         $this->samedayCityRepository = $refreshCitiesRequest->samedayCityRepository;
+        $this->countriesHandler = $refreshCitiesRequest->countriesHandler;
     }
 
     /**
@@ -71,7 +77,7 @@ final class RefreshCity
         $this->samedayCityRepository->truncate();
 
         foreach ($cities as $samedayCity) {
-            if (array_key_exists($samedayCity->country_code, WooCountriesHandler::getShippingCountries())) {
+            if (array_key_exists($samedayCity->country_code, $this->countriesHandler->getShippingCountries())) {
                 $this->samedayCityRepository->addCity($samedayCity);
             }
         }

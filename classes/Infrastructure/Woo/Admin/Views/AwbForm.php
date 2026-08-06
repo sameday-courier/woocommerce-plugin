@@ -141,7 +141,7 @@ class AwbForm
             $repayment = 0;
         }
 
-        $openPackage = WooOpenPackageOrderDataHandler::isEnabled($order->get_id()) ? 'checked' : '';
+        $openPackage = (new WooOpenPackageOrderDataHandler())->isEnabled($order->get_id()) ? 'checked' : '';
 
         $lockerName = null;
         $lockerAddress = null;

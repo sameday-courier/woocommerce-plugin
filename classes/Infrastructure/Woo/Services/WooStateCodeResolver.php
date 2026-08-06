@@ -4,32 +4,59 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class WooStateCodeResolver
+final class WooStateCodeResolver implements StateCodeResolverInterface
 {
-    public static function resolveNameFromCode(?string $countryCode, ?string $stateCode): ?string
+    /**
+     * @var CountriesHandlerInterface $countriesHandler
+     */
+    private CountriesHandlerInterface $countriesHandler;
+
+    /**
+     * @param CountriesHandlerInterface $countriesHandler
+     */
+    public function __construct(CountriesHandlerInterface $countriesHandler)
+    {
+        $this->countriesHandler = $countriesHandler;
+    }
+
+    /**
+     * @param string|null $countryCode
+     * @param string|null $stateCode
+     *
+     * @return string|null
+     */
+    public function resolveNameFromCode(?string $countryCode, ?string $stateCode): ?string
     {
         if (null === $countryCode || null === $stateCode || '' === $countryCode || '' === $stateCode) {
             return null;
         }
 
-        $name = html_entity_decode(WooCountriesHandler::getStateName($countryCode, $stateCode));
+        $name = html_entity_decode($this->countriesHandler->getStateName($countryCode, $stateCode));
 
         return '' === $name ? null : $name;
     }
 
-    public static function resolveFromName(string $countryCode, string $stateName): string
+    /**
+     * @param string $countryCode
+     * @param string $stateName
+     *
+     * @return string
+     */
+    public function resolveFromName(string $countryCode, string $stateName): string
     {
         if ('' === $countryCode || '' === $stateName) {
             return '';
         }
 
-        $states = WooCountriesHandler::getStatesForCountry($countryCode);
+        $states = $this->countriesHandler->getStatesForCountry($countryCode);
 
         if (null === $states) {
             return '';

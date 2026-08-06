@@ -27,11 +27,12 @@ use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxR
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -65,14 +66,24 @@ final class GenerateAwb
     private DbHandler $dbHandler;
 
     /**
-     * @var WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater
+     * @var OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
      */
-    private WooOrderShippingAddressUpdater $wooOrderShippingAddressUpdater;
+    private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
 
     /**
      * @var AwbErrorParser $awbErrorParser
      */
     private AwbErrorParser $awbErrorParser;
+
+    /**
+     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     */
+    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+
+    /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
+    private StateCodeResolverInterface $stateCodeResolver;
 
     public function __construct(
         GenerateAwbRequest $generateAwbRequest
@@ -83,8 +94,10 @@ final class GenerateAwb
         $this->dbHandler = $generateAwbRequest->dbHandler;
         $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
         $this->samedayAwbRepository = $generateAwbRequest->samedayAwbRepository;
-        $this->wooOrderShippingAddressUpdater = $generateAwbRequest->wooOrderShippingAddressUpdater;
+        $this->orderShippingAddressUpdater = $generateAwbRequest->orderShippingAddressUpdater;
         $this->awbErrorParser = $generateAwbRequest->awbErrorParser;
+        $this->samedayShippingHdAddressParser = $generateAwbRequest->samedayShippingHdAddressParser;
+        $this->stateCodeResolver = $generateAwbRequest->stateCodeResolver;
     }
 
     /**
@@ -121,7 +134,8 @@ final class GenerateAwb
         $awbRecipientResolver = new AwbGenerateRecipientResolver(
             $item,
             new SamedayServiceRules($this->samedayServiceRepository),
-            new WooSamedayShippingHdAddressParser(),
+            $this->samedayShippingHdAddressParser,
+            $this->stateCodeResolver,
         );
         $awbRecipient = $awbRecipientResolver->resolve();
 
@@ -272,9 +286,9 @@ final class GenerateAwb
             $samedayServiceRules = new SamedayServiceRules($this->samedayServiceRepository);
 
             if ($samedayServiceRules->isOohDeliveryOption($service)) {
-                $this->wooOrderShippingAddressUpdater->activateOutOfHome($item->getOrderId());
+                $this->orderShippingAddressUpdater->activateOutOfHome($item->getOrderId());
             } else {
-                $this->wooOrderShippingAddressUpdater->activateHomeDelivery($item->getOrderId());
+                $this->orderShippingAddressUpdater->activateHomeDelivery($item->getOrderId());
             }
         } catch (Throwable $exception) {}
 

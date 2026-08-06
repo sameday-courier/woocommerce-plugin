@@ -37,7 +37,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        $serviceCode = WooShippingMethodProvider::getChosenServiceCode();
+        $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
         if (!(new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode)
             || !is_checkout()
         ) {
@@ -52,7 +52,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function resolveShipTo(): ?string
     {
-        $lockerSession = WooSessionHandler::get(SamedaySessionKeys::LOCKER);
+        $lockerSession = (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER);
         if (null === $lockerSession) {
             return null;
         }
@@ -169,7 +169,7 @@ final class ShowLockerFieldAction extends AbstractAction
             foreach ($cityLockers as $locker) {
                 $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
                 $isSelected = '';
-                if ((int) WooSessionHandler::get(SamedaySessionKeys::LOCKER) === (int) $locker->getLockerId()) {
+                if ((int) (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER) === (int) $locker->getLockerId()) {
                     $isSelected = "selected='selected'";
                 }
                 $options .= sprintf(

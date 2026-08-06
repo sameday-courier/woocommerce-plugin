@@ -23,6 +23,7 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -123,6 +124,7 @@ final class AllImportController extends AbstractController
                     $dbHandler,
                     new SamedayCityRepository($dbHandler),
                     new CacheHandler(),
+                    new WooCountriesHandler(),
                 )
             ))->execute(),
             'Failed to import cities.'

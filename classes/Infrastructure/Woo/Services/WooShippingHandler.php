@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\Ports\ShippingOrderProviderInterface;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class WooShippingHandler
+final class WooShippingHandler implements ShippingOrderProviderInterface
 {
     /**
      * @param int $id
      *
      * @return array|null
      */
-    public static function getShippingOrderById(int $id): ?array
+    public function getShippingOrderById(int $id): ?array
     {
         $order = wc_get_order($id);
 

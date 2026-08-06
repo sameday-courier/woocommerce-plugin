@@ -66,7 +66,7 @@ final class AddExtraFeesAction extends AbstractAction
             return false;
         }
 
-        $chosenDeliveryMethod = WooSessionHandler::get(SamedaySessionKeys::CHOSEN_PAYMENT_METHOD);
+        $chosenDeliveryMethod = (new WooSessionHandler())->get(SamedaySessionKeys::CHOSEN_PAYMENT_METHOD);
         $isCod = SamedayConstants::CASH_ON_DELIVERY;
 
         return $chosenDeliveryMethod === $isCod;
