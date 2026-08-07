@@ -63,8 +63,11 @@ final class RefreshLocker
                 $locker = $this->samedayLockerRepository->getLockerSameday($lockerObject->getId());
                 if (null === $locker) {
                     $this->samedayLockerRepository->addLocker($lockerObject);
-                } else {
-                    $this->samedayLockerRepository->updateLocker($lockerObject, $locker->getId());
+                } elseif (!$this->samedayLockerRepository->updateLocker($lockerObject, $locker->getId())) {
+                    return new RefreshLockerResponse(
+                        'Unable to update locker',
+                        ResponseNoticeType::ERROR,
+                    );
                 }
 
                 $remoteLockers[] = $lockerObject->getId();

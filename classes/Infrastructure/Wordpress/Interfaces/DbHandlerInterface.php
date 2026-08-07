@@ -54,9 +54,9 @@ interface DbHandlerInterface
      * @param array $row
      * @param array $where [id => $id]
      *
-     * @return void
+     * @return bool True when the update query succeeded, false otherwise.
      */
-    public function updateRow(string $tableName, array $row, array $where): void;
+    public function updateRow(string $tableName, array $row, array $where): bool;
 
     /**
      * @param string $tableName

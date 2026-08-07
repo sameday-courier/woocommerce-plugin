@@ -64,8 +64,11 @@ final class RefreshService
                 $service = $this->samedayServiceRepository->getServiceSameday($serviceObject->getId());
                 if (null === $service) {
                     $this->samedayServiceRepository->addService($serviceObject);
-                } else {
-                    $this->samedayServiceRepository->updateServiceCode($serviceObject, $service->getId());
+                } elseif (!$this->samedayServiceRepository->updateServiceCode($serviceObject, $service->getId())) {
+                    return new RefreshServiceResponse(
+                        'Unable to update service',
+                        ResponseNoticeType::ERROR,
+                    );
                 }
 
                 $remoteServices[] = $serviceObject->getId();
@@ -96,12 +99,17 @@ final class RefreshService
             SamedayConstants::PUDO_CODE
         );
 
-        if (null !== $lnService && null !== $pudoService) {
-            $this->samedayServiceRepository->updateService(
+        if (null !== $lnService && null !== $pudoService
+            && !$this->samedayServiceRepository->updateService(
                 [
                     'id' => $pudoService->getId(),
                     'status' => $lnService->getStatus(),
                 ]
+            )
+        ) {
+            return new RefreshServiceResponse(
+                'Unable to sync PUDO status',
+                ResponseNoticeType::ERROR,
             );
         }
 

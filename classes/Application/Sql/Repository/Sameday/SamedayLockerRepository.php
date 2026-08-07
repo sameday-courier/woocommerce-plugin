@@ -115,11 +115,11 @@ class SamedayLockerRepository extends AbstractRepository
      * @param LockerObject $lockerObject
      * @param int $id
      *
-     * @return void
+     * @return bool
      */
-    public function updateLocker(LockerObject $lockerObject, int $id): void
+    public function updateLocker(LockerObject $lockerObject, int $id): bool
     {
-        $this->dbHandler->updateRow(
+        return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
                 'locker_id' => $lockerObject->getId(),

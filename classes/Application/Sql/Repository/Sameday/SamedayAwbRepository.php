@@ -80,11 +80,11 @@ class SamedayAwbRepository extends AbstractRepository
      * @param int $orderId
      * @param string $parcels Serialized parcels data
      *
-     * @return void
+     * @return bool
      */
-    public function updateParcels(int $orderId, string $parcels): void
+    public function updateParcels(int $orderId, string $parcels): bool
     {
-        $this->dbHandler->updateRow(
+        return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
                 'parcels' => $parcels

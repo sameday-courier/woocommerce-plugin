@@ -31,7 +31,7 @@ final class EditService
     public function __construct(EditServiceRequest $editServiceRequest)
     {
         $this->editServiceRequest = $editServiceRequest;
-        $this->samedayServiceRepository = new SamedayServiceRepository();
+        $this->samedayServiceRepository = $editServiceRequest->samedayServiceRepository;
     }
 
     /**
@@ -102,19 +102,31 @@ final class EditService
             'status' => (int) $postFields['status']['value'],
         ];
 
-        $this->samedayServiceRepository->updateService($service);
+        if (!$this->samedayServiceRepository->updateService($service)) {
+            return new EditServiceResponse(
+                $serviceId,
+                'Unable to update service',
+                ResponseNoticeType::ERROR,
+            );
+        }
 
         if ($currentService->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
             $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
                 SamedayConstants::PUDO_CODE
             );
 
-            if (null !== $pudoService) {
-                $this->samedayServiceRepository->updateService(
+            if (null !== $pudoService
+                && !$this->samedayServiceRepository->updateService(
                     [
                         'id' => $pudoService->getId(),
                         'status' => $service['status'],
                     ]
+                )
+            ) {
+                return new EditServiceResponse(
+                    $serviceId,
+                    'Service updated, but unable to sync PUDO status',
+                    ResponseNoticeType::ERROR,
                 );
             }
         }

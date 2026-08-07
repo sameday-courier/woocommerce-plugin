@@ -179,14 +179,14 @@ class SamedayServiceRepository extends AbstractRepository
     /**
      * @param array $service
      *
-     * @return void
+     * @return bool
      */
-    public function updateService(array $service): void
+    public function updateService(array $service): bool
     {
         $id = $service['id'];
         unset($service['id']);
 
-        $this->dbHandler->updateRow(
+        return $this->dbHandler->updateRow(
             $this->getTableName(),
             $service,
             [
@@ -199,16 +199,16 @@ class SamedayServiceRepository extends AbstractRepository
      * @param ServiceObject $serviceObject
      * @param int $id
      *
-     * @return void
+     * @return bool
      */
-    public function updateServiceCode(ServiceObject $serviceObject, int $id): void
+    public function updateServiceCode(ServiceObject $serviceObject, int $id): bool
     {
         $serviceName = $serviceObject->getName();
         if ($serviceObject->getCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
             $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
         }
 
-        $this->dbHandler->updateRow(
+        return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
                 'sameday_code' => $serviceObject->getCode(),

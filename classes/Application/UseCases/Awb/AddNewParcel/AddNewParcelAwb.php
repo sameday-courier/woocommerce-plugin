@@ -119,7 +119,13 @@ final class AddNewParcelAwb
             ]
         );
 
-        $this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels));
+        if (!$this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels))) {
+            return new AddNewParcelAwbResponse(
+                $this->addNewParcelAwbRequest->getOrderId(),
+                'Unable to update AWB parcels',
+                ResponseNoticeType::ERROR,
+            );
+        }
 
         return new AddNewParcelAwbResponse(
             $this->addNewParcelAwbRequest->getOrderId(),

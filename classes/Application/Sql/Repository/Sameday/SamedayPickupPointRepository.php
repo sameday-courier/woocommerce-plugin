@@ -100,11 +100,11 @@ class SamedayPickupPointRepository extends AbstractRepository
      * @param PickupPointObject $pickupPointObject
      * @param int $id
      *
-     * @return void
+     * @return bool
      */
-    public function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): void
+    public function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): bool
     {
-        $this->dbHandler->updateRow(
+        return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
                 'sameday_alias' => $pickupPointObject->getAlias(),

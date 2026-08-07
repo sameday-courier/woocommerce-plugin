@@ -62,8 +62,11 @@ final class RefreshPickupPoint
                 $pickupPoint = $this->samedayPickupPointRepository->getPickupPointSameday($pickupPointObject->getId());
                 if (null === $pickupPoint) {
                     $this->samedayPickupPointRepository->addPickupPoint($pickupPointObject);
-                } else {
-                    $this->samedayPickupPointRepository->updatePickupPoint($pickupPointObject, $pickupPoint->getId());
+                } elseif (!$this->samedayPickupPointRepository->updatePickupPoint($pickupPointObject, $pickupPoint->getId())) {
+                    return new RefreshPickupPointResponse(
+                        'Unable to update pickup point',
+                        ResponseNoticeType::ERROR,
+                    );
                 }
 
                 $remotePickupPoints[] = $pickupPointObject->getId();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
@@ -48,9 +49,10 @@ final class EditServiceController extends AbstractController
             new EditServiceRequest(
                 (int) $inputParams['samedaycourier-service-id'],
                 $serviceName,
-                $inputParams['samedaycourier-price'],
+                $inputParams['samedaycourier-price'] ?? '',
                 $inputParams['samedaycourier-free-delivery-price'] ?: null,
                 $inputParams['samedaycourier-status'] ?? null,
+                new SamedayServiceRepository()
             )
         );
 

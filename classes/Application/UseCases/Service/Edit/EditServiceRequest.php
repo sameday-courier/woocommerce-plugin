@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -36,24 +38,32 @@ final class EditServiceRequest
     private ?string $status;
 
     /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
+    public SamedayServiceRepository $samedayServiceRepository;
+
+    /**
      * @param int $id
      * @param string $name
      * @param string $price
      * @param string|null $priceFree
      * @param string|null $status
+     * @param SamedayServiceRepository $samedayServiceRepository
      */
     public function __construct(
         int $id,
         string $name,
         string $price,
-        ?string $priceFree = null,
-        ?string $status = null
+        ?string $priceFree,
+        ?string $status,
+        SamedayServiceRepository $samedayServiceRepository
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
         $this->priceFree = $priceFree;
         $this->status = $status;
+        $this->samedayServiceRepository = $samedayServiceRepository;
     }
 
     /**
