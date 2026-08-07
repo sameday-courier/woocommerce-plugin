@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
-use JsonException;
 use Sameday\Objects\ParcelDimensionsObject;
+use SamedayCourier\Shipping\Application\Common\Services\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
@@ -48,9 +48,9 @@ final class GenerateAwbItem
     private BillingDto $billing;
 
     /**
-     * @var LockerDto|null
+     * @var LockerDto|null $locker
      */
-    private LockerDto $locker;
+    private ?LockerDto $locker;
 
     /**
      * @var bool $hasOpenPackage
@@ -104,7 +104,7 @@ final class GenerateAwbItem
      * @param array $shippingLines
      * @param ShippingDto $shipping
      * @param BillingDto $billing
-     * @param LockerDto $locker
+     * @param LockerDto|null $locker
      * @param bool $hasOpenPackage
      * @param bool $hasLockerFirstMile
      * @param int $packageType
@@ -122,7 +122,7 @@ final class GenerateAwbItem
         array $shippingLines,
         ShippingDto $shipping,
         BillingDto $billing,
-        LockerDto $locker,
+        ?LockerDto $locker,
         bool $hasOpenPackage,
         bool $hasLockerFirstMile,
         int $packageType,
@@ -190,14 +190,6 @@ final class GenerateAwbItem
             );
         }
 
-        if ('' !== $lockerData = $data['locker']) {
-            try {
-                $lockerData = json_decode($lockerData, true, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
-                $lockerData = [];
-            }
-        }
-
         $serviceRepository = new SamedayServiceRepository();
         $pickupPointRepository = new SamedayPickupPointRepository();
         $samedayService = $serviceRepository->getServiceSameday(
@@ -214,7 +206,7 @@ final class GenerateAwbItem
             (array) ($data['shipping_lines'] ?? []),
             ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
             BillingDto::fromArray((array) ($data['billing'] ?? [])),
-            LockerDto::fromArray((array) $lockerData),
+            (new LockerDtoFactory())->fromInput($data['locker'] ?? null),
             isset($data['samedaycourier-open-package-status']),
             isset($data['samedaycourier-locker_first_mile']),
             (int) $data['samedaycourier-package-type'],

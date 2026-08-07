@@ -10,15 +10,13 @@ if (!defined( 'ABSPATH')) {
 }
 
 use JsonException;
-use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Application\Common\Services\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
@@ -71,19 +69,7 @@ class AwbForm
             SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
 
-        $locker = null;
-        $lockerDetailsForm = null;
-        if (is_int($postMetaLocker)) {
-            $locker = $postMetaLocker;
-        } else if (is_string($postMetaLocker)) {
-            $lockerDetailsForm = JsonStringHandler::fixJson(
-                InputSanitizer::sanitizeInput($postMetaLocker)
-            );
-
-            try {
-                $locker = json_decode($lockerDetailsForm, true, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {}
-        }
+        $lockerDto = (new LockerDtoFactory($this->samedayLockerRepository))->fromInput($postMetaLocker);
 
         $serviceCode = null;
         foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
@@ -92,8 +78,11 @@ class AwbForm
             }
 
             if (null !== $serviceCode = $shippingLine->get_meta('service_code')) {
-                if ('' !== $postMetaLocker && isset($locker['oohType']) && $locker['oohType'] === '1'
-                    && $this->samedayServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
+                if (
+                    null !== $lockerDto
+                    && '1' === $lockerDto->getOohType()
+                    && $this->samedayServiceRules->isOohDeliveryOptionByCode($serviceCode)
+                ) {
                     $serviceCode = SamedayConstants::OOH_TYPES['1'] ;
                 }
 
@@ -143,40 +132,17 @@ class AwbForm
 
         $openPackage = (new WooOpenPackageOrderDataHandler())->isEnabled($order->get_id()) ? 'checked' : '';
 
-        $lockerName = null;
-        $lockerAddress = null;
-
-        if (is_int($locker)) {
-            // Get locker from local import
-            $localLockerSameday = $this->samedayLockerRepository->getLockerSameday((int) $postMetaLocker);
-            if (null !== $localLockerSameday) {
-                try {
-                    $lockerDetailsForm = json_encode([
-                        'lockerId' => $localLockerSameday->getLockerId() ?? '',
-                        'name' => $localLockerSameday->getName() ?? '',
-                        'address' => $localLockerSameday->getAddress() ?? '',
-                        'city' => $localLockerSameday->getCity() ?? '',
-                        'countyId' => $localLockerSameday->getCounty() ?? '',
-                        'postalCode' => $localLockerSameday->getPostalCode() ?? '',
-                    ], JSON_THROW_ON_ERROR);
-                } catch (JsonException $exception) {
-                    $localLockerSameday = null;
-                }
-            }
-            if (null !== $localLockerSameday) {
-                $lockerName = $localLockerSameday->getName();
-                $lockerAddress = $localLockerSameday->getAddress();
-            }
-        }
-
-        if (is_array($locker)) {
-            $lockerName = $locker['name'];
-            $lockerAddress = $locker['address'];
-        }
-
+        $lockerDetailsForm = null;
         $lockerDetails = null;
-        if (null !== $lockerName && null !== $lockerAddress) {
-            $lockerDetails = sprintf('%s - %s', $lockerName, $lockerAddress);
+        if (null !== $lockerDto) {
+            try {
+                $lockerDetailsForm = json_encode($lockerDto->toArray(), JSON_THROW_ON_ERROR);
+                $lockerDetails = sprintf('%s - %s', $lockerDto->getName(), $lockerDto->getAddress());
+            } catch (JsonException $exception) {
+                $lockerDto = null;
+                $lockerDetailsForm = null;
+                $lockerDetails = null;
+            }
         }
 
         $username = SamedaySettings::getUser();

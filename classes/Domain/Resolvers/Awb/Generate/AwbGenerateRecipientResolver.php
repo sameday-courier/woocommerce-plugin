@@ -112,12 +112,16 @@ class AwbGenerateRecipientResolver
         $lockerId = null;
         $oohLastMile = null;
         if ($this->isOohDeliveryType() && $this->hasLocker($locker = $this->awbItem->getLocker())) {
+            $resolvedLockerId = null !== $locker->getLockerId()
+                ? (string) $locker->getLockerId()
+                : null;
+
             if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $lockerId = $locker->getLockerId();
+                $lockerId = $resolvedLockerId;
             }
 
             if ($service->getSamedayCode() === SamedayConstants::PUDO_CODE) {
-                $oohLastMile = $locker->getLockerId();
+                $oohLastMile = $resolvedLockerId;
             }
 
             // Overwrite recipient data with OOH data for the delivery

@@ -4,90 +4,83 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs;
 
+use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\SamedayLockerRules;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
 final class LockerDto
 {
-    private ?string $lockerId;
+    private ?int $lockerId;
 
     private ?string $oohType;
 
     private ?string $name;
 
-    private ?string $address;
-
-    private ?string $cityId;
+    private ?string $county;
 
     private ?string $city;
 
-    private ?string $countyId;
-
-    private ?string $county;
-
-    private ?string $supportedPayment;
+    private ?string $address;
 
     private ?string $postalCode;
 
-    /**
-     * @param string|null $lockerId
-     * @param string|null $oohType
-     * @param string|null $name
-     * @param string|null $address
-     * @param string|null $cityId
-     * @param string|null $city
-     * @param string|null $countyId
-     * @param string|null $county
-     * @param string|null $supportedPayment
-     * @param string|null $postalCode
-     */
     public function __construct(
-        ?string $lockerId = null,
+        ?int $lockerId = null,
         ?string $oohType = null,
         ?string $name = null,
-        ?string $address = null,
-        ?string $cityId = null,
-        ?string $city = null,
-        ?string $countyId = null,
         ?string $county = null,
-        ?string $supportedPayment = null,
+        ?string $city = null,
+        ?string $address = null,
         ?string $postalCode = null
     ) {
         $this->lockerId = $lockerId;
         $this->oohType = $oohType;
         $this->name = $name;
-        $this->address = $address;
-        $this->cityId = $cityId;
-        $this->city = $city;
-        $this->countyId = $countyId;
         $this->county = $county;
-        $this->supportedPayment = $supportedPayment;
+        $this->city = $city;
+        $this->address = $address;
         $this->postalCode = $postalCode;
     }
 
     /**
      * @param array<string, mixed> $data
-     *
-     * @return self
      */
     public static function fromArray(array $data): self
     {
         return new self(
-            isset($data['lockerId']) ? (string) $data['lockerId'] : null,
-            isset($data['oohType']) ? (string) $data['oohType'] : null,
+            isset($data['lockerId']) && $data['lockerId'] !== ''
+                ? (int) $data['lockerId']
+                : null,
+            isset($data['oohType']) && $data['oohType'] !== ''
+                ? (string) $data['oohType']
+                : null,
             isset($data['name']) ? (string) $data['name'] : null,
-            isset($data['address']) ? (string) $data['address'] : null,
-            isset($data['cityId']) ? (string) $data['cityId'] : null,
-            isset($data['city']) ? (string) $data['city'] : null,
-            isset($data['countyId']) ? (string) $data['countyId'] : null,
             isset($data['county']) ? (string) $data['county'] : null,
-            isset($data['supportedPayment']) ? (string) $data['supportedPayment'] : null,
+            isset($data['city']) ? (string) $data['city'] : null,
+            isset($data['address']) ? (string) $data['address'] : null,
             isset($data['postalCode']) ? (string) $data['postalCode'] : null,
         );
     }
 
-    public function getLockerId(): ?string
+    public static function fromSamedayLocker(SamedayLocker $locker): self
+    {
+        $lockerId = $locker->getLockerId();
+
+        return new self(
+            $lockerId,
+            SamedayLockerRules::resolveOohType($lockerId),
+            $locker->getName(),
+            $locker->getCounty(),
+            $locker->getCity(),
+            $locker->getAddress(),
+            $locker->getPostalCode(),
+        );
+    }
+
+    public function getLockerId(): ?int
     {
         return $this->lockerId;
     }
@@ -102,14 +95,9 @@ final class LockerDto
         return $this->name;
     }
 
-    public function getAddress(): ?string
+    public function getCounty(): ?string
     {
-        return $this->address;
-    }
-
-    public function getCityId(): ?string
-    {
-        return $this->cityId;
+        return $this->county;
     }
 
     public function getCity(): ?string
@@ -117,23 +105,29 @@ final class LockerDto
         return $this->city;
     }
 
-    public function getCountyId(): ?string
+    public function getAddress(): ?string
     {
-        return $this->countyId;
-    }
-
-    public function getCounty(): ?string
-    {
-        return $this->county;
-    }
-
-    public function getSupportedPayment(): ?string
-    {
-        return $this->supportedPayment;
+        return $this->address;
     }
 
     public function getPostalCode(): ?string
     {
         return $this->postalCode;
+    }
+
+    /**
+     * @return array<string, int|string|null>
+     */
+    public function toArray(): array
+    {
+        return [
+            'lockerId' => $this->lockerId,
+            'oohType' => $this->oohType,
+            'name' => $this->name,
+            'county' => $this->county,
+            'city' => $this->city,
+            'address' => $this->address,
+            'postalCode' => $this->postalCode,
+        ];
     }
 }
