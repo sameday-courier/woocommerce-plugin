@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use Sameday\Objects\ParcelDimensionsObject;
-use SamedayCourier\Shipping\Application\Common\Services\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;

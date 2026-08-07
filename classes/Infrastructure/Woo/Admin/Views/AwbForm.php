@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use JsonException;
-use SamedayCourier\Shipping\Application\Common\Services\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
