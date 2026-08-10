@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
+use Exception;
 use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -38,10 +42,32 @@ final class ShowAsPdfAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
+        $showAsPdfAwbItem = ShowAsPdfAwbItem::fromArray($inputParams);
+
+        try {
+            $samedayApiClient = new Sameday(SdkInitiator::init());
+        } catch (Exception $exception) {
+            NoticerHandler::addFlashNotice(
+                $exception->getMessage(),
+            );
+
+            Redirector::to(
+                'post.php',
+                [
+                    'post' => $showAsPdfAwbItem->getOrderId(),
+                    'action' => 'edit',
+                ]
+            );
+
+            return;
+        }
+
         $showAsPdf = new ShowAsPdfAwb(
             new ShowAsPdfAwbRequest(
-                ShowAsPdfAwbItem::fromArray($inputParams),
-                SamedaySettings::getDefaultLabelFormat()
+                $showAsPdfAwbItem,
+                SamedaySettings::getDefaultLabelFormat(),
+                new SamedayAwbRepository(),
+                $samedayApiClient,
             )
         );
         $result = $showAsPdf->execute();

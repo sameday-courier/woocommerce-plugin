@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
 use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
+use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
@@ -22,53 +24,31 @@ if (!defined('ABSPATH')) {
 
 class AwbGenerateRecipientResolver
 {
-    /**
-     * @var GenerateAwbItem $awbItem
-     */
-    private GenerateAwbItem $awbItem;
-
-    /**
-     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
-     */
-    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
-
-    /**
-     * @var SamedayServiceRules $samedayServiceRules
-     */
     private SamedayServiceRules $samedayServiceRules;
 
-    /**
-     * @var StateCodeResolverInterface $stateCodeResolver
-     */
+    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+
     private StateCodeResolverInterface $stateCodeResolver;
 
-    /**
-     * @param GenerateAwbItem $awbItem
-     * @param SamedayServiceRules $samedayServiceRules
-     * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
-     * @param StateCodeResolverInterface $stateCodeResolver
-     */
     public function __construct(
-        GenerateAwbItem $awbItem,
         SamedayServiceRules $samedayServiceRules,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver
     )
     {
-        $this->awbItem = $awbItem;
         $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
     }
 
-    /**
-     * @return AwbGenerateRecipientResponse
-     */
-    public function resolve(): AwbGenerateRecipientResponse
+    public function resolve(
+        int $orderId,
+        ShippingDto $shipping,
+        BillingDto $billing,
+        SamedayService $service,
+        ?LockerDto $locker
+    ): AwbGenerateRecipientResponse
     {
-        $shipping = $this->awbItem->getShipping();
-        $billing = $this->awbItem->getBilling();
-
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
         $country = $shipping->getCountry() ?? $billing->getCountry();
@@ -107,11 +87,9 @@ class AwbGenerateRecipientResolver
             $phone,
         );
 
-        $service = $this->awbItem->getService();
-
         $lockerId = null;
         $oohLastMile = null;
-        if ($this->isOohDeliveryType() && $this->hasLocker($locker = $this->awbItem->getLocker())) {
+        if ($this->isOohDeliveryType($service) && $this->hasLocker($locker)) {
             $resolvedLockerId = null !== $locker->getLockerId()
                 ? (string) $locker->getLockerId()
                 : null;
@@ -124,18 +102,15 @@ class AwbGenerateRecipientResolver
                 $oohLastMile = $resolvedLockerId;
             }
 
-            // Overwrite recipient data with OOH data for the delivery
             $awbRecipient->setCity($locker->getCity());
             $awbRecipient->setCounty($locker->getCounty());
             $awbRecipient->setAddress($locker->getAddress());
             $awbRecipient->setPostalCode($locker->getPostalCode());
         }
 
-        $post_meta_samedaycourier_address_hd = $this->samedayShippingHdAddressParser->parse(
-            $this->awbItem->getOrderId()
-        );
+        $post_meta_samedaycourier_address_hd = $this->samedayShippingHdAddressParser->parse($orderId);
 
-        if (!$this->isOohDeliveryType() && $this->isHomeDeliveryType()) {
+        if (!$this->isOohDeliveryType($service) && $this->isHomeDeliveryType($orderId)) {
             $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
             $county = $this->stateCodeResolver->resolveNameFromCode(
                 $post_meta_samedaycourier_address_hd['country'],
@@ -161,31 +136,18 @@ class AwbGenerateRecipientResolver
         );
     }
 
-    /**
-     * @param LockerDto|null $locker
-     *
-     * @return bool
-     */
     private function hasLocker(?LockerDto $locker): bool
     {
         return $locker !== null;
     }
 
-    /**
-     * @return bool
-     */
-    private function isOohDeliveryType(): bool
+    private function isOohDeliveryType(SamedayService $service): bool
     {
-        return $this->samedayServiceRules->isOohDeliveryOption($this->awbItem->getService());
+        return $this->samedayServiceRules->isOohDeliveryOption($service);
     }
 
-    /**
-     * @return bool
-     */
-    private function isHomeDeliveryType(): bool
+    private function isHomeDeliveryType(int $orderId): bool
     {
-        return null !== $this->samedayShippingHdAddressParser->parse(
-            $this->awbItem->getOrderId()
-        );
+        return null !== $this->samedayShippingHdAddressParser->parse($orderId);
     }
 }

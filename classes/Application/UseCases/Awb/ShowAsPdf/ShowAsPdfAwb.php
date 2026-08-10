@@ -11,7 +11,6 @@ use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -19,23 +18,20 @@ if (!defined('ABSPATH')) {
 
 final class ShowAsPdfAwb
 {
-    /**
-     * @var ShowAsPdfAwbRequest $showAsPdfAwbRequest
-     */
-    private ShowAsPdfAwbRequest $showAsPdfAwbRequest;
+    private ShowAsPdfAwbItem $showAsPdfAwbItem;
 
-    /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
+    private string $labelFormat;
+
     private SamedayAwbRepository $samedayAwbRepository;
 
-    /**
-     * @param ShowAsPdfAwbRequest $showAsPdfAwbRequest
-     */
+    private Sameday $sameday;
+
     public function __construct(ShowAsPdfAwbRequest $showAsPdfAwbRequest)
     {
-        $this->showAsPdfAwbRequest = $showAsPdfAwbRequest;
-        $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->showAsPdfAwbItem = $showAsPdfAwbRequest->getShowAsPdfAwbItem();
+        $this->labelFormat = $showAsPdfAwbRequest->getLabelFormat();
+        $this->samedayAwbRepository = $showAsPdfAwbRequest->getSamedayAwbRepository();
+        $this->sameday = $showAsPdfAwbRequest->getSameday();
     }
 
     /**
@@ -45,7 +41,7 @@ final class ShowAsPdfAwb
      */
     public function execute(): ShowAsPdfAwbResponse
     {
-        $orderId = $this->showAsPdfAwbRequest->getOrderId();
+        $orderId = $this->showAsPdfAwbItem->getOrderId();
         $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
 
         if (null === $awb) {
@@ -56,15 +52,14 @@ final class ShowAsPdfAwb
             );
         }
 
-        $sameday = new Sameday(SdkInitiator::init());
         $pdf = null;
         $errorMessage = null;
 
         try {
-            $content = $sameday->getAwbPdf(
+            $content = $this->sameday->getAwbPdf(
                 new SamedayGetAwbPdfRequest(
                     (string) $awb->getAwbNumber(),
-                    new AwbPdfType($this->showAsPdfAwbRequest->getLabelFormat())
+                    new AwbPdfType($this->labelFormat)
                 )
             );
 

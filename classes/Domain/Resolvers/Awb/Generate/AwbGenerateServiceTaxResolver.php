@@ -16,48 +16,27 @@ if (!defined('ABSPATH')) {
 
 class AwbGenerateServiceTaxResolver
 {
-    /**
-     * @var SamedayService $samedayService
-     */
-    private SamedayService $samedayService;
-
-    /**
-     * @var SamedayServiceRepository $samedayRepository
-     */
     private SamedayServiceRepository $samedayServiceRepository;
 
-    /**
-     * @var GenerateAwbItem $generateAwbItem
-     */
-    private GenerateAwbItem $awbItem;
-
-    public function __construct(
-        SamedayService $samedayService,
-        SamedayServiceRepository $samedayServiceRepository,
-        GenerateAwbItem $awbItem
-    )
+    public function __construct(SamedayServiceRepository $samedayServiceRepository)
     {
-        $this->samedayService = $samedayService;
         $this->samedayServiceRepository = $samedayServiceRepository;
-        $this->awbItem = $awbItem;
     }
 
-    /**
-     * @return AwbGenerateServiceTaxResponse
-     */
-    public function resolve(): AwbGenerateServiceTaxResponse
+    public function resolve(
+        SamedayService $samedayService,
+        GenerateAwbItem $awbItem
+    ): AwbGenerateServiceTaxResponse
     {
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes(
-            $this->samedayService->getSamedayId()
+            $samedayService->getSamedayId()
         );
 
-        $item = $this->awbItem;
-
         $serviceTaxIds = [];
-        if ($item->hasOpenPackage()) {
+        if ($awbItem->hasOpenPackage()) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $item->getPackageType()
+                    && $optionalService->getPackageType()->getType() === $awbItem->getPackageType()
                 ) {
                     $serviceTaxIds[] = SamedayConstants::OPEN_PACKAGE_OPTION_CODE;
 
@@ -66,10 +45,10 @@ class AwbGenerateServiceTaxResolver
             }
         }
 
-        if ($item->hasLockerFirstMile()) {
+        if ($awbItem->hasLockerFirstMile()) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $item->getPackageType()
+                    && $optionalService->getPackageType()->getType() === $awbItem->getPackageType()
                 ) {
                     $serviceTaxIds[] = SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE;
                     break;

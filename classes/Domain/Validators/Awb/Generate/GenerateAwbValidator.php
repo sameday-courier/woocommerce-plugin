@@ -4,34 +4,16 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbResponse;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-
 if (!defined('ABSPATH')) {
     exit;
 }
 
 final class GenerateAwbValidator
 {
-    /**
-     * @var GenerateAwbValidatorRequest
-     */
-    private GenerateAwbValidatorRequest $request;
-
-    public function __construct(GenerateAwbValidatorRequest $request)
+    public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse
     {
-        $this->request = $request;
-    }
-
-    /**
-     * @return GenerateAwbValidatorResponse
-     */
-    public function validate(): GenerateAwbValidatorResponse
-    {
-        $awbItem = $this->request->awbItem;
-        $service = $this->request->samedayService;
+        $billing = $request->getBilling();
+        $service = $request->getSamedayService();
 
         $response = new GenerateAwbValidatorResponse();
         if (null === $service) {
@@ -41,21 +23,21 @@ final class GenerateAwbValidator
             );
         }
 
-        if (null === $awbItem->getBilling()->getPhone()) {
+        if (null === $billing->getPhone()) {
             $response->setErrors(
                 'phone',
                 "Must complete phone number."
             );
         }
 
-        if (null === $awbItem->getBilling()->getEmail()) {
+        if (null === $billing->getEmail()) {
             $response->setErrors(
                 'email',
                 "Must complete email."
             );
         }
 
-        if (empty($this->request->awbItem->getShippingLines())) {
+        if (empty($request->getShippingLines())) {
             $response->setErrors(
                 "shipping_lines",
                 "No shipping lines for this awb item."

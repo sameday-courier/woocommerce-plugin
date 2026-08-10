@@ -10,7 +10,6 @@ use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,23 +17,20 @@ if (!defined('ABSPATH')) {
 
 final class ShowHistoryAwb
 {
-    private ShowHistoryAwbRequest $showHistoryAwbRequest;
+    private ShowHistoryAwbItem $showHistoryAwbItem;
 
-    /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
     private SamedayAwbRepository $samedayAwbRepository;
 
-    /**
-     * @var SamedayPackageRepository $samedayPackageRepository
-     */
     private SamedayPackageRepository $samedayPackageRepository;
+
+    private Sameday $sameday;
 
     public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
     {
-        $this->showHistoryAwbRequest = $showHistoryAwbRequest;
-        $this->samedayAwbRepository = new SamedayAwbRepository();
-        $this->samedayPackageRepository = new SamedayPackageRepository();
+        $this->showHistoryAwbItem = $showHistoryAwbRequest->getShowHistoryAwbItem();
+        $this->samedayAwbRepository = $showHistoryAwbRequest->getSamedayAwbRepository();
+        $this->samedayPackageRepository = $showHistoryAwbRequest->getSamedayPackageRepository();
+        $this->sameday = $showHistoryAwbRequest->getSameday();
     }
 
     /**
@@ -44,7 +40,7 @@ final class ShowHistoryAwb
      */
     public function execute(): ShowHistoryAwbResponse
     {
-        $orderId = $this->showHistoryAwbRequest->getOrderId();
+        $orderId = $this->showHistoryAwbItem->getOrderId();
         $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
 
         if (null === $awb) {
@@ -55,14 +51,13 @@ final class ShowHistoryAwb
             );
         }
 
-        $sameday = new Sameday(SdkInitiator::init());
         $parcels = unserialize($awb->getParcels() ?? '', ['']);
 
         $this->samedayPackageRepository->deletePackagesByOrderId($orderId);
 
         foreach ($parcels as $parcel) {
             try {
-                $parcelStatus = $sameday->getParcelStatusHistory(
+                $parcelStatus = $this->sameday->getParcelStatusHistory(
                     new SamedayGetParcelStatusHistoryRequest($parcel->getAwbNumber())
                 );
             } catch (Exception $exception) {

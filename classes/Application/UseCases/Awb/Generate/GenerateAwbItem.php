@@ -4,17 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
-use Sameday\Objects\ParcelDimensionsObject;
-use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
-use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
-use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -22,37 +12,40 @@ if (!defined('ABSPATH')) {
 
 final class GenerateAwbItem implements ItemInterface
 {
+    /**
+     * @var int $orderId
+     */
     private int $orderId;
 
     /**
-     * @var SamedayService $service
+     * @var int $serviceId
      */
-    private SamedayService $service;
+    private int $serviceId;
 
     /**
-     * @var SamedayPickupPoint $pickupPoint
+     * @var int $pickupPointId
      */
-    private SamedayPickupPoint $pickupPoint;
+    private int $pickupPointId;
 
     /**
-     * @var array<int, mixed>
+     * @var array<int, mixed> $shippingLines
      */
     private array $shippingLines;
 
     /**
-     * @var ShippingDto $shipping
+     * @var array<string, mixed> $shipping
      */
-    private ShippingDto $shipping;
+    private array $shipping;
 
     /**
-     * @var BillingDto $billing
+     * @var array<string, mixed> $billing
      */
-    private BillingDto $billing;
+    private array $billing;
 
     /**
-     * @var LockerDto|null $locker
+     * @var mixed $locker
      */
-    private ?LockerDto $locker;
+    private $locker;
 
     /**
      * @var bool $hasOpenPackage
@@ -75,12 +68,12 @@ final class GenerateAwbItem implements ItemInterface
     private int $awbPayment;
 
     /**
-     * @var float|string
+     * @var mixed $insuranceValue
      */
     private $insuranceValue;
 
     /**
-     * @var float|string
+     * @var mixed $repayment
      */
     private $repayment;
 
@@ -95,36 +88,36 @@ final class GenerateAwbItem implements ItemInterface
     private ?string $observation;
 
     /**
-     * @var ParcelDimensionsObject[]
+     * @var array<int|string, mixed> $packageDimensions
      */
-    private array $parcelsDimensions;
+    private array $packageDimensions;
 
     /**
      * @param int $orderId
-     * @param SamedayService $service
-     * @param SamedayPickupPoint $pickupPoint
+     * @param int $serviceId
+     * @param int $pickupPointId
      * @param array $shippingLines
-     * @param ShippingDto $shipping
-     * @param BillingDto $billing
-     * @param LockerDto|null $locker
+     * @param array $shipping
+     * @param array $billing
+     * @param mixed $locker
      * @param bool $hasOpenPackage
      * @param bool $hasLockerFirstMile
      * @param int $packageType
      * @param int $awbPayment
-     * @param $insuranceValue
-     * @param $repayment
+     * @param mixed $insuranceValue
+     * @param mixed $repayment
      * @param string|null $clientReference
      * @param string|null $observation
-     * @param array $parcelsDimensions
+     * @param array $packageDimensions
      */
     public function __construct(
         int $orderId,
-        SamedayService $service,
-        SamedayPickupPoint $pickupPoint,
+        int $serviceId,
+        int $pickupPointId,
         array $shippingLines,
-        ShippingDto $shipping,
-        BillingDto $billing,
-        ?LockerDto $locker,
+        array $shipping,
+        array $billing,
+        $locker,
         bool $hasOpenPackage,
         bool $hasLockerFirstMile,
         int $packageType,
@@ -133,11 +126,11 @@ final class GenerateAwbItem implements ItemInterface
         $repayment,
         ?string $clientReference,
         ?string $observation,
-        array $parcelsDimensions
+        array $packageDimensions
     ) {
         $this->orderId = $orderId;
-        $this->service = $service;
-        $this->pickupPoint = $pickupPoint;
+        $this->serviceId = $serviceId;
+        $this->pickupPointId = $pickupPointId;
         $this->shippingLines = $shippingLines;
         $this->shipping = $shipping;
         $this->billing = $billing;
@@ -150,7 +143,7 @@ final class GenerateAwbItem implements ItemInterface
         $this->repayment = $repayment;
         $this->clientReference = $clientReference;
         $this->observation = $observation;
-        $this->parcelsDimensions = $parcelsDimensions;
+        $this->packageDimensions = $packageDimensions;
     }
 
     /**
@@ -160,23 +153,14 @@ final class GenerateAwbItem implements ItemInterface
      */
     public static function fromArray(array $inputParams): self
     {
-        $serviceRepository = new SamedayServiceRepository();
-        $pickupPointRepository = new SamedayPickupPointRepository();
-        $samedayService = $serviceRepository->getServiceSameday(
-            (int) $inputParams['samedaycourier-service']
-        );
-        $samedayPickupPoint = $pickupPointRepository->getPickupPointSameday(
-            (int) $inputParams['samedaycourier-package-pickup-point']
-        );
-
         return new self(
             (int) $inputParams['samedaycourier-order-id'],
-            $samedayService,
-            $samedayPickupPoint,
+            (int) $inputParams['samedaycourier-service'],
+            (int) $inputParams['samedaycourier-package-pickup-point'],
             (array) ($inputParams['shipping_lines'] ?? []),
-            ShippingDto::fromArray((array) ($inputParams['shipping'] ?? [])),
-            BillingDto::fromArray((array) ($inputParams['billing'] ?? [])),
-            (new LockerDtoFactory())->fromInput($inputParams['locker'] ?? null),
+            (array) ($inputParams['shipping'] ?? []),
+            (array) ($inputParams['billing'] ?? []),
+            $inputParams['locker'] ?? null,
             isset($inputParams['samedaycourier-open-package-status']),
             isset($inputParams['samedaycourier-locker_first_mile']),
             (int) $inputParams['samedaycourier-package-type'],
@@ -185,31 +169,32 @@ final class GenerateAwbItem implements ItemInterface
             $inputParams['samedaycourier-package-repayment'],
             $inputParams['samedaycourier-client-reference'] ?? null,
             $inputParams['samedaycourier-package-observation'] ?? null,
-            (new ParcelDimensionsFactory())->fromList(
-                (array) ($inputParams['samedaycourier-package-dimensions'] ?? [])
-            ),
+            (array) ($inputParams['samedaycourier-package-dimensions'] ?? []),
         );
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;
     }
 
     /**
-     * @return SamedayService
+     * @return int
      */
-    public function getService(): SamedayService
+    public function getServiceId(): int
     {
-        return $this->service;
+        return $this->serviceId;
     }
 
     /**
-     * @return SamedayPickupPoint
+     * @return int
      */
-    public function getPickupPoint(): SamedayPickupPoint
+    public function getPickupPointId(): int
     {
-        return $this->pickupPoint;
+        return $this->pickupPointId;
     }
 
     /**
@@ -221,25 +206,25 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return ShippingDto
+     * @return array<string, mixed>
      */
-    public function getShipping(): ShippingDto
+    public function getShipping(): array
     {
         return $this->shipping;
     }
 
     /**
-     * @return BillingDto
+     * @return array<string, mixed>
      */
-    public function getBilling(): BillingDto
+    public function getBilling(): array
     {
         return $this->billing;
     }
 
     /**
-     * @return LockerDto|null
+     * @return mixed
      */
-    public function getLocker(): ?LockerDto
+    public function getLocker()
     {
         return $this->locker;
     }
@@ -277,7 +262,7 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return float|string
+     * @return mixed
      */
     public function getInsuranceValue()
     {
@@ -285,28 +270,34 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return float|string
+     * @return mixed
      */
     public function getRepayment()
     {
         return $this->repayment;
     }
 
+    /**
+     * @return string|null
+     */
     public function getClientReference(): ?string
     {
         return $this->clientReference;
     }
 
+    /**
+     * @return string|null
+     */
     public function getObservation(): ?string
     {
         return $this->observation;
     }
 
     /**
-     * @return ParcelDimensionsObject[]
+     * @return array<int|string, mixed>
      */
-    public function getParcelsDimensions(): array
+    public function getPackageDimensions(): array
     {
-        return $this->parcelsDimensions;
+        return $this->packageDimensions;
     }
 }

@@ -11,12 +11,21 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
+use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
@@ -94,23 +103,36 @@ final class GenerateAwbController extends AbstractController
         $dbHandler = new DbHandler();
         $hdAddressParser = new WooSamedayShippingHdAddressParser();
         $stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler());
+        $samedayLockerRepository = new SamedayLockerRepository($dbHandler);
+        $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
+        $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
+        $samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
         $generateAwb = new GenerateAwb(
             new GenerateAwbRequest(
                 GenerateAwbItem::fromArray($data),
                 $samedayApiClient,
                 $dbHandler,
-                new SamedayServiceRepository($dbHandler),
-                new SamedayAwbRepository($dbHandler),
+                $samedayServiceRepository,
+                new SamedayPickupPointRepository($dbHandler),
+                $samedayAwbRepository,
                 new WooOrderShippingAddressUpdater(
                     new WooOrderAddressRepository($dbHandler),
                     new WooOrderShippingAddressArchive(),
-                    new SamedayLockerRepository($dbHandler),
+                    $samedayLockerRepository,
                     $hdAddressParser,
                     $stateCodeResolver,
                 ),
                 new AwbErrorParser(),
                 $hdAddressParser,
                 $stateCodeResolver,
+                new ParcelDimensionsFactory(),
+                new LockerDtoFactory($samedayLockerRepository),
+                new ShippingDtoFactory(),
+                new BillingDtoFactory(),
+                new GenerateAwbValidator(),
+                new AwbGenerateServiceTaxResolver($samedayServiceRepository),
+                $samedayServiceRules,
+                new AwbRemover($samedayApiClient, $samedayAwbRepository),
             )
         );
 

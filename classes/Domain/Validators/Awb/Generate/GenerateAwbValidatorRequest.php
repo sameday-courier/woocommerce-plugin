@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
 if (!defined('ABSPATH')) {
@@ -13,22 +13,41 @@ if (!defined('ABSPATH')) {
 
 class GenerateAwbValidatorRequest
 {
-    /**
-     * @var SamedayService $samedayService
-     */
-    public SamedayService $samedayService;
+    private ?SamedayService $samedayService;
+
+    private BillingDto $billing;
 
     /**
-     * @var GenerateAwbItem $awbItem
+     * @var array<int, mixed> $shippingLines
      */
-    public GenerateAwbItem $awbItem;
+    private array $shippingLines;
 
     public function __construct(
-        SamedayService $samedayService,
-        GenerateAwbItem $awbItem
+        ?SamedayService $samedayService,
+        BillingDto $billing,
+        array $shippingLines
     )
     {
         $this->samedayService = $samedayService;
-        $this->awbItem = $awbItem;
+        $this->billing = $billing;
+        $this->shippingLines = $shippingLines;
+    }
+
+    public function getSamedayService(): ?SamedayService
+    {
+        return $this->samedayService;
+    }
+
+    public function getBilling(): BillingDto
+    {
+        return $this->billing;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function getShippingLines(): array
+    {
+        return $this->shippingLines;
     }
 }

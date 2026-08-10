@@ -9,29 +9,30 @@ use JsonException;
 use Throwable;
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
-use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
-use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
-use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
@@ -76,15 +77,58 @@ final class GenerateAwb
     private AwbErrorParser $awbErrorParser;
 
     /**
-     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
      */
-    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @var StateCodeResolverInterface $stateCodeResolver
+     * @var ParcelDimensionsFactory $parcelDimensionsFactory
      */
-    private StateCodeResolverInterface $stateCodeResolver;
+    private ParcelDimensionsFactory $parcelDimensionsFactory;
 
+    /**
+     * @var LockerDtoFactory $lockerDtoFactory
+     */
+    private LockerDtoFactory $lockerDtoFactory;
+
+    /**
+     * @var ShippingDtoFactory $shippingDtoFactory
+     */
+    private ShippingDtoFactory $shippingDtoFactory;
+
+    /**
+     * @var BillingDtoFactory $billingDtoFactory
+     */
+    private BillingDtoFactory $billingDtoFactory;
+
+    /**
+     * @var GenerateAwbValidator $generateAwbValidator
+     */
+    private GenerateAwbValidator $generateAwbValidator;
+
+    /**
+     * @var AwbGenerateServiceTaxResolver $awbGenerateServiceTaxResolver
+     */
+    private AwbGenerateServiceTaxResolver $awbGenerateServiceTaxResolver;
+
+    /**
+     * @var AwbGenerateRecipientResolver $awbGenerateRecipientResolver
+     */
+    private AwbGenerateRecipientResolver $awbGenerateRecipientResolver;
+
+    /**
+     * @var SamedayServiceRules $samedayServiceRules
+     */
+    private SamedayServiceRules $samedayServiceRules;
+
+    /**
+     * @var AwbRemover $awbRemover
+     */
+    private AwbRemover $awbRemover;
+
+    /**
+     * @param GenerateAwbRequest $generateAwbRequest
+     */
     public function __construct(
         GenerateAwbRequest $generateAwbRequest
     )
@@ -93,11 +137,19 @@ final class GenerateAwb
         $this->sameday = $generateAwbRequest->getSameday();
         $this->dbHandler = $generateAwbRequest->getDbHandler();
         $this->samedayServiceRepository = $generateAwbRequest->getSamedayServiceRepository();
+        $this->samedayPickupPointRepository = $generateAwbRequest->getSamedayPickupPointRepository();
         $this->samedayAwbRepository = $generateAwbRequest->getSamedayAwbRepository();
         $this->orderShippingAddressUpdater = $generateAwbRequest->getOrderShippingAddressUpdater();
         $this->awbErrorParser = $generateAwbRequest->getAwbErrorParser();
-        $this->samedayShippingHdAddressParser = $generateAwbRequest->getSamedayShippingHdAddressParser();
-        $this->stateCodeResolver = $generateAwbRequest->getStateCodeResolver();
+        $this->parcelDimensionsFactory = $generateAwbRequest->getParcelDimensionsFactory();
+        $this->lockerDtoFactory = $generateAwbRequest->getLockerDtoFactory();
+        $this->shippingDtoFactory = $generateAwbRequest->getShippingDtoFactory();
+        $this->billingDtoFactory = $generateAwbRequest->getBillingDtoFactory();
+        $this->generateAwbValidator = $generateAwbRequest->getGenerateAwbValidator();
+        $this->awbGenerateServiceTaxResolver = $generateAwbRequest->getAwbGenerateServiceTaxResolver();
+        $this->awbGenerateRecipientResolver = $generateAwbRequest->getAwbGenerateRecipientResolver();
+        $this->samedayServiceRules = $generateAwbRequest->getSamedayServiceRules();
+        $this->awbRemover = $generateAwbRequest->getAwbRemover();
     }
 
     /**
@@ -108,14 +160,20 @@ final class GenerateAwb
     {
         $item = $this->awbItem;
 
-        $service = $item->getService();
-        $pickupPoint = $item->getPickupPoint();
-        $awbValidator = (new GenerateAwbValidator(
+        $service = $this->samedayServiceRepository->getServiceSameday($item->getServiceId());
+        $pickupPoint = $this->samedayPickupPointRepository->getPickupPointSameday($item->getPickupPointId());
+        $shipping = $this->shippingDtoFactory->fromInput($item->getShipping());
+        $billing = $this->billingDtoFactory->fromInput($item->getBilling());
+        $locker = $this->lockerDtoFactory->fromInput($item->getLocker());
+        $parcelsDimensions = $this->parcelDimensionsFactory->fromList($item->getPackageDimensions());
+
+        $awbValidator = $this->generateAwbValidator->validate(
             new GenerateAwbValidatorRequest(
                 $service,
-                $item
+                $billing,
+                $item->getShippingLines(),
             )
-        ))->validate();
+        );
 
         if ($awbValidator->hasErrors()) {
             return new GenerateAwbResponse(
@@ -124,26 +182,28 @@ final class GenerateAwb
             );
         }
 
-        $serviceTaxResolver = new AwbGenerateServiceTaxResolver(
-            $service,
-            $this->samedayServiceRepository,
-            $item,
-        );
-        $serviceTax = $serviceTaxResolver->resolve();
+        if (null === $service || null === $pickupPoint) {
+            return new GenerateAwbResponse(
+                'Selected service or pickup point could not be found.',
+                ResponseNoticeType::ERROR
+            );
+        }
 
-        $awbRecipientResolver = new AwbGenerateRecipientResolver(
-            $item,
-            new SamedayServiceRules($this->samedayServiceRepository),
-            $this->samedayShippingHdAddressParser,
-            $this->stateCodeResolver,
+        $serviceTax = $this->awbGenerateServiceTaxResolver->resolve($service, $item);
+
+        $awbRecipient = $this->awbGenerateRecipientResolver->resolve(
+            $item->getOrderId(),
+            $shipping,
+            $billing,
+            $service,
+            $locker,
         );
-        $awbRecipient = $awbRecipientResolver->resolve();
 
         $request = new SamedayPostAwbRequest(
             $pickupPoint->getSamedayId(),
             null,
             new PackageType($item->getPackageType()),
-            $item->getParcelsDimensions(),
+            $parcelsDimensions,
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
             new AwbRecipientEntityObject(
@@ -251,7 +311,7 @@ final class GenerateAwb
     private function rollbackRemoteAwb(string $awbNumber): GenerateAwbResponse
     {
         try {
-            (new AwbRemover($this->sameday, $this->samedayAwbRepository))->removeRemote($awbNumber);
+            $this->awbRemover->removeRemote($awbNumber);
 
             $message = 'The AWB was generated but could not be saved. So it has been cancelled, please try again.';
         } catch (Throwable $rollbackException) {
@@ -283,9 +343,7 @@ final class GenerateAwb
         $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
 
         try {
-            $samedayServiceRules = new SamedayServiceRules($this->samedayServiceRepository);
-
-            if ($samedayServiceRules->isOohDeliveryOption($service)) {
+            if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
                 $this->orderShippingAddressUpdater->activateOutOfHome($item->getOrderId());
             } else {
                 $this->orderShippingAddressUpdater->activateHomeDelivery($item->getOrderId());
