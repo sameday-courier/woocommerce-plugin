@@ -50,9 +50,7 @@ final class GenerateAwbController extends AbstractController
      * @param array $inputParams
      *
      * @return void
-     *
      * @throws JsonException
-     * @throws SamedaySDKException
      */
     protected function processAction(array $inputParams): void
     {
@@ -62,7 +60,6 @@ final class GenerateAwbController extends AbstractController
         if (empty($orderData)) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate("There is no data to process."),
-                ResponseNoticeType::ERROR,
             );
 
             Redirector::to(

@@ -22,47 +22,47 @@ final class GenerateAwbRequest
     /**
      * @var GenerateAwbItem $generateAwbItem
      */
-    public GenerateAwbItem $generateAwbItem;
+    private GenerateAwbItem $generateAwbItem;
 
     /**
      * @var Sameday $sameday
      */
-    public Sameday $sameday;
+    private Sameday $sameday;
 
     /**
      * @var DbHandler $dbHandler
      */
-    public DbHandler $dbHandler;
+    private DbHandler $dbHandler;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
      */
-    public SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceRepository $samedayServiceRepository;
 
     /**
      * @var SamedayAwbRepository $samedayAwbRepository
      */
-    public SamedayAwbRepository $samedayAwbRepository;
+    private SamedayAwbRepository $samedayAwbRepository;
 
     /**
      * @var OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
      */
-    public OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
+    private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
 
     /**
      * @var AwbErrorParser $awbErrorParser
      */
-    public AwbErrorParser $awbErrorParser;
+    private AwbErrorParser $awbErrorParser;
 
     /**
      * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
-    public SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
     /**
      * @var StateCodeResolverInterface $stateCodeResolver
      */
-    public StateCodeResolverInterface $stateCodeResolver;
+    private StateCodeResolverInterface $stateCodeResolver;
 
     /**
      * @param GenerateAwbItem $generateAwbItem
@@ -95,5 +95,77 @@ final class GenerateAwbRequest
         $this->awbErrorParser = $awbErrorParser;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
+    }
+
+    /**
+     * @return GenerateAwbItem
+     */
+    public function getGenerateAwbItem(): GenerateAwbItem
+    {
+        return $this->generateAwbItem;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
+    }
+
+    /**
+     * @return DbHandler
+     */
+    public function getDbHandler(): DbHandler
+    {
+        return $this->dbHandler;
+    }
+
+    /**
+     * @return SamedayServiceRepository
+     */
+    public function getSamedayServiceRepository(): SamedayServiceRepository
+    {
+        return $this->samedayServiceRepository;
+    }
+
+    /**
+     * @return SamedayAwbRepository
+     */
+    public function getSamedayAwbRepository(): SamedayAwbRepository
+    {
+        return $this->samedayAwbRepository;
+    }
+
+    /**
+     * @return OrderShippingAddressUpdaterInterface
+     */
+    public function getOrderShippingAddressUpdater(): OrderShippingAddressUpdaterInterface
+    {
+        return $this->orderShippingAddressUpdater;
+    }
+
+    /**
+     * @return AwbErrorParser
+     */
+    public function getAwbErrorParser(): AwbErrorParser
+    {
+        return $this->awbErrorParser;
+    }
+
+    /**
+     * @return SamedayShippingHdAddressParserInterface
+     */
+    public function getSamedayShippingHdAddressParser(): SamedayShippingHdAddressParserInterface
+    {
+        return $this->samedayShippingHdAddressParser;
+    }
+
+    /**
+     * @return StateCodeResolverInterface
+     */
+    public function getStateCodeResolver(): StateCodeResolverInterface
+    {
+        return $this->stateCodeResolver;
     }
 }

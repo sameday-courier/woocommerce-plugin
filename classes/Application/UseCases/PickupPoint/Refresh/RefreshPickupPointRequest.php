@@ -16,16 +16,16 @@ final class RefreshPickupPointRequest
     /**
      * @var Sameday $sameday
      */
-    public Sameday $sameday;
+    private Sameday $sameday;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
      */
-    public SamedayPickupPointRepository $samedayPickupPointRepository;
+    private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @param SamedayPickupPointRepository $pickupPointRepository
      * @param Sameday $sameday
+     * @param SamedayPickupPointRepository $pickupPointRepository
      */
     public function __construct(
         Sameday $sameday,
@@ -34,5 +34,21 @@ final class RefreshPickupPointRequest
     {
         $this->sameday = $sameday;
         $this->samedayPickupPointRepository = $pickupPointRepository;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
+    }
+
+    /**
+     * @return SamedayPickupPointRepository
+     */
+    public function getSamedayPickupPointRepository(): SamedayPickupPointRepository
+    {
+        return $this->samedayPickupPointRepository;
     }
 }

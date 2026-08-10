@@ -89,15 +89,15 @@ final class GenerateAwb
         GenerateAwbRequest $generateAwbRequest
     )
     {
-        $this->awbItem = $generateAwbRequest->generateAwbItem;
-        $this->sameday = $generateAwbRequest->sameday;
-        $this->dbHandler = $generateAwbRequest->dbHandler;
-        $this->samedayServiceRepository = $generateAwbRequest->samedayServiceRepository;
-        $this->samedayAwbRepository = $generateAwbRequest->samedayAwbRepository;
-        $this->orderShippingAddressUpdater = $generateAwbRequest->orderShippingAddressUpdater;
-        $this->awbErrorParser = $generateAwbRequest->awbErrorParser;
-        $this->samedayShippingHdAddressParser = $generateAwbRequest->samedayShippingHdAddressParser;
-        $this->stateCodeResolver = $generateAwbRequest->stateCodeResolver;
+        $this->awbItem = $generateAwbRequest->getGenerateAwbItem();
+        $this->sameday = $generateAwbRequest->getSameday();
+        $this->dbHandler = $generateAwbRequest->getDbHandler();
+        $this->samedayServiceRepository = $generateAwbRequest->getSamedayServiceRepository();
+        $this->samedayAwbRepository = $generateAwbRequest->getSamedayAwbRepository();
+        $this->orderShippingAddressUpdater = $generateAwbRequest->getOrderShippingAddressUpdater();
+        $this->awbErrorParser = $generateAwbRequest->getAwbErrorParser();
+        $this->samedayShippingHdAddressParser = $generateAwbRequest->getSamedayShippingHdAddressParser();
+        $this->stateCodeResolver = $generateAwbRequest->getStateCodeResolver();
     }
 
     /**

@@ -19,27 +19,27 @@ final class RefreshCityRequest
     /**
      * @var SamedayCityRepository $samedayCityRepository
      */
-    public SamedayCityRepository $samedayCityRepository;
+    private SamedayCityRepository $samedayCityRepository;
 
     /**
      * @var CacheHandler $cacheHandler
      */
-    public CacheHandler $cacheHandler;
+    private CacheHandler $cacheHandler;
 
     /**
      * @var SchemaHandler $schemaHandler
      */
-    public SchemaHandler $schemaHandler;
+    private SchemaHandler $schemaHandler;
 
     /**
      * @var DbHandler $dbHandler
      */
-    public DbHandler $dbHandler;
+    private DbHandler $dbHandler;
 
     /**
      * @var CountriesHandlerInterface $countriesHandler
      */
-    public CountriesHandlerInterface $countriesHandler;
+    private CountriesHandlerInterface $countriesHandler;
 
     /**
      * @param SchemaHandler $schemaHandler
@@ -61,5 +61,45 @@ final class RefreshCityRequest
         $this->schemaHandler = $schemaHandler;
         $this->dbHandler = $dbHandler;
         $this->countriesHandler = $countriesHandler;
+    }
+
+    /**
+     * @return SamedayCityRepository
+     */
+    public function getSamedayCityRepository(): SamedayCityRepository
+    {
+        return $this->samedayCityRepository;
+    }
+
+    /**
+     * @return CacheHandler
+     */
+    public function getCacheHandler(): CacheHandler
+    {
+        return $this->cacheHandler;
+    }
+
+    /**
+     * @return SchemaHandler
+     */
+    public function getSchemaHandler(): SchemaHandler
+    {
+        return $this->schemaHandler;
+    }
+
+    /**
+     * @return DbHandler
+     */
+    public function getDbHandler(): DbHandler
+    {
+        return $this->dbHandler;
+    }
+
+    /**
+     * @return CountriesHandlerInterface
+     */
+    public function getCountriesHandler(): CountriesHandlerInterface
+    {
+        return $this->countriesHandler;
     }
 }

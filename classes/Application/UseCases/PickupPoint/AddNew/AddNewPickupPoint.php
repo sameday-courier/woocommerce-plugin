@@ -30,8 +30,8 @@ final class AddNewPickupPoint
         AddNewPickupPointRequest $addNewPickupPointRequest
     )
     {
-        $this->addNewPickupPointItem = $addNewPickupPointRequest->pickupPointItem;
-        $this->sameday = $addNewPickupPointRequest->sameday;
+        $this->addNewPickupPointItem = $addNewPickupPointRequest->getAddNewPickupPointItem();
+        $this->sameday = $addNewPickupPointRequest->getSameday();
     }
 
     /**

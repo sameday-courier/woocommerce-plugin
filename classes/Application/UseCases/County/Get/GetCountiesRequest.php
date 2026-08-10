@@ -15,10 +15,18 @@ final class GetCountiesRequest
     /**
      * @var Sameday $sameday
      */
-    public Sameday $sameday;
+    private Sameday $sameday;
 
     public function __construct(Sameday $sameday)
     {
         $this->sameday = $sameday;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
     }
 }

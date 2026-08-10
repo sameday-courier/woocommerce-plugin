@@ -16,12 +16,12 @@ final class RefreshLockerRequest
     /**
      * @var SamedayLockerRepository $samedayLockerRepository
      */
-    public SamedayLockerRepository $samedayLockerRepository;
+    private SamedayLockerRepository $samedayLockerRepository;
 
     /**
      * @var Sameday $sameday
      */
-    public Sameday $sameday;
+    private Sameday $sameday;
 
     /**
      * @param SamedayLockerRepository $samedayLockerRepository
@@ -34,5 +34,21 @@ final class RefreshLockerRequest
     {
         $this->samedayLockerRepository = $samedayLockerRepository;
         $this->sameday = $sameday;
+    }
+
+    /**
+     * @return SamedayLockerRepository
+     */
+    public function getSamedayLockerRepository(): SamedayLockerRepository
+    {
+        return $this->samedayLockerRepository;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
     }
 }

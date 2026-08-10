@@ -35,8 +35,8 @@ final class RefreshService
      */
     public function __construct(RefreshServiceRequest $refreshServiceRequest)
     {
-        $this->sameday = $refreshServiceRequest->sameday;
-        $this->samedayServiceRepository = $refreshServiceRequest->samedayServiceRepository;
+        $this->sameday = $refreshServiceRequest->getSameday();
+        $this->samedayServiceRepository = $refreshServiceRequest->getSamedayServiceRepository();
     }
 
     /**

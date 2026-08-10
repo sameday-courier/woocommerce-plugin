@@ -49,11 +49,11 @@ final class RefreshCity
      */
     public function __construct(RefreshCityRequest $refreshCitiesRequest)
     {
-        $this->cacheHandler = $refreshCitiesRequest->cacheHandler;
-        $this->dbHandler = $refreshCitiesRequest->dbHandler;
-        $this->schemaHandler = $refreshCitiesRequest->schemaHandler;
-        $this->samedayCityRepository = $refreshCitiesRequest->samedayCityRepository;
-        $this->countriesHandler = $refreshCitiesRequest->countriesHandler;
+        $this->cacheHandler = $refreshCitiesRequest->getCacheHandler();
+        $this->dbHandler = $refreshCitiesRequest->getDbHandler();
+        $this->schemaHandler = $refreshCitiesRequest->getSchemaHandler();
+        $this->samedayCityRepository = $refreshCitiesRequest->getSamedayCityRepository();
+        $this->countriesHandler = $refreshCitiesRequest->getCountriesHandler();
     }
 
     /**

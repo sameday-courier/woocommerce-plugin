@@ -33,8 +33,8 @@ final class RefreshLocker
      */
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
-        $this->samedayLockerRepository = $refreshLockerRequest->samedayLockerRepository;
-        $this->sameday = $refreshLockerRequest->sameday;
+        $this->samedayLockerRepository = $refreshLockerRequest->getSamedayLockerRepository();
+        $this->sameday = $refreshLockerRequest->getSameday();
     }
 
     /**

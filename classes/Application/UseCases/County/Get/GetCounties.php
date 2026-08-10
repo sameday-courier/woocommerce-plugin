@@ -23,7 +23,7 @@ final class GetCounties
 
     public function __construct(GetCountiesRequest $getCountiesRequest)
     {
-        $this->sameday = $getCountiesRequest->sameday;
+        $this->sameday = $getCountiesRequest->getSameday();
     }
 
     /**

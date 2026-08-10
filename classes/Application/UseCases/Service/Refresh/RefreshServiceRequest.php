@@ -16,16 +16,15 @@ final class RefreshServiceRequest
     /**
      * @var Sameday $sameday
      */
-    public Sameday $sameday;
+    private Sameday $sameday;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
      */
-    public SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceRepository $samedayServiceRepository;
 
     /**
      * @param Sameday $sameday
-     *
      * @param SamedayServiceRepository $samedayServiceRepository
      */
     public function __construct(
@@ -35,5 +34,21 @@ final class RefreshServiceRequest
     {
         $this->sameday = $sameday;
         $this->samedayServiceRepository = $samedayServiceRepository;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
+    }
+
+    /**
+     * @return SamedayServiceRepository
+     */
+    public function getSamedayServiceRepository(): SamedayServiceRepository
+    {
+        return $this->samedayServiceRepository;
     }
 }

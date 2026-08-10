@@ -32,8 +32,8 @@ final class RefreshPickupPoint
      */
     public function __construct(RefreshPickupPointRequest $refreshPickupPointRequest)
     {
-        $this->sameday = $refreshPickupPointRequest->sameday;
-        $this->samedayPickupPointRepository = $refreshPickupPointRequest->samedayPickupPointRepository;
+        $this->sameday = $refreshPickupPointRequest->getSameday();
+        $this->samedayPickupPointRepository = $refreshPickupPointRequest->getSamedayPickupPointRepository();
     }
 
     /**
