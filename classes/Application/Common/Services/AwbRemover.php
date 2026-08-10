@@ -13,6 +13,7 @@ use Sameday\Exceptions\SamedayServerException;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 
 if (!defined('ABSPATH')) {
@@ -41,6 +42,30 @@ final class AwbRemover
     }
 
     /**
+     * @param int $orderId
+     *
+     * @return void
+     *
+     * @throws AwbNotFoundForOrderException
+     * @throws SamedayAuthenticationException
+     * @throws SamedayAuthorizationException
+     * @throws SamedayNotFoundException
+     * @throws SamedayOtherException
+     * @throws SamedaySDKException
+     * @throws SamedayServerException
+     */
+    public function remove(int $orderId): void
+    {
+        $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
+        if (null === $awb) {
+            throw new AwbNotFoundForOrderException($orderId);
+        }
+
+        $this->removeRemote((string) $awb->getAwbNumber());
+        $this->removeLocal($awb);
+    }
+
+    /**
      * @param string $awbNumber
      *
      * @return void
@@ -64,26 +89,8 @@ final class AwbRemover
      *
      * @return void
      */
-    public function removeLocal(SamedayAwb $awb): void
+    private function removeLocal(SamedayAwb $awb): void
     {
         $this->samedayAwbRepository->deleteAwbAndParcels($awb);
-    }
-
-    /**
-     * @param SamedayAwb $awb
-     *
-     * @return void
-     *
-     * @throws SamedayAuthenticationException
-     * @throws SamedayAuthorizationException
-     * @throws SamedayNotFoundException
-     * @throws SamedayOtherException
-     * @throws SamedaySDKException
-     * @throws SamedayServerException
-     */
-    public function remove(SamedayAwb $awb): void
-    {
-        $this->removeRemote((string) $awb->getAwbNumber());
-        $this->removeLocal($awb);
     }
 }

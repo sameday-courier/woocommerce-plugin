@@ -7,7 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
@@ -65,7 +64,6 @@ final class RemoveAwbController extends AbstractController
         $removeAwb = new RemoveAwb(
             new RemoveAwbRequest(
                 $removeAwbItem,
-                $samedayAwbRepository,
                 new AwbRemover(
                     $samedayApiClient,
                     $samedayAwbRepository

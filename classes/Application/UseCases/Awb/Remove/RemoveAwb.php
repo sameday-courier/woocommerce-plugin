@@ -7,13 +7,10 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 use Exception;
 use JsonException;
 use Sameday\Exceptions\SamedayOtherException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -25,11 +22,6 @@ final class RemoveAwb
      * @var RemoveAwbItem $removeAwbItem
      */
     private RemoveAwbItem $removeAwbItem;
-
-    /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
-    private SamedayAwbRepository $samedayAwbRepository;
 
     /**
      * @var AwbRemover $awbRemover
@@ -49,7 +41,6 @@ final class RemoveAwb
     )
     {
         $this->removeAwbItem = $removeAwbRequest->getRemoveAwbItem();
-        $this->samedayAwbRepository = $removeAwbRequest->getAwbRepository();
         $this->awbRemover = $removeAwbRequest->getAwbRemover();
         $this->awbErrorParser = $removeAwbRequest->getAwbErrorParser();
     }
@@ -61,16 +52,13 @@ final class RemoveAwb
      */
     public function execute(): RemoveAwbResponse
     {
-        $orderId = $this->removeAwbItem->getOrderId();
-        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId)) {
+        try {
+            $this->awbRemover->remove($this->removeAwbItem->getOrderId());
+        } catch (AwbNotFoundForOrderException $exception) {
             return new RemoveAwbResponse(
-                "Invalid or inexistent an AWB for this $orderId",
+                "Invalid or inexistent an AWB for this {$exception->getOrderId()}",
                 ResponseNoticeType::ERROR,
             );
-        }
-
-        try {
-            $this->awbRemover->remove($awb);
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {
