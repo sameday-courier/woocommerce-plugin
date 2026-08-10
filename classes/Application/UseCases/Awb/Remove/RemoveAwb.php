@@ -21,7 +21,10 @@ if (!defined('ABSPATH')) {
 
 final class RemoveAwb
 {
-    private RemoveAwbRequest $removeAwbRequest;
+    /**
+     * @var RemoveAwbItem $removeAwbItem
+     */
+    private RemoveAwbItem $removeAwbItem;
 
     /**
      * @var SamedayAwbRepository $samedayAwbRepository
@@ -29,14 +32,25 @@ final class RemoveAwb
     private SamedayAwbRepository $samedayAwbRepository;
 
     /**
+     * @var AwbRemover $awbRemover
+     */
+    private AwbRemover $awbRemover;
+
+    /**
      * @var AwbErrorParser $awbErrorParser
      */
     private AwbErrorParser $awbErrorParser;
 
-    public function __construct(RemoveAwbRequest $removeAwbRequest)
+    /**
+     * @param RemoveAwbRequest $removeAwbRequest
+     */
+    public function __construct(
+        RemoveAwbRequest $removeAwbRequest
+    )
     {
-        $this->removeAwbRequest = $removeAwbRequest;
-        $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->removeAwbItem = $removeAwbRequest->getRemoveAwbItem();
+        $this->samedayAwbRepository = $removeAwbRequest->getAwbRepository();
+        $this->awbRemover = $removeAwbRequest->getAwbRemover();
         $this->awbErrorParser = $removeAwbRequest->getAwbErrorParser();
     }
 
@@ -44,15 +58,19 @@ final class RemoveAwb
      * @return RemoveAwbResponse
      *
      * @throws JsonException
-     * @throws SamedaySDKException
      */
     public function execute(): RemoveAwbResponse
     {
-        $awb = $this->removeAwbRequest->getAwb();
-        $awbRemover = new AwbRemover(new Sameday(SdkInitiator::init()), $this->samedayAwbRepository);
+        $orderId = $this->removeAwbItem->getOrderId();
+        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId)) {
+            return new RemoveAwbResponse(
+                "Invalid or inexistent an AWB for this $orderId",
+                ResponseNoticeType::ERROR,
+            );
+        }
 
         try {
-            $awbRemover->remove($awb);
+            $this->awbRemover->remove($awb);
         } catch (SamedayOtherException $exception) {
             $error = $exception->getRawResponse()->getBody();
             if (null !== $error && '' !== $error) {

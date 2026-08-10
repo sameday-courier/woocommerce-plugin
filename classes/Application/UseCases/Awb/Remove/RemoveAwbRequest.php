@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
+use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -14,24 +16,60 @@ if (!defined('ABSPATH')) {
 final class RemoveAwbRequest
 {
     /**
-     * @var SamedayAwb $awb
+     * @var RemoveAwbItem $removeAwbItem
      */
-    private SamedayAwb $awb;
+    private RemoveAwbItem $removeAwbItem;
+
+    /**
+     * @var AwbRemover $awbRemover
+     */
+    private AwbRemover $awbRemover;
+
+    /**
+     * @var SamedayAwbRepository $awbRepository
+     */
+    private SamedayAwbRepository $awbRepository;
 
     /**
      * @var AwbErrorParser $awbErrorParser
      */
     private AwbErrorParser $awbErrorParser;
 
-    public function __construct(SamedayAwb $awb, AwbErrorParser $awbErrorParser)
+    public function __construct(
+        RemoveAwbItem $removeAwbItem,
+        SamedayAwbRepository $awbRepository,
+        AwbRemover $awbRemover,
+        AwbErrorParser $awbErrorParser
+    )
     {
-        $this->awb = $awb;
+        $this->removeAwbItem = $removeAwbItem;
+        $this->awbRepository = $awbRepository;
+        $this->awbRemover = $awbRemover;
         $this->awbErrorParser = $awbErrorParser;
     }
 
-    public function getAwb(): SamedayAwb
+    /**
+     * @return RemoveAwbItem
+     */
+    public function getRemoveAwbItem(): RemoveAwbItem
     {
-        return $this->awb;
+        return $this->removeAwbItem;
+    }
+
+    /**
+     * @return SamedayAwbRepository
+     */
+    public function getAwbRepository(): SamedayAwbRepository
+    {
+        return $this->awbRepository;
+    }
+
+    /**
+     * @return AwbRemover
+     */
+    public function getAwbRemover(): AwbRemover
+    {
+        return $this->awbRemover;
     }
 
     public function getAwbErrorParser(): AwbErrorParser

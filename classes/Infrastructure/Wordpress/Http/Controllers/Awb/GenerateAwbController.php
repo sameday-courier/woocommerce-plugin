@@ -82,7 +82,6 @@ final class GenerateAwbController extends AbstractController
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($exception->getMessage()),
-                ResponseNoticeType::ERROR,
             );
 
             Redirector::to(

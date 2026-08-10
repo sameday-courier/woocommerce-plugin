@@ -6,11 +6,15 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -25,21 +29,11 @@ final class RemoveAwbController extends AbstractController
     private const ACTION = 'remove-awb';
 
     /**
-     * @var SamedayAwbRepository $samedayAwbRepository
-     */
-    private SamedayAwbRepository $samedayAwbRepository;
-
-    /**
      * @return string
      */
     public function getAction(): string
     {
         return self::ACTION;
-    }
-
-    public function __construct()
-    {
-        $this->samedayAwbRepository = new SamedayAwbRepository();
     }
 
     /**
@@ -52,24 +46,33 @@ final class RemoveAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $orderId = (int) $inputParams['order-id'];
-        if (null === $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId)
-        ) {
+        $removeAwbItem = RemoveAwbItem::fromArray($inputParams);
+
+        try {
+            $samedayApiClient = new Sameday(SdkInitiator::init());
+        } catch (SamedaySDKException $exception) {
             NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate("Unable to remove awb for order $orderId"),
-                ResponseNoticeType::ERROR,
+                TranslatorHandler::translate($exception->getMessage()),
             );
 
-            Redirector::to(
-                'post.php',
-                [
-                    'post' => $orderId,
-                    'action' => 'edit',
-                ]
-            );
+            $this->redirectTo($removeAwbItem->getOrderId());
+
+            return;
         }
 
-        $removeAwb = new RemoveAwb(new RemoveAwbRequest($awb, new AwbErrorParser()));
+        $samedayAwbRepository = new SamedayAwbRepository();
+
+        $removeAwb = new RemoveAwb(
+            new RemoveAwbRequest(
+                $removeAwbItem,
+                $samedayAwbRepository,
+                new AwbRemover(
+                    $samedayApiClient,
+                    $samedayAwbRepository
+                ),
+                new AwbErrorParser()
+            )
+        );
 
         $result = $removeAwb->execute();
 
@@ -80,6 +83,16 @@ final class RemoveAwbController extends AbstractController
             );
         }
 
+        $this->redirectTo($removeAwbItem->getOrderId());
+    }
+
+    /**
+     * @param  int $orderId
+     *
+     * @return void
+     */
+    private function redirectTo(int $orderId): void
+    {
         Redirector::to(
             'post.php',
             [
