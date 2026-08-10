@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 
@@ -35,21 +36,29 @@ final class AddNewParcelAwbRequest
     private AwbErrorParser $awbErrorParser;
 
     /**
+     * @var ParcelDimensionsFactory $parcelDimensionsFactory
+     */
+    private ParcelDimensionsFactory $parcelDimensionsFactory;
+
+    /**
      * @param AddNewParcelAwbItem $awbItem
      * @param Sameday $sameday
      * @param SamedayAwbRepository $samedayAwbRepository
      * @param AwbErrorParser $awbErrorParser
+     * @param ParcelDimensionsFactory $parcelDimensionsFactory
      */
     public function __construct(
         AddNewParcelAwbItem $awbItem,
         Sameday $sameday,
         SamedayAwbRepository $samedayAwbRepository,
-        AwbErrorParser $awbErrorParser
+        AwbErrorParser $awbErrorParser,
+        ParcelDimensionsFactory $parcelDimensionsFactory
     ) {
         $this->awbItem = $awbItem;
         $this->sameday = $sameday;
         $this->samedayAwbRepository = $samedayAwbRepository;
         $this->awbErrorParser = $awbErrorParser;
+        $this->parcelDimensionsFactory = $parcelDimensionsFactory;
     }
 
     /**
@@ -82,5 +91,13 @@ final class AddNewParcelAwbRequest
     public function getAwbErrorParser(): AwbErrorParser
     {
         return $this->awbErrorParser;
+    }
+
+    /**
+     * @return ParcelDimensionsFactory
+     */
+    public function getParcelDimensionsFactory(): ParcelDimensionsFactory
+    {
+        return $this->parcelDimensionsFactory;
     }
 }

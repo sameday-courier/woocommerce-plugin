@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
@@ -69,7 +70,8 @@ final class AddNewParcelAwbController extends AbstractController
             $addNewParcelAwbItem,
             $sameday,
             new SamedayAwbRepository(),
-            new AwbErrorParser()
+            new AwbErrorParser(),
+            new ParcelDimensionsFactory()
         );
 
         $addNewParcelAwb = new AddNewParcelAwb($addNewParcelAwbRequest);

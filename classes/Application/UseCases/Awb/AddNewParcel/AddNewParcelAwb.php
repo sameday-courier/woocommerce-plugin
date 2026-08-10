@@ -8,17 +8,13 @@ use Exception;
 use JsonException;
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
-use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -46,12 +42,18 @@ final class AddNewParcelAwb
      */
     private AwbErrorParser $awbErrorParser;
 
+    /**
+     * @var ParcelDimensionsFactory $parcelDimensionsFactory
+     */
+    private ParcelDimensionsFactory $parcelDimensionsFactory;
+
     public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
     {
         $this->addNewParcelAwbRequest = $addNewParcelAwbRequest;
         $this->sameday = $addNewParcelAwbRequest->getSameday();
         $this->samedayAwbRepository = $addNewParcelAwbRequest->getSamedayAwbRepository();
         $this->awbErrorParser = $addNewParcelAwbRequest->getAwbErrorParser();
+        $this->parcelDimensionsFactory = $addNewParcelAwbRequest->getParcelDimensionsFactory();
     }
 
     /**
@@ -76,9 +78,16 @@ final class AddNewParcelAwb
         $position = $this->getPosition($awb->getParcels() ?? '');
 
 
+        $parcelDimensionsObject = $this->parcelDimensionsFactory->fromAttributes(
+            $parcelItem->getParcelWeight(),
+            $parcelItem->getParcelWidth(),
+            $parcelItem->getParcelLength(),
+            $parcelItem->getParcelHeight(),
+        );
+
         $request = new SamedayPostParcelRequest(
             (string) $awb->getAwbNumber(),
-            $parcelItem->getParcelDimensionsObject(),
+            $parcelDimensionsObject,
             $position,
             $parcelItem->getParcelObservation(),
             null,

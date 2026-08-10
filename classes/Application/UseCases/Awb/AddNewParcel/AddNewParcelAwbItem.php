@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
-use Sameday\Objects\ParcelDimensionsObject;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
 if (!defined('ABSPATH')) {
@@ -20,9 +18,24 @@ final class AddNewParcelAwbItem implements ItemInterface
     private int $orderId;
 
     /**
-     * @var ParcelDimensionsObject $parcelDimensionsObject
+     * @var mixed $parcelWeight
      */
-    private ParcelDimensionsObject $parcelDimensionsObject;
+    private $parcelWeight;
+
+    /**
+     * @var mixed $parcelWidth
+     */
+    private $parcelWidth;
+
+    /**
+     * @var mixed $parcelLength
+     */
+    private $parcelLength;
+
+    /**
+     * @var mixed $parcelHeight
+     */
+    private $parcelHeight;
 
     /**
      * @var string $parcelObservation
@@ -34,15 +47,30 @@ final class AddNewParcelAwbItem implements ItemInterface
      */
     private bool $parcelIsLast;
 
+    /**
+     * @param int $orderId
+     * @param mixed $parcelWeight
+     * @param mixed $parcelWidth
+     * @param mixed $parcelLength
+     * @param mixed $parcelHeight
+     * @param string $parcelObservation
+     * @param bool $parcelIsLast
+     */
     public function __construct(
         int $orderId,
-        ParcelDimensionsObject $parcelDimensionsObject,
+        $parcelWeight,
+        $parcelWidth,
+        $parcelLength,
+        $parcelHeight,
         string $parcelObservation = "",
         bool $parcelIsLast = false
     )
     {
         $this->orderId = $orderId;
-        $this->parcelDimensionsObject = $parcelDimensionsObject;
+        $this->parcelWeight = $parcelWeight;
+        $this->parcelWidth = $parcelWidth;
+        $this->parcelLength = $parcelLength;
+        $this->parcelHeight = $parcelHeight;
         $this->parcelObservation = $parcelObservation;
         $this->parcelIsLast = $parcelIsLast;
     }
@@ -54,17 +82,12 @@ final class AddNewParcelAwbItem implements ItemInterface
      */
     public static function fromArray(array $inputParams): self
     {
-        $parcelDimensionsFactory = new ParcelDimensionsFactory();
-        $parcelDimensionObject = $parcelDimensionsFactory->fromAttributes(
-            $inputParams['samedaycourier-parcel-weight'],
-            $inputParams['samedaycourier-parcel-width'],
-            $inputParams['samedaycourier-parcel-length'],
-            $inputParams['samedaycourier-parcel-height'],
-        );
-
         return new self(
             (int) ($inputParams['samedaycourier-order-id'] ?? 0),
-            $parcelDimensionObject,
+            $inputParams['samedaycourier-parcel-weight'] ?? null,
+            $inputParams['samedaycourier-parcel-width'] ?? null,
+            $inputParams['samedaycourier-parcel-length'] ?? null,
+            $inputParams['samedaycourier-parcel-height'] ?? null,
             $inputParams['samedaycourier-parcel-observation'] ?? '',
             $inputParams['samedaycourier-parcel-is-last'] ?? false
         );
@@ -79,11 +102,35 @@ final class AddNewParcelAwbItem implements ItemInterface
     }
 
     /**
-     * @return ParcelDimensionsObject
+     * @return mixed
      */
-    public function getParcelDimensionsObject(): ParcelDimensionsObject
+    public function getParcelWeight()
     {
-        return $this->parcelDimensionsObject;
+        return $this->parcelWeight;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelWidth()
+    {
+        return $this->parcelWidth;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelLength()
+    {
+        return $this->parcelLength;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelHeight()
+    {
+        return $this->parcelHeight;
     }
 
     /**
