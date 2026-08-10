@@ -104,17 +104,7 @@ class AddNewPickupPointController extends AbstractController
         }
 
         $request = new AddNewPickupPointRequest(
-            new AddNewPickupPointItem(
-                $inputParams['pickupPointCountry'],
-                $inputParams['pickupPointCounty'],
-                $inputParams['pickupPointCity'],
-                $inputParams['pickupPointAddress'],
-                $inputParams['pickupPointPostalCode'],
-                $inputParams['pickupPointAlias'],
-                $inputParams['pickupPointContactPersonName'],
-                $inputParams['pickupPointContactPersonPhone'],
-                (bool) ($inputParams['pickupPointDefault'] ?? false),
-            ),
+            AddNewPickupPointItem::fromArray($inputParams),
             $samedayApiClient
         );
 

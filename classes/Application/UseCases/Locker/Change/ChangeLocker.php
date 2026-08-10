@@ -36,9 +36,10 @@ final class ChangeLocker
         ChangeLockerRequest $changeLockerRequest
     )
     {
-        $this->orderId = $changeLockerRequest->orderId;
-        $this->locker = $changeLockerRequest->locker;
-        $this->lockerOrderDataHandler = $changeLockerRequest->lockerOrderDataHandler;
+        $changeLockerItem = $changeLockerRequest->getChangeLockerItem();
+        $this->orderId = $changeLockerItem->getOrderId();
+        $this->locker = $changeLockerItem->getLocker();
+        $this->lockerOrderDataHandler = $changeLockerRequest->getLockerOrderDataHandler();
     }
 
     /**

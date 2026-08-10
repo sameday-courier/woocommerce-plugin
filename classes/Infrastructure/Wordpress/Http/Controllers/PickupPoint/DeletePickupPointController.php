@@ -8,6 +8,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPoint;
+use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointItem;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
@@ -69,7 +70,7 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
-        if (null === $samedayId = $inputParams['sameday_id'] ?? null) {
+        if (null === ($inputParams['sameday_id'] ?? null)) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate("Invalid data format."),
                 ResponseNoticeType::ERROR,
@@ -84,9 +85,11 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
+        $deletePickupPointItem = DeletePickupPointItem::fromArray($inputParams);
+
         $request = new DeletePickupPointRequest(
-            $samedayApiClient,
-            (int) $samedayId
+            $deletePickupPointItem,
+            $samedayApiClient
         );
 
         $deletePickupPoint = new DeletePickupPoint($request);

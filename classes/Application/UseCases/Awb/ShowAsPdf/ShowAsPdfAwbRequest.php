@@ -11,9 +11,9 @@ if (!defined('ABSPATH')) {
 final class ShowAsPdfAwbRequest
 {
     /**
-     * @var int $orderId
+     * @var ShowAsPdfAwbItem $showAsPdfAwbItem
      */
-    private int $orderId;
+    private ShowAsPdfAwbItem $showAsPdfAwbItem;
 
     /**
      * @var string $labelFormat
@@ -21,13 +21,21 @@ final class ShowAsPdfAwbRequest
     private string $labelFormat;
 
     /**
-     * @param int $orderId
+     * @param ShowAsPdfAwbItem $showAsPdfAwbItem
      * @param string $labelFormat
      */
-    public function __construct(int $orderId, string $labelFormat)
+    public function __construct(ShowAsPdfAwbItem $showAsPdfAwbItem, string $labelFormat)
     {
-        $this->orderId = $orderId;
+        $this->showAsPdfAwbItem = $showAsPdfAwbItem;
         $this->labelFormat = $labelFormat;
+    }
+
+    /**
+     * @return ShowAsPdfAwbItem
+     */
+    public function getShowAsPdfAwbItem(): ShowAsPdfAwbItem
+    {
+        return $this->showAsPdfAwbItem;
     }
 
     /**
@@ -35,7 +43,7 @@ final class ShowAsPdfAwbRequest
      */
     public function getOrderId(): int
     {
-        return $this->orderId;
+        return $this->showAsPdfAwbItem->getOrderId();
     }
 
     /**

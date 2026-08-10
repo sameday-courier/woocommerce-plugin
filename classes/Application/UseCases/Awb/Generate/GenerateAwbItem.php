@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
+use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
@@ -19,7 +20,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class GenerateAwbItem
+final class GenerateAwbItem implements ItemInterface
 {
     private int $orderId;
 
@@ -153,39 +154,39 @@ final class GenerateAwbItem
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $inputParams
      *
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $inputParams): self
     {
         $serviceRepository = new SamedayServiceRepository();
         $pickupPointRepository = new SamedayPickupPointRepository();
         $samedayService = $serviceRepository->getServiceSameday(
-            (int) $data['samedaycourier-service']
+            (int) $inputParams['samedaycourier-service']
         );
         $samedayPickupPoint = $pickupPointRepository->getPickupPointSameday(
-            (int) $data['samedaycourier-package-pickup-point']
+            (int) $inputParams['samedaycourier-package-pickup-point']
         );
 
         return new self(
-            (int) $data['samedaycourier-order-id'],
+            (int) $inputParams['samedaycourier-order-id'],
             $samedayService,
             $samedayPickupPoint,
-            (array) ($data['shipping_lines'] ?? []),
-            ShippingDto::fromArray((array) ($data['shipping'] ?? [])),
-            BillingDto::fromArray((array) ($data['billing'] ?? [])),
-            (new LockerDtoFactory())->fromInput($data['locker'] ?? null),
-            isset($data['samedaycourier-open-package-status']),
-            isset($data['samedaycourier-locker_first_mile']),
-            (int) $data['samedaycourier-package-type'],
-            (int) $data['samedaycourier-package-awb-payment'],
-            $data['samedaycourier-package-insurance-value'],
-            $data['samedaycourier-package-repayment'],
-            $data['samedaycourier-client-reference'] ?? null,
-            $data['samedaycourier-package-observation'] ?? null,
+            (array) ($inputParams['shipping_lines'] ?? []),
+            ShippingDto::fromArray((array) ($inputParams['shipping'] ?? [])),
+            BillingDto::fromArray((array) ($inputParams['billing'] ?? [])),
+            (new LockerDtoFactory())->fromInput($inputParams['locker'] ?? null),
+            isset($inputParams['samedaycourier-open-package-status']),
+            isset($inputParams['samedaycourier-locker_first_mile']),
+            (int) $inputParams['samedaycourier-package-type'],
+            (int) $inputParams['samedaycourier-package-awb-payment'],
+            $inputParams['samedaycourier-package-insurance-value'],
+            $inputParams['samedaycourier-package-repayment'],
+            $inputParams['samedaycourier-client-reference'] ?? null,
+            $inputParams['samedaycourier-package-observation'] ?? null,
             (new ParcelDimensionsFactory())->fromList(
-                (array) ($data['samedaycourier-package-dimensions'] ?? [])
+                (array) ($inputParams['samedaycourier-package-dimensions'] ?? [])
             ),
         );
     }

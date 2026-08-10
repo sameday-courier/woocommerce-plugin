@@ -28,8 +28,8 @@ final class GetCities
 
     public function __construct(GetCitiesRequest $getCitiesRequest)
     {
-        $this->sameday = $getCitiesRequest->sameday;
-        $this->countyId = $getCitiesRequest->countyId;
+        $this->sameday = $getCitiesRequest->getSameday();
+        $this->countyId = $getCitiesRequest->getGetCitiesItem()->getCountyId();
     }
 
     /**

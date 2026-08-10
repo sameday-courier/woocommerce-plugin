@@ -7,7 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
@@ -46,22 +45,8 @@ final class AddNewParcelAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $orderId = (int) ($inputParams['samedaycourier-order-id'] ?? 0);
-
-        $parcelDimensionsFactory = new ParcelDimensionsFactory();
-        $parcelDimensionObject = $parcelDimensionsFactory->fromAttributes(
-            $inputParams['samedaycourier-parcel-weight'],
-            $inputParams['samedaycourier-parcel-width'],
-            $inputParams['samedaycourier-parcel-length'],
-            $inputParams['samedaycourier-parcel-height'],
-        );
-
-        $addNewParcelAwbItem = new AddNewParcelAwbItem(
-            $orderId,
-            $parcelDimensionObject,
-            $inputParams['samedaycourier-parcel-observation'] ?? '',
-            $inputParams['samedaycourier-parcel-is-last'] ?? false
-        );
+        $addNewParcelAwbItem = AddNewParcelAwbItem::fromArray($inputParams);
+        $orderId = $addNewParcelAwbItem->getOrderId();
 
         try {
             $sameday = new Sameday(SdkInitiator::init());

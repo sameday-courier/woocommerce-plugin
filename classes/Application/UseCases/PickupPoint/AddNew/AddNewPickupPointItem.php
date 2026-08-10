@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
+use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class AddNewPickupPointItem
+final class AddNewPickupPointItem implements ItemInterface
 {
     /**
      * @var string $pickupPointCountryId
@@ -76,6 +78,26 @@ final class AddNewPickupPointItem
         $this->pickupPointContactPersonName = $pickupPointContactPersonName;
         $this->pickupPointContactPersonPhone = $pickupPointContactPersonPhone;
         $this->isDefault = $isDefault;
+    }
+
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
+    public static function fromArray(array $inputParams): self
+    {
+        return new self(
+            $inputParams['pickupPointCountry'],
+            $inputParams['pickupPointCounty'],
+            $inputParams['pickupPointCity'],
+            $inputParams['pickupPointAddress'],
+            $inputParams['pickupPointPostalCode'],
+            $inputParams['pickupPointAlias'],
+            $inputParams['pickupPointContactPersonName'],
+            $inputParams['pickupPointContactPersonPhone'],
+            (bool) ($inputParams['pickupPointDefault'] ?? false),
+        );
     }
 
     /**

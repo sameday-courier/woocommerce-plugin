@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Lock
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLocker;
+use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerItem;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
@@ -37,13 +38,11 @@ final class ChangeLockerController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $orderId = isset($inputParams['orderId']) ? (int) $inputParams['orderId'] : 0;
-        $locker = $inputParams['locker'] ?? null;
+        $changeLockerItem = ChangeLockerItem::fromArray($inputParams);
 
         $result = (new ChangeLocker(
             new ChangeLockerRequest(
-                $orderId,
-                $locker,
+                $changeLockerItem,
                 new WooLockerOrderDataHandler(),
             )
         ))->execute();

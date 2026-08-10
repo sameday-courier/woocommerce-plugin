@@ -30,8 +30,8 @@ final class DeletePickupPoint
      */
     public function __construct(DeletePickupPointRequest $deletePickupPointRequest)
     {
-        $this->sameday = $deletePickupPointRequest->sameday;
-        $this->samedayId = $deletePickupPointRequest->samedayId;
+        $this->sameday = $deletePickupPointRequest->getSameday();
+        $this->samedayId = $deletePickupPointRequest->getDeletePickupPointItem()->getSamedayId();
     }
 
     /**

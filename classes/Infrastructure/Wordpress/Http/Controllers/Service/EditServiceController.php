@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Serv
 
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
+use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceItem;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
@@ -45,13 +46,11 @@ final class EditServiceController extends AbstractController
             $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
         }
 
+        $inputParams['samedaycourier-service-name'] = $serviceName;
+
         $editService = new EditService(
             new EditServiceRequest(
-                (int) $inputParams['samedaycourier-service-id'],
-                $serviceName,
-                $inputParams['samedaycourier-price'] ?? '',
-                $inputParams['samedaycourier-free-delivery-price'] ?: null,
-                $inputParams['samedaycourier-status'] ?? null,
+                EditServiceItem::fromArray($inputParams),
                 new SamedayServiceRepository()
             )
         );

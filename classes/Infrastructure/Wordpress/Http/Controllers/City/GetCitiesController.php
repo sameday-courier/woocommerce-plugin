@@ -8,6 +8,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCities;
+use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesItem;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
@@ -56,8 +57,8 @@ final class GetCitiesController extends AbstractController
 
         $getCities = new GetCities(
             new GetCitiesRequest(
-                $samedayApiClient,
-                (int) $inputParams['countyId']
+                GetCitiesItem::fromArray($inputParams),
+                $samedayApiClient
             )
         );
 

@@ -13,21 +13,37 @@ if (!defined('ABSPATH')) {
 final class GetCitiesRequest
 {
     /**
-     * @var Sameday $sameday
+     * @var GetCitiesItem $getCitiesItem
      */
-    public Sameday $sameday;
+    private GetCitiesItem $getCitiesItem;
 
     /**
-     * @var int $countyId
+     * @var Sameday $sameday
      */
-    public int $countyId;
+    private Sameday $sameday;
 
     public function __construct(
-        Sameday $sameday,
-        int $countyId
+        GetCitiesItem $getCitiesItem,
+        Sameday $sameday
     )
     {
+        $this->getCitiesItem = $getCitiesItem;
         $this->sameday = $sameday;
-        $this->countyId = $countyId;
+    }
+
+    /**
+     * @return GetCitiesItem
+     */
+    public function getGetCitiesItem(): GetCitiesItem
+    {
+        return $this->getCitiesItem;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
     }
 }

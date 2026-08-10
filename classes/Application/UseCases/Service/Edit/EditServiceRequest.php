@@ -13,96 +13,40 @@ if (!defined('ABSPATH')) {
 final class EditServiceRequest
 {
     /**
-     * @var int $id
+     * @var EditServiceItem $editServiceItem
      */
-    private int $id;
-
-    /**
-     * @var string $name
-     */
-    private string $name;
-
-    /**
-     * @var string $price
-     */
-    private string $price;
-
-    /**
-     * @var string|null $priceFree
-     */
-    private ?string $priceFree;
-
-    /**
-     * @var string|null $status
-     */
-    private ?string $status;
+    private EditServiceItem $editServiceItem;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
      */
-    public SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceRepository $samedayServiceRepository;
 
     /**
-     * @param int $id
-     * @param string $name
-     * @param string $price
-     * @param string|null $priceFree
-     * @param string|null $status
+     * @param EditServiceItem $editServiceItem
      * @param SamedayServiceRepository $samedayServiceRepository
      */
     public function __construct(
-        int $id,
-        string $name,
-        string $price,
-        ?string $priceFree,
-        ?string $status,
+        EditServiceItem $editServiceItem,
         SamedayServiceRepository $samedayServiceRepository
     ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->price = $price;
-        $this->priceFree = $priceFree;
-        $this->status = $status;
+        $this->editServiceItem = $editServiceItem;
         $this->samedayServiceRepository = $samedayServiceRepository;
     }
 
     /**
-     * @return int
+     * @return EditServiceItem
      */
-    public function getId(): int
+    public function getEditServiceItem(): EditServiceItem
     {
-        return $this->id;
+        return $this->editServiceItem;
     }
 
     /**
-     * @return string
+     * @return SamedayServiceRepository
      */
-    public function getName(): string
+    public function getSamedayServiceRepository(): SamedayServiceRepository
     {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrice(): string
-    {
-        return $this->price;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPriceFree(): ?string
-    {
-        return $this->priceFree;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getStatus(): ?string
-    {
-        return $this->status;
+        return $this->samedayServiceRepository;
     }
 }

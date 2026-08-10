@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Sameday\Exceptions\SamedaySDKException;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
@@ -39,7 +40,7 @@ final class ShowAsPdfAwbController extends AbstractController
     {
         $showAsPdf = new ShowAsPdfAwb(
             new ShowAsPdfAwbRequest(
-                (int) $inputParams['order-id'],
+                ShowAsPdfAwbItem::fromArray($inputParams),
                 SamedaySettings::getDefaultLabelFormat()
             )
         );

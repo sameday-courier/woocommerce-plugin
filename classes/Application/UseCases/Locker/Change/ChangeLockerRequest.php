@@ -13,33 +13,41 @@ if (!defined('ABSPATH')) {
 final class ChangeLockerRequest
 {
     /**
-     * @var int $orderId
+     * @var ChangeLockerItem $changeLockerItem
      */
-    public int $orderId;
-
-    /**
-     * @var mixed $locker
-     */
-    public $locker;
+    private ChangeLockerItem $changeLockerItem;
 
     /**
      * @var LockerOrderDataHandlerInterface $lockerOrderDataHandler
      */
-    public LockerOrderDataHandlerInterface $lockerOrderDataHandler;
+    private LockerOrderDataHandlerInterface $lockerOrderDataHandler;
 
     /**
-     * @param int $orderId
-     * @param mixed $locker
+     * @param ChangeLockerItem $changeLockerItem
      * @param LockerOrderDataHandlerInterface $lockerOrderDataHandler
      */
     public function __construct(
-        int $orderId,
-        $locker,
+        ChangeLockerItem $changeLockerItem,
         LockerOrderDataHandlerInterface $lockerOrderDataHandler
     )
     {
-        $this->orderId = $orderId;
-        $this->locker = $locker;
+        $this->changeLockerItem = $changeLockerItem;
         $this->lockerOrderDataHandler = $lockerOrderDataHandler;
+    }
+
+    /**
+     * @return ChangeLockerItem
+     */
+    public function getChangeLockerItem(): ChangeLockerItem
+    {
+        return $this->changeLockerItem;
+    }
+
+    /**
+     * @return LockerOrderDataHandlerInterface
+     */
+    public function getLockerOrderDataHandler(): LockerOrderDataHandlerInterface
+    {
+        return $this->lockerOrderDataHandler;
     }
 }

@@ -31,7 +31,7 @@ final class EditService
     public function __construct(EditServiceRequest $editServiceRequest)
     {
         $this->editServiceRequest = $editServiceRequest;
-        $this->samedayServiceRepository = $editServiceRequest->samedayServiceRepository;
+        $this->samedayServiceRepository = $editServiceRequest->getSamedayServiceRepository();
     }
 
     /**
@@ -39,7 +39,8 @@ final class EditService
      */
     public function execute(): EditServiceResponse
     {
-        $serviceId = $this->editServiceRequest->getId();
+        $editServiceItem = $this->editServiceRequest->getEditServiceItem();
+        $serviceId = $editServiceItem->getId();
 
         $postFields = [
             'id' => [
@@ -48,19 +49,19 @@ final class EditService
             ],
             'name' => [
                 'required' => true,
-                'value' => $this->editServiceRequest->getName(),
+                'value' => $editServiceItem->getName(),
             ],
             'price' => [
                 'required' => true,
-                'value' => $this->editServiceRequest->getPrice(),
+                'value' => $editServiceItem->getPrice(),
             ],
             'price_free' => [
                 'required' => false,
-                'value' => $this->editServiceRequest->getPriceFree(),
+                'value' => $editServiceItem->getPriceFree(),
             ],
             'status' => [
                 'required' => false,
-                'value' => $this->editServiceRequest->getStatus(),
+                'value' => $editServiceItem->getStatus(),
             ],
         ];
 

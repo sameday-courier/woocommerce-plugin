@@ -13,21 +13,37 @@ if (!defined('ABSPATH')) {
 final class DeletePickupPointRequest
 {
     /**
-     * @var Sameday $sameday
+     * @var DeletePickupPointItem $deletePickupPointItem
      */
-    public Sameday $sameday;
+    private DeletePickupPointItem $deletePickupPointItem;
 
     /**
-     * @var int $samedayId
+     * @var Sameday $sameday
      */
-    public int $samedayId;
+    private Sameday $sameday;
 
     public function __construct(
-        Sameday $sameday,
-        int $samedayId
+        DeletePickupPointItem $deletePickupPointItem,
+        Sameday $sameday
     )
     {
+        $this->deletePickupPointItem = $deletePickupPointItem;
         $this->sameday = $sameday;
-        $this->samedayId = $samedayId;
+    }
+
+    /**
+     * @return DeletePickupPointItem
+     */
+    public function getDeletePickupPointItem(): DeletePickupPointItem
+    {
+        return $this->deletePickupPointItem;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
     }
 }
