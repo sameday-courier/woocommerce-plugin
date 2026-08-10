@@ -250,7 +250,7 @@ final class SamedayCourier extends WC_Shipping_Method
                             'is_testing' => $locker->getIsTesting(),
                         ];
                     },
-                    SamedayLockerRepository::getLockers()
+                    (new SamedayLockerRepository())->getLockers()
                 );
             }
 
