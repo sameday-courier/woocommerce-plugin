@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
@@ -158,38 +159,6 @@ final class GenerateAwbItem
      */
     public static function fromArray(array $data): self
     {
-        $parcelDimensions = [];
-
-        foreach ($data as $key => $value) {
-            if (!preg_match('/^samedaycourier-package-(weight|length|height|width)(\d+)$/', $key, $matches)) {
-                continue;
-            }
-
-            $attribute = $matches[1];
-            $index = $matches[2];
-
-            if (!isset($parcelDimensions[$index])) {
-                $parcelDimensions[$index] = [
-                    'weight' => null,
-                    'length' => null,
-                    'height' => null,
-                    'width' => null,
-                ];
-            }
-
-            $parcelDimensions[$index][$attribute] = $value;
-        }
-
-        $parcelsDimensions = [];
-        foreach ($parcelDimensions as $dimension) {
-            $parcelsDimensions[] = new ParcelDimensionsObject(
-                $dimension['weight'],
-                $dimension['length'],
-                $dimension['height'],
-                $dimension['width']
-            );
-        }
-
         $serviceRepository = new SamedayServiceRepository();
         $pickupPointRepository = new SamedayPickupPointRepository();
         $samedayService = $serviceRepository->getServiceSameday(
@@ -215,7 +184,9 @@ final class GenerateAwbItem
             $data['samedaycourier-package-repayment'],
             $data['samedaycourier-client-reference'] ?? null,
             $data['samedaycourier-package-observation'] ?? null,
-            $parcelsDimensions,
+            (new ParcelDimensionsFactory())->fromList(
+                (array) ($data['samedaycourier-package-dimensions'] ?? [])
+            ),
         );
     }
 

@@ -246,16 +246,16 @@ class AwbForm
                                 <label for="samedaycourier-package-weight"> ' . TranslatorHandler::translate("Package Dimensions") . ' <span style="color: #ff2222"> * </span>  </label>
                             </th> 
                             <td class="forminp forminp-text" style="width: 20%;">
-                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-weight1" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . TranslatorHandler::translate("Package Weight") . '">
+                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][weight]" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . TranslatorHandler::translate("Package Weight") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-length1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . TranslatorHandler::translate("Package Length") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][length]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . TranslatorHandler::translate("Package Length") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-height1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-height" placeholder="' . TranslatorHandler::translate("Package Height") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][height]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-height" placeholder="' . TranslatorHandler::translate("Package Height") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-width1" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . TranslatorHandler::translate("Package Width") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][width]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . TranslatorHandler::translate("Package Width") . '">
                              </td>
                              <td><button class="sameday_admin_button deleteParcelButton">✖</button></td>
                         </tr>

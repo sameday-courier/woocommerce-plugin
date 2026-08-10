@@ -6,11 +6,15 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use JsonException;
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\ParcelDimensionsObject;
+use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
@@ -44,22 +48,46 @@ final class AddNewParcelAwbController extends AbstractController
     {
         $orderId = (int) ($inputParams['samedaycourier-order-id'] ?? 0);
 
-        $addNewParcelAwb = new AddNewParcelAwb(
-            new AddNewParcelAwbRequest(
-                $orderId,
-                new AddNewParcelAwbItem(
-                    new ParcelDimensionsObject(
-                        (float) number_format((float) ($inputParams['samedaycourier-parcel-weight'] ?? 1), 2),
-                        (float) number_format((float) ($inputParams['samedaycourier-parcel-length'] ?? 0), 2),
-                        (float) number_format((float) ($inputParams['samedaycourier-parcel-height'] ?? 0), 2),
-                        (float) number_format((float) ($inputParams['samedaycourier-parcel-width'] ?? 0), 2)
-                    ),
-                    (string) ($inputParams['samedaycourier-parcel-observation'] ?? ''),
-                    (bool) ($inputParams['samedaycourier-parcel-is-last'] ?? false)
-                ),
-                new AwbErrorParser()
-            ),
+        $parcelDimensionsFactory = new ParcelDimensionsFactory();
+        $parcelDimensionObject = $parcelDimensionsFactory->fromAttributes(
+            $inputParams['samedaycourier-parcel-weight'],
+            $inputParams['samedaycourier-parcel-width'],
+            $inputParams['samedaycourier-parcel-length'],
+            $inputParams['samedaycourier-parcel-height'],
         );
+
+        $addNewParcelAwbItem = new AddNewParcelAwbItem(
+            $orderId,
+            $parcelDimensionObject,
+            $inputParams['samedaycourier-parcel-observation'] ?? '',
+            $inputParams['samedaycourier-parcel-is-last'] ?? false
+        );
+
+        try {
+            $sameday = new Sameday(SdkInitiator::init());
+        } catch (SamedaySDKException $e) {
+            NoticerHandler::addFlashNotice(
+                TranslatorHandler::translate($e->getMessage()),
+            );
+
+            Redirector::to(
+                'post.php',
+                [
+                    'post' => $orderId,
+                    'action' => 'edit',
+                    'add-new-parcel' => ResponseNoticeType::ERROR,
+                ]
+            );
+        }
+
+        $addNewParcelAwbRequest = new AddNewParcelAwbRequest(
+            $addNewParcelAwbItem,
+            $sameday,
+            new SamedayAwbRepository(),
+            new AwbErrorParser()
+        );
+
+        $addNewParcelAwb = new AddNewParcelAwb($addNewParcelAwbRequest);
 
         $result = $addNewParcelAwb->execute();
 

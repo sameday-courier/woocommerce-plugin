@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
+use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -13,14 +15,19 @@ if (!defined('ABSPATH')) {
 final class AddNewParcelAwbRequest
 {
     /**
-     * @var int $orderId
-     */
-    private int $orderId;
-
-    /**
      * @var AddNewParcelAwbItem $awbItem
      */
     private AddNewParcelAwbItem $awbItem;
+
+    /**
+     * @var Sameday $sameday
+     */
+    private Sameday $sameday;
+
+    /**
+     * @var SamedayAwbRepository $samedayAwbRepository
+     */
+    private SamedayAwbRepository $samedayAwbRepository;
 
     /**
      * @var AwbErrorParser $awbErrorParser
@@ -28,27 +35,21 @@ final class AddNewParcelAwbRequest
     private AwbErrorParser $awbErrorParser;
 
     /**
-     * @param int $orderId
      * @param AddNewParcelAwbItem $awbItem
+     * @param Sameday $sameday
+     * @param SamedayAwbRepository $samedayAwbRepository
      * @param AwbErrorParser $awbErrorParser
      */
     public function __construct(
-        int $orderId,
         AddNewParcelAwbItem $awbItem,
+        Sameday $sameday,
+        SamedayAwbRepository $samedayAwbRepository,
         AwbErrorParser $awbErrorParser
-    )
-    {
-        $this->orderId = $orderId;
+    ) {
         $this->awbItem = $awbItem;
+        $this->sameday = $sameday;
+        $this->samedayAwbRepository = $samedayAwbRepository;
         $this->awbErrorParser = $awbErrorParser;
-    }
-
-    /**
-     * @return int
-     */
-    public function getOrderId(): int
-    {
-        return $this->orderId;
     }
 
     /**
@@ -57,6 +58,22 @@ final class AddNewParcelAwbRequest
     public function getAwbItem(): AddNewParcelAwbItem
     {
         return $this->awbItem;
+    }
+
+    /**
+     * @return Sameday
+     */
+    public function getSameday(): Sameday
+    {
+        return $this->sameday;
+    }
+
+    /**
+     * @return SamedayAwbRepository
+     */
+    public function getSamedayAwbRepository(): SamedayAwbRepository
+    {
+        return $this->samedayAwbRepository;
     }
 
     /**

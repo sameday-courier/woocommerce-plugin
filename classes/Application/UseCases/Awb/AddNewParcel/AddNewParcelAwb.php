@@ -32,6 +32,11 @@ final class AddNewParcelAwb
     private AddNewParcelAwbRequest $addNewParcelAwbRequest;
 
     /**
+     * @var Sameday $sameday
+     */
+    private Sameday $sameday;
+
+    /**
      * @var SamedayAwbRepository $samedayAwbRepository
      */
     private SamedayAwbRepository $samedayAwbRepository;
@@ -44,31 +49,32 @@ final class AddNewParcelAwb
     public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
     {
         $this->addNewParcelAwbRequest = $addNewParcelAwbRequest;
-        $this->samedayAwbRepository = new SamedayAwbRepository();
+        $this->sameday = $addNewParcelAwbRequest->getSameday();
+        $this->samedayAwbRepository = $addNewParcelAwbRequest->getSamedayAwbRepository();
         $this->awbErrorParser = $addNewParcelAwbRequest->getAwbErrorParser();
     }
 
     /**
      * @return AddNewParcelAwbResponse
-     *
      * @throws JsonException
-     * @throws SamedaySDKException
      */
     public function execute(): AddNewParcelAwbResponse
     {
-        $sameday = new Sameday(SdkInitiator::init());
-        $awb = $this->samedayAwbRepository->getAwbForOrderId($this->addNewParcelAwbRequest->getOrderId());
+        $parcelItem = $this->addNewParcelAwbRequest->getAwbItem();
+
+        $orderId = $parcelItem->getOrderId();
+        $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
 
         if (null === $awb) {
             return new AddNewParcelAwbResponse(
-                $this->addNewParcelAwbRequest->getOrderId(),
+                $orderId,
                 'AWB not found for this order.',
                 ResponseNoticeType::ERROR,
             );
         }
 
         $position = $this->getPosition($awb->getParcels() ?? '');
-        $parcelItem = $this->addNewParcelAwbRequest->getAwbItem();
+
 
         $request = new SamedayPostParcelRequest(
             (string) $awb->getAwbNumber(),
@@ -81,7 +87,7 @@ final class AddNewParcelAwb
 
         $parcel = null;
         try {
-            $parcel = $sameday->postParcel($request);
+            $parcel = $this->sameday->postParcel($request);
         } catch (SamedayBadRequestException $e) {
             $errors = $e->getErrors();
         } catch (SamedayOtherException $exception) {
@@ -103,7 +109,7 @@ final class AddNewParcelAwb
         if (isset($errors) && null === $parcel) {
 
             return new AddNewParcelAwbResponse(
-                $this->addNewParcelAwbRequest->getOrderId(),
+                $orderId,
                 $this->awbErrorParser->parse($errors),
                 ResponseNoticeType::ERROR,
             );
@@ -121,14 +127,14 @@ final class AddNewParcelAwb
 
         if (!$this->samedayAwbRepository->updateParcels($awb->getOrderId(), serialize($parcels))) {
             return new AddNewParcelAwbResponse(
-                $this->addNewParcelAwbRequest->getOrderId(),
+                $orderId,
                 'Unable to update AWB parcels',
                 ResponseNoticeType::ERROR,
             );
         }
 
         return new AddNewParcelAwbResponse(
-            $this->addNewParcelAwbRequest->getOrderId(),
+            $orderId,
             "AWB added new parcel successfully.",
             ResponseNoticeType::SUCCESS,
         );

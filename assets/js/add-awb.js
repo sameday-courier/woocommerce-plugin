@@ -19,16 +19,8 @@
                     if (packageDimensionInput) {
                         let clonedPackageDimensionInput = packageDimensionInput.cloneNode(true);
 
-                        // Update the name attribute with an incremented number
-                        let allInputs = modalContainer.querySelectorAll(".rowPackageDimension input");
-                        let lastIndex = allInputs.length;
                         clonedPackageDimensionInput.querySelectorAll("input").forEach((input) => {
-                            let name = input.getAttribute("name");
-                            if (name) {
-                                let newName = name.replace(/\d+$/, '') + lastIndex;
-                                input.setAttribute("name", newName);
-                            }
-                            input.value = ""; // Clear the value in the cloned input
+                            input.value = "";
                         });
 
                         packageDimensionInput.parentNode.insertBefore(clonedPackageDimensionInput, packageDimensionInput.nextSibling);
@@ -71,15 +63,13 @@
         });
 
         function renumberInputs() {
-            // Renumber all inputs to ensure sequential naming
             let modalContainer = document.getElementById("TB_window");
             let allRows = modalContainer.querySelectorAll(".rowPackageDimension");
             allRows.forEach((row, index) => {
                 row.querySelectorAll("input").forEach((input) => {
                     let name = input.getAttribute("name");
                     if (name) {
-                        let newName = name.replace(/\d+$/, '') + (index + 1);
-                        input.setAttribute("name", newName);
+                        input.setAttribute("name", name.replace(/\[\d+]/, '[' + (index + 1) + ']'));
                     }
                 });
             });

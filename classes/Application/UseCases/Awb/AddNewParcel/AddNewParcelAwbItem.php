@@ -13,6 +13,11 @@ if (!defined('ABSPATH')) {
 final class AddNewParcelAwbItem
 {
     /**
+     * @var int $orderId
+     */
+    private int $orderId;
+
+    /**
      * @var ParcelDimensionsObject $parcelDimensionsObject
      */
     private ParcelDimensionsObject $parcelDimensionsObject;
@@ -28,14 +33,24 @@ final class AddNewParcelAwbItem
     private bool $parcelIsLast;
 
     public function __construct(
+        int $orderId,
         ParcelDimensionsObject $parcelDimensionsObject,
         string $parcelObservation = "",
         bool $parcelIsLast = false
     )
     {
+        $this->orderId = $orderId;
         $this->parcelDimensionsObject = $parcelDimensionsObject;
         $this->parcelObservation = $parcelObservation;
         $this->parcelIsLast = $parcelIsLast;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderId(): int
+    {
+        return $this->orderId;
     }
 
     /**
