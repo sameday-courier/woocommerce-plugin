@@ -20,7 +20,8 @@
     vertical-align: middle;
 }
 
-.sameday_admin_button {
+.sameday_admin_button,
+.sameday_button {
     display: inline-block;
     background: linear-gradient(90deg, #ed2224, #b21f24);
     color: #fff !important;
@@ -38,28 +39,39 @@
 }
 
 .sameday_admin_button:hover,
-.sameday_admin_button:focus {
+.sameday_admin_button:focus,
+.sameday_button:hover,
+.sameday_button:focus {
     background: linear-gradient(135deg, #d50b15, #8f3614);
     color: #fff !important;
     box-shadow: 0 2px 4px rgba(178, 31, 36, 0.25);
 }
 
-.sameday_admin_button:focus {
+.sameday_admin_button:focus,
+.sameday_button:focus {
     outline: 2px solid #ed2224;
     outline-offset: 1px;
 }
 
-.sameday_admin_button:active {
+.sameday_admin_button:active,
+.sameday_button:active {
     transform: translateY(1px);
 }
 
-/* Orders list: keep WP page-title-action layout, only brand colors */
+.sameday_button:disabled,
+.sameday_button[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Orders list: keep WP page-title-action layout, white buttons with black text */
 .wrap a.page-title-action.sameday_button,
 .wrap a.page-title-action.sameday_button:active {
-    border-color: #b21f24;
-    background: #ed2224;
-    background: linear-gradient(90deg, #ed2224, #b21f24);
-    color: #fff !important;
+    border-color: #1d2327;
+    background: #fff;
+    color: #1d2327 !important;
 }
 
 .wrap a.page-title-action.sameday_button:hover,
@@ -73,4 +85,18 @@
 
 .wrap a.page-title-action.sameday_button:focus {
     box-shadow: 0 0 0 1px #fff, 0 0 0 3px #ed2224;
+}
+
+.wrap a.page-title-action.sameday_button .sameday-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0 6px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    vertical-align: text-top;
+    object-fit: contain;
+    position: relative;
+    top: 1px;
 }

@@ -1,8 +1,8 @@
 (function ($) {
     'use strict';
 
-    var BUTTON_ID = 'sameday-bulk-awb-button';
-    var MODAL_ID = 'sameday-bulk-awb-modal';
+    var BUTTON_SELECTOR = '[data-sameday-bulk-awb-open]';
+    var MODAL_SELECTOR = '[data-sameday-bulk-awb-modal]';
 
     function getSelectedOrderIds() {
         var ids = [];
@@ -21,19 +21,8 @@
         return ids;
     }
 
-    function placeButton() {
-        var $button = $('#' + BUTTON_ID);
-        var $anchor = $('.wrap > h1.wp-heading-inline').nextAll('a.page-title-action').not('#' + BUTTON_ID).first();
-
-        if (!$anchor.length) {
-            $anchor = $('.wrap > a.page-title-action').not('#' + BUTTON_ID).first();
-        }
-
-        if (!$button.length || !$anchor.length) {
-            return;
-        }
-
-        $button.insertAfter($anchor).css({
+    function syncButtonLayout($button, $anchor) {
+        $button.css({
             display: $anchor.css('display'),
             position: $anchor.css('position'),
             top: $anchor.css('top'),
@@ -50,21 +39,52 @@
         });
     }
 
-    function updateConfirmState() {
-        var hasOrders = getSelectedOrderIds().length > 0;
-        var agreed = $('#sameday-bulk-awb-agree').is(':checked');
-        $('#sameday-bulk-awb-confirm').prop('disabled', !(hasOrders && agreed));
+    function placeButtons() {
+        var $buttons = $(BUTTON_SELECTOR);
+        if (!$buttons.length) {
+            return;
+        }
+
+        var $anchor = $('.wrap > h1.wp-heading-inline').nextAll('a.page-title-action').not(BUTTON_SELECTOR).first();
+        if (!$anchor.length) {
+            $anchor = $('.wrap > a.page-title-action').not(BUTTON_SELECTOR).first();
+        }
+        if (!$anchor.length) {
+            return;
+        }
+
+        var $insertAfter = $anchor;
+        $buttons.each(function () {
+            var $button = $(this);
+            $button.insertAfter($insertAfter);
+            syncButtonLayout($button, $anchor);
+            $insertAfter = $button;
+        });
     }
 
-    function renderOrders(ids) {
-        var $list = $('#sameday-bulk-awb-order-list');
-        var $empty = $('#sameday-bulk-awb-empty');
+    function getModal($from) {
+        if ($from.is(MODAL_SELECTOR)) {
+            return $from;
+        }
+
+        return $from.closest(MODAL_SELECTOR);
+    }
+
+    function updateConfirmState($modal) {
+        var hasOrders = getSelectedOrderIds().length > 0;
+        var agreed = $modal.find('[data-sameday-bulk-awb-agree]').is(':checked');
+        $modal.find('[data-sameday-bulk-awb-confirm]').prop('disabled', !(hasOrders && agreed));
+    }
+
+    function renderOrders($modal, ids) {
+        var $list = $modal.find('[data-sameday-bulk-awb-order-list]');
+        var $empty = $modal.find('[data-sameday-bulk-awb-empty]');
         var orderLabel = (window.samedayBulkAwb && window.samedayBulkAwb.i18n && window.samedayBulkAwb.i18n.order)
             ? window.samedayBulkAwb.i18n.order
             : 'Order';
 
         $list.empty();
-        $('#sameday-bulk-awb-order-count').text(String(ids.length));
+        $modal.find('[data-sameday-bulk-awb-order-count]').text(String(ids.length));
 
         if (!ids.length) {
             $list.hide();
@@ -80,52 +100,73 @@
         });
     }
 
-    function openModal() {
-        var ids = getSelectedOrderIds();
-        var $modal = $('#' + MODAL_ID);
+    function openModal(modalId) {
+        var $modal = $('#' + modalId);
+        if (!$modal.length) {
+            return;
+        }
 
-        renderOrders(ids);
-        $('#sameday-bulk-awb-agree').prop('checked', false);
-        updateConfirmState();
+        closeAllModals();
+        renderOrders($modal, getSelectedOrderIds());
+        $modal.find('[data-sameday-bulk-awb-agree]').prop('checked', false);
+        updateConfirmState($modal);
 
         $modal.prop('hidden', false);
         $('body').addClass('sameday-bulk-awb-modal-open');
     }
 
-    function closeModal() {
-        $('#' + MODAL_ID).prop('hidden', true);
+    function closeModal($modal) {
+        if (!$modal || !$modal.length) {
+            return;
+        }
+
+        $modal.prop('hidden', true);
+        if (!$(MODAL_SELECTOR).filter(':not([hidden])').length) {
+            $('body').removeClass('sameday-bulk-awb-modal-open');
+        }
+    }
+
+    function closeAllModals() {
+        $(MODAL_SELECTOR).prop('hidden', true);
         $('body').removeClass('sameday-bulk-awb-modal-open');
     }
 
     $(function () {
-        placeButton();
+        placeButtons();
 
-        $(document).on('click', '#' + BUTTON_ID, function (event) {
+        $(document).on('click', BUTTON_SELECTOR, function (event) {
             event.preventDefault();
-            openModal();
+            openModal($(this).data('sameday-bulk-awb-open'));
         });
 
         $(document).on('click', '[data-sameday-bulk-awb-close]', function (event) {
             event.preventDefault();
-            closeModal();
+            closeModal(getModal($(this)));
         });
 
-        $(document).on('change', '#sameday-bulk-awb-agree', updateConfirmState);
+        $(document).on('change', '[data-sameday-bulk-awb-agree]', function () {
+            updateConfirmState(getModal($(this)));
+        });
 
         $(document).on('keydown', function (event) {
-            if (event.key === 'Escape' && !$('#' + MODAL_ID).prop('hidden')) {
-                closeModal();
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            var $openModal = $(MODAL_SELECTOR).filter(':not([hidden])').last();
+            if ($openModal.length) {
+                closeModal($openModal);
             }
         });
 
-        $(document).on('click', '#sameday-bulk-awb-confirm', function (event) {
+        $(document).on('click', '[data-sameday-bulk-awb-confirm]', function (event) {
             event.preventDefault();
             if ($(this).is(':disabled')) {
                 return;
             }
 
-            // Confirm handler will be wired to bulk generation in a later step.
-            closeModal();
+            // Confirm handlers will be wired to bulk generate/remove in a later step.
+            closeModal(getModal($(this)));
         });
     });
 }(jQuery));

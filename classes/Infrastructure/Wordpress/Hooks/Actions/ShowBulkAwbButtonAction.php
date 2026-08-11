@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\BulkAwbModal;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateBulkAwbModal;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\RemoveBulkAwbModal;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -33,7 +34,8 @@ final class ShowBulkAwbButtonAction extends AbstractAction
             return;
         }
 
-        echo BulkAwbModal::render();
+        echo GenerateBulkAwbModal::render();
+        echo RemoveBulkAwbModal::render();
     }
 
     /**

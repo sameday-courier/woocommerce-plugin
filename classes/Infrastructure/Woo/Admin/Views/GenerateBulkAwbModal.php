@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class BulkAwbModal
+final class GenerateBulkAwbModal
 {
-    public const MODAL_ID = 'sameday-bulk-awb-modal';
+    public const MODAL_ID = 'sameday-generate-bulk-awb-modal';
     public const BUTTON_ID = 'sameday-bulk-awb-button';
 
     /**
@@ -22,28 +23,30 @@ final class BulkAwbModal
     {
         $title = TranslatorHandler::translate('AWB Bulk Generation');
         $subtitle = TranslatorHandler::translate('Review selected orders before generating shipment labels.');
-        $summaryTemplate = TranslatorHandler::translate('You are about to generate AWB for %s order(s).');
+        $summaryTemplate = TranslatorHandler::translate('You are about to generate Sameday AWB for %s order(s).');
         $disclaimer = TranslatorHandler::translate('Confirm this if you want to start bulk awb processing!');
         $cancel = TranslatorHandler::translate('Cancel');
         $confirm = TranslatorHandler::translate('Confirm');
-        $buttonLabel = TranslatorHandler::translate('Sameday Bulk Awb');
+        $buttonLabel = TranslatorHandler::translate('Generate Bulk Awb');
         $emptySelection = TranslatorHandler::translate('Please select at least one order.');
 
         $summaryHtml = sprintf(
             $summaryTemplate,
-            '<strong id="sameday-bulk-awb-order-count">0</strong>'
+            '<strong data-sameday-bulk-awb-order-count>0</strong>'
         );
 
         $button = sprintf(
-            '<a id="%1$s" href="#" class="page-title-action sameday_button" style="display:none;" role="button">%2$s</a>',
+            '<a id="%1$s" href="#" class="page-title-action sameday_button" style="display:none;" role="button" data-sameday-bulk-awb-open="%2$s">%3$s%4$s</a>',
             esc_attr(self::BUTTON_ID),
+            esc_attr(self::MODAL_ID),
+            SamedayIcon::render('sameday-icon', 16),
             $buttonLabel
         );
 
         $modal = sprintf(
-            '<div id="%1$s" class="sameday-bulk-awb-modal" hidden>
+            '<div id="%1$s" class="sameday-bulk-awb-modal" hidden data-sameday-bulk-awb-modal>
                 <div class="sameday-bulk-awb-modal__backdrop" data-sameday-bulk-awb-close></div>
-                <div class="sameday-bulk-awb-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="sameday-bulk-awb-title">
+                <div class="sameday-bulk-awb-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="%1$s-title">
                     <div class="sameday-bulk-awb-modal__header">
                         <div class="sameday-bulk-awb-modal__heading">
                             <div class="sameday-bulk-awb-modal__icon" aria-hidden="true">
@@ -53,7 +56,7 @@ final class BulkAwbModal
                                 </svg>
                             </div>
                             <div class="sameday-bulk-awb-modal__titles">
-                                <h2 id="sameday-bulk-awb-title">%2$s</h2>
+                                <h2 id="%1$s-title">%2$s</h2>
                                 <p>%3$s</p>
                             </div>
                         </div>
@@ -63,10 +66,10 @@ final class BulkAwbModal
                     </div>
                     <div class="sameday-bulk-awb-modal__body">
                         <p class="sameday-bulk-awb-modal__summary">%5$s</p>
-                        <ul id="sameday-bulk-awb-order-list" class="sameday-bulk-awb-modal__orders"></ul>
-                        <p id="sameday-bulk-awb-empty" class="sameday-bulk-awb-modal__empty" hidden>%6$s</p>
-                        <label class="sameday-bulk-awb-modal__disclaimer" for="sameday-bulk-awb-agree">
-                            <input type="checkbox" id="sameday-bulk-awb-agree">
+                        <ul class="sameday-bulk-awb-modal__orders" data-sameday-bulk-awb-order-list></ul>
+                        <p class="sameday-bulk-awb-modal__empty" data-sameday-bulk-awb-empty hidden>%6$s</p>
+                        <label class="sameday-bulk-awb-modal__disclaimer">
+                            <input type="checkbox" data-sameday-bulk-awb-agree>
                             <span>%7$s</span>
                         </label>
                     </div>
@@ -74,7 +77,7 @@ final class BulkAwbModal
                         <button type="button" class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--cancel" data-sameday-bulk-awb-close>
                             %8$s
                         </button>
-                        <button type="button" id="sameday-bulk-awb-confirm" class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm" disabled>
+                        <button type="button" class="sameday_button sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm" data-sameday-bulk-awb-confirm disabled>
                             %9$s
                         </button>
                     </div>

@@ -21,8 +21,10 @@
 .sameday-bulk-awb-modal__dialog {
     position: relative;
     z-index: 1;
-    width: 100%;
-    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    width: min(900px, 92vw);
+    height: min(900px, 85vh);
     background: #fff;
     border-radius: 14px;
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
@@ -34,32 +36,38 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    padding: 22px 24px 8px;
+    padding: 28px 32px 12px;
+    flex: 0 0 auto;
 }
 
 .sameday-bulk-awb-modal__heading {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 16px;
     min-width: 0;
 }
 
 .sameday-bulk-awb-modal__icon {
     flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     border-radius: 999px;
-    background: #ebe7ff;
-    color: #6d5efc;
+    background: #fde8e8;
+    color: #ed2224;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
+.sameday-bulk-awb-modal__icon svg {
+    width: 26px;
+    height: 26px;
+}
+
 .sameday-bulk-awb-modal__titles h2 {
-    margin: 2px 0 4px;
+    margin: 2px 0 6px;
     color: #1f2937;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.3;
 }
@@ -67,21 +75,21 @@
 .sameday-bulk-awb-modal__titles p {
     margin: 0;
     color: #6b7280;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.45;
 }
 
 .sameday-bulk-awb-modal__close {
     flex: 0 0 auto;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     margin: 0;
     padding: 0;
     border: 0;
     border-radius: 8px;
     background: transparent;
     color: #9ca3af;
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
     cursor: pointer;
 }
@@ -93,21 +101,24 @@
 }
 
 .sameday-bulk-awb-modal__body {
-    padding: 8px 24px 8px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 12px 32px;
 }
 
 .sameday-bulk-awb-modal__summary {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     color: #374151;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.5;
 }
 
 .sameday-bulk-awb-modal__orders {
-    margin: 0 0 16px;
-    padding-left: 22px;
+    margin: 0 0 18px;
+    padding-left: 24px;
     color: #374151;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.6;
 }
 
@@ -116,22 +127,22 @@
 }
 
 .sameday-bulk-awb-modal__empty {
-    margin: 0 0 16px;
+    margin: 0 0 18px;
     color: #b45309;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .sameday-bulk-awb-modal__disclaimer {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
-    padding: 14px 14px;
+    padding: 16px 18px;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     background: #f9fafb;
     color: #4b5563;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.45;
     cursor: pointer;
 }
@@ -148,12 +159,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 18px 24px 22px;
+    padding: 18px 32px 24px;
+    flex: 0 0 auto;
 }
 
 .sameday-bulk-awb-modal__btn {
-    min-height: 38px;
-    padding: 0 18px;
+    min-height: 42px;
+    padding: 0 20px;
     border-radius: 8px;
     border: 1px solid transparent;
     font-size: 14px;
@@ -174,22 +186,26 @@
     border-color: #9ca3af;
 }
 
-.sameday-bulk-awb-modal__btn--confirm {
-    background: #9b8afb;
-    border-color: #9b8afb;
-    color: #fff;
+.sameday-bulk-awb-modal__btn.sameday_button.sameday-bulk-awb-modal__btn--confirm {
+    min-height: 42px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ed2224, #b21f24);
+    color: #fff !important;
 }
 
-.sameday-bulk-awb-modal__btn--confirm:hover,
-.sameday-bulk-awb-modal__btn--confirm:focus {
-    background: #8774f7;
-    border-color: #8774f7;
-    color: #fff;
+.sameday-bulk-awb-modal__btn.sameday_button.sameday-bulk-awb-modal__btn--confirm:hover,
+.sameday-bulk-awb-modal__btn.sameday_button.sameday-bulk-awb-modal__btn--confirm:focus {
+    background: linear-gradient(135deg, #d50b15, #8f3614);
+    color: #fff !important;
 }
 
-.sameday-bulk-awb-modal__btn--confirm:disabled {
+.sameday-bulk-awb-modal__btn.sameday_button.sameday-bulk-awb-modal__btn--confirm:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }
 
 body.sameday-bulk-awb-modal-open {
