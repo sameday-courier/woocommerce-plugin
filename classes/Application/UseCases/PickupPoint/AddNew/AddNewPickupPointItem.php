@@ -88,14 +88,14 @@ final class AddNewPickupPointItem implements ItemInterface
     public static function fromArray(array $inputParams): self
     {
         return new self(
-            $inputParams['pickupPointCountry'],
-            $inputParams['pickupPointCounty'],
-            $inputParams['pickupPointCity'],
-            $inputParams['pickupPointAddress'],
-            $inputParams['pickupPointPostalCode'],
-            $inputParams['pickupPointAlias'],
-            $inputParams['pickupPointContactPersonName'],
-            $inputParams['pickupPointContactPersonPhone'],
+            (string) ($inputParams['pickupPointCountry'] ?? ''),
+            (string) ($inputParams['pickupPointCounty'] ?? ''),
+            (string) ($inputParams['pickupPointCity'] ?? ''),
+            (string) ($inputParams['pickupPointAddress'] ?? ''),
+            (string) ($inputParams['pickupPointPostalCode'] ?? ''),
+            (string) ($inputParams['pickupPointAlias'] ?? ''),
+            (string) ($inputParams['pickupPointContactPersonName'] ?? ''),
+            (string) ($inputParams['pickupPointContactPersonPhone'] ?? ''),
             (bool) ($inputParams['pickupPointDefault'] ?? false),
         );
     }

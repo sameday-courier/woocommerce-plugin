@@ -16,17 +16,17 @@ final class OohDto
     public ?int $lockerId;
 
     /**
-     * @var string|null $oohLastMile
+     * @var int|null $oohLastMile
      */
-    public ?string $oohLastMile;
+    public ?int $oohLastMile;
 
     /**
      * @param int|null $lockerId
-     * @param string|null $oohLastMile
+     * @param int|null $oohLastMile
      */
     public function __construct(
         ?int $lockerId = null,
-        ?string $oohLastMile = null
+        ?int $oohLastMile = null
     )
     {
         $this->lockerId = $lockerId;
@@ -42,9 +42,9 @@ final class OohDto
     }
 
     /**
-     * @return null|string
+     * @return null|int
      */
-    public function getOohLastMile(): ?string
+    public function getOohLastMile(): ?int
     {
         return $this->oohLastMile;
     }

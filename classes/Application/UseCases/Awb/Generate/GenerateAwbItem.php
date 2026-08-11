@@ -153,22 +153,25 @@ final class GenerateAwbItem implements ItemInterface
      */
     public static function fromArray(array $inputParams): self
     {
+        $clientReference = $inputParams['samedaycourier-client-reference'] ?? null;
+        $observation = $inputParams['samedaycourier-package-observation'] ?? null;
+
         return new self(
-            (int) $inputParams['samedaycourier-order-id'],
-            (int) $inputParams['samedaycourier-service'],
-            (int) $inputParams['samedaycourier-package-pickup-point'],
+            (int) ($inputParams['samedaycourier-order-id'] ?? 0),
+            (int) ($inputParams['samedaycourier-service'] ?? 0),
+            (int) ($inputParams['samedaycourier-package-pickup-point'] ?? 0),
             (array) ($inputParams['shipping_lines'] ?? []),
             (array) ($inputParams['shipping'] ?? []),
             (array) ($inputParams['billing'] ?? []),
             $inputParams['locker'] ?? null,
             isset($inputParams['samedaycourier-open-package-status']),
             isset($inputParams['samedaycourier-locker_first_mile']),
-            (int) $inputParams['samedaycourier-package-type'],
-            (int) $inputParams['samedaycourier-package-awb-payment'],
-            $inputParams['samedaycourier-package-insurance-value'],
-            $inputParams['samedaycourier-package-repayment'],
-            $inputParams['samedaycourier-client-reference'] ?? null,
-            $inputParams['samedaycourier-package-observation'] ?? null,
+            (int) ($inputParams['samedaycourier-package-type'] ?? 0),
+            (int) ($inputParams['samedaycourier-package-awb-payment'] ?? 0),
+            $inputParams['samedaycourier-package-insurance-value'] ?? null,
+            $inputParams['samedaycourier-package-repayment'] ?? null,
+            null !== $clientReference ? (string) $clientReference : null,
+            null !== $observation ? (string) $observation : null,
             (array) ($inputParams['samedaycourier-package-dimensions'] ?? []),
         );
     }

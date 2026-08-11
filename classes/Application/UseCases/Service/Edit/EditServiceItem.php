@@ -65,12 +65,15 @@ final class EditServiceItem implements ItemInterface
      */
     public static function fromArray(array $inputParams): self
     {
+        $priceFree = $inputParams['samedaycourier-free-delivery-price'] ?? null;
+        $status = $inputParams['samedaycourier-status'] ?? null;
+
         return new self(
-            (int) $inputParams['samedaycourier-service-id'],
-            $inputParams['samedaycourier-service-name'],
-            $inputParams['samedaycourier-price'] ?? '',
-            $inputParams['samedaycourier-free-delivery-price'] ?: null,
-            $inputParams['samedaycourier-status'] ?? null,
+            (int) ($inputParams['samedaycourier-service-id'] ?? 0),
+            (string) ($inputParams['samedaycourier-service-name'] ?? ''),
+            (string) ($inputParams['samedaycourier-price'] ?? ''),
+            null !== $priceFree && '' !== $priceFree ? (string) $priceFree : null,
+            null !== $status ? (string) $status : null,
         );
     }
 
