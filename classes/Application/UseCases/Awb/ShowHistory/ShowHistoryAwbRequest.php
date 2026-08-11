@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
 
 if (!defined('ABSPATH')) {
     exit;

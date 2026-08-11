@@ -9,7 +9,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;

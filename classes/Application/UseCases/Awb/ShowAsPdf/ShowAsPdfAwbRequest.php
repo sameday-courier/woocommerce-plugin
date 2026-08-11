@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 if (!defined('ABSPATH')) {
     exit;

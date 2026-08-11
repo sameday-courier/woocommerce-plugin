@@ -9,7 +9,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\Types\AwbPdfType;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
 if (!defined('ABSPATH')) {

@@ -8,7 +8,7 @@ use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;

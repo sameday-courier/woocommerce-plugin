@@ -11,7 +11,7 @@ use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Objects\PostAwb\ParcelObject;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;

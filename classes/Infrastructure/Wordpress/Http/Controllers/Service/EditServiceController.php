@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceItem;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;

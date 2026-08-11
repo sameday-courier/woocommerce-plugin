@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 if (!defined( 'ABSPATH')) {
     exit;
@@ -11,7 +11,7 @@ if (!defined( 'ABSPATH')) {
 use Sameday\Objects\PickupPoint\PickupPointObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
-use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 class SamedayPickupPointRepository extends AbstractRepository
 {

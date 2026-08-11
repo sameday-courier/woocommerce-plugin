@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPackageRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbRequest;

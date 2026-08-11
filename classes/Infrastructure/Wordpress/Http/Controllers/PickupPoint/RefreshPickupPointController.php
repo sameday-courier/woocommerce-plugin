@@ -8,7 +8,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Pick
 use Sameday\Sameday;
 use Sameday\Exceptions\SamedaySDKException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;

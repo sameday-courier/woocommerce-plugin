@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 use Exception;
 use Sameday\Requests\SamedayGetPickupPointsRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 

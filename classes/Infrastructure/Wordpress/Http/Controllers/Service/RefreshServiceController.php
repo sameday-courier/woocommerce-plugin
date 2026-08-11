@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Serv
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;

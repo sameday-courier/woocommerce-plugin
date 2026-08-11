@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 if (!defined( 'ABSPATH')) {
     exit;
@@ -15,7 +15,7 @@ use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
-use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 class SamedayServiceRepository extends AbstractRepository
 {

@@ -12,7 +12,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Exceptions\SamedayServerException;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 

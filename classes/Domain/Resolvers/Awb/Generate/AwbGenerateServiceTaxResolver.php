@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateServiceTaxResponse;

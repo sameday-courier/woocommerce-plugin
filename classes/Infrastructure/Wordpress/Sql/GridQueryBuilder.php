@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Sql;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SqlSanitizer;

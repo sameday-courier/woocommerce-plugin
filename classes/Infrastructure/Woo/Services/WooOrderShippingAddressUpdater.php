@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use Exception;
 use JsonException;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Woo\WooOrderAddressRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;

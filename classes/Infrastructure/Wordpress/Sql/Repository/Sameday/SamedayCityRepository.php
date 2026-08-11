@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Sql\Repository\Sameday;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 if (!defined( 'ABSPATH')) {
     exit;
@@ -11,9 +11,10 @@ if (!defined( 'ABSPATH')) {
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
-use SamedayCourier\Shipping\Application\Sql\Repository\AbstractRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use stdClass;
+
 class SamedayCityRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_cities';

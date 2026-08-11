@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Sql\Repository;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository;
 
 if (!defined( 'ABSPATH')) {
     exit;

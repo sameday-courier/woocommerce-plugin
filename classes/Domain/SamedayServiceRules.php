@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class SamedayServiceRules
 {

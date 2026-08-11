@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use Exception;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\SamedaySettings;

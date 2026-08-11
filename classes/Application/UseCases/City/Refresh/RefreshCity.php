@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;

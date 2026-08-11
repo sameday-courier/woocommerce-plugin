@@ -8,10 +8,10 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
-use SamedayCourier\Shipping\Application\Sql\GridQueryBuilder;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;

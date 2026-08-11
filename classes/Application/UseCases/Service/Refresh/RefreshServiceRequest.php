@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 if (!defined('ABSPATH')) {
     exit;

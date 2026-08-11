@@ -32,9 +32,9 @@ use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
@@ -270,7 +270,10 @@ final class SamedayCourier extends WC_Shipping_Method
 
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
-                new RefreshLockerRequest(new SamedayLockerRepository(), new Sameday(SdkInitiator::init())))
+                new RefreshLockerRequest(
+                    new SamedayLockerRepository(),
+                    new Sameday(SdkInitiator::init())
+                ))
             )->execute();
         }
     }

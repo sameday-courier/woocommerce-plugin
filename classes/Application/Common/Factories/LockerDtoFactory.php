@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\Common\Factories;
 
 use JsonException;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 
 if (!defined('ABSPATH')) {

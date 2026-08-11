@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
 
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Application\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Domain\SamedayConstants;

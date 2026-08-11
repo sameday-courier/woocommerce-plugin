@@ -19,7 +19,7 @@ if (!defined( 'ABSPATH')) {
  * Text Domain: sameday
  */
 
-use SamedayCourier\Shipping\Application\Sql\PluginHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\PluginHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RegistryHandler;
 
 /**

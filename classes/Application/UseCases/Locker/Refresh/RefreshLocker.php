@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 use Exception;
 use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedaySettings;

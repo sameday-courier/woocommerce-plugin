@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use InvalidArgumentException;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;

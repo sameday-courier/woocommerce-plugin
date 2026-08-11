@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use SamedayCourier\Shipping\Application\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
