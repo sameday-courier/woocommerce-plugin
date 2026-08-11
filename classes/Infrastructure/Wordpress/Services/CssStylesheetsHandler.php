@@ -113,6 +113,10 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'sameday_admin',
                 self::WP_CONTEXT['admin_full']
             ),
+            'sameday-awb-history-style' => self::addStyleSheet(
+                'sameday_awb_history',
+                self::WP_CONTEXT['admin_full']
+            ),
             'select2-style' => self::addStyleSheet(
                 'select2',
                 self::WP_CONTEXT['admin_full']

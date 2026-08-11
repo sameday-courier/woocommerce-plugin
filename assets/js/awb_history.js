@@ -2,14 +2,14 @@ jQuery(document).ready(function ($) {
     $(document).on('click', '.showHistoryDetails', function () {
         const show = $(this).val();
         const awbNumber = $(this).data('awb-number');
-        const tableId = 'history-' + awbNumber;
+        const $historyTable = $('#history-' + awbNumber);
 
         if (show === '+') {
-            $('#' + tableId).css('display', 'block');
+            $historyTable.addClass('is-open');
             $(this).val('-');
             $(this).html('<strong> - </strong>');
         } else {
-            $('#' + tableId).css('display', 'none');
+            $historyTable.removeClass('is-open');
             $(this).val('+');
             $(this).html('<strong> + </strong>');
         }
