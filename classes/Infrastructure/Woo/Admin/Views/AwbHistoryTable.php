@@ -28,12 +28,8 @@ class AwbHistoryTable
         }
 
         foreach ($packages as $package) {
-            $summarySerialized = $package instanceof SamedayPackage
-                ? ($package->getSummary() ?? '')
-                : ($package['summary'] ?? '');
-            $historySerialized = $package instanceof SamedayPackage
-                ? ($package->getHistory() ?? '')
-                : ($package['history'] ?? '');
+            $summarySerialized = $package instanceof SamedayPackage ? ($package->getSummary() ?? '') : ($package['summary'] ?? '');
+            $historySerialized = $package instanceof SamedayPackage ? ($package->getHistory() ?? '') : ($package['history'] ?? '');
             $summary = unserialize($summarySerialized, ['']);
             $packageHistory = unserialize($historySerialized, ['']);
             $historyRows = '';
