@@ -33,6 +33,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         'pickup_points' => 'pickup_points', // Pickup points admin page only (page=sameday_pickup_points).
         'checkout' => 'checkout', // Any WooCommerce checkout page (is_checkout()).
         'checkout_strict' => 'checkout_strict', // Checkout only, excluding order-pay and order-received.
+        'orders_list' => 'orders_list', // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
     ];
 
     private const PLUGIN_ADMIN_PAGES = [
@@ -125,6 +126,10 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'tickbox-form',
                 self::WP_CONTEXT['pickup_points']
             ),
+            'sameday-bulk-awb-modal-style' => self::addStyleSheet(
+                'sameday_bulk_awb_modal',
+                self::WP_CONTEXT['orders_list']
+            ),
             'sameday-locker-checkout-style' => self::addStyleSheet(
                 'sameday_locker_checkout',
                 self::WP_CONTEXT['checkout_strict']
@@ -196,6 +201,8 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 return self::isAdminFullPage();
             case 'pickup_points':
                 return self::isPickupPointsPage();
+            case 'orders_list':
+                return self::isOrdersListPage();
             case 'checkout':
                 return is_checkout();
             case 'checkout_strict':
@@ -265,6 +272,24 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     private static function isPickupPointsPage(): bool
     {
         return isset($_GET['page']) && 'sameday_pickup_points' === $_GET['page'];
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isOrdersListPage(): bool
+    {
+        if (isset($_GET['page']) && 'wc-orders' === $_GET['page']) {
+            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string) $_GET['action'])) : '';
+
+            return !in_array($action, ['edit', 'new'], true);
+        }
+
+        global $pagenow;
+
+        return 'edit.php' === $pagenow
+            && isset($_GET['post_type'])
+            && 'shop_order' === $_GET['post_type'];
     }
 
     /**

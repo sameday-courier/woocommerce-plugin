@@ -46,6 +46,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         'checkout_nomenclator' => 'checkout_nomenclator', // Checkout page when Sameday nomenclator is enabled.
         'admin_settings' => 'admin_settings', // Sameday WooCommerce shipping settings section only.
         'order_edit' => 'order_edit', // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
+        'orders_list' => 'orders_list', // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
     ];
 
     private const PLUGIN_ADMIN_PAGES = [
@@ -213,6 +214,12 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'select2-script'],
                 false
             ),
+            'bulk-awb' => self::addScript(
+                'bulk-awb',
+                self::WP_CONTEXT['orders_list'],
+                ['jquery'],
+                true
+            ),
         ];
 
         return self::$scripts;
@@ -351,6 +358,8 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 return self::isSamedaySettingsPage();
             case 'order_edit':
                 return self::isOrderEditPage();
+            case 'orders_list':
+                return self::isOrdersListPage();
             default:
                 return false;
         }
@@ -406,6 +415,24 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isOrdersListPage(): bool
+    {
+        if (isset($_GET['page']) && 'wc-orders' === $_GET['page']) {
+            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string) $_GET['action'])) : '';
+
+            return !in_array($action, ['edit', 'new'], true);
+        }
+
+        global $pagenow;
+
+        return 'edit.php' === $pagenow
+            && isset($_GET['post_type'])
+            && 'shop_order' === $_GET['post_type'];
     }
 
     /**
@@ -530,6 +557,13 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     'username' => SamedaySettings::getUser(),
                     'country' => SamedaySettings::getHostCountry(),
                     'buttonText' => TranslatorHandler::translate('Show Locations Map'),
+                ]);
+                break;
+            case 'bulk-awb':
+                wp_localize_script($handle, 'samedayBulkAwb', [
+                    'i18n' => [
+                        'order' => TranslatorHandler::translate('Order'),
+                    ],
                 ]);
                 break;
         }

@@ -52,3 +52,25 @@
 .sameday_admin_button:active {
     transform: translateY(1px);
 }
+
+/* Orders list: keep WP page-title-action layout, only brand colors */
+.wrap a.page-title-action.sameday_button,
+.wrap a.page-title-action.sameday_button:active {
+    border-color: #b21f24;
+    background: #ed2224;
+    background: linear-gradient(90deg, #ed2224, #b21f24);
+    color: #fff !important;
+}
+
+.wrap a.page-title-action.sameday_button:hover,
+.wrap a.page-title-action.sameday_button:focus {
+    border-color: #8f1618;
+    background: #d50b15;
+    background: linear-gradient(135deg, #d50b15, #8f3614);
+    color: #fff !important;
+    box-shadow: none;
+}
+
+.wrap a.page-title-action.sameday_button:focus {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 3px #ed2224;
+}

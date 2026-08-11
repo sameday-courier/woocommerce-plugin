@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\PostOrderPlac
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RefreshShippingMethodsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RenderAdminAwbFormsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAdminOrderAwbActionsAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowBulkAwbButtonAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowLockerFieldAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowOpenPackageFieldAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateCheckoutLockerAction;
@@ -31,6 +32,7 @@ class ActionsRegisterService implements RegistryHandlerInterface
         RefreshShippingMethodsAction::class,
         RenderAdminAwbFormsAction::class,
         ShowAdminOrderAwbActionsAction::class,
+        ShowBulkAwbButtonAction::class,
         ShowLockerFieldAction::class,
         ShowOpenPackageFieldAction::class,
         ValidateCheckoutLockerAction::class,
