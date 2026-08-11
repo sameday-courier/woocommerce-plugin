@@ -68,16 +68,16 @@ final class SamedayServiceRules
 
     /**
      * @param SamedayService $samedayService
-     * @param string $stateName
+     * @param string|null $stateName
      *
      * @return bool
      */
-    public function isEligibleTo6H(SamedayService $samedayService, string $stateName): bool
+    public function isEligibleTo6H(SamedayService $samedayService, ?string $stateName): bool
     {
         $is6HCode = $samedayService->getSamedayCode() === SamedayConstants::SAMEDAY_6H_CODE;
 
         $isEligibleRegionFor6H = in_array(
-            RomanianDiacriticsNormalizer::normalize($stateName),
+            RomanianDiacriticsNormalizer::normalize($stateName ?? ''),
             SamedayConstants::ELIGIBLE_TO_6H_SERVICE,
             true
         );

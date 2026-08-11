@@ -16,13 +16,27 @@ if (!defined('ABSPATH')) {
 
 class AwbGenerateServiceTaxResolver
 {
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
     private SamedayServiceRepository $samedayServiceRepository;
 
-    public function __construct(SamedayServiceRepository $samedayServiceRepository)
+    /**
+     * @param SamedayServiceRepository $samedayServiceRepository
+     */
+    public function __construct(
+        SamedayServiceRepository $samedayServiceRepository
+    )
     {
         $this->samedayServiceRepository = $samedayServiceRepository;
     }
 
+    /**
+     * @param SamedayService $samedayService
+     * @param GenerateAwbItem $awbItem
+     *
+     * @return AwbGenerateServiceTaxResponse
+     */
     public function resolve(
         SamedayService $samedayService,
         GenerateAwbItem $awbItem
