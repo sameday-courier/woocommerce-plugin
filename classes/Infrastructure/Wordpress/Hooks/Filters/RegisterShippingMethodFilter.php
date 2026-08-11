@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
-use SamedayCourier\Shipping\Application\Shipping\Method\SamedayCourier;
+use SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 
 if (!defined('ABSPATH')) {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Shipping\Method;
+namespace SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method;
 
 if (!defined('ABSPATH')) {
     exit;
