@@ -13,6 +13,7 @@ use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
+
 class SamedayLockerRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_locker';
