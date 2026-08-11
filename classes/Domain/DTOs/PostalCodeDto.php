@@ -10,7 +10,10 @@ if (!defined('ABSPATH')) {
 
 final class PostalCodeDto
 {
-    private string $code;
+    /**
+     * @var string|null $code
+     */
+    private ?string $code;
 
     /**
      * @param string|null $code
