@@ -11,9 +11,9 @@ if (!defined('ABSPATH')) {
 final class OohDto
 {
     /**
-     * @var string|null $lockerId
+     * @var int|null $lockerId
      */
-    public ?string $lockerId;
+    public ?int $lockerId;
 
     /**
      * @var string|null $oohLastMile
@@ -21,11 +21,11 @@ final class OohDto
     public ?string $oohLastMile;
 
     /**
-     * @param string|null $lockerId
+     * @param int|null $lockerId
      * @param string|null $oohLastMile
      */
     public function __construct(
-        ?string $lockerId = null,
+        ?int $lockerId = null,
         ?string $oohLastMile = null
     )
     {
@@ -34,9 +34,9 @@ final class OohDto
     }
 
     /**
-     * @return null|string
+     * @return null|int
      */
-    public function getLockerId(): ?string
+    public function getLockerId(): ?int
     {
         return $this->lockerId;
     }

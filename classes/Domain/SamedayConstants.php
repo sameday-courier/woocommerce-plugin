@@ -20,10 +20,22 @@ final class SamedayConstants
     public const STANDARD_CROSSBORDER_CODE = "XB";
     public const LOCKER_CROSSBORDER_CODE = "XL";
     public const PUDO_CODE = "PP";
+    public const CROSSBORDER_PUDO = "PP";
     public const OOH_TYPES = [
         0 => self::LOCKER_NEXT_DAY_CODE,
         1 => self::PUDO_CODE,
     ];
+
+    public const EASYBOX_TYPE_SERVICE = [
+        0 => self::LOCKER_NEXT_DAY_CODE,
+        1 => self::LOCKER_CROSSBORDER_CODE,
+    ];
+
+    public const PUDO_TYPE_SERVICE = [
+        0 => self::PUDO_CODE,
+        1 => self::CROSSBORDER_PUDO,
+    ];
+
     public const OOH_SERVICES = [
         self::LOCKER_NEXT_DAY_CODE,
         self::LOCKER_CROSSBORDER_CODE,

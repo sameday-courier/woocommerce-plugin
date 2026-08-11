@@ -10,6 +10,7 @@ use Throwable;
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
+use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
@@ -199,6 +200,8 @@ final class GenerateAwb
             $locker,
         );
 
+        $recipient = $awbRecipient->getRecipient();
+
         $request = new SamedayPostAwbRequest(
             $pickupPoint->getSamedayId(),
             null,
@@ -207,12 +210,14 @@ final class GenerateAwb
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
             new AwbRecipientEntityObject(
-                $awbRecipient->getRecipient()->getCity(),
-                $awbRecipient->getRecipient()->getCounty(),
-                $awbRecipient->getRecipient()->getAddress(),
-                $awbRecipient->getRecipient()->getName(),
-                $awbRecipient->getRecipient()->getPhone(),
-                $awbRecipient->getRecipient()->getEmail(),
+                $recipient->getCity(),
+                $recipient->getCounty(),
+                $recipient->getAddress(),
+                $recipient->getName(),
+                $recipient->getPhone(),
+                $recipient->getEmail(),
+                $recipient->getCompany(),
+                $recipient->getPostcode(),
             ),
             $item->getInsuranceValue(),
             $item->getRepayment(),

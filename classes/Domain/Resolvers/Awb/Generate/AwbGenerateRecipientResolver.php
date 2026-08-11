@@ -24,12 +24,26 @@ if (!defined('ABSPATH')) {
 
 class AwbGenerateRecipientResolver
 {
+    /**
+     * @var SamedayServiceRules $samedayServiceRules
+     */
     private SamedayServiceRules $samedayServiceRules;
 
+    /**
+     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     */
     private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
+    /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
     private StateCodeResolverInterface $stateCodeResolver;
 
+    /**
+     * @param SamedayServiceRules $samedayServiceRules
+     * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @param StateCodeResolverInterface $stateCodeResolver
+     */
     public function __construct(
         SamedayServiceRules $samedayServiceRules,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
@@ -41,6 +55,15 @@ class AwbGenerateRecipientResolver
         $this->stateCodeResolver = $stateCodeResolver;
     }
 
+    /**
+     * @param int $orderId
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     * @param SamedayService $service
+     * @param LockerDto|null $locker
+     *
+     * @return AwbGenerateRecipientResponse
+     */
     public function resolve(
         int $orderId,
         ShippingDto $shipping,
@@ -90,16 +113,12 @@ class AwbGenerateRecipientResolver
         $lockerId = null;
         $oohLastMile = null;
         if ($this->isOohDeliveryType($service) && $this->hasLocker($locker)) {
-            $resolvedLockerId = null !== $locker->getLockerId()
-                ? (string) $locker->getLockerId()
-                : null;
-
-            if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $lockerId = $resolvedLockerId;
+            if ($this->isEasyBoxServiceType($service)) {
+                $lockerId = $locker->getLockerId();
             }
 
-            if ($service->getSamedayCode() === SamedayConstants::PUDO_CODE) {
-                $oohLastMile = $resolvedLockerId;
+            if ($this->isPudoServiceType($service)) {
+                $oohLastMile = $locker->getLockerId();
             }
 
             $awbRecipient->setCity($locker->getCity());
@@ -136,16 +155,51 @@ class AwbGenerateRecipientResolver
         );
     }
 
+    /**
+     * @param LockerDto|null $locker
+     *
+     * @return bool
+     */
     private function hasLocker(?LockerDto $locker): bool
     {
         return $locker !== null;
     }
 
+    /**
+     * @param SamedayService $samedayService
+     *
+     * @return bool
+     */
+    private function isEasyBoxServiceType(SamedayService $samedayService): bool
+    {
+        return $this->samedayServiceRules->isEasyBoxServiceType($samedayService);
+    }
+
+    /**
+     * @param SamedayService $samedayService
+     *
+     * @return bool
+     */
+    private function isPudoServiceType(SamedayService $samedayService): bool
+    {
+        return $this->samedayServiceRules->isPudoServiceType($samedayService);
+    }
+
+    /**
+     * @param SamedayService $service
+     *
+     * @return bool
+     */
     private function isOohDeliveryType(SamedayService $service): bool
     {
         return $this->samedayServiceRules->isOohDeliveryOption($service);
     }
 
+    /**
+     * @param int $orderId
+     *
+     * @return bool
+     */
     private function isHomeDeliveryType(int $orderId): bool
     {
         return null !== $this->samedayShippingHdAddressParser->parse($orderId);

@@ -88,8 +88,8 @@ final class AddNewParcelAwbItem implements ItemInterface
             $inputParams['samedaycourier-parcel-width'] ?? null,
             $inputParams['samedaycourier-parcel-length'] ?? null,
             $inputParams['samedaycourier-parcel-height'] ?? null,
-            $inputParams['samedaycourier-parcel-observation'] ?? '',
-            $inputParams['samedaycourier-parcel-is-last'] ?? false
+            (string) ($inputParams['samedaycourier-parcel-observation'] ?? ''),
+            (bool) (int) ($inputParams['samedaycourier-parcel-is-last'] ?? 0)
         );
     }
 

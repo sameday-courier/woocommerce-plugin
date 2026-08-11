@@ -57,6 +57,26 @@ final class SamedayServiceRules
     }
 
     /**
+     * @param SamedayService $samedayService
+     *
+     * @return bool
+     */
+    public function isEasyBoxServiceType(SamedayService $samedayService): bool
+    {
+        return in_array($samedayService->getSamedayCode(), SamedayConstants::EASYBOX_TYPE_SERVICE, true);
+    }
+
+    /**
+     * @param SamedayService $samedayService
+     *
+     * @return bool
+     */
+    public function isPudoServiceType(SamedayService $samedayService): bool
+    {
+        return in_array($samedayService->getSamedayCode(), SamedayConstants::PUDO_TYPE_SERVICE, true);
+    }
+
+    /**
      * @param string $samedayServiceCode
      *
      * @return bool
