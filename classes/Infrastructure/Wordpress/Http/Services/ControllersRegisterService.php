@@ -9,9 +9,11 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\S
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StorePaymentMethodInSessionController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ControllerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\BulkGenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\GenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\StartBulkGenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCitiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County\GetCountiesController;
@@ -58,6 +60,8 @@ class ControllersRegisterService implements RegistryHandlerInterface
             GetCountiesController::class,
             GetCitiesController::class,
             ChangeLockerController::class,
+            StartBulkGenerateAwbController::class,
+            BulkGenerateAwbController::class,
             StoreLockerInSessionController::class,
             StoreOpenPackageInSessionController::class,
             StorePaymentMethodInSessionController::class,

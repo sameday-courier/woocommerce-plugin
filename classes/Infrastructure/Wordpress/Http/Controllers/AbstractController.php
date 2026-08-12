@@ -23,7 +23,7 @@ abstract class AbstractController implements ControllerInterface
     public function handle(): void
     {
         $inputParams = InputSanitizer::sanitizeInputs($_POST);
-        if (!UserPermissionChecker::hasAllowedRole()) {
+        if (!UserPermissionChecker::canAccess()) {
             throw new AccessDeniedException(
                 TranslatorHandler::translate("Not enough permission to access this content.")
             );
@@ -36,6 +36,16 @@ abstract class AbstractController implements ControllerInterface
         }
 
         $this->processAction($inputParams);
+    }
+
+    /**
+     * Current authenticated user id. Safe to call after handle() auth gate.
+     *
+     * @return int
+     */
+    protected function getCurrentUserId(): int
+    {
+        return UserPermissionChecker::getCurrentUserId();
     }
 
     /**

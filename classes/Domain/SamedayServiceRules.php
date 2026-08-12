@@ -30,6 +30,14 @@ final class SamedayServiceRules
     }
 
     /**
+     * @return SamedayServiceRepository
+     */
+    public function getSamedayServiceRepository(): SamedayServiceRepository
+    {
+        return $this->samedayServiceRepository;
+    }
+
+    /**
      * @param SamedayService $samedayService
      *
      * @return bool

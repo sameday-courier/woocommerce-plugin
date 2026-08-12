@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
+use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -49,7 +49,10 @@ final class GenerateAwbRequest
 
     private StateCodeResolverInterface $stateCodeResolver;
 
-    private ParcelDimensionsFactory $parcelDimensionsFactory;
+    /**
+     * @var ParcelDimensionsObject[] $parcelsDimensions
+     */
+    private array $parcelsDimensions;
 
     private LockerDtoFactory $lockerDtoFactory;
 
@@ -67,43 +70,44 @@ final class GenerateAwbRequest
 
     private AwbRemover $awbRemover;
 
+    /**
+     * @param ParcelDimensionsObject[] $parcelsDimensions
+     */
     public function __construct(
         GenerateAwbItem $generateAwbItem,
         Sameday $sameday,
         DbHandler $dbHandler,
-        SamedayServiceRepository $samedayServiceRepository,
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayAwbRepository $samedayAwbRepository,
         OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
         AwbErrorParser $awbErrorParser,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
-        ParcelDimensionsFactory $parcelDimensionsFactory,
+        array $parcelsDimensions,
         LockerDtoFactory $lockerDtoFactory,
         ShippingDtoFactory $shippingDtoFactory,
         BillingDtoFactory $billingDtoFactory,
         GenerateAwbValidator $generateAwbValidator,
-        AwbGenerateServiceTaxResolver $awbGenerateServiceTaxResolver,
         SamedayServiceRules $samedayServiceRules,
         AwbRemover $awbRemover
     ) {
         $this->generateAwbItem = $generateAwbItem;
         $this->sameday = $sameday;
         $this->dbHandler = $dbHandler;
-        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->samedayServiceRules = $samedayServiceRules;
+        $this->samedayServiceRepository = $samedayServiceRules->getSamedayServiceRepository();
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;
         $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
         $this->awbErrorParser = $awbErrorParser;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
-        $this->parcelDimensionsFactory = $parcelDimensionsFactory;
+        $this->parcelsDimensions = $parcelsDimensions;
         $this->lockerDtoFactory = $lockerDtoFactory;
         $this->shippingDtoFactory = $shippingDtoFactory;
         $this->billingDtoFactory = $billingDtoFactory;
         $this->generateAwbValidator = $generateAwbValidator;
-        $this->awbGenerateServiceTaxResolver = $awbGenerateServiceTaxResolver;
-        $this->samedayServiceRules = $samedayServiceRules;
+        $this->awbGenerateServiceTaxResolver = new AwbGenerateServiceTaxResolver($samedayServiceRules);
         $this->awbGenerateRecipientResolver = new AwbGenerateRecipientResolver(
             $samedayServiceRules,
             $samedayShippingHdAddressParser,
@@ -162,9 +166,12 @@ final class GenerateAwbRequest
         return $this->stateCodeResolver;
     }
 
-    public function getParcelDimensionsFactory(): ParcelDimensionsFactory
+    /**
+     * @return ParcelDimensionsObject[]
+     */
+    public function getParcelsDimensions(): array
     {
-        return $this->parcelDimensionsFactory;
+        return $this->parcelsDimensions;
     }
 
     public function getLockerDtoFactory(): LockerDtoFactory

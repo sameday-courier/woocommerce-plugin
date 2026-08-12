@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use Exception;
 use JsonException;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
@@ -36,9 +35,9 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     private OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive;
 
     /**
-     * @var SamedayLockerRepository $samedayLockerRepository
+     * @var LockerDtoFactory $lockerDtoFactory
      */
-    private SamedayLockerRepository $samedayLockerRepository;
+    private LockerDtoFactory $lockerDtoFactory;
 
     /**
      * @var SamedayShippingHdAddressParserInterface $hdAddressParser
@@ -53,20 +52,20 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     /**
      * @param WooOrderAddressRepository $wooOrderAddressRepository
      * @param OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive
-     * @param SamedayLockerRepository $samedayLockerRepository
+     * @param LockerDtoFactory $lockerDtoFactory
      * @param SamedayShippingHdAddressParserInterface $hdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
      */
     public function __construct(
         WooOrderAddressRepository $wooOrderAddressRepository,
         OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive,
-        SamedayLockerRepository $samedayLockerRepository,
+        LockerDtoFactory $lockerDtoFactory,
         SamedayShippingHdAddressParserInterface $hdAddressParser,
         StateCodeResolverInterface $stateCodeResolver
     ) {
         $this->wooOrderAddressRepository = $wooOrderAddressRepository;
         $this->wooOrderShippingAddressArchive = $wooOrderShippingAddressArchive;
-        $this->samedayLockerRepository = $samedayLockerRepository;
+        $this->lockerDtoFactory = $lockerDtoFactory;
         $this->hdAddressParser = $hdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
     }
@@ -139,48 +138,17 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
             return null;
         }
 
-        try {
-            $lockerFields = json_decode($postMetaLocker, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $exception) {
-            $lockerFields = null;
-        }
-
-        if (!is_array($lockerFields)) {
-            $lockerModel = $this->samedayLockerRepository->getLockerSameday((int) $postMetaLocker);
-            if (null === $lockerModel) {
-                return null;
-            }
-
-            return [
-                'name' => $lockerModel->getName(),
-                'city' => $lockerModel->getCity(),
-                'county' => $lockerModel->getCounty(),
-                'address' => $lockerModel->getAddress(),
-                'postalCode' => $lockerModel->getPostalCode(),
-            ];
-        }
-
-        if (!isset($lockerFields['name']) && !isset($lockerFields['city']) && !isset($lockerFields['county'])) {
-            $lockerModel = $this->samedayLockerRepository->getLockerSameday((int) $postMetaLocker);
-            if (null === $lockerModel) {
-                return null;
-            }
-
-            return [
-                'name' => $lockerModel->getName(),
-                'city' => $lockerModel->getCity(),
-                'county' => $lockerModel->getCounty(),
-                'address' => $lockerModel->getAddress(),
-                'postalCode' => $lockerModel->getPostalCode(),
-            ];
+        $lockerDto = $this->lockerDtoFactory->fromInput($postMetaLocker);
+        if (null === $lockerDto) {
+            return null;
         }
 
         return [
-            'name' => (string) ($lockerFields['name'] ?? ''),
-            'city' => (string) ($lockerFields['city'] ?? ''),
-            'county' => (string) ($lockerFields['county'] ?? ''),
-            'address' => (string) ($lockerFields['address'] ?? ''),
-            'postalCode' => (string) ($lockerFields['postalCode'] ?? ''),
+            'name' => (string) ($lockerDto->getName() ?? ''),
+            'city' => (string) ($lockerDto->getCity() ?? ''),
+            'county' => (string) ($lockerDto->getCounty() ?? ''),
+            'address' => (string) ($lockerDto->getAddress() ?? ''),
+            'postalCode' => (string) ($lockerDto->getPostalCode() ?? ''),
         ];
     }
 

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateServiceTaxResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -17,18 +17,18 @@ if (!defined('ABSPATH')) {
 class AwbGenerateServiceTaxResolver
 {
     /**
-     * @var SamedayServiceRepository $samedayServiceRepository
+     * @var SamedayServiceRules $samedayServiceRules
      */
-    private SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceRules $samedayServiceRules;
 
     /**
-     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param SamedayServiceRules $samedayServiceRules
      */
     public function __construct(
-        SamedayServiceRepository $samedayServiceRepository
+        SamedayServiceRules $samedayServiceRules
     )
     {
-        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->samedayServiceRules = $samedayServiceRules;
     }
 
     /**
@@ -42,9 +42,9 @@ class AwbGenerateServiceTaxResolver
         GenerateAwbItem $awbItem
     ): AwbGenerateServiceTaxResponse
     {
-        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes(
-            $samedayService->getSamedayId()
-        );
+        $optionalServices = $this->samedayServiceRules
+            ->getSamedayServiceRepository()
+            ->getServiceIdOptionalTaxes($samedayService->getSamedayId());
 
         $serviceTaxIds = [];
         if ($awbItem->hasOpenPackage()) {

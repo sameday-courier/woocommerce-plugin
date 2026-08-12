@@ -63,7 +63,7 @@ final class ParcelDimensionsFactory
      */
     private function optionalDimension($value): ?float
     {
-        if (null === $value || '' === $value || !is_numeric($value)) {
+        if ('' === $value || !is_numeric($value)) {
             return null;
         }
 

@@ -83,11 +83,15 @@ final class LockerDtoFactory
      */
     private function fromPayload(array $data): ?LockerDto
     {
-        if (!$this->hasRequiredPayloadFields($data)) {
-            return null;
+        if ($this->hasRequiredPayloadFields($data)) {
+            return LockerDto::fromArray($data);
         }
 
-        return LockerDto::fromArray($data);
+        if (isset($data['lockerId']) && '' !== $data['lockerId'] && null !== $data['lockerId']) {
+            return $this->fromLockerId((int) $data['lockerId']);
+        }
+
+        return null;
     }
 
     /**

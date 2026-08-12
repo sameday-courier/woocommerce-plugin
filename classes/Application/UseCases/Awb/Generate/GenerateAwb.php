@@ -16,9 +16,9 @@ use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Sameday;
+use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
@@ -83,9 +83,9 @@ final class GenerateAwb
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @var ParcelDimensionsFactory $parcelDimensionsFactory
+     * @var ParcelDimensionsObject[] $parcelsDimensions
      */
-    private ParcelDimensionsFactory $parcelDimensionsFactory;
+    private array $parcelsDimensions;
 
     /**
      * @var LockerDtoFactory $lockerDtoFactory
@@ -142,7 +142,7 @@ final class GenerateAwb
         $this->samedayAwbRepository = $generateAwbRequest->getSamedayAwbRepository();
         $this->orderShippingAddressUpdater = $generateAwbRequest->getOrderShippingAddressUpdater();
         $this->awbErrorParser = $generateAwbRequest->getAwbErrorParser();
-        $this->parcelDimensionsFactory = $generateAwbRequest->getParcelDimensionsFactory();
+        $this->parcelsDimensions = $generateAwbRequest->getParcelsDimensions();
         $this->lockerDtoFactory = $generateAwbRequest->getLockerDtoFactory();
         $this->shippingDtoFactory = $generateAwbRequest->getShippingDtoFactory();
         $this->billingDtoFactory = $generateAwbRequest->getBillingDtoFactory();
@@ -166,7 +166,6 @@ final class GenerateAwb
         $shipping = $this->shippingDtoFactory->fromInput($item->getShipping());
         $billing = $this->billingDtoFactory->fromInput($item->getBilling());
         $locker = $this->lockerDtoFactory->fromInput($item->getLocker());
-        $parcelsDimensions = $this->parcelDimensionsFactory->fromList($item->getPackageDimensions());
 
         $awbValidator = $this->generateAwbValidator->validate(
             new GenerateAwbValidatorRequest(
@@ -206,7 +205,7 @@ final class GenerateAwb
             $pickupPoint->getSamedayId(),
             null,
             new PackageType($item->getPackageType()),
-            $parcelsDimensions,
+            $this->parcelsDimensions,
             $service->getSamedayId(),
             new AwbPaymentType($item->getAwbPayment()),
             new AwbRecipientEntityObject(
