@@ -157,10 +157,10 @@
         return $modal.find('[data-sameday-bulk-awb-step="starting"]:not([hidden]), [data-sameday-bulk-awb-step="progress"]:not([hidden])').length > 0;
     }
 
-    function updateProgress($modal, processed, total, currentOrderId) {
+    function updateProgress($modal, processed, total, currentItemId) {
         var percent = total > 0 ? Math.round((processed / total) * 100) : 0;
         var text = i18n('processing', 'Processing order #%1$s (%2$s/%3$s)')
-            .replace('%1$s', String(currentOrderId || '-'))
+            .replace('%1$s', String(currentItemId || '-'))
             .replace('%2$s', String(processed))
             .replace('%3$s', String(total));
 
@@ -193,10 +193,10 @@
 
     function renderReport($modal, data) {
         var $list = $modal.find('[data-sameday-bulk-awb-report-list]');
-        var orders = data.orders || [];
+        var items = data.items || data.orders || [];
         var successCount = data.successCount || 0;
         var errorCount = data.errorCount || 0;
-        var total = data.total || orders.length || 0;
+        var total = data.total || items.length || 0;
 
         $modal.find('[data-sameday-bulk-awb-stat-success]').text(String(successCount));
         $modal.find('[data-sameday-bulk-awb-stat-error]').text(String(errorCount));
@@ -205,10 +205,11 @@
         $modal.find('[data-sameday-bulk-awb-log-filter]').val('all');
         $list.empty();
 
-        orders.forEach(function (entry) {
+        items.forEach(function (entry) {
             var status = normalizeStatus(entry.status);
             var message = entry.message || '';
-            var line = '#' + entry.orderId + ' ' + message;
+            var itemId = entry.itemId || entry.orderId;
+            var line = '#' + itemId + ' ' + message;
             var $item = $('<li/>')
                 .addClass('sameday-bulk-awb-modal__log-item sameday-bulk-awb-modal__log-item--' + status)
                 .attr('data-status', status);
@@ -318,7 +319,12 @@
 
     function handleNextPayload($modal, jobId, data) {
         if (data.done) {
-            updateProgress($modal, data.processed || data.total || 0, data.total || 0, data.currentOrderId);
+            updateProgress(
+                $modal,
+                data.processed || data.total || 0,
+                data.total || 0,
+                data.currentItemId || data.currentOrderId
+            );
             renderReport($modal, data);
             setStep($modal, 'report');
             return null;
@@ -328,7 +334,9 @@
             $modal,
             data.processed || 0,
             data.total || 0,
-            data.currentOrderId || (data.lastResult && data.lastResult.orderId)
+            data.currentItemId
+                || data.currentOrderId
+                || (data.lastResult && (data.lastResult.itemId || data.lastResult.orderId))
         );
 
         return processNext($modal, jobId);
@@ -362,9 +370,9 @@
                 successCount: 0,
                 errorCount: orderIds.length,
                 total: orderIds.length,
-                orders: orderIds.map(function (orderId) {
+                items: orderIds.map(function (orderId) {
                     return {
-                        orderId: orderId,
+                        itemId: orderId,
                         status: 'error',
                         message: message
                     };

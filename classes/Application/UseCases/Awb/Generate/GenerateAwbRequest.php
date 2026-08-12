@@ -19,6 +19,7 @@ use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxR
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
@@ -70,6 +71,8 @@ final class GenerateAwbRequest
 
     private AwbRemover $awbRemover;
 
+    private OrderAwbProviderInterface $orderAwbProvider;
+
     /**
      * @param ParcelDimensionsObject[] $parcelsDimensions
      */
@@ -89,7 +92,8 @@ final class GenerateAwbRequest
         BillingDtoFactory $billingDtoFactory,
         GenerateAwbValidator $generateAwbValidator,
         SamedayServiceRules $samedayServiceRules,
-        AwbRemover $awbRemover
+        AwbRemover $awbRemover,
+        OrderAwbProviderInterface $orderAwbProvider
     ) {
         $this->generateAwbItem = $generateAwbItem;
         $this->sameday = $sameday;
@@ -114,6 +118,7 @@ final class GenerateAwbRequest
             $stateCodeResolver,
         );
         $this->awbRemover = $awbRemover;
+        $this->orderAwbProvider = $orderAwbProvider;
     }
 
     public function getGenerateAwbItem(): GenerateAwbItem
@@ -212,5 +217,10 @@ final class GenerateAwbRequest
     public function getAwbRemover(): AwbRemover
     {
         return $this->awbRemover;
+    }
+
+    public function getOrderAwbProvider(): OrderAwbProviderInterface
+    {
+        return $this->orderAwbProvider;
     }
 }

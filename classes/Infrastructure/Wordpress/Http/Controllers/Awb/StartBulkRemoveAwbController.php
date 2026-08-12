@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use SamedayCourier\Shipping\Application\UseCases\Awb\BulkRemove\BulkRemoveAwbItem;
-use SamedayCourier\Shipping\Domain\DTOs\BulkAwbJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkAwbJobStore;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
 if (!defined('ABSPATH')) {
@@ -45,13 +45,13 @@ final class StartBulkRemoveAwbController extends AbstractController
         }
 
         $jobId = wp_generate_uuid4();
-        $job = BulkAwbJob::create(
+        $job = BulkJob::create(
             $jobId,
             $this->getCurrentUserId(),
             $orderIds
         );
 
-        (new TransientBulkAwbJobStore())->create($job);
+        (new TransientBulkJobStore())->create($job);
 
         wp_send_json_success([
             'jobId' => $jobId,

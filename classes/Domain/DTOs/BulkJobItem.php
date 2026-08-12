@@ -8,31 +8,31 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class BulkAwbJobOrderEntry
+final class BulkJobItem
 {
-    private int $orderId;
+    private int $itemId;
 
     /**
-     * @var array{status: string, message: string, awbNumber?: string|null}|null
+     * @var array{status: string, message: string, ...}|null
      */
     private ?array $payload;
 
     /**
-     * @param array{status: string, message: string, awbNumber?: string|null}|null $payload
+     * @param array{status: string, message: string, ...}|null $payload
      */
-    public function __construct(int $orderId, ?array $payload = null)
+    public function __construct(int $itemId, ?array $payload = null)
     {
-        $this->orderId = $orderId;
+        $this->itemId = $itemId;
         $this->payload = $payload;
     }
 
-    public function getOrderId(): int
+    public function getItemId(): int
     {
-        return $this->orderId;
+        return $this->itemId;
     }
 
     /**
-     * @return array{status: string, message: string, awbNumber?: string|null}|null
+     * @return array{status: string, message: string, ...}|null
      */
     public function getPayload(): ?array
     {
@@ -45,20 +45,20 @@ final class BulkAwbJobOrderEntry
     }
 
     /**
-     * @param array{status: string, message: string, awbNumber?: string|null} $payload
+     * @param array{status: string, message: string, ...} $payload
      */
     public function withPayload(array $payload): self
     {
-        return new self($this->orderId, $payload);
+        return new self($this->itemId, $payload);
     }
 
     /**
-     * @return array{orderId: int, payload: array{status: string, message: string, awbNumber?: string|null}|null}
+     * @return array{itemId: int, payload: array{status: string, message: string, ...}|null}
      */
     public function toArray(): array
     {
         return [
-            'orderId' => $this->orderId,
+            'itemId' => $this->itemId,
             'payload' => $this->payload,
         ];
     }
@@ -74,7 +74,7 @@ final class BulkAwbJobOrderEntry
         }
 
         return new self(
-            (int) ($data['orderId'] ?? 0),
+            (int) ($data['itemId'] ?? $data['orderId'] ?? 0),
             $payload
         );
     }

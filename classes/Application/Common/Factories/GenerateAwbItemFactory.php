@@ -10,7 +10,6 @@ use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderWeightCalculatorInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
@@ -29,8 +28,6 @@ final class GenerateAwbItemFactory
 
     private OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler;
 
-    private OrderAwbProviderInterface $orderAwbProvider;
-
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     private SamedayServiceRepository $samedayServiceRepository;
@@ -43,7 +40,6 @@ final class GenerateAwbItemFactory
         GenerateAwbOrderProviderInterface $orderProvider,
         OrderWeightCalculatorInterface $orderWeightCalculator,
         OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler,
-        OrderAwbProviderInterface $orderAwbProvider,
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayServiceRules $samedayServiceRules,
         ?LockerDtoFactory $lockerDtoFactory = null
@@ -51,7 +47,6 @@ final class GenerateAwbItemFactory
         $this->orderProvider = $orderProvider;
         $this->orderWeightCalculator = $orderWeightCalculator;
         $this->openPackageOrderDataHandler = $openPackageOrderDataHandler;
-        $this->orderAwbProvider = $orderAwbProvider;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayServiceRepository = $samedayServiceRules->getSamedayServiceRepository();
@@ -69,12 +64,6 @@ final class GenerateAwbItemFactory
         if (null === $order) {
             throw new InvalidArgumentException(
                 sprintf('Order #%d could not be found.', $orderId)
-            );
-        }
-
-        if (null !== $this->orderAwbProvider->get($orderId)) {
-            throw new InvalidArgumentException(
-                sprintf('Order #%d already has an AWB.', $orderId)
             );
         }
 

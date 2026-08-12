@@ -13,6 +13,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
@@ -85,6 +86,7 @@ final class AwbRequestFactory
             new GenerateAwbValidator(),
             $samedayServiceRules,
             new AwbRemover($sameday, $samedayAwbRepository),
+            new WooOrderAwbProvider($samedayAwbRepository),
         );
     }
 }

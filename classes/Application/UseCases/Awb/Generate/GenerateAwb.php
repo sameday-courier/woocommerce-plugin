@@ -34,6 +34,7 @@ use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
 if (!defined('ABSPATH')) {
@@ -128,6 +129,11 @@ final class GenerateAwb
     private AwbRemover $awbRemover;
 
     /**
+     * @var OrderAwbProviderInterface $orderAwbProvider
+     */
+    private OrderAwbProviderInterface $orderAwbProvider;
+
+    /**
      * @param GenerateAwbRequest $generateAwbRequest
      */
     public function __construct(
@@ -151,6 +157,7 @@ final class GenerateAwb
         $this->awbGenerateRecipientResolver = $generateAwbRequest->getAwbGenerateRecipientResolver();
         $this->samedayServiceRules = $generateAwbRequest->getSamedayServiceRules();
         $this->awbRemover = $generateAwbRequest->getAwbRemover();
+        $this->orderAwbProvider = $generateAwbRequest->getOrderAwbProvider();
     }
 
     /**
@@ -169,22 +176,19 @@ final class GenerateAwb
 
         $awbValidator = $this->generateAwbValidator->validate(
             new GenerateAwbValidatorRequest(
+                $item->getOrderId(),
                 $service,
+                $pickupPoint,
                 $billing,
                 $item->getShippingLines(),
+                null !== $this->orderAwbProvider->get($item->getOrderId()),
+                [] !== $this->parcelsDimensions,
             )
         );
 
         if ($awbValidator->hasErrors()) {
             return new GenerateAwbResponse(
                 $awbValidator->toString(),
-                ResponseNoticeType::ERROR
-            );
-        }
-
-        if (null === $service || null === $pickupPoint) {
-            return new GenerateAwbResponse(
-                'Selected service or pickup point could not be found.',
                 ResponseNoticeType::ERROR
             );
         }
