@@ -562,10 +562,20 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             case 'bulk-awb':
                 wp_localize_script($handle, 'samedayBulkAwb', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),
-                    'startAction' => 'bulk-generate-awb-start',
-                    'nextAction' => 'bulk-generate-awb-next',
-                    'startNonce' => NonceHandler::createNonce('bulk-generate-awb-start'),
-                    'nextNonce' => NonceHandler::createNonce('bulk-generate-awb-next'),
+                    'modes' => [
+                        'generate' => [
+                            'startAction' => 'bulk-generate-awb-start',
+                            'nextAction' => 'bulk-generate-awb-next',
+                            'startNonce' => NonceHandler::createNonce('bulk-generate-awb-start'),
+                            'nextNonce' => NonceHandler::createNonce('bulk-generate-awb-next'),
+                        ],
+                        'remove' => [
+                            'startAction' => 'bulk-remove-awb-start',
+                            'nextAction' => 'bulk-remove-awb-next',
+                            'startNonce' => NonceHandler::createNonce('bulk-remove-awb-start'),
+                            'nextNonce' => NonceHandler::createNonce('bulk-remove-awb-next'),
+                        ],
+                    ],
                     'i18n' => [
                         'order' => TranslatorHandler::translate('Order'),
                         'processing' => TranslatorHandler::translate('Processing order #%1$s (%2$s/%3$s)'),

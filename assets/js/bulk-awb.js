@@ -277,13 +277,27 @@
         });
     }
 
+    function getModeName($modal) {
+        return String($modal.attr('data-sameday-bulk-awb-mode') || '');
+    }
+
+    function getModeConfig($modal) {
+        var modes = config.modes || {};
+        return modes[getModeName($modal)] || null;
+    }
+
     function processNext($modal, jobId, totalHint, firstOrderId) {
+        var modeConfig = getModeConfig($modal);
+        if (!modeConfig) {
+            throw new Error(i18n('genericError', 'Something went wrong.'));
+        }
+
         setStep($modal, 'progress');
         if (typeof totalHint === 'number') {
             updateProgress($modal, 0, totalHint, firstOrderId);
         }
 
-        return request(config.nextAction, config.nextNonce, { jobId: jobId })
+        return request(modeConfig.nextAction, modeConfig.nextNonce, { jobId: jobId })
             .then(function (response) {
                 var data = (response && response.data) ? response.data : {};
                 return handleNextPayload($modal, jobId, data);
@@ -320,15 +334,16 @@
         return processNext($modal, jobId);
     }
 
-    function startGenerate($modal) {
+    function startBulk($modal) {
         var orderIds = getSelectedOrderIds();
-        if (!orderIds.length) {
+        var modeConfig = getModeConfig($modal);
+        if (!orderIds.length || !modeConfig) {
             return;
         }
 
         setStep($modal, 'starting');
 
-        request(config.startAction, config.startNonce, {
+        request(modeConfig.startAction, modeConfig.startNonce, {
             'samedaycourier-order-ids': orderIds
         }).then(function (response) {
             var data = (response && response.data) ? response.data : {};
@@ -408,12 +423,12 @@
             }
 
             var $modal = getModal($(this));
-            if ($modal.data('sameday-bulk-awb-mode') !== 'generate') {
+            if (!getModeConfig($modal)) {
                 closeModal($modal);
                 return;
             }
 
-            startGenerate($modal);
+            startBulk($modal);
         });
     });
 }(jQuery));
