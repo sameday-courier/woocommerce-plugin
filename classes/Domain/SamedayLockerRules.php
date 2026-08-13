@@ -17,8 +17,9 @@ final class SamedayLockerRules
     private const OOH_TYPE_PUDO = '1';
 
     /**
-     * Local lockers: lockerId in [0, 500000) => oohType 0 (locker);
-     * lockerId >= 500000 => oohType 1 (PUDO).
+     * @param int|null $lockerId
+     *
+     * @return string|null
      */
     public static function resolveOohType(?int $lockerId): ?string
     {
