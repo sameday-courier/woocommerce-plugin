@@ -6,9 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class AddExtraFeesAction extends AbstractAction
 {
@@ -43,9 +43,10 @@ final class AddExtraFeesAction extends AbstractAction
         }
 
         if ($this->hasExtraFees()) {
+            $settings = (new WordpressSamedaySettingsProvider())->get();
             $woocommerce->cart->add_fee(
-                SamedaySettings::getRepaymentTaxLabel() ?? TranslatorHandler::translate('Repayment tax'),
-                SamedaySettings::getRepaymentTax(),
+                $settings->getRepaymentTaxLabel() ?? TranslatorHandler::translate('Repayment tax'),
+                $settings->getRepaymentTax(),
                 true,
                 ''
             );
@@ -57,7 +58,7 @@ final class AddExtraFeesAction extends AbstractAction
      */
     private function hasExtraFees(): bool
     {
-        $repayment_tax = SamedaySettings::getRepaymentTax() ?? 0;
+        $repayment_tax = (new WordpressSamedaySettingsProvider())->get()->getRepaymentTax() ?? 0;
         if ($repayment_tax <= 0) {
             return false;
         }

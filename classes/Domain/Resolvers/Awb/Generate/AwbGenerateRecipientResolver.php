@@ -9,6 +9,7 @@ use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
@@ -36,19 +37,27 @@ class AwbGenerateRecipientResolver
     private StateCodeResolverInterface $stateCodeResolver;
 
     /**
+     * @var CityPostalCodeProviderInterface
+     */
+    private CityPostalCodeProviderInterface $cityPostalCodeProvider;
+
+    /**
      * @param SamedayServiceRules $samedayServiceRules
      * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
+     * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
      */
     public function __construct(
         SamedayServiceRules $samedayServiceRules,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
-        StateCodeResolverInterface $stateCodeResolver
+        StateCodeResolverInterface $stateCodeResolver,
+        CityPostalCodeProviderInterface $cityPostalCodeProvider
     )
     {
         $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
+        $this->cityPostalCodeProvider = $cityPostalCodeProvider;
     }
 
     /**
@@ -79,7 +88,8 @@ class AwbGenerateRecipientResolver
         $postalCode = PostalCode::tryCreate(
             $shipping->getPostcode() ?? $billing->getPostcode(),
             $state,
-            $country
+            $country,
+            $this->cityPostalCodeProvider
         )->getCode();
         $phone = $shipping->getPhone() ?? $billing->getPhone();
         $email = $shipping->getEmail() ?? $billing->getEmail();

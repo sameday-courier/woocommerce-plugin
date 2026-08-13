@@ -6,13 +6,32 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameda
 
 use Sameday\Objects\Locker\LockerObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 class SamedayLockerRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_locker';
+
+    /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    /**
+     * @param DbHandlerInterface|null $dbHandler
+     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     */
+    public function __construct(
+        ?DbHandlerInterface $dbHandler = null,
+        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+    ) {
+        parent::__construct($dbHandler);
+        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+    }
 
     public function getTableName(): string
     {
@@ -27,7 +46,7 @@ class SamedayLockerRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT city, county FROM {$this->getTableName()} WHERE is_testing = %s GROUP BY city",
             [
-                SamedaySettings::isTesting()
+                $this->isTesting()
             ]
         );
 
@@ -42,7 +61,7 @@ class SamedayLockerRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -60,7 +79,7 @@ class SamedayLockerRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE city = %s AND is_testing = %s",
             [
                 $city,
-                SamedaySettings::isTesting()
+                $this->isTesting()
             ]
         );
 
@@ -78,7 +97,7 @@ class SamedayLockerRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE locker_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                SamedaySettings::isTesting()
+                $this->isTesting()
             ]
         );
 
@@ -103,7 +122,7 @@ class SamedayLockerRepository extends AbstractRepository
                 'lng' => $lockerObject->getLong(),
                 'postal_code' => $lockerObject->getPostalCode(),
                 'boxes' => serialize($lockerObject->getBoxes()),
-                'is_testing' => SamedaySettings::isTesting(),
+                'is_testing' => $this->isTesting(),
             ]
         );
     }
@@ -143,5 +162,13 @@ class SamedayLockerRepository extends AbstractRepository
     public function deleteLocker(int $id): void
     {
         $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isTesting(): bool
+    {
+        return $this->samedaySettingsProvider->get()->isTesting();
     }
 }

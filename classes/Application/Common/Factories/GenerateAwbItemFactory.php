@@ -37,6 +37,7 @@ final class GenerateAwbItemFactory
         OrderWeightCalculatorInterface $orderWeightCalculator,
         OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler,
         SamedayPickupPointRepository $samedayPickupPointRepository,
+        SamedayServiceRepository $samedayServiceRepository,
         SamedayServiceRules $samedayServiceRules,
         ?LockerDtoFactory $lockerDtoFactory = null
     ) {
@@ -45,7 +46,7 @@ final class GenerateAwbItemFactory
         $this->openPackageOrderDataHandler = $openPackageOrderDataHandler;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->samedayServiceRules = $samedayServiceRules;
-        $this->samedayServiceRepository = $samedayServiceRules->getSamedayServiceRepository();
+        $this->samedayServiceRepository = $samedayServiceRepository;
         $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
     }
 

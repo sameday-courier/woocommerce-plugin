@@ -7,8 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 /**
  * Class Api
@@ -29,11 +29,12 @@ final class SdkInitiator
         ?string $apiUrl = null
     ): SamedayClient
 	{
+        $settings = (new WordpressSamedaySettingsProvider())->get();
         if (null === $username) {
-            $username = SamedaySettings::getUser();
+            $username = $settings->getUser();
         }
         if (null === $password) {
-            $password = SamedaySettings::getPassword();
+            $password = $settings->getPassword();
         }
         if (null === $apiUrl) {
             $apiUrl = self::getApiUrl();
@@ -83,6 +84,8 @@ final class SdkInitiator
      */
     public static function getApiUrl(): string
     {
-        return self::getEnvModes()[SamedaySettings::getHostCountry()][SamedaySettings::getTestingMode()];
+        $settings = (new WordpressSamedaySettingsProvider())->get();
+
+        return self::getEnvModes()[$settings->getHostCountry()][$settings->getTestingMode()];
     }
 }

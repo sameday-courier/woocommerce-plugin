@@ -6,12 +6,32 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameda
 
 use Sameday\Objects\PickupPoint\PickupPointObject;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+
 class SamedayPickupPointRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_pickup_point';
+
+    /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    /**
+     * @param DbHandlerInterface|null $dbHandler
+     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     */
+    public function __construct(
+        ?DbHandlerInterface $dbHandler = null,
+        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+    ) {
+        parent::__construct($dbHandler);
+        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+    }
 
     public function getTableName(): string
     {
@@ -29,7 +49,7 @@ class SamedayPickupPointRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -48,7 +68,7 @@ class SamedayPickupPointRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -63,7 +83,7 @@ class SamedayPickupPointRepository extends AbstractRepository
         $result = $this->dbHandler->getRow(
             "SELECT sameday_id FROM {$this->getTableName()} WHERE default_pickup_point = 1 AND is_testing = %s LIMIT 1",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -82,7 +102,7 @@ class SamedayPickupPointRepository extends AbstractRepository
             [
                 'sameday_id' => $pickupPointObject->getId(),
                 'sameday_alias' => $pickupPointObject->getAlias(),
-                'is_testing' => SamedaySettings::isTesting(),
+                'is_testing' => $this->isTesting(),
                 'city' => $pickupPointObject->getCity()->getName(),
                 'county' => $pickupPointObject->getCounty()->getName(),
                 'address' => $pickupPointObject->getAddress(),
@@ -124,5 +144,13 @@ class SamedayPickupPointRepository extends AbstractRepository
     public function deletePickupPoint(int $id): void
     {
         $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isTesting(): bool
+    {
+        return $this->samedaySettingsProvider->get()->isTesting();
     }
 }

@@ -5,19 +5,28 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Domain\Ports\SamedayServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 
 final class SamedayServiceSelector
 {
     /**
-     * @var SamedayServiceRepository
+     * @var SamedayServiceProviderInterface
      */
-    private SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceProviderInterface $samedayServiceProvider;
 
-    public function __construct(SamedayServiceRepository $samedayServiceRepository)
+    /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    public function __construct(
+        SamedayServiceProviderInterface  $samedayServiceProvider,
+        SamedaySettingsProviderInterface $samedaySettingsProvider
+    )
     {
-        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->samedayServiceProvider = $samedayServiceProvider;
+        $this->samedaySettingsProvider = $samedaySettingsProvider;
     }
 
     /**
@@ -27,14 +36,14 @@ final class SamedayServiceSelector
      */
     public function getEligibleServices(string $destinationCountry): array
     {
-        $hostCountry = SamedaySettings::getHostCountry();
+        $hostCountry = $this->samedaySettingsProvider->get()->getHostCountry();
         $eligibleShippingServices = SamedayConstants::ELIGIBLE_SERVICES;
         if ($destinationCountry !== $hostCountry) {
             $eligibleShippingServices = SamedayConstants::CROSSBORDER_ELIGIBLE_SERVICES;
         }
 
         return array_filter(
-            $this->samedayServiceRepository->getAvailableServices(),
+            $this->samedayServiceProvider->getAvailableServices(),
             static function (SamedayService $service) use ($eligibleShippingServices) {
                 return in_array(
                     $service->getSamedayCode(),

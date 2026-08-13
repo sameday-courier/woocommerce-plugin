@@ -13,11 +13,11 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Order;
 
 class AwbForm
@@ -141,8 +141,9 @@ class AwbForm
             }
         }
 
-        $username = SamedaySettings::getUser();
-        $hostCountry = SamedaySettings::getHostCountry();
+        $settings = (new WordpressSamedaySettingsProvider())->get();
+        $username = $settings->getUser();
+        $hostCountry = $settings->getHostCountry();
         $destCity = $order->get_data()['shipping']['city'] ?? '';
         $destCountry = $order->get_data()['shipping']['country'] ?? '';
 

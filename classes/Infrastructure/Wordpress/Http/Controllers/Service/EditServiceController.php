@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class EditServiceController extends AbstractController
 {
@@ -38,7 +38,7 @@ final class EditServiceController extends AbstractController
     {
         $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
         if (null === $serviceName) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
         }
 
         $inputParams['samedaycourier-service-name'] = $serviceName;

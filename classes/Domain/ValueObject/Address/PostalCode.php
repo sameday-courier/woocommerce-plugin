@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\ValueObject\Address;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\DTOs\PostalCodeDto;
+use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 
 final class PostalCode
 {
@@ -17,19 +17,22 @@ final class PostalCode
      * @param string|null $code
      * @param string $countyCode
      * @param string $countryCode
+     * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
      *
-     * @return PostalCodeDto|null
+     * @return PostalCodeDto
      */
     public static function tryCreate(
         ?string $code,
         string $countyCode,
-        string $countryCode
-    ): PostalCodeDto {
+        string $countryCode,
+        CityPostalCodeProviderInterface $cityPostalCodeProvider
+    ): PostalCodeDto
+    {
         if (null === $code || '' === $code || '' === $countyCode || '' === $countryCode) {
             return new PostalCodeDto(null);
         }
 
-        $reference = (new SamedayCityRepository())->getPostalForSpecificCounty(
+        $reference = $cityPostalCodeProvider->getPostalForSpecificCounty(
             $countyCode,
             $countryCode
         );

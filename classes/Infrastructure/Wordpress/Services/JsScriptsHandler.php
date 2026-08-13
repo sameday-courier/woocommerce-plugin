@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
@@ -352,7 +352,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             case 'checkout_strict':
                 return self::isStrictCheckoutPage();
             case 'checkout_nomenclator':
-                return is_checkout() && SamedaySettings::isUseSamedayNomenclator();
+                return is_checkout() && (new WordpressSamedaySettingsProvider())->get()->isUseSamedayNomenclator();
             case 'admin_settings':
                 return self::isSamedaySettingsPage();
             case 'order_edit':
@@ -552,9 +552,10 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ]);
                 break;
             case 'custom-checkout-button':
+                $settings = (new WordpressSamedaySettingsProvider())->get();
                 wp_localize_script($handle, 'samedayData', [
-                    'username' => SamedaySettings::getUser(),
-                    'country' => SamedaySettings::getHostCountry(),
+                    'username' => $settings->getUser(),
+                    'country' => $settings->getHostCountry(),
                     'buttonText' => TranslatorHandler::translate('Show Locations Map'),
                 ]);
                 break;

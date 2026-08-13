@@ -24,7 +24,7 @@ use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
@@ -43,6 +43,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
@@ -89,6 +90,11 @@ final class SamedayCourier extends WC_Shipping_Method
     private WeightConverterInterface $weightConverter;
 
     /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    /**
      * SamedayCourier_Shipping_Method constructor.
      *
      * @param int $instance_id
@@ -107,8 +113,12 @@ final class SamedayCourier extends WC_Shipping_Method
             'instance-settings'
         );
 
+        $this->samedaySettingsProvider = new WordpressSamedaySettingsProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
-        $this->samedayServiceSelector = new SamedayServiceSelector($samedayServiceRepository);
+        $this->samedayServiceSelector = new SamedayServiceSelector(
+            $samedayServiceRepository,
+            $this->samedaySettingsProvider
+        );
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
         $this->samedayServiceRepository = new SamedayServiceRepository();
         $this->samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
@@ -128,7 +138,8 @@ final class SamedayCourier extends WC_Shipping_Method
      */
     public function calculate_shipping($package = array()): void
     {
-        if (!SamedaySettings::isEnabled()) {
+        $settings = $this->samedaySettingsProvider->get();
+        if (!$settings->isEnabled()) {
             return;
         }
 
@@ -140,12 +151,12 @@ final class SamedayCourier extends WC_Shipping_Method
             return;
         }
 
-        $useEstimatedCost = SamedaySettings::getEstimatedCost();
-        $estimatedCostExtraFee = SamedaySettings::getEstimatedCostExtraFee();
-        $useLockerMap = SamedaySettings::isLockersMapEnabled();
+        $useEstimatedCost = $settings->getEstimatedCost();
+        $estimatedCostExtraFee = $settings->getEstimatedCostExtraFee();
+        $useLockerMap = $settings->isLockersMapEnabled();
         $cartValue = $this->wooCommerceHandler->getWC()->cart->get_subtotal();
 
-        if (true === SamedaySettings::isDiscountFreeShippingEnabled()) {
+        if (true === $settings->isDiscountFreeShippingEnabled()) {
             $cartValue = $this->wooCommerceHandler->getWC()->cart->get_cart_contents_total();
         }
 
@@ -160,7 +171,7 @@ final class SamedayCourier extends WC_Shipping_Method
             }
 
             if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
-                $lockerMaxItems = SamedaySettings::getLockerMaxItems();
+                $lockerMaxItems = $settings->getLockerMaxItems();
 
                 if (count($this->wooCommerceHandler->getWC()->cart->get_cart()) > $lockerMaxItems) {
                     continue;
@@ -190,7 +201,7 @@ final class SamedayCourier extends WC_Shipping_Method
                         // Business logic for Bulgaria Currency Rules
                         $storeCurrency = get_woocommerce_currency();
                         if (($storeCurrency !== $estimatedCurrency)
-                            && (SamedaySettings::getHostCountry() === SamedayConstants::API_HOST_LOCALE_BG)
+                            && ($settings->getHostCountry() === SamedayConstants::API_HOST_LOCALE_BG)
                         ) {
                             try {
                                 $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
@@ -263,13 +274,14 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         $time = time();
 
-        $ltSync = SamedaySettings::getSamedaySyncLockersTs();
+        $ltSync = $this->samedaySettingsProvider->get()->getSamedaySyncLockersTs();
 
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
                 new RefreshLockerRequest(
                     new SamedayLockerRepository(),
-                    new Sameday(SdkInitiator::init())
+                    new Sameday(SdkInitiator::init()),
+                    $this->samedaySettingsProvider
                 ))
             )->execute();
         }
@@ -524,8 +536,9 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         // Show on checkout:
-        $this->enabled = SamedaySettings::isEnabled() ? 'yes' : 'no';
-        $this->title = SamedaySettings::getTitle();
+        $settings = $this->samedaySettingsProvider->get();
+        $this->enabled = $settings->isEnabled() ? 'yes' : 'no';
+        $this->title = $settings->getTitle();
 
         $this->init_settings();
 

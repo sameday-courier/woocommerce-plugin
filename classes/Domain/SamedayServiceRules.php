@@ -4,33 +4,25 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\Ports\SamedayServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 
 final class SamedayServiceRules
 {
     /**
-     * @var SamedayServiceRepository
+     * @var SamedayServiceProviderInterface
      */
-    private SamedayServiceRepository $samedayServiceRepository;
+    private SamedayServiceProviderInterface $samedayServiceProvider;
 
     /**
-     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param SamedayServiceProviderInterface $samedayServiceProvider
      */
     public function __construct(
-        SamedayServiceRepository $samedayServiceRepository
+        SamedayServiceProviderInterface $samedayServiceProvider
     )
     {
-        $this->samedayServiceRepository = $samedayServiceRepository;
-    }
-
-    /**
-     * @return SamedayServiceRepository
-     */
-    public function getSamedayServiceRepository(): SamedayServiceRepository
-    {
-        return $this->samedayServiceRepository;
+        $this->samedayServiceProvider = $samedayServiceProvider;
     }
 
     /**
@@ -40,7 +32,7 @@ final class SamedayServiceRules
      */
     public function isEligibleToLockerFirstMile(SamedayService $samedayService): bool
     {
-        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes($samedayService->getSamedayId());
+        $optionalServices = $this->samedayServiceProvider->getServiceIdOptionalTaxes($samedayService->getSamedayId());
 
         foreach ($optionalServices as $optionalService) {
             if ($optionalService->getCode() === SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE) {

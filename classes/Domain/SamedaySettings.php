@@ -4,261 +4,308 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-use Sameday\Objects\Types\AwbPdfType;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
-
 final class SamedaySettings
 {
-    public const OPTION_KEY = 'woocommerce_samedaycourier_settings';
-    public const ENABLED = 'enabled';
-    public const TITLE = 'title';
-    public const USER = 'user';
-    public const PASSWORD = 'password';
-    public const DEFAULT_LABEL_FORMAT = 'default_label_format';
-    public const ESTIMATED_COST = 'estimated_cost';
-    public const ESTIMATED_COST_EXTRA_FEE = 'estimated_cost_extra_fee';
-    public const REPAYMENT_TAX_LABEL = 'repayment_tax_label';
-    public const REPAYMENT_TAX = 'repayment_tax';
-    public const OPEN_PACKAGE_STATUS = 'open_package_status';
-    public const DISCOUNT_FREE_SHIPPING = 'discount_free_shipping';
-    public const OPEN_PACKAGE_LABEL = 'open_package_label';
-    public const LOCKER_MAX_ITEMS = 'locker_max_items';
-    public const LOCKERS_MAP = 'lockers_map';
-    public const IS_TESTING = 'is_testing';
-    public const HOST_COUNTRY = 'host_country';
-    public const USE_NOMENCLATOR = 'use_nomenclator';
-    public const SAMEDAY_SYNC_LOCKERS_TS = 'sameday_sync_lockers_ts';
+    /**
+     * @var bool
+     */
+    private bool $enabled;
 
     /**
-     * @return array
+     * @var string
      */
-    public static function getSamedayOptions(): array
-    {
-        $settings = OptionsHandler::getOption(self::OPTION_KEY);
-        if (false === $settings) {
-            return [];
-        }
-
-        return is_array($settings) ? $settings : [];
-    }
+    private string $title;
 
     /**
-     * @param array $options
+     * @var string|null
      */
-    public static function setSamedayOptions(array $options): void
-    {
-        OptionsHandler::setOption(self::OPTION_KEY, $options);
-    }
+    private ?string $user;
 
     /**
-     * @return string
+     * @var string|null
      */
-    public static function getPathToSettingsPage(): string
+    private ?string $password;
+
+    /**
+     * @var string
+     */
+    private string $defaultLabelFormat;
+
+    /**
+     * @var string
+     */
+    private string $estimatedCost;
+
+    /**
+     * @var int
+     */
+    private int $estimatedCostExtraFee;
+
+    /**
+     * @var string|null
+     */
+    private ?string $repaymentTaxLabel;
+
+    /**
+     * @var int|null
+     */
+    private ?int $repaymentTax;
+
+    /**
+     * @var bool
+     */
+    private bool $openPackageStatusEnabled;
+
+    /**
+     * @var bool
+     */
+    private bool $discountFreeShippingEnabled;
+
+    /**
+     * @var string|null
+     */
+    private ?string $openPackageLabel;
+
+    /**
+     * @var int
+     */
+    private int $lockerMaxItems;
+
+    /**
+     * @var bool
+     */
+    private bool $lockersMapEnabled;
+
+    /**
+     * @var bool
+     */
+    private bool $testing;
+
+    /**
+     * @var string
+     */
+    private string $hostCountry;
+
+    /**
+     * @var bool
+     */
+    private bool $useSamedayNomenclator;
+
+    /**
+     * @var int
+     */
+    private int $samedaySyncLockersTs;
+
+    /**
+     * @param bool $enabled
+     * @param string $title
+     * @param string|null $user
+     * @param string|null $password
+     * @param string $defaultLabelFormat
+     * @param string $estimatedCost
+     * @param int $estimatedCostExtraFee
+     * @param string|null $repaymentTaxLabel
+     * @param int|null $repaymentTax
+     * @param bool $openPackageStatusEnabled
+     * @param bool $discountFreeShippingEnabled
+     * @param string|null $openPackageLabel
+     * @param int $lockerMaxItems
+     * @param bool $lockersMapEnabled
+     * @param bool $testing
+     * @param string $hostCountry
+     * @param bool $useSamedayNomenclator
+     * @param int $samedaySyncLockersTs
+     */
+    public function __construct(
+        bool    $enabled,
+        string  $title,
+        ?string $user,
+        ?string $password,
+        string  $defaultLabelFormat,
+        string  $estimatedCost,
+        int     $estimatedCostExtraFee,
+        ?string $repaymentTaxLabel,
+        ?int    $repaymentTax,
+        bool    $openPackageStatusEnabled,
+        bool    $discountFreeShippingEnabled,
+        ?string $openPackageLabel,
+        int     $lockerMaxItems,
+        bool    $lockersMapEnabled,
+        bool    $testing,
+        string  $hostCountry,
+        bool    $useSamedayNomenclator,
+        int     $samedaySyncLockersTs
+    )
     {
-        return UrlBuilder::build(
-            'admin.php',
-            [
-                'page' => 'wc-settings',
-                'tab' => 'shipping',
-                'section' => 'samedaycourier',
-            ]
-        );
+        $this->enabled = $enabled;
+        $this->title = $title;
+        $this->user = $user;
+        $this->password = $password;
+        $this->defaultLabelFormat = $defaultLabelFormat;
+        $this->estimatedCost = $estimatedCost;
+        $this->estimatedCostExtraFee = $estimatedCostExtraFee;
+        $this->repaymentTaxLabel = $repaymentTaxLabel;
+        $this->repaymentTax = $repaymentTax;
+        $this->openPackageStatusEnabled = $openPackageStatusEnabled;
+        $this->discountFreeShippingEnabled = $discountFreeShippingEnabled;
+        $this->openPackageLabel = $openPackageLabel;
+        $this->lockerMaxItems = $lockerMaxItems;
+        $this->lockersMapEnabled = $lockersMapEnabled;
+        $this->testing = $testing;
+        $this->hostCountry = $hostCountry;
+        $this->useSamedayNomenclator = $useSamedayNomenclator;
+        $this->samedaySyncLockersTs = $samedaySyncLockersTs;
     }
 
     /**
      * @return bool
      */
-    public static function isEnabled(): bool
+    public function isEnabled(): bool
     {
-        return self::get(self::ENABLED, 'yes') !== 'no';
+        return $this->enabled;
     }
 
     /**
      * @return string
      */
-    public static function getTitle(): string
+    public function getTitle(): string
     {
-        $title = self::get(self::TITLE);
-
-        return is_string($title) && $title !== '' ? $title : 'SamedayCourier';
+        return $this->title;
     }
 
     /**
      * @return string|null
      */
-    public static function getUser(): ?string
+    public function getUser(): ?string
     {
-        $user = self::get(self::USER);
-
-        return is_string($user) && $user !== '' ? $user : null;
+        return $this->user;
     }
 
     /**
      * @return string|null
      */
-    public static function getPassword(): ?string
+    public function getPassword(): ?string
     {
-        $password = self::get(self::PASSWORD);
-
-        return is_string($password) && $password !== '' ? $password : null;
+        return $this->password;
     }
 
     /**
      * @return string
      */
-    public static function getDefaultLabelFormat(): string
+    public function getDefaultLabelFormat(): string
     {
-        $format = self::get(self::DEFAULT_LABEL_FORMAT);
-
-        return is_string($format) && $format !== '' ? $format : SamedayAwbPdfTypes::getLabelKeys()[AwbPdfType::A4];
+        return $this->defaultLabelFormat;
     }
 
     /**
      * @return string
      */
-    public static function getEstimatedCost(): string
+    public function getEstimatedCost(): string
     {
-        $estimatedCost = self::get(self::ESTIMATED_COST, 'no');
-
-        return is_string($estimatedCost) ? $estimatedCost : 'no';
+        return $this->estimatedCost;
     }
 
     /**
      * @return int
      */
-    public static function getEstimatedCostExtraFee(): int
+    public function getEstimatedCostExtraFee(): int
     {
-        return (int) self::get(self::ESTIMATED_COST_EXTRA_FEE, 0);
+        return $this->estimatedCostExtraFee;
     }
 
     /**
      * @return string|null
      */
-    public static function getRepaymentTaxLabel(): ?string
+    public function getRepaymentTaxLabel(): ?string
     {
-        $label = self::get(self::REPAYMENT_TAX_LABEL);
-
-        return is_string($label) && $label !== '' ? $label : null;
+        return $this->repaymentTaxLabel;
     }
 
     /**
      * @return int|null
      */
-    public static function getRepaymentTax(): ?int
+    public function getRepaymentTax(): ?int
     {
-        $repaymentTax = self::get(self::REPAYMENT_TAX);
-
-        if (null === $repaymentTax || $repaymentTax === '') {
-            return null;
-        }
-
-        return (int) $repaymentTax;
+        return $this->repaymentTax;
     }
 
     /**
      * @return bool
      */
-    public static function isOpenPackageStatusEnabled(): bool
+    public function isOpenPackageStatusEnabled(): bool
     {
-        return self::get(self::OPEN_PACKAGE_STATUS) === 'yes';
+        return $this->openPackageStatusEnabled;
     }
 
-    public static function isDiscountFreeShippingEnabled(): bool
+    /**
+     * @return bool
+     */
+    public function isDiscountFreeShippingEnabled(): bool
     {
-        $discountFreeShipping = self::get(self::DISCOUNT_FREE_SHIPPING);
-
-        return !(null === $discountFreeShipping || 'no' === $discountFreeShipping);
+        return $this->discountFreeShippingEnabled;
     }
 
     /**
      * @return string|null
      */
-    public static function getOpenPackageLabel(): ?string
+    public function getOpenPackageLabel(): ?string
     {
-        $label = self::get(self::OPEN_PACKAGE_LABEL);
-
-        return is_string($label) && $label !== '' ? $label : null;
+        return $this->openPackageLabel;
     }
 
     /**
      * @return int
      */
-    public static function getLockerMaxItems(): int
+    public function getLockerMaxItems(): int
     {
-        $lockerMaxItems = self::get(self::LOCKER_MAX_ITEMS);
-
-        return null !== $lockerMaxItems ? (int) $lockerMaxItems : SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+        return $this->lockerMaxItems;
     }
 
     /**
      * @return bool
      */
-    public static function isLockersMapEnabled(): bool
+    public function isLockersMapEnabled(): bool
     {
-        return self::get(self::LOCKERS_MAP, 'yes') === 'yes';
+        return $this->lockersMapEnabled;
     }
 
     /**
      * @return bool
      */
-    public static function isTesting(): bool
+    public function isTesting(): bool
     {
-        $isTesting = self::get(self::IS_TESTING);
-
-        return $isTesting === 'yes' || $isTesting === '1' || (int) $isTesting === 1;
+        return $this->testing;
     }
 
     /**
      * @return int
      */
-    public static function getTestingMode(): int
+    public function getTestingMode(): int
     {
-        return self::isTesting() ? SamedayConstants::API_DEMO : SamedayConstants::API_PROD;
+        return $this->testing ? SamedayConstants::API_DEMO : SamedayConstants::API_PROD;
     }
 
     /**
      * @return string
      */
-    public static function getHostCountry(): string
+    public function getHostCountry(): string
     {
-        $hostCountry = self::get(self::HOST_COUNTRY);
-
-        return is_string($hostCountry) && $hostCountry !== '' && $hostCountry !== 'none'
-            ? $hostCountry
-            : SamedayConstants::API_HOST_LOCALE_RO;
+        return $this->hostCountry;
     }
 
     /**
      * @return bool
      */
-    public static function isUseSamedayNomenclator(): bool
+    public function isUseSamedayNomenclator(): bool
     {
-        $useSamedayNomenclator = self::get(self::USE_NOMENCLATOR);
-
-        return ! (null === $useSamedayNomenclator || 'no' === $useSamedayNomenclator);
-    }
-
-    public static function getSamedaySyncLockersTs(): int
-    {
-        return (int) self::get(self::SAMEDAY_SYNC_LOCKERS_TS, 0);
-    }
-
-    public static function setSamedaySyncLockersTs(int $timestamp): void
-    {
-        $options = self::getSamedayOptions();
-        $options[self::SAMEDAY_SYNC_LOCKERS_TS] = $timestamp;
-
-        self::setSamedayOptions($options);
+        return $this->useSamedayNomenclator;
     }
 
     /**
-     * @param mixed $default
-     *
-     * @return mixed
+     * @return int
      */
-    private static function get(string $key, $default = null)
+    public function getSamedaySyncLockersTs(): int
     {
-        return self::getSamedayOptions()[$key] ?? $default;
+        return $this->samedaySyncLockersTs;
     }
 }

@@ -20,6 +20,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddr
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -51,7 +52,8 @@ final class AwbRequestFactory
         $stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler());
         $lockerDtoFactory = new LockerDtoFactory(new SamedayLockerRepository($dbHandler));
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
-        $samedayServiceRules = new SamedayServiceRules(new SamedayServiceRepository($dbHandler));
+        $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
+        $samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
 
         if (null === $parcelsDimensions) {
             $parcelsDimensions = $this->parcelDimensionsFactory->fromList(
@@ -64,6 +66,7 @@ final class AwbRequestFactory
             $sameday,
             $dbHandler,
             new SamedayPickupPointRepository($dbHandler),
+            $samedayServiceRepository,
             $samedayAwbRepository,
             new WooOrderShippingAddressUpdater(
                 new WooOrderAddressRepository($dbHandler),
@@ -83,6 +86,7 @@ final class AwbRequestFactory
             $samedayServiceRules,
             new AwbRemover($sameday, $samedayAwbRepository),
             new WooOrderAwbProvider($samedayAwbRepository),
+            new SamedayCityRepository($dbHandler),
         );
     }
 }

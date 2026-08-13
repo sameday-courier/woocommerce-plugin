@@ -8,9 +8,9 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class ShowOpenPackageFieldAction extends AbstractAction
 {
@@ -72,7 +72,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
             return false;
         }
 
-        return SamedaySettings::isOpenPackageStatusEnabled();
+        return (new WordpressSamedaySettingsProvider())->get()->isOpenPackageStatusEnabled();
     }
 
     /**
@@ -86,7 +86,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'type' => 'checkbox',
                 'class' => ['input-checkbox'],
                 'id' => 'sameday_open_package',
-                'label' => SamedaySettings::getOpenPackageLabel(),
+                'label' => (new WordpressSamedaySettingsProvider())->get()->getOpenPackageLabel(),
                 'required' => false,
                 'return' => true,
             ],

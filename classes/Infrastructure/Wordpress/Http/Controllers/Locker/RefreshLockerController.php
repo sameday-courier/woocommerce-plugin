@@ -16,6 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class RefreshLockerController extends AbstractController
 {
@@ -52,7 +53,8 @@ final class RefreshLockerController extends AbstractController
 
         $request = new RefreshLockerRequest(
             new SamedayLockerRepository(),
-            $samedayApiClient
+            $samedayApiClient,
+            new WordpressSamedaySettingsProvider()
         );
         $refreshLocker = new RefreshLocker($request);
 

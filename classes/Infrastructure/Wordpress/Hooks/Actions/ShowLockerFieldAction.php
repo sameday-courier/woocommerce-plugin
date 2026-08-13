@@ -9,10 +9,10 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class ShowLockerFieldAction extends AbstractAction
 {
@@ -73,7 +73,8 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildHtmlContent(?string $shipTo): string
     {
-        if (SamedaySettings::isLockersMapEnabled()) {
+        $settings = (new WordpressSamedaySettingsProvider())->get();
+        if ($settings->isLockersMapEnabled()) {
             return $this->buildLockersMapHtml($shipTo);
         }
 
@@ -87,6 +88,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildLockersMapHtml(?string $shipTo): string
     {
+        $settings = (new WordpressSamedaySettingsProvider())->get();
         $html = sprintf(
             '<tr class="shipping-pickup-store">
                 <td><strong>%s</strong></td>
@@ -101,8 +103,8 @@ final class ShowLockerFieldAction extends AbstractAction
                 </th>
             </tr>',
             TranslatorHandler::translate('Sameday Locker'),
-            esc_attr(SamedaySettings::getUser() ?? ''),
-            esc_attr(SamedaySettings::getHostCountry()),
+            esc_attr($settings->getUser() ?? ''),
+            esc_attr($settings->getHostCountry()),
             TranslatorHandler::translate('Show Locations Map')
         );
 

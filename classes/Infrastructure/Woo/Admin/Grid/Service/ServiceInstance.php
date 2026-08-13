@@ -7,7 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Admin_Settings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class ServiceInstance
@@ -69,7 +70,7 @@ class ServiceInstance
                         <?php if(!isset($_GET['action']) || RequestSanitizer::getAction() !== 'edit') { ?>
                         <div class="meta-box-sortables ui-sortable">
                             <div>
-                                <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
+                                <a href="<?php echo UrlBuilder::buildSamedaySettingsPage(); ?>" class="sameday_admin_button">
 		                            <?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
                                 <form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">
@@ -127,7 +128,7 @@ class ServiceInstance
         $serviceName = $service->getSamedayName() ?? '';
         if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
             $greyedOut = "disabled";
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
         }
 
 	    $statuses = '';

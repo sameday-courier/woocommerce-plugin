@@ -10,7 +10,7 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 
 final class RefreshLocker
 {
@@ -25,12 +25,18 @@ final class RefreshLocker
     public Sameday $sameday;
 
     /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    /**
      * @param RefreshLockerRequest $refreshLockerRequest
      */
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
         $this->samedayLockerRepository = $refreshLockerRequest->getSamedayLockerRepository();
         $this->sameday = $refreshLockerRequest->getSameday();
+        $this->samedaySettingsProvider = $refreshLockerRequest->getSamedaySettingsProvider();
     }
 
     /**
@@ -99,6 +105,6 @@ final class RefreshLocker
      */
     private function updateLastSyncTimestamp(): void
     {
-        SamedaySettings::setSamedaySyncLockersTs(time());
+        $this->samedaySettingsProvider->setSamedaySyncLockersTs(time());
     }
 }

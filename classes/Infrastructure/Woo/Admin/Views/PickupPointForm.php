@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
-
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 class PickupPointForm
 {
 	public static function renderModals(): void
@@ -23,7 +22,8 @@ class PickupPointForm
 						<label for="pickupPointCountry">Country</label>
 						<div class="form-input">
 							<select name="pickupPointCountry" id="pickupPointCountry">
-								<option value="<?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['value']; ?>"><?php echo SamedayConstants::DEFAULT_COUNTRIES[SamedaySettings::getHostCountry()]['label']; ?></option>
+								<?php $hostCountry = (new WordpressSamedaySettingsProvider())->get()->getHostCountry(); ?>
+								<option value="<?php echo SamedayConstants::DEFAULT_COUNTRIES[$hostCountry]['value']; ?>"><?php echo SamedayConstants::DEFAULT_COUNTRIES[$hostCountry]['label']; ?></option>
 							</select>
 						</div>
 					</div>

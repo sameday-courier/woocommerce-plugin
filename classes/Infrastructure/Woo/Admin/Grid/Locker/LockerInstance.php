@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Locker;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 class LockerInstance
@@ -58,7 +57,7 @@ class LockerInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div>
-                                <a href="<?php echo SamedaySettings::getPathToSettingsPage(); ?>" class="sameday_admin_button">
+                                <a href="<?php echo UrlBuilder::buildSamedaySettingsPage(); ?>" class="sameday_admin_button">
 									<?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post" style="width:200px; display:inline-block;top: -2px !important; position: relative;">

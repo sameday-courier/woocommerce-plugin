@@ -189,7 +189,12 @@ final class GenerateAwb
             );
         }
 
-        $serviceTax = $this->awbGenerateServiceTaxResolver->resolve($service, $item);
+        $serviceTax = $this->awbGenerateServiceTaxResolver->resolve(
+            $service,
+            $item->hasOpenPackage(),
+            $item->hasLockerFirstMile(),
+            $item->getPackageType()
+        );
 
         $awbRecipient = $this->awbGenerateRecipientResolver->resolve(
             $item->getOrderId(),

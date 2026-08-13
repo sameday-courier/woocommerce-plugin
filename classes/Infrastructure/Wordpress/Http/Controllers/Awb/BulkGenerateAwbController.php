@@ -51,12 +51,14 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
 
         $dbHandler = new DbHandler();
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
+        $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
         $generateAwbItemFactory = new GenerateAwbItemFactory(
             new WooGenerateAwbOrderProvider(),
             new WooOrderWeightCalculator(),
             new WooOpenPackageOrderDataHandler(),
             new SamedayPickupPointRepository($dbHandler),
-            new SamedayServiceRules(new SamedayServiceRepository($dbHandler)),
+            $samedayServiceRepository,
+            new SamedayServiceRules($samedayServiceRepository),
         );
 
         try {

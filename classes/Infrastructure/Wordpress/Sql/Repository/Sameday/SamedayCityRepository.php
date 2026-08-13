@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
+use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use stdClass;
 
-class SamedayCityRepository extends AbstractRepository
+class SamedayCityRepository extends AbstractRepository implements CityPostalCodeProviderInterface
 {
     private const TABLE_NAME = 'sameday_cities';
 

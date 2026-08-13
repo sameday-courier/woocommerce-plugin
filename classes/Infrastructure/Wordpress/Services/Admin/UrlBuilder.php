@@ -28,4 +28,19 @@ class UrlBuilder
     {
         return esc_url(self::build($adminUrlPath, $queryArgs));
     }
+
+    /**
+     * @return string
+     */
+    public static function buildSamedaySettingsPage(): string
+    {
+        return self::build(
+            'admin.php',
+            [
+                'page' => 'wc-settings',
+                'tab' => 'shipping',
+                'section' => 'samedaycourier',
+            ]
+        );
+    }
 }

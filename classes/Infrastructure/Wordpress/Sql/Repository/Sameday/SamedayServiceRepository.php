@@ -9,13 +9,34 @@ use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Ports\SamedayServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
-class SamedayServiceRepository extends AbstractRepository
+
+class SamedayServiceRepository extends AbstractRepository implements SamedayServiceProviderInterface
 {
     private const TABLE_NAME = 'sameday_service';
+
+    /**
+     * @var SamedaySettingsProviderInterface
+     */
+    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+
+    /**
+     * @param DbHandlerInterface|null $dbHandler
+     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     */
+    public function __construct(
+        ?DbHandlerInterface $dbHandler = null,
+        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+    ) {
+        parent::__construct($dbHandler);
+        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+    }
 
     public function getTableName(): string
     {
@@ -30,7 +51,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s AND status > 0",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -45,7 +66,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT * FROM {$this->getTableName()} WHERE is_testing = %s",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -62,7 +83,7 @@ class SamedayServiceRepository extends AbstractRepository
         $rows = $this->dbHandler->getRows(
             "SELECT service_optional_taxes FROM {$this->getTableName()} WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
             [
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
                 $samedayServiceId,
             ]
         );
@@ -117,7 +138,7 @@ class SamedayServiceRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
             [
                 $samedayId,
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -139,7 +160,7 @@ class SamedayServiceRepository extends AbstractRepository
             "SELECT * FROM {$this->getTableName()} WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
             [
                 $samedayCode,
-                SamedaySettings::isTesting(),
+                $this->isTesting(),
             ]
         );
 
@@ -165,7 +186,7 @@ class SamedayServiceRepository extends AbstractRepository
                 'sameday_id' => $service->getId(),
                 'sameday_name' => $service->getName(),
                 'sameday_code' => $service->getCode(),
-                'is_testing' => SamedaySettings::isTesting(),
+                'is_testing' => $this->isTesting(),
                 'status' => 0,
                 'service_optional_taxes' => !empty($optionalTaxes) ? serialize($optionalTaxes) : null,
             ]
@@ -201,7 +222,7 @@ class SamedayServiceRepository extends AbstractRepository
     {
         $serviceName = $serviceObject->getName();
         if ($serviceObject->getCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[SamedaySettings::getHostCountry()];
+            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[$this->samedaySettingsProvider->get()->getHostCountry()];
         }
 
         return $this->dbHandler->updateRow(
@@ -227,5 +248,13 @@ class SamedayServiceRepository extends AbstractRepository
     public function deleteService(int $id): void
     {
         $this->dbHandler->deleteRow($this->getTableName(), ['id' => $id]);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isTesting(): bool
+    {
+        return $this->samedaySettingsProvider->get()->isTesting();
     }
 }

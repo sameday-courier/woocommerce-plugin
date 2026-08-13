@@ -18,6 +18,7 @@ use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientRe
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
+use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
@@ -77,6 +78,7 @@ final class GenerateAwbRequest
         Sameday $sameday,
         DbHandler $dbHandler,
         SamedayPickupPointRepository $samedayPickupPointRepository,
+        SamedayServiceRepository $samedayServiceRepository,
         SamedayAwbRepository $samedayAwbRepository,
         OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
         AwbErrorParser $awbErrorParser,
@@ -89,13 +91,14 @@ final class GenerateAwbRequest
         GenerateAwbValidator $generateAwbValidator,
         SamedayServiceRules $samedayServiceRules,
         AwbRemover $awbRemover,
-        OrderAwbProviderInterface $orderAwbProvider
+        OrderAwbProviderInterface $orderAwbProvider,
+        CityPostalCodeProviderInterface $cityPostalCodeProvider
     ) {
         $this->generateAwbItem = $generateAwbItem;
         $this->sameday = $sameday;
         $this->dbHandler = $dbHandler;
         $this->samedayServiceRules = $samedayServiceRules;
-        $this->samedayServiceRepository = $samedayServiceRules->getSamedayServiceRepository();
+        $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;
         $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
@@ -107,11 +110,12 @@ final class GenerateAwbRequest
         $this->shippingDtoFactory = $shippingDtoFactory;
         $this->billingDtoFactory = $billingDtoFactory;
         $this->generateAwbValidator = $generateAwbValidator;
-        $this->awbGenerateServiceTaxResolver = new AwbGenerateServiceTaxResolver($samedayServiceRules);
+        $this->awbGenerateServiceTaxResolver = new AwbGenerateServiceTaxResolver($samedayServiceRepository);
         $this->awbGenerateRecipientResolver = new AwbGenerateRecipientResolver(
             $samedayServiceRules,
             $samedayShippingHdAddressParser,
             $stateCodeResolver,
+            $cityPostalCodeProvider,
         );
         $this->awbRemover = $awbRemover;
         $this->orderAwbProvider = $orderAwbProvider;

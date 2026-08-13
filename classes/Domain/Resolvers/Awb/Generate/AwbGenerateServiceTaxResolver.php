@@ -4,49 +4,50 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Ports\SamedayServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateServiceTaxResponse;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 
 class AwbGenerateServiceTaxResolver
 {
     /**
-     * @var SamedayServiceRules $samedayServiceRules
+     * @var SamedayServiceProviderInterface
      */
-    private SamedayServiceRules $samedayServiceRules;
+    private SamedayServiceProviderInterface $samedayServiceProvider;
 
     /**
-     * @param SamedayServiceRules $samedayServiceRules
+     * @param SamedayServiceProviderInterface $samedayServiceProvider
      */
     public function __construct(
-        SamedayServiceRules $samedayServiceRules
+        SamedayServiceProviderInterface $samedayServiceProvider
     )
     {
-        $this->samedayServiceRules = $samedayServiceRules;
+        $this->samedayServiceProvider = $samedayServiceProvider;
     }
 
     /**
      * @param SamedayService $samedayService
-     * @param GenerateAwbItem $awbItem
+     * @param bool $hasOpenPackage
+     * @param bool $hasLockerFirstMile
+     * @param int $packageType
      *
      * @return AwbGenerateServiceTaxResponse
      */
     public function resolve(
         SamedayService $samedayService,
-        GenerateAwbItem $awbItem
+        bool           $hasOpenPackage,
+        bool           $hasLockerFirstMile,
+        int            $packageType
     ): AwbGenerateServiceTaxResponse
     {
-        $optionalServices = $this->samedayServiceRules
-            ->getSamedayServiceRepository()
-            ->getServiceIdOptionalTaxes($samedayService->getSamedayId());
+        $optionalServices = $this->samedayServiceProvider->getServiceIdOptionalTaxes($samedayService->getSamedayId());
 
         $serviceTaxIds = [];
-        if ($awbItem->hasOpenPackage()) {
+        if ($hasOpenPackage) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $awbItem->getPackageType()
+                    && $optionalService->getPackageType()->getType() === $packageType
                 ) {
                     $serviceTaxIds[] = SamedayConstants::OPEN_PACKAGE_OPTION_CODE;
 
@@ -55,10 +56,10 @@ class AwbGenerateServiceTaxResolver
             }
         }
 
-        if ($awbItem->hasLockerFirstMile()) {
+        if ($hasLockerFirstMile) {
             foreach ($optionalServices as $optionalService) {
                 if ($optionalService->getCode() === SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $awbItem->getPackageType()
+                    && $optionalService->getPackageType()->getType() === $packageType
                 ) {
                     $serviceTaxIds[] = SamedayConstants::PERSONAL_DELIVERY_OPTION_CODE;
                     break;
