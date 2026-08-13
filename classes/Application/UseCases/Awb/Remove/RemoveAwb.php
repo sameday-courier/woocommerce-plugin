@@ -56,7 +56,7 @@ final class RemoveAwb
             $this->awbRemover->remove($this->removeAwbItem->getOrderId());
         } catch (AwbNotFoundForOrderException $exception) {
             return new RemoveAwbResponse(
-                "Invalid or inexistent an AWB for this {$exception->getOrderId()}",
+                "Invalid or inexistent an AWB for this OrderID: {$exception->getOrderId()}",
                 ResponseNoticeType::ERROR,
             );
         } catch (SamedayOtherException $exception) {

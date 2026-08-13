@@ -283,12 +283,12 @@
     }
 
     function getModeConfig($modal) {
-        var modes = config.modes || {};
+        let modes = config.modes || {};
         return modes[getModeName($modal)] || null;
     }
 
     function processNext($modal, jobId, totalHint, firstOrderId) {
-        var modeConfig = getModeConfig($modal);
+        let modeConfig = getModeConfig($modal);
         if (!modeConfig) {
             throw new Error(i18n('genericError', 'Something went wrong.'));
         }
@@ -303,12 +303,12 @@
                 var data = (response && response.data) ? response.data : {};
                 return handleNextPayload($modal, jobId, data);
             }, function (xhr) {
-                var data = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : null;
+                let data = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : null;
                 if (data && data.done) {
                     return handleNextPayload($modal, jobId, data);
                 }
 
-                var message = i18n('genericError', 'Something went wrong.');
+                let message = i18n('genericError', 'Something went wrong.');
                 if (data && data.message) {
                     message = data.message;
                 }
