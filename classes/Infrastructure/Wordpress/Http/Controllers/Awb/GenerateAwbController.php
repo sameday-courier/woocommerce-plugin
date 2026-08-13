@@ -79,8 +79,6 @@ final class GenerateAwbController extends AbstractController
                     'add-awb' => ResponseNoticeType::ERROR,
                 ]
             );
-
-            return;
         }
 
         $awbRequestFactory = new AwbRequestFactory();
