@@ -18,9 +18,14 @@ final class TransientBulkJobStore implements BulkJobStoreInterface
 
     private const TTL_SECONDS = 3600;
 
+    /**
+     * @var CacheHandlerInterface|CacheHandler
+     */
     private CacheHandlerInterface $cacheHandler;
 
-    public function __construct(?CacheHandlerInterface $cacheHandler = null)
+    public function __construct(
+        ?CacheHandlerInterface $cacheHandler = null
+    )
     {
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }

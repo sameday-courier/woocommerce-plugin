@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\UseCases\Awb\BulkRemove;
+namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class BulkRemoveAwbItem implements ItemInterface
+final class StartBulkGenerateAwbItem implements ItemInterface
 {
     /**
      * @var int[] $orderIds

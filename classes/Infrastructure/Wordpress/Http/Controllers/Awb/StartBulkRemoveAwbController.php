@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
-use SamedayCourier\Shipping\Application\UseCases\Awb\BulkRemove\BulkRemoveAwbItem;
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbItem;
+use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
@@ -33,30 +35,29 @@ final class StartBulkRemoveAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $orderIds = BulkRemoveAwbItem::fromArray($inputParams)->getOrderIds();
+        $result = (new StartBulkRemoveAwb(
+            new StartBulkRemoveAwbRequest(
+                StartBulkRemoveAwbItem::fromArray($inputParams),
+                $this->getCurrentUserId(),
+                new TransientBulkJobStore()
+            )
+        ))->execute();
 
-        if ([] === $orderIds) {
+        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
             $this->sendJsonErrorResponse(
                 [
-                    'message' => TranslatorHandler::translate('There is no data to process.'),
+                    'message' => TranslatorHandler::translate(
+                        $result->getNoticeMessage() ?? 'There is no data to process.'
+                    ),
                 ]
             );
         }
 
-        $jobId = wp_generate_uuid4();
-        $job = BulkJob::create(
-            $jobId,
-            $this->getCurrentUserId(),
-            $orderIds
-        );
-
-        (new TransientBulkJobStore())->create($job);
-
         $this->sendJsonSuccessResponse([
-            'jobId' => $jobId,
-            'total' => $job->getTotal(),
-            'processed' => 0,
-            'done' => false,
+            'jobId' => $result->getJobId(),
+            'total' => $result->getTotal(),
+            'processed' => $result->getProcessed(),
+            'done' => $result->isDone(),
         ]);
     }
 }
