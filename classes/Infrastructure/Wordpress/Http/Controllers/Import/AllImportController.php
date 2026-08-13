@@ -27,7 +27,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
@@ -74,7 +73,7 @@ final class AllImportController extends AbstractController
                 ResponseNoticeType::ERROR,
             );
 
-            Redirector::to(
+            $this->redirectTo(
                 'admin.php',
                 self::SETTINGS_REDIRECT_ARGS
             );
@@ -131,7 +130,7 @@ final class AllImportController extends AbstractController
         );
 
         $this->dispatchNotice($failedSteps);
-        Redirector::to(
+        $this->redirectTo(
             'admin.php',
             self::SETTINGS_REDIRECT_ARGS
         );

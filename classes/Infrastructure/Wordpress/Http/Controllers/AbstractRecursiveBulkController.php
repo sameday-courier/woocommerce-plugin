@@ -29,11 +29,8 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         $jobId = isset($inputParams['jobId']) ? (string) $inputParams['jobId'] : '';
 
         if ('' === $jobId) {
-            wp_send_json_error(
-                [
-                    'message' => TranslatorHandler::translate('Invalid bulk job.'),
-                ],
-                400
+            $this->sendJsonErrorResponse(
+                'Invalid bulk job.',
             );
         }
 
@@ -42,10 +39,8 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         $job = $jobStore->get($jobId, $userId);
 
         if (null === $job) {
-            wp_send_json_error(
-                [
-                    'message' => TranslatorHandler::translate('Bulk session expired, please restart.'),
-                ],
+            $this->sendJsonErrorResponse(
+                'Bulk session expired, please restart.',
                 404
             );
         }
@@ -68,26 +63,26 @@ abstract class AbstractRecursiveBulkController extends AbstractController
             $this->sendDoneResponse($jobStore, $job);
         }
 
-        wp_send_json_success([
-            'done' => false,
-            'jobId' => $job->getJobId(),
-            'total' => $job->getTotal(),
-            'processed' => $job->getProcessedCount(),
-            'currentItemId' => $itemId,
-            'lastResult' => array_merge(
-                [
-                    'itemId' => $itemId,
-                ],
-                $payload
-            ),
-            'successCount' => $job->getSuccessCount(),
-            'errorCount' => $job->getErrorCount(),
-        ]);
+        $this->sendJsonSuccessResponse(
+            [
+                'done' => false,
+                'jobId' => $job->getJobId(),
+                'total' => $job->getTotal(),
+                'processed' => $job->getProcessedCount(),
+                'currentItemId' => $itemId,
+                'lastResult' => array_merge(
+                    [
+                        'itemId' => $itemId,
+                    ],
+                    $payload
+                ),
+                'successCount' => $job->getSuccessCount(),
+                'errorCount' => $job->getErrorCount(),
+            ]
+        );
     }
 
     /**
-     * Process a single bulk job item (one recursive step).
-     *
      * @return array{status: string, message: string, ...}
      */
     abstract protected function processItem(int $itemId): array;
@@ -116,9 +111,9 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         $jobStore->delete($job->getJobId(), $job->getUserId());
 
         if ($job->getErrorCount() > 0 && 0 === $job->getSuccessCount()) {
-            wp_send_json_error($payload, 400);
+            $this->sendJsonErrorResponse($payload);
         }
 
-        wp_send_json_success($payload);
+        $this->sendJsonSuccessResponse($payload);
     }
 }

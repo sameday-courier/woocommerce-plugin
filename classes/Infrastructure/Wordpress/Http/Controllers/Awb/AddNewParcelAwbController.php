@@ -18,7 +18,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -41,7 +40,6 @@ final class AddNewParcelAwbController extends AbstractController
      *
      * @return void
      *
-     * @throws SamedaySDKException
      * @throws JsonException
      */
     protected function processAction(array $inputParams): void
@@ -56,7 +54,7 @@ final class AddNewParcelAwbController extends AbstractController
                 TranslatorHandler::translate($e->getMessage()),
             );
 
-            Redirector::to(
+            $this->redirectTo(
                 'post.php',
                 [
                     'post' => $orderId,
@@ -85,7 +83,7 @@ final class AddNewParcelAwbController extends AbstractController
             );
         }
 
-        Redirector::to(
+        $this->redirectTo(
             'post.php',
             [
                 'post' => $result->getOrderId(),

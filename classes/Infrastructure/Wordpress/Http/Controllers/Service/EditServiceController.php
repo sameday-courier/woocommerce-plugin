@@ -12,7 +12,6 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 
 if (!defined('ABSPATH')) {
@@ -65,7 +64,7 @@ final class EditServiceController extends AbstractController
         }
 
         if ($result->getNoticeType() === ResponseNoticeType::ERROR) {
-            Redirector::to(
+            $this->redirectTo(
                 'edit.php',
                 [
                     'post_type' => 'page',
@@ -76,7 +75,7 @@ final class EditServiceController extends AbstractController
             );
         }
 
-        Redirector::to(
+        $this->redirectTo(
             'edit.php',
             [
                 'post_type' => 'page',

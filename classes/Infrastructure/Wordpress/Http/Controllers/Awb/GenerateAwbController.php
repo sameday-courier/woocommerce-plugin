@@ -14,7 +14,6 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
 
@@ -50,7 +49,14 @@ final class GenerateAwbController extends AbstractController
                 TranslatorHandler::translate("There is no data to process."),
             );
 
-            $this->redirectTo($orderId);
+            $this->redirectTo(
+                'post.php',
+                [
+                    'id' => $orderId,
+                    'post' => $orderId,
+                    'action' => 'edit',
+                ]
+            );
 
             return;
         }
@@ -65,7 +71,7 @@ final class GenerateAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            Redirector::to(
+            $this->redirectTo(
                 'post.php',
                 [
                     'post' => $orderId,
@@ -73,6 +79,8 @@ final class GenerateAwbController extends AbstractController
                     'add-awb' => ResponseNoticeType::ERROR,
                 ]
             );
+
+            return;
         }
 
         $awbRequestFactory = new AwbRequestFactory();
@@ -92,17 +100,7 @@ final class GenerateAwbController extends AbstractController
             );
         }
 
-        $this->redirectTo($orderId);
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     */
-    private function redirectTo(int $orderId): void
-    {
-        Redirector::to(
+        $this->redirectTo(
             'post.php',
             [
                 'id' => $orderId,

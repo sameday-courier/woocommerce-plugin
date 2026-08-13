@@ -15,7 +15,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -51,7 +50,7 @@ final class ShowAsPdfAwbController extends AbstractController
                 $exception->getMessage(),
             );
 
-            Redirector::to(
+            $this->redirectTo(
                 'post.php',
                 [
                     'post' => $showAsPdfAwbItem->getOrderId(),
@@ -96,7 +95,7 @@ final class ShowAsPdfAwbController extends AbstractController
             );
         }
 
-        Redirector::to(
+        $this->redirectTo(
             'post.php',
             [
                 'post' => $result->getOrderId(),

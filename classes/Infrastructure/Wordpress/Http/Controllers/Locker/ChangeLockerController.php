@@ -48,12 +48,11 @@ final class ChangeLockerController extends AbstractController
         ))->execute();
 
         if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            wp_send_json_error(
-                TranslatorHandler::translate($result->getNoticeMessage() ?? 'Failed to change locker.'),
-                400
+            $this->sendJsonErrorResponse(
+                TranslatorHandler::translate($result->getNoticeMessage() ?? 'Failed to change locker.')
             );
         }
 
-        wp_send_json_success();
+        $this->sendJsonSuccessResponse(null);
     }
 }

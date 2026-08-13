@@ -14,7 +14,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -50,7 +49,7 @@ final class RefreshServiceController extends AbstractController
                 ResponseNoticeType::ERROR,
             );
 
-            Redirector::to('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
+            $this->redirectTo('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
         }
 
         $request = new RefreshServiceRequest(
@@ -68,7 +67,7 @@ final class RefreshServiceController extends AbstractController
             );
         }
 
-        Redirector::to(
+        $this->redirectTo(
             'edit.php',
             [
                 'post_type' => 'page',

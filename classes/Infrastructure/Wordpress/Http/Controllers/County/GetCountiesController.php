@@ -39,19 +39,17 @@ final class GetCountiesController extends AbstractController
         try {
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
-            wp_send_json_error(
+            $this->sendJsonErrorResponse(
                 TranslatorHandler::translate('Could not instantiate Sameday client service.'),
                 500
             );
-
-            die();
         }
 
         $getCounties = new GetCounties(new GetCountiesRequest($samedayApiClient));
         $result = $getCounties->execute();
 
         if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            wp_send_json_error($result->getNoticeMessage(), 500);
+            $this->sendJsonErrorResponse($result->getNoticeMessage(), 500);
         }
 
         wp_send_json($result->getCounties());

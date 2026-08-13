@@ -36,11 +36,10 @@ final class StartBulkGenerateAwbController extends AbstractController
         $orderIds = BulkGenerateAwbItem::fromArray($inputParams)->getOrderIds();
 
         if ([] === $orderIds) {
-            wp_send_json_error(
+            $this->sendJsonErrorResponse(
                 [
                     'message' => TranslatorHandler::translate('There is no data to process.'),
-                ],
-                400
+                ]
             );
         }
 
@@ -53,7 +52,7 @@ final class StartBulkGenerateAwbController extends AbstractController
 
         (new TransientBulkJobStore())->create($job);
 
-        wp_send_json_success([
+        $this->sendJsonSuccessResponse([
             'jobId' => $jobId,
             'total' => $job->getTotal(),
             'processed' => 0,

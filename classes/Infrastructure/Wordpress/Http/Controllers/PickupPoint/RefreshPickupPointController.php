@@ -15,7 +15,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -51,7 +50,7 @@ final class RefreshPickupPointController extends AbstractController
                 ResponseNoticeType::ERROR,
             );
 
-            Redirector::to('edit.php',
+            $this->redirectTo('edit.php',
                 [
                     'post_type' => 'page',
                     'page' => 'sameday_pickup_points'
@@ -74,7 +73,7 @@ final class RefreshPickupPointController extends AbstractController
             );
         }
 
-        Redirector::to(
+        $this->redirectTo(
             'edit.php',
             [
                 'post_type' => 'page',

@@ -38,21 +38,18 @@ final class GetCitiesController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         if (!isset($inputParams['countyId'])) {
-            wp_send_json_error(
-                TranslatorHandler::translate('County id is required.'),
-                400
+            $this->sendJsonErrorResponse(
+                TranslatorHandler::translate('County id is required.')
             );
         }
 
         try {
             $samedayApiClient = new Sameday(SdkInitiator::init());
         } catch (SamedaySDKException $exception) {
-            wp_send_json_error(
+            $this->sendJsonErrorResponse(
                 TranslatorHandler::translate('Could not instantiate Sameday client service.'),
                 500
             );
-
-            die();
         }
 
         $getCities = new GetCities(
@@ -65,7 +62,7 @@ final class GetCitiesController extends AbstractController
         $result = $getCities->execute();
 
         if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            wp_send_json_error($result->getNoticeMessage(), 500);
+            $this->sendJsonErrorResponse($result->getNoticeMessage(), 500);
         }
 
         wp_send_json($result->getCities());

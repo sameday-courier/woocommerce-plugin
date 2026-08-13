@@ -17,7 +17,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\Redirector;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -54,7 +53,7 @@ final class RemoveAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectTo($removeAwbItem->getOrderId());
+            $this->redirectToOrderEdit($removeAwbItem->getOrderId());
 
             return;
         }
@@ -81,17 +80,17 @@ final class RemoveAwbController extends AbstractController
             );
         }
 
-        $this->redirectTo($removeAwbItem->getOrderId());
+        $this->redirectToOrderEdit($removeAwbItem->getOrderId());
     }
 
     /**
-     * @param  int $orderId
+     * @param int $orderId
      *
      * @return void
      */
-    private function redirectTo(int $orderId): void
+    private function redirectToOrderEdit(int $orderId): void
     {
-        Redirector::to(
+        $this->redirectTo(
             'post.php',
             [
                 'post' => $orderId,

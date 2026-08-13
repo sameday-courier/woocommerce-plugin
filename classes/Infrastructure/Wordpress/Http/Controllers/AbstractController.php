@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
@@ -46,6 +47,48 @@ abstract class AbstractController implements ControllerInterface
     protected function getCurrentUserId(): int
     {
         return UserPermissionChecker::getCurrentUserId();
+    }
+
+    /**
+     * @param mixed $payload
+     * @param int $statusCode
+     * @return void
+     */
+    protected function sendJsonErrorResponse(
+        $payload,
+        int $statusCode = 400
+    ): void
+    {
+        wp_send_json_error($payload, $statusCode);
+    }
+
+    /**
+     * @param mixed $payload
+     * @param int $statusCode
+     * @param bool $flag
+     *
+     * @return void
+     */
+    protected function sendJsonSuccessResponse(
+        $payload,
+        int $statusCode = 200,
+        bool $flag = false
+    ): void
+    {
+        wp_send_json_success($payload, $statusCode, $flag);
+    }
+
+    /**
+     * @param string $mainPath such as admin.php, post.php, edit.php
+     * @param array $queryArgs
+     *
+     * @return void
+     */
+    protected function redirectTo(string $mainPath, array $queryArgs = []): void
+    {
+        wp_safe_redirect(UrlBuilder::build($mainPath, $queryArgs));
+
+        exit;
     }
 
     /**
