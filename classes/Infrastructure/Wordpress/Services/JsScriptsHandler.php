@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use InvalidArgumentException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\Models\SamedayCity;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
@@ -196,7 +197,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 'sameday_settings_actions',
                 self::WP_CONTEXT['admin_settings'],
                 [],
-                false
+                true
             ),
             'awb-history' => self::addScript(
                 'awb_history',
@@ -232,9 +233,10 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function addScript(
         string $fileName,
         string $context,
-        array $deps = ['jquery'],
-        bool $inFooter = true
-    ): array {
+        array  $deps = ['jquery'],
+        bool   $inFooter = true
+    ): array
+    {
         if (!isset(self::WP_CONTEXT[$context])) {
             throw new InvalidArgumentException(
                 sprintf(
@@ -264,9 +266,10 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function addExternalScript(
         string $url,
         string $context,
-        array $deps = ['jquery'],
-        bool $inFooter = false
-    ): array {
+        array  $deps = ['jquery'],
+        bool   $inFooter = false
+    ): array
+    {
         if (!isset(self::WP_CONTEXT[$context])) {
             throw new InvalidArgumentException(
                 sprintf(
@@ -399,7 +402,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         global $pagenow;
 
         if ('post.php' === $pagenow && isset($_GET['post'])) {
-            return 'shop_order' === get_post_type((int) $_GET['post']);
+            return 'shop_order' === get_post_type((int)$_GET['post']);
         }
 
         if ('admin.php' === $pagenow
@@ -419,7 +422,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function isOrdersListPage(): bool
     {
         if (isset($_GET['page']) && 'wc-orders' === $_GET['page']) {
-            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string) $_GET['action'])) : '';
+            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string)$_GET['action'])) : '';
 
             return !in_array($action, ['edit', 'new'], true);
         }
@@ -579,6 +582,29 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     ],
                 ]);
                 break;
+            case 'sameday-settings-actions':
+                wp_localize_script($handle, 'samedayAllImport', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'startAction' => 'all-import-start',
+                    'nextAction' => 'all-import-next',
+                    'startNonce' => NonceHandler::createNonce('all-import-start'),
+                    'nextNonce' => NonceHandler::createNonce('all-import-next'),
+                    'steps' => [
+                        AllImportSteps::SERVICES => TranslatorHandler::translate('Services'),
+                        AllImportSteps::PICKUP_POINTS => TranslatorHandler::translate('Pickup points'),
+                        AllImportSteps::LOCKERS => TranslatorHandler::translate('Lockers'),
+                        AllImportSteps::CITIES => TranslatorHandler::translate('Cities'),
+                    ],
+                    'i18n' => [
+                        'processing' => TranslatorHandler::translate('Importing %s (%s/%s)'),
+                        'complete' => TranslatorHandler::translate('Process complete, all data is imported.'),
+                        'completedWithErrors' => TranslatorHandler::translate(
+                            'Import process completed with errors. The following could not be imported: %s.'
+                        ),
+                        'genericError' => TranslatorHandler::translate('Something went wrong.'),
+                    ],
+                ]);
+                break;
         }
     }
 
@@ -626,7 +652,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . $relativePath;
 
         if (file_exists($absolutePath)) {
-            return (string) filemtime($absolutePath);
+            return (string)filemtime($absolutePath);
         }
 
         return (new WooHandler())->getPluginVersion();

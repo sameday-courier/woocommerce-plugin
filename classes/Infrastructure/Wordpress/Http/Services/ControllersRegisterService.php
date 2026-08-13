@@ -20,6 +20,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\GetCi
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City\RefreshCityController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County\GetCountiesController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import\AllImportController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import\StartAllImportController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\ChangeLockerController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker\RefreshLockerController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint\AddNewPickupPointController;
@@ -37,42 +38,43 @@ class ControllersRegisterService implements RegistryHandlerInterface
     private const METHOD = 'handle';
 
     private const CONTROLLERS =
-    [
-        self::POST_CONTROLLERS =>
         [
-            RemoveAwbController::class,
-            ShowAsPdfAwbController::class,
-            AddNewParcelAwbController::class,
-            EditServiceController::class,
-            RefreshServiceController::class,
-            RefreshPickupPointController::class,
-            RefreshLockerController::class,
-            GenerateAwbController::class,
-            AddNewPickupPointController::class,
-            DeletePickupPointController::class,
-            AllImportController::class,
-            RefreshCityController::class,
-        ],
-        self::AJAX_CONTROLLERS =>
-        [
-            GetCountiesController::class,
-            GetCitiesController::class,
-            ChangeLockerController::class,
-            StartBulkGenerateAwbController::class,
-            BulkGenerateAwbController::class,
-            StartBulkRemoveAwbController::class,
-            BulkRemoveAwbController::class,
-            StoreLockerInSessionController::class,
-            StoreOpenPackageInSessionController::class,
-            StorePaymentMethodInSessionController::class,
-        ],
-        self::NO_PRIV_AJAX_CONTROLLERS =>
-        [
-            StoreLockerInSessionController::class,
-            StoreOpenPackageInSessionController::class,
-            StorePaymentMethodInSessionController::class,
-        ]
-    ];
+            self::POST_CONTROLLERS =>
+            [
+                RemoveAwbController::class,
+                ShowAsPdfAwbController::class,
+                AddNewParcelAwbController::class,
+                EditServiceController::class,
+                RefreshServiceController::class,
+                RefreshPickupPointController::class,
+                RefreshLockerController::class,
+                GenerateAwbController::class,
+                AddNewPickupPointController::class,
+                DeletePickupPointController::class,
+                RefreshCityController::class,
+            ],
+            self::AJAX_CONTROLLERS =>
+            [
+                GetCountiesController::class,
+                GetCitiesController::class,
+                ChangeLockerController::class,
+                StartBulkGenerateAwbController::class,
+                BulkGenerateAwbController::class,
+                StartBulkRemoveAwbController::class,
+                BulkRemoveAwbController::class,
+                StartAllImportController::class,
+                AllImportController::class,
+                StoreLockerInSessionController::class,
+                StoreOpenPackageInSessionController::class,
+                StorePaymentMethodInSessionController::class,
+            ],
+            self::NO_PRIV_AJAX_CONTROLLERS =>
+            [
+                StoreLockerInSessionController::class,
+                StoreOpenPackageInSessionController::class,
+                StorePaymentMethodInSessionController::class,
+            ]
+        ];
 
     /**
      * @return void

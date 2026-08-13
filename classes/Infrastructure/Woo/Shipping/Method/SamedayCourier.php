@@ -179,11 +179,11 @@ final class SamedayCourier extends WC_Shipping_Method
                 if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
                     $estimatedPrice = $estimatedCost->getCost();
                     $estimatedCurrency = $estimatedCost->getCurrency();
-                        if (($useEstimatedCost === 'yes')
+                    if (($useEstimatedCost === 'yes')
                         || ($useEstimatedCost === 'btfp' && ($service->getPrice() ?? 0) < $estimatedPrice)
                     ) {
                         if ($estimatedCostExtraFee > 0) {
-                            $estimatedPrice += (float) number_format($price * ($estimatedCostExtraFee /100), 2, '.', '');
+                            $estimatedPrice += (float)number_format($price * ($estimatedCostExtraFee / 100), 2, '.', '');
                         }
                         $price = $estimatedPrice;
 
@@ -202,7 +202,8 @@ final class SamedayCourier extends WC_Shipping_Method
                                     number_format($estimatedPrice, 2),
                                     $estimatedCurrency
                                 );
-                            } catch (Exception $exception) {}
+                            } catch (Exception $exception) {
+                            }
                         }
                     }
                 }
@@ -293,7 +294,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $city = RomanianDiacriticsNormalizer::normalize($address['city']);
         $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
 
-        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int) $serviceId);
+        $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int)$serviceId);
         $serviceTaxIds = array();
         if ('yes' === $this->sessionHandler->get(SamedaySessionKeys::OPEN_PACKAGE)) {
             foreach ($optionalServices as $optionalService) {
@@ -392,17 +393,17 @@ final class SamedayCourier extends WC_Shipping_Method
             ),
 
             'default_label_format' => array(
-                'title'   => TranslatorHandler::translate('Default label format') . ' *',
+                'title' => TranslatorHandler::translate('Default label format') . ' *',
                 'default' => 'A4',
-                'type'    => 'select',
+                'type' => 'select',
                 'options' => $labelFormatOptions,
                 'description' => TranslatorHandler::translate('Awb paper format')
             ),
 
             'estimated_cost' => array(
-                'title'   => TranslatorHandler::translate('Use estimated cost') . ' *',
+                'title' => TranslatorHandler::translate('Use estimated cost') . ' *',
                 'default' => 'no',
-                'type'    => 'select',
+                'type' => 'select',
                 'options' => [
                     'no' => TranslatorHandler::translate('Never'),
                     'yes' => TranslatorHandler::translate('Always'),
@@ -474,9 +475,9 @@ final class SamedayCourier extends WC_Shipping_Method
             ),
 
             'lockers_map' => array(
-                'title'   => TranslatorHandler::translate('Show locker map method'),
+                'title' => TranslatorHandler::translate('Show locker map method'),
                 'default' => 'yes',
-                'type'    => 'select',
+                'type' => 'select',
                 'options' => [
                     'no' => TranslatorHandler::translate('Drop-down list'),
                     'yes' => TranslatorHandler::translate('Interactive Map'),
@@ -554,7 +555,7 @@ final class SamedayCourier extends WC_Shipping_Method
                         $apiUrl
                     );
                     if ($sameday->login()) {
-                        $isTesting = (int) (SamedayConstants::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
+                        $isTesting = (int)(SamedayConstants::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
                         $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
                         $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
                         $isLogged = true;
@@ -582,7 +583,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
             parent::process_admin_options();
         } else {
-            WC_Admin_Settings::add_error( TranslatorHandler::translate('Invalid username/password combination provided! Settings have not been changed!'));
+            WC_Admin_Settings::add_error(TranslatorHandler::translate('Invalid username/password combination provided! Settings have not been changed!'));
         }
     }
 
@@ -607,24 +608,32 @@ final class SamedayCourier extends WC_Shipping_Method
         $adminPostUrl = UrlBuilder::buildEscaped('admin-post.php');
 
         echo '
-            <form id="sameday-all-import-form" action="' . $adminPostUrl . '" method="post" hidden>
-                <input type="hidden" name="action" value="all_import">
-                <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('all_import') . '">
-            </form>
             <form id="sameday-import-cities-form" action="' . $adminPostUrl . '" method="post" hidden>
                 <input type="hidden" name="action" value="import_cities">
                 <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('import_cities') . '">
             </form>
             <div class="sameday-settings-actions">
-                <button type="submit" form="sameday-all-import-form" class="sameday_admin_button">'
-                    . TranslatorHandler::translate('Import all') .
-                '</button>
+                <button type="button" id="sameday-all-import-button" class="sameday_admin_button">'
+            . TranslatorHandler::translate('Import all') .
+            '</button>
                 <a href="' . $serviceUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Services') . '</a>
                 <a href="' . $pickupPointUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Pickup-point') . '</a>
                 <a href="' . $lockerUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Lockers') . '</a>
                 <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
-                    . TranslatorHandler::translate('Import Cities') .
-                '</button>
+            . TranslatorHandler::translate('Import Cities') .
+            '</button>
+            </div>
+            <div id="sameday-all-import-overlay" class="sameday-all-import-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="sameday-all-import-title">
+                <div class="sameday-all-import-overlay__card">
+                    <div class="sameday-all-import-overlay__spinner" aria-hidden="true"></div>
+                    <p id="sameday-all-import-title" class="sameday-all-import-overlay__title">'
+            . TranslatorHandler::translate('Importing data') .
+            '</p>
+                    <p class="sameday-all-import-overlay__status" data-sameday-all-import-status aria-live="polite"></p>
+                    <div class="sameday-all-import-overlay__progress" aria-hidden="true">
+                        <div class="sameday-all-import-overlay__progress-bar" data-sameday-all-import-progress></div>
+                    </div>
+                </div>
             </div>';
     }
 

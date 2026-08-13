@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import;
 
-use Sameday\Exceptions\SamedaySDKException;
+use Exception;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
@@ -21,30 +16,25 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 
-final class AllImportController extends AbstractController
+final class AllImportController extends AbstractRecursiveBulkController
 {
     /**
      * @var string
      */
-    private const ACTION = 'all_import';
-
-    /**
-     * @var array<string, string>
-     */
-    private const SETTINGS_REDIRECT_ARGS = [
-        'page' => 'wc-settings',
-        'tab' => 'shipping',
-        'section' => SamedayConstants::PLUGIN_NAME,
-    ];
+    private const ACTION = 'all-import-next';
 
     /**
      * @return string
@@ -55,172 +45,103 @@ final class AllImportController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
-     *
-     * @return void
+     * @return array{status: string, message: string, label: string}
      */
-    protected function processAction(array $inputParams): void
+    protected function processItem(int $itemId): array
     {
+        $step = $this->getStep($itemId);
+        if (null === $step) {
+            return [
+                'status' => ResponseNoticeType::ERROR,
+                'message' => TranslatorHandler::translate('Unknown import step.'),
+                'label' => (string) $itemId,
+            ];
+        }
+
         try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($exception->getMessage()),
-                ResponseNoticeType::ERROR,
-            );
-
-            $this->redirectTo(
-                'admin.php',
-                self::SETTINGS_REDIRECT_ARGS
-            );
+            $result = ($step['execute'])();
+        } catch (Exception $exception) {
+            return [
+                'status' => ResponseNoticeType::ERROR,
+                'message' => TranslatorHandler::translate($exception->getMessage()),
+                'label' => $step['label'],
+            ];
         }
 
-        /** @var array<int, array{label: string, message: string, manualImportHint: string}> $failedSteps */
-        $failedSteps = [];
-
-        $this->runStep(
-            $failedSteps,
-            'Services',
-            TranslatorHandler::translate('Go to Services and use the Refresh button to import them manually.'),
-            fn () => (new RefreshService(
-                new RefreshServiceRequest($samedayApiClient, new SamedayServiceRepository())
-            ))->execute(),
-            'Failed to refresh services.'
-        );
-
-        $this->runStep(
-            $failedSteps,
-            'Pickup points',
-            TranslatorHandler::translate('Go to Pickup-point and use the Refresh button to import them manually.'),
-            fn () => (new RefreshPickupPoint(
-                new RefreshPickupPointRequest($samedayApiClient, new SamedayPickupPointRepository())
-            ))->execute(),
-            'Failed to refresh pickup points.'
-        );
-
-        $this->runStep(
-            $failedSteps,
-            'Lockers',
-            TranslatorHandler::translate('Go to Lockers and use the Refresh button to import them manually.'),
-            fn () => (new RefreshLocker(
-                new RefreshLockerRequest(new SamedayLockerRepository(), $samedayApiClient)
-            ))->execute(),
-            'Failed to refresh lockers.'
-        );
-
-        $dbHandler = new DbHandler();
-        $this->runStep(
-            $failedSteps,
-            'Cities',
-            TranslatorHandler::translate('Use the Import Cities button on this page to import them manually.'),
-            fn () => (new RefreshCity(
-                new RefreshCityRequest(
-                    new SchemaHandler(),
-                    $dbHandler,
-                    new SamedayCityRepository($dbHandler),
-                    new CacheHandler(),
-                    new WooCountriesHandler(),
-                )
-            ))->execute(),
-            'Failed to import cities.'
-        );
-
-        $this->dispatchNotice($failedSteps);
-        $this->redirectTo(
-            'admin.php',
-            self::SETTINGS_REDIRECT_ARGS
-        );
-    }
-
-    /**
-     * @param array<int, array{label: string, message: string, manualImportHint: string}> $failedSteps
-     * @param string $label
-     * @param string $manualImportHint
-     * @param callable(): ResponseInterface $execute
-     * @param string $defaultErrorMessage
-     *
-     * @return void
-     */
-    private function runStep(
-        array &$failedSteps,
-        string $label,
-        string $manualImportHint,
-        callable $execute,
-        string $defaultErrorMessage
-    ): void {
-        $result = $execute();
-
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            $this->recordFailure(
-                $failedSteps,
-                $label,
-                $result->getNoticeMessage() ?? $defaultErrorMessage,
-                $manualImportHint
-            );
-        }
-    }
-
-    /**
-     * @param array<int, array{label: string, message: string, manualImportHint: string}> $failedSteps
-     * @param string $label
-     * @param string $message
-     * @param string $manualImportHint
-     *
-     * @return void
-     */
-    private function recordFailure(
-        array &$failedSteps,
-        string $label,
-        string $message,
-        string $manualImportHint
-    ): void {
-        $failedSteps[] = [
-            'label' => $label,
-            'message' => $message,
-            'manualImportHint' => $manualImportHint,
+        return [
+            'status' => $result->getNoticeType(),
+            'message' => TranslatorHandler::translate($result->getNoticeMessage() ?? ''),
+            'label' => $step['label'],
         ];
     }
 
     /**
-     * @param array<int, array{label: string, message: string, manualImportHint: string}> $failedSteps
-     *
-     * @return void
+     * @return array{label: string, execute: callable(): ResponseInterface}|null
      */
-    private function dispatchNotice(array $failedSteps): void
+    private function getStep(int $itemId): ?array
     {
-        if ([] === $failedSteps) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate('Process complete, all data is imported.'),
-                ResponseNoticeType::SUCCESS,
-            );
+        $steps = [
+            AllImportSteps::SERVICES => [
+                'label' => TranslatorHandler::translate('Services'),
+                'execute' => function (): ResponseInterface {
+                    return (new RefreshService(
+                        new RefreshServiceRequest(
+                            $this->createSamedayApiClient(),
+                            new SamedayServiceRepository()
+                        )
+                    ))->execute();
+                },
+            ],
+            AllImportSteps::PICKUP_POINTS => [
+                'label' => TranslatorHandler::translate('Pickup points'),
+                'execute' => function (): ResponseInterface {
+                    return (new RefreshPickupPoint(
+                        new RefreshPickupPointRequest(
+                            $this->createSamedayApiClient(),
+                            new SamedayPickupPointRepository()
+                        )
+                    ))->execute();
+                },
+            ],
+            AllImportSteps::LOCKERS => [
+                'label' => TranslatorHandler::translate('Lockers'),
+                'execute' => function (): ResponseInterface {
+                    return (new RefreshLocker(
+                        new RefreshLockerRequest(
+                            new SamedayLockerRepository(),
+                            $this->createSamedayApiClient()
+                        )
+                    ))->execute();
+                },
+            ],
+            AllImportSteps::CITIES => [
+                'label' => TranslatorHandler::translate('Cities'),
+                'execute' => static function (): ResponseInterface {
+                    $dbHandler = new DbHandler();
 
-            return;
-        }
+                    return (new RefreshCity(
+                        new RefreshCityRequest(
+                            new SchemaHandler(),
+                            $dbHandler,
+                            new SamedayCityRepository($dbHandler),
+                            new CacheHandler(),
+                            new WooCountriesHandler(),
+                        )
+                    ))->execute();
+                },
+            ],
+        ];
 
-        $failedLabels = array_map(
-            static fn (array $failedStep): string => $failedStep['label'],
-            $failedSteps
-        );
+        return $steps[$itemId] ?? null;
+    }
 
-        $message = TranslatorHandler::translate(
-            sprintf(
-                'Import process completed with errors. The following could not be imported: %s.',
-                implode(', ', $failedLabels)
-            )
-        );
-
-        foreach ($failedSteps as $failedStep) {
-            $message .= sprintf(
-                '<br><strong>%s:</strong> %s. %s',
-                $failedStep['label'],
-                TranslatorHandler::translate($failedStep['message']),
-                $failedStep['manualImportHint']
-            );
-        }
-
-        NoticerHandler::addFlashNotice(
-            $message,
-            ResponseNoticeType::ERROR,
-        );
+    /**
+     * @return Sameday
+     *
+     * @throws Exception
+     */
+    private function createSamedayApiClient(): Sameday
+    {
+        return new Sameday(SdkInitiator::init());
     }
 }
