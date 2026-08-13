@@ -74,7 +74,7 @@ final class SamedayConstants
     ];
     public const CURRENCY_MAPPER = [
         self::API_HOST_LOCALE_RO => 'RON',
-        self::API_HOST_LOCALE_BG => 'BGN',
+        self::API_HOST_LOCALE_BG => self::EURO_CURRENCY,
         self::API_HOST_LOCALE_HU => 'HUF',
     ];
     public const EURO_CURRENCY = "EUR";

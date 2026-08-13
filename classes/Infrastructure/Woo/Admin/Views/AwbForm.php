@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Domain\SamedayCurrencyRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -119,7 +120,7 @@ class AwbForm
         }
 
         $payment_gateway = wc_get_payment_gateway_by_order($order);
-        $repayment = $order->get_total();
+        $repayment = (float) $order->get_total();
 
         if ($payment_gateway->id !== SamedayConstants::CASH_ON_DELIVERY) {
             $repayment = 0;
@@ -148,9 +149,7 @@ class AwbForm
         $destCurrency = SamedayConstants::CURRENCY_MAPPER[$destCountry];
         $currency = $order->get_currency() ?? get_woocommerce_currency();
         $currencyWarningMessage = '';
-        if ($destCurrency !== $currency
-            && $repayment > 0
-        ) {
+        if (SamedayCurrencyRules::hasCurrencyIssue($repayment, $destCurrency, $currency)) {
             $message = sprintf(
                 'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
              Please consider a conversion !!',
