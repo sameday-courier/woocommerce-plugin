@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooSamedayShippingHdAddressParser implements SamedayShippingHdAddressParserInterface
 {
     /**

@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
 {
     /**

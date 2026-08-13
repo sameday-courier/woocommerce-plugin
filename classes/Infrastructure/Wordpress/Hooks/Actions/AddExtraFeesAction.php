@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddExtraFeesAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_cart_calculate_fees';
@@ -72,5 +68,4 @@ final class AddExtraFeesAction extends AbstractAction
         return $chosenDeliveryMethod === $isCod;
     }
 }
-
 

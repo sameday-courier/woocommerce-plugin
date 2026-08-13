@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class TranslatorHandler
 {
     /**

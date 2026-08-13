@@ -16,10 +16,6 @@ use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewParcelAwb
 {
     /**
@@ -76,7 +72,6 @@ final class AddNewParcelAwb
         }
 
         $position = $this->getPosition($awb->getParcels() ?? '');
-
 
         $parcelDimensionsObject = $this->parcelDimensionsFactory->fromAttributes(
             $parcelItem->getParcelWeight(),

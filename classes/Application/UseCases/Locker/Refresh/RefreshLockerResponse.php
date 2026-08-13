@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshLockerResponse implements ResponseInterface
 {
     use NoticerTrait;

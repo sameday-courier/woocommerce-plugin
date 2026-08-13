@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RemoveAwb
 {
     /**

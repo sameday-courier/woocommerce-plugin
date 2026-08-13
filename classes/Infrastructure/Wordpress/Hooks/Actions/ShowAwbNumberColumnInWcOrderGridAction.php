@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColu
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use WC_Order;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';

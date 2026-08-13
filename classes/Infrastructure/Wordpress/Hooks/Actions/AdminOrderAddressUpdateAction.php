@@ -8,10 +8,6 @@ use JsonException;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use WC_Order;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AdminOrderAddressUpdateAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_before_order_object_save';

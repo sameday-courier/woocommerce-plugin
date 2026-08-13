@@ -13,10 +13,6 @@ use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshCity
 {
     /**

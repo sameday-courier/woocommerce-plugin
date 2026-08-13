@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
-if (!defined("ABSPATH")) {
-    exit;
-}
-
 abstract class AbstractNoPrivController implements ControllerInterface
 {
     /**

@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class DeletePickupPointItem implements ItemInterface
 {
     /**

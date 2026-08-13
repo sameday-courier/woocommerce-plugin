@@ -14,10 +14,6 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbR
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowHistoryAwbController
 {
     /**

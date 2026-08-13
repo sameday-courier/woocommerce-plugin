@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 use SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method\SamedayCourier;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RegisterShippingMethodFilter extends AbstractFilter
 {
     private const FILTER = 'woocommerce_shipping_methods';

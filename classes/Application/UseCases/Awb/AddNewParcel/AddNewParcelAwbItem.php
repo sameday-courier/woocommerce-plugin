@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewParcelAwbItem implements ItemInterface
 {
     /**

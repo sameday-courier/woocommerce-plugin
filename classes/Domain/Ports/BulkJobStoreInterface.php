@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 
 use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 interface BulkJobStoreInterface
 {
     /**

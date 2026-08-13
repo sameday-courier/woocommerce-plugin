@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StartBulkRemoveAwbRequest
 {
     private StartBulkRemoveAwbItem $startBulkRemoveAwbItem;

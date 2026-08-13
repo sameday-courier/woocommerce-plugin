@@ -18,10 +18,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use WC_Order;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdaterInterface
 {
     /**

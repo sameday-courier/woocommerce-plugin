@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain;
 
 use Sameday\Objects\Types\AwbPaymentType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class SamedayAwbPaymentTypes
 {
     /**

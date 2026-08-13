@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Shipping;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShippingMethodCodeParser
 {
     /**

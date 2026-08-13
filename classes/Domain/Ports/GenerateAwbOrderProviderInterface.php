@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshot;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 interface GenerateAwbOrderProviderInterface
 {
     /**

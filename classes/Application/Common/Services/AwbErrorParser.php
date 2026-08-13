@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Common\Services;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbErrorParser
 {
     private const GENERIC_MESSAGE = 'Something went wrong.';

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 /**
  * Renders the Sameday brand icon as an embedded base64 data-URI.
  */

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use RuntimeException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;

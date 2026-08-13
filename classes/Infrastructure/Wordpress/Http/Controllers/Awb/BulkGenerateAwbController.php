@@ -22,10 +22,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class BulkGenerateAwbController extends AbstractRecursiveBulkController
 {
     private const ACTION = 'bulk-generate-awb-next';

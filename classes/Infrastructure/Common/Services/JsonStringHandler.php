@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Common\Services;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class JsonStringHandler
 {
     /**

@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewPickupPointItem implements ItemInterface
 {
     /**

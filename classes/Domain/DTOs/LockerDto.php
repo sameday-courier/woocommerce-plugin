@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Domain\DTOs;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedayLockerRules;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class LockerDto
 {
     private ?int $lockerId;

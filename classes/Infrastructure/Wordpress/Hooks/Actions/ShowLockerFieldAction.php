@@ -14,10 +14,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowLockerFieldAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_review_order_after_shipping';

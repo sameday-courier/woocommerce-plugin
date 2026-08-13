@@ -16,10 +16,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowAsPdfAwbController extends AbstractController
 {
     private const ACTION = 'show-as-pdf';

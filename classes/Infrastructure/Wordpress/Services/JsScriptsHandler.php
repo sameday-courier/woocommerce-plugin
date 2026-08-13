@@ -13,10 +13,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class JsScriptsHandler implements RegistryHandlerInterface
 {
     private const SCRIPT_PATH = 'path';

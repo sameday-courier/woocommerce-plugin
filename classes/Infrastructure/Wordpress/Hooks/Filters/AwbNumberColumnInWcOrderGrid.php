@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbNumberColumnInWcOrderGrid extends AbstractFilter
 {
     private const FILTER = 'manage_woocommerce_page_wc-orders_columns';

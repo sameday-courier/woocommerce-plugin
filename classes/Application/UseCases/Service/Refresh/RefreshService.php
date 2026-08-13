@@ -14,10 +14,6 @@ use SamedayCourier\Shipping\Domain\Models\SamedayService;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshService
 {
     /**

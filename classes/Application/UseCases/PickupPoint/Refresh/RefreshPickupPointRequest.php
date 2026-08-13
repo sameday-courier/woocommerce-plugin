@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshPickupPointRequest
 {
     /**

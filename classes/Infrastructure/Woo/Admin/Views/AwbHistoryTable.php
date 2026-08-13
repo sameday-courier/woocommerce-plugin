@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 

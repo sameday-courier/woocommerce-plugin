@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Security;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class UserPermissionChecker
 {
     private const USER_ROLE_PERMISSIONS = [

@@ -13,10 +13,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataH
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class PostOrderPlacementAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_checkout_order_processed';

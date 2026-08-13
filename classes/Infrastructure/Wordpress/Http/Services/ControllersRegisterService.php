@@ -29,10 +29,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\Ed
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service\RefreshServiceController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class ControllersRegisterService implements RegistryHandlerInterface
 {
     private const POST_CONTROLLERS = 'admin_post_';

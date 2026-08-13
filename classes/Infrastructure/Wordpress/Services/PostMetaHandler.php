@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class PostMetaHandler
 {
     /**

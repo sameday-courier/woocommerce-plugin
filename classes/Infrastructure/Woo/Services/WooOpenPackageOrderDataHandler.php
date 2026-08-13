@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandlerInterface
 {
     /**

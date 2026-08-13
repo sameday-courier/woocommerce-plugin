@@ -12,10 +12,6 @@ use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowAsPdfAwb
 {
     private ShowAsPdfAwbItem $showAsPdfAwbItem;

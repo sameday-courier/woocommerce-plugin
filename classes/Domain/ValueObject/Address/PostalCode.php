@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Domain\ValueObject\Address;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\DTOs\PostalCodeDto;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class PostalCode
 {
     private function __construct()

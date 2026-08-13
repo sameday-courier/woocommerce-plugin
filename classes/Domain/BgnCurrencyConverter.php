@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use Exception;
 use RuntimeException;
 

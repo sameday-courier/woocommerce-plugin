@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain;
 
 use Sameday\Objects\Types\AwbPdfType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class SamedayAwbPdfTypes
 {
     /**

@@ -17,10 +17,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRe
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class BulkRemoveAwbController extends AbstractRecursiveBulkController
 {
     private const ACTION = 'bulk-remove-awb-next';

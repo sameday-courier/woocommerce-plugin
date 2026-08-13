@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ChangeLockerRequest
 {
     /**

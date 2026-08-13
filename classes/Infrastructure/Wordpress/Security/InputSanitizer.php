@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Security;
 
 use JsonException;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class InputSanitizer
 {
     /**

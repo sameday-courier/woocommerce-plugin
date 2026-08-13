@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooSessionHandler implements SessionHandlerInterface
 {
     /**

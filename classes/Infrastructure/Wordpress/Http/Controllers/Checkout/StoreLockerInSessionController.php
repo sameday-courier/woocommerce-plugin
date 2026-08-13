@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractNo
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StoreLockerInSessionController extends AbstractNoPrivController
 {
     private const ACTION = 'store_sameday_locker_in_session';

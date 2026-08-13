@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Domain\SamedaySettings;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowOpenPackageFieldAction extends AbstractAction
 {
     private const ACTION_NAME = 'woocommerce_review_order_after_shipping';

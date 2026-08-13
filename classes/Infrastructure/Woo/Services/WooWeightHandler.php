@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooWeightHandler implements WeightConverterInterface
 {
     private const KEY = 'woocommerce_weight_unit';

@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StartBulkRemoveAwb
 {
     private StartBulkRemoveAwbItem $startBulkRemoveAwbItem;

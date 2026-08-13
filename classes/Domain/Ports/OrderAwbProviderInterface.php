@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 interface OrderAwbProviderInterface
 {
     /**

@@ -15,10 +15,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class AddNewPickupPointController extends AbstractController
 {
     private const ACTION = "send_pickup_point";

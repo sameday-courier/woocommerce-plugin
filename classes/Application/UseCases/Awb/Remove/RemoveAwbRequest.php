@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RemoveAwbRequest
 {
     /**

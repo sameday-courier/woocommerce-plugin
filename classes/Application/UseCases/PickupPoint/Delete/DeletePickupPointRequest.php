@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete;
 
 use Sameday\Sameday;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class DeletePickupPointRequest
 {
     /**

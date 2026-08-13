@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\Common\Factories;
 use SamedayCourier\Shipping\Application\Common\Factories\Traits\AddressInputMapperTrait;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class BillingDtoFactory
 {
     use AddressInputMapperTrait;

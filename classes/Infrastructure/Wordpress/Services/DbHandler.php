@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 final class DbHandler implements DbHandlerInterface
 {
     /**

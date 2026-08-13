@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateBulkAwbModal;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\RemoveBulkAwbModal;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowBulkAwbButtonAction extends AbstractAction
 {
     private const ACTION = 'admin_footer';

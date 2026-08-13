@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractCo
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StartBulkRemoveAwbController extends AbstractController
 {
     private const ACTION = 'bulk-remove-awb-start';

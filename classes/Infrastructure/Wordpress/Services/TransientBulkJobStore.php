@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class TransientBulkJobStore implements BulkJobStoreInterface
 {
     private const KEY_PREFIX = 'sameday_bulk_job_';

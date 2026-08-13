@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\FilterInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 abstract class AbstractFilter implements FilterInterface
 {
     /**

@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Security;
 
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RequestSanitizer
 {
     /**

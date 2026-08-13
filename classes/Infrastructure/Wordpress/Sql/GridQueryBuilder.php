@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SqlSanitizer;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GridQueryBuilder
 {
     /**

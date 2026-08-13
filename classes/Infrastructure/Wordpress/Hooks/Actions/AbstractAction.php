@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\ActionInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 abstract class AbstractAction implements ActionInterface
 {
     /**
@@ -40,5 +36,4 @@ abstract class AbstractAction implements ActionInterface
         return count($this->getParams());
     }
 }
-
 

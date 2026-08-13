@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\Common\Factories;
 
 use Sameday\Objects\ParcelDimensionsObject;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ParcelDimensionsFactory
 {
     /**

@@ -13,10 +13,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
 use Throwable;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowHistoryAwb
 {
     private ShowHistoryAwbItem $showHistoryAwbItem;

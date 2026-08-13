@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Domain\Exceptions;
 
 use RuntimeException;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbNotFoundForOrderException extends RuntimeException
 {
     private int $orderId;

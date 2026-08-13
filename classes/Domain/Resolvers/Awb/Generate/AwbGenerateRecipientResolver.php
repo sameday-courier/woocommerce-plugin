@@ -18,10 +18,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class AwbGenerateRecipientResolver
 {
     /**

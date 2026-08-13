@@ -16,10 +16,6 @@ use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GenerateAwbItemFactory
 {
     private GenerateAwbOrderProviderInterface $orderProvider;

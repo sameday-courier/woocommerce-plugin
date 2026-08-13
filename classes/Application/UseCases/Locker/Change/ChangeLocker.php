@@ -8,10 +8,6 @@ use Exception;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ChangeLocker
 {
     /**

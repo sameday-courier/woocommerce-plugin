@@ -9,10 +9,6 @@ use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class DeletePickupPoint
 {
     /**

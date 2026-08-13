@@ -10,10 +10,6 @@ use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewPickupPoint
 {
     /**

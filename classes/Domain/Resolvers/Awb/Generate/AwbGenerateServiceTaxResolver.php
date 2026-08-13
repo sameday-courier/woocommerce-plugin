@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateS
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class AwbGenerateServiceTaxResolver
 {
     /**

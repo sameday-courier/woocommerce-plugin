@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCitiesItem implements ItemInterface
 {
     /**

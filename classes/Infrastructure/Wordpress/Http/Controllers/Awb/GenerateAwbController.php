@@ -17,10 +17,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
 
-if (!defined("ABSPATH")) {
-    exit;
-}
-
 final class GenerateAwbController extends AbstractController
 {
     private const ACTION = "add-awb";

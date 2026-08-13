@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshLockerRequest
 {
     /**

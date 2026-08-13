@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewParcelAwbRequest
 {
     /**

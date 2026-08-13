@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractNoPrivController;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StorePaymentMethodInSessionController extends AbstractNoPrivController
 {
     private const ACTION = 'store_sameday_payment_method_in_session';

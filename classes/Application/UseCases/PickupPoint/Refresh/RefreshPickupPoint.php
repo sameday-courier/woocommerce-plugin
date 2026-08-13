@@ -11,10 +11,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshPickupPoint
 {
     /**

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\ParcelDimensionsObject;
@@ -446,7 +442,6 @@ final class SamedayCourier extends WC_Shipping_Method
                 'description' => TranslatorHandler::translate('Add extra fee on checkout.'),
                 'default' => TranslatorHandler::translate('')
             ),
-
 
             'open_package_status' => array(
                 'title' => TranslatorHandler::translate('Open package status'),

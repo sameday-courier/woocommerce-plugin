@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\Ports\ShippingOrderProviderInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooShippingHandler implements ShippingOrderProviderInterface
 {
     /**

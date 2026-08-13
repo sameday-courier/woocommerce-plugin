@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshLocker
 {
     /**

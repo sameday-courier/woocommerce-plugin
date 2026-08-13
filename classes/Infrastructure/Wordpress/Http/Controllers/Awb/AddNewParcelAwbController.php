@@ -19,10 +19,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined("ABSPATH")) {
-    exit;
-}
-
 final class AddNewParcelAwbController extends AbstractController
 {
     private const ACTION = "add-new-parcel";

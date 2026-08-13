@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class SamedaySessionKeys
 {
     public const OPEN_PACKAGE = 'open_package';

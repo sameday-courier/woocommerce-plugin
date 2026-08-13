@@ -12,10 +12,6 @@ use WC_Order;
 use WC_Order_Item_Shipping;
 use WC_Payment_Gateway;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInterface
 {
     /**

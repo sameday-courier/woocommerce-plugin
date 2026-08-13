@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
 
 final class SamedayPackageMapper extends AbstractMapper

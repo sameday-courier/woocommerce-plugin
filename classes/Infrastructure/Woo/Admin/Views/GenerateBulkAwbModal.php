@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GenerateBulkAwbModal
 {
     public const MODAL_ID = 'sameday-generate-bulk-awb-modal';

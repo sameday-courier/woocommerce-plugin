@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use WooCommerce;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooHandler implements WooCommerceHandlerInterface
 {
     /**

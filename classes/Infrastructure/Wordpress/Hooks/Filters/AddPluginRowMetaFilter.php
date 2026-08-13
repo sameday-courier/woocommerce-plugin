@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddPluginRowMetaFilter extends AbstractFilter
 {
     private const FILTER = 'plugin_row_meta';

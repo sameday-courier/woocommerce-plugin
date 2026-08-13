@@ -2,10 +2,6 @@
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
 
-if(!defined('ABSPATH')) {
-    exit;
-}
-
 class UrlBuilder
 {
     /**

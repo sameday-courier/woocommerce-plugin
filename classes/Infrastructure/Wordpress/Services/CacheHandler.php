@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 final class CacheHandler implements CacheHandlerInterface
 {
     /**

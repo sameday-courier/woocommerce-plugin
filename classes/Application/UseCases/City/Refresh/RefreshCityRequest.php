@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshCityRequest
 {
     /**

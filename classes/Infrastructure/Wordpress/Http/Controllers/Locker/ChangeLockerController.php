@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ChangeLockerController extends AbstractController
 {
     /**

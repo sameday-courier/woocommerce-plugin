@@ -9,10 +9,6 @@ use JsonException;
 use RuntimeException;
 use stdClass;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class FileReadHandler
 {
     /**

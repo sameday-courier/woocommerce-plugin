@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class EditService
 {
     /**

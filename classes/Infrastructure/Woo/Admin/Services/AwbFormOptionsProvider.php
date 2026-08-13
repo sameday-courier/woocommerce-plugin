@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\SamedayAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\SamedayPackageTypes;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbFormOptionsProvider
 {
     /**

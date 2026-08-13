@@ -11,10 +11,6 @@ use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Responses\SamedayGetParcelStatusHistoryResponse;
 use Sameday\Sameday;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ParcelStatusHistoryService
 {
     private const FALLBACK_STATUS_DATE = '1970-01-01 00:00:00';

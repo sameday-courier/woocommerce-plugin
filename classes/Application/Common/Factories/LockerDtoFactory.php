@@ -8,10 +8,6 @@ use JsonException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class LockerDtoFactory
 {
     private const REQUIRED_PAYLOAD_KEYS = [

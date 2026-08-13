@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooStateCodeResolver implements StateCodeResolverInterface
 {
     /**

@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Domain\Ports\ShippingMethodProviderInterface;
 use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
 use SamedayCourier\Shipping\Domain\Shipping\ShippingMethodCodeParser;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooShippingMethodProvider implements ShippingMethodProviderInterface
 {
     /**

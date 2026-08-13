@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GenerateAwbValidator
 {
     public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse

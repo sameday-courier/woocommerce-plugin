@@ -24,10 +24,6 @@ use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GenerateAwbRequest
 {
     private GenerateAwbItem $generateAwbItem;

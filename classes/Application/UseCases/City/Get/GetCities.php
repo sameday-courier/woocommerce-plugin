@@ -10,10 +10,6 @@ use Sameday\Requests\SamedayGetCitiesRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCities
 {
     /**

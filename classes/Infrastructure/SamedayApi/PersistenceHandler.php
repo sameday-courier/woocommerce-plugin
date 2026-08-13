@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use \Sameday\PersistentData\SamedayPersistentDataInterface;
 use \Sameday\SamedayClient;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;

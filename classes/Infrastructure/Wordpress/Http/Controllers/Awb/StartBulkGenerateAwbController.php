@@ -12,10 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractCo
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StartBulkGenerateAwbController extends AbstractController
 {
     private const ACTION = 'bulk-generate-awb-start';

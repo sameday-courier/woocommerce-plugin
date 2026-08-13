@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use WC_Order;

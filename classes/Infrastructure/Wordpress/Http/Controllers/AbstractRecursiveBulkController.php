@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 /**
  * Progressive bulk job step controller.
  * Each request processes one pending item; the client recurses until done=true.

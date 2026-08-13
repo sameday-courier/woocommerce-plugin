@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ItemInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class EditServiceItem implements ItemInterface
 {
     /**

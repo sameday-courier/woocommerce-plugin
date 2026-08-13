@@ -16,10 +16,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowAdminOrderAwbActionsAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_admin_order_data_after_shipping_address';

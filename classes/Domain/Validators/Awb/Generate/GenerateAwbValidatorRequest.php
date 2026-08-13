@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class GenerateAwbValidatorRequest
 {
     private int $orderId;

@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AddNewPickupPointResponse
 {
     use NoticerTrait;

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShippingMethodFullLabelFilter extends AbstractFilter
 {
     private const FILTER = 'woocommerce_cart_shipping_method_full_label';

@@ -8,10 +8,6 @@ use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class AwbGenerateRecipientResponse
 {
     /**

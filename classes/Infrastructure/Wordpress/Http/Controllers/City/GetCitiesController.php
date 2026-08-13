@@ -14,10 +14,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCitiesController extends AbstractController
 {
     private const ACTION = 'get_cities';

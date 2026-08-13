@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowHistoryAwbResponse
 {
     /**

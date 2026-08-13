@@ -11,10 +11,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\ShippingMetho
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\FilterInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class FiltersRegisterService implements RegistryHandlerInterface
 {
     private const FILTERS = [

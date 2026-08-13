@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\SamedayConstants;

@@ -10,10 +10,6 @@ use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooOrderWeightCalculator implements OrderWeightCalculatorInterface
 {
     private const MIN_WEIGHT = 1.0;

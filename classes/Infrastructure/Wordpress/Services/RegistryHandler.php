@@ -11,10 +11,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRe
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RegistryHandler
 {
     private const Registers = [

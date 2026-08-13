@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
-if (!defined("ABSPATH")) {
-    exit;
-}
-
 interface ControllerInterface
 {
     /**

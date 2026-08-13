@@ -15,10 +15,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class DeletePickupPointController extends AbstractController
 {
     private const ACTION = 'delete_pickup_point';

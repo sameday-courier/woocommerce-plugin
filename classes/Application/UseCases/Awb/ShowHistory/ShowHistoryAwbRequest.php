@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\ParcelStatusHistoryService
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class ShowHistoryAwbRequest
 {
     private ShowHistoryAwbItem $showHistoryAwbItem;

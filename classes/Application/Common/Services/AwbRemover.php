@@ -16,10 +16,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbRemover
 {
     /**

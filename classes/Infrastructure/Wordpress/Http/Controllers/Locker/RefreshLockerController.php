@@ -17,10 +17,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshLockerController extends AbstractController
 {
     /**

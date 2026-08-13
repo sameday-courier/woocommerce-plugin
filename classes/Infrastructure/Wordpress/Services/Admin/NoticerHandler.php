@@ -8,10 +8,6 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class NoticerHandler implements RegistryHandlerInterface
 {
     private const NOTICE_KEY = 'samedaycourier_notice_key';

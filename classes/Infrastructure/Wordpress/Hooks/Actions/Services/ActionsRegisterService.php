@@ -19,10 +19,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateCheck
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\ActionInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class ActionsRegisterService implements RegistryHandlerInterface
 {
     private const ACTIONS = [

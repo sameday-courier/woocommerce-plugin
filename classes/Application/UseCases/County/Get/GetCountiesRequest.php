@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
 use Sameday\Sameday;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCountiesRequest
 {
     /**

@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class CssStylesheetsHandler implements RegistryHandlerInterface
 {
     private const STYLE_PATH = 'path';

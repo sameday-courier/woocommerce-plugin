@@ -6,10 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class StartBulkGenerateAwbRequest
 {
     private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;

@@ -8,10 +8,6 @@ use Sameday\Objects\Types\AwbPdfType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class SamedaySettings
 {
     public const OPTION_KEY = 'woocommerce_samedaycourier_settings';

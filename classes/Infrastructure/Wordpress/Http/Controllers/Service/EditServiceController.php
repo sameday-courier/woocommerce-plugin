@@ -14,10 +14,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandl
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Domain\SamedaySettings;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class EditServiceController extends AbstractController
 {
     /**

@@ -2,10 +2,6 @@
 
 namespace SamedayCourier\Shipping\Application\Common\Interfaces;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 interface ItemInterface
 {
     /**

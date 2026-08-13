@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use WC_Cache_Helper;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class RefreshShippingMethodsAction extends AbstractAction
 {
     // Enabling, disabling and refreshing session shipping methods data

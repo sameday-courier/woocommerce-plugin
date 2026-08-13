@@ -30,10 +30,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractCo
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DbHandler;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AllImportController extends AbstractController
 {
     /**

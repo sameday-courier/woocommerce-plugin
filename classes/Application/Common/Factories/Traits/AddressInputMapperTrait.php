@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Common\Factories\Traits;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 trait AddressInputMapperTrait
 {
     /**

@@ -9,10 +9,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint\PickupPoin
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service\ServiceInstance;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class LoadersRegisterService implements RegistryHandlerInterface
 {
     private const ACTION = 'plugins_loaded';

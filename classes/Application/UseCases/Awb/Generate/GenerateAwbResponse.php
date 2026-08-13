@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GenerateAwbResponse implements ResponseInterface
 {
     use NoticerTrait;

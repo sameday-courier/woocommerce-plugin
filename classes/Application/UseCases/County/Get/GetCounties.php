@@ -10,10 +10,6 @@ use Sameday\Requests\SamedayGetCountiesRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCounties
 {
     /**

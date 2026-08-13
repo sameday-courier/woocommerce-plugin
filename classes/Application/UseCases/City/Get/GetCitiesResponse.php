@@ -7,10 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class GetCitiesResponse implements ResponseInterface
 {
     use NoticerTrait;

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Traits;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 trait AddressObjectTrait
 {
     private ?string $firstName;

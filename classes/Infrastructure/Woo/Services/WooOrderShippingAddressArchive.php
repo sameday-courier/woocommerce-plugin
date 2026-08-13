@@ -10,10 +10,6 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use WC_Order;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiveInterface
 {
     /**

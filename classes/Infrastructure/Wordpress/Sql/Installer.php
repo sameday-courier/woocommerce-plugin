@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 class Installer
 {
     private SchemaHandler $schemaHandler;

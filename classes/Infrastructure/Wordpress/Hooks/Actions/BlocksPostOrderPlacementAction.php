@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class BlocksPostOrderPlacementAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_blocks_checkout_order_processed';

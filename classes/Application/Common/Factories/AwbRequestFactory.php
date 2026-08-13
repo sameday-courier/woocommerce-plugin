@@ -25,10 +25,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 final class AwbRequestFactory
 {
     private ParcelDimensionsFactory $parcelDimensionsFactory;
