@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCities;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesItem;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 
 final class GetCitiesController extends AbstractController

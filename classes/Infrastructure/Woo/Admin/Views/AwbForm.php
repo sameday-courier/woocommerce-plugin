@@ -14,10 +14,10 @@ use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\SamedayIcon;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Order;
 

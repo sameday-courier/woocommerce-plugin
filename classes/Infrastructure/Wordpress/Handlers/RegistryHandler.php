@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\Services\ActionsRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\Services\FiltersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Loaders\Services\LoadersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services\ControllersRegisterService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 
 final class RegistryHandler
 {

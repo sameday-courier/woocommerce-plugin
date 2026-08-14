@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
 use InvalidArgumentException;
 use SamedayCourier\Shipping\Domain\SamedayConstants;

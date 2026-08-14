@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChecker;
 
@@ -82,7 +82,7 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function redirectTo(string $mainPath, array $queryArgs = []): void
     {
-        wp_safe_redirect(UrlBuilder::build($mainPath, $queryArgs));
+        wp_safe_redirect(UrlsHandler::build($mainPath, $queryArgs));
 
         exit;
     }

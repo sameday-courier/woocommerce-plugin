@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
 /**
  * Renders the Sameday brand icon as an embedded base64 data-URI.

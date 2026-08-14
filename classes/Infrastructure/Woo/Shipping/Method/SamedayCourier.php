@@ -26,8 +26,8 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerReq
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -42,7 +42,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
@@ -606,19 +606,19 @@ final class SamedayCourier extends WC_Shipping_Method
             return;
         }
 
-        $serviceUrl = UrlBuilder::buildEscaped('edit.php', [
+        $serviceUrl = UrlsHandler::buildEscaped('edit.php', [
             'post_type' => 'page',
             'page' => 'sameday_services',
         ]);
-        $pickupPointUrl = UrlBuilder::buildEscaped('edit.php', [
+        $pickupPointUrl = UrlsHandler::buildEscaped('edit.php', [
             'post_type' => 'page',
             'page' => 'sameday_pickup_points',
         ]);
-        $lockerUrl = UrlBuilder::buildEscaped('edit.php', [
+        $lockerUrl = UrlsHandler::buildEscaped('edit.php', [
             'post_type' => 'page',
             'page' => 'sameday_lockers',
         ]);
-        $adminPostUrl = UrlBuilder::buildEscaped('admin-post.php');
+        $adminPostUrl = UrlsHandler::buildEscaped('admin-post.php');
 
         echo '
             <form id="sameday-import-cities-form" action="' . $adminPostUrl . '" method="post" hidden>

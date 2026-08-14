@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
 final class WooWeightHandler implements WeightConverterInterface
 {

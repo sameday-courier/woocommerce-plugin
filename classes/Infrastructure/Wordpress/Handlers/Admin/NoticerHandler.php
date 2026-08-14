@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
 final class NoticerHandler implements RegistryHandlerInterface
 {

@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
 final class TransientBulkJobStore implements BulkJobStoreInterface

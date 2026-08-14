@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllI
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImportRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 final class StartAllImportController extends AbstractController
 {

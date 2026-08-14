@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
 abstract class AbstractNoPrivController implements ControllerInterface

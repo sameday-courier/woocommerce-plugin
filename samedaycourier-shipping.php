@@ -20,7 +20,7 @@ if (!defined( 'ABSPATH')) {
  */
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\PluginHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RegistryHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\RegistryHandler;
 
 /**
  * Check if WooCommerce plugin is enabled

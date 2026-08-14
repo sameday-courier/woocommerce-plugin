@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CacheHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use stdClass;
 
 class SamedayCityRepository extends AbstractRepository implements CityPostalCodeProviderInterface

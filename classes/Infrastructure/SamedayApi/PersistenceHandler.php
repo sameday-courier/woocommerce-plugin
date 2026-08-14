@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
 use \Sameday\PersistentData\SamedayPersistentDataInterface;
 use \Sameday\SamedayClient;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
 class PersistenceHandler implements SamedayPersistentDataInterface
 {

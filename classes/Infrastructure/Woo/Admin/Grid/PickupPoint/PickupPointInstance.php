@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint;
 
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin\UrlBuilder;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 class PickupPointInstance
 {
 	static $instance;
@@ -58,7 +58,7 @@ class PickupPointInstance
 					<div id="post-body-content">
 						<div class="meta-box-sortables ui-sortable">
 							<div class="sameday-settings-actions">
-                                <a href="<?php echo UrlBuilder::buildSamedaySettingsPage(); ?>" class="sameday_admin_button">
+                                <a href="<?php echo UrlsHandler::buildSamedaySettingsPage(); ?>" class="sameday_admin_button">
 									<?php echo TranslatorHandler::translate('Back') ?>
                                 </a>
 								<form action="<?php echo admin_url('admin-post.php') ?>" method="post">

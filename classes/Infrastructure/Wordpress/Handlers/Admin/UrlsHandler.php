@@ -1,8 +1,8 @@
 <?php
 
-namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services\Admin;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin;
 
-class UrlBuilder
+class UrlsHandler
 {
     /**
      * @param string $adminUrlPath
