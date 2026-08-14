@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
 use Exception;
 use JsonException;
+use RuntimeException;
 use Sameday\Http\SamedayRawResponse;
 use Sameday\Requests\SamedayGetParcelStatusHistoryRequest;
 use Sameday\Responses\SamedayGetParcelStatusHistoryResponse;
@@ -31,8 +32,8 @@ final class ParcelStatusHistoryService
 
         $response = new SamedayGetParcelStatusHistoryResponse($request, $patchedResponse);
 
-        if (!$this->hasSummary($response)) {
-            throw new Exception(
+        if (null === $response->getSummary()) {
+            throw new RuntimeException(
                 sprintf('Parcel status history response is empty for AWB %s.', $awbNumber)
             );
         }
@@ -158,16 +159,5 @@ final class ParcelStatusHistoryService
         }
 
         return $statusDate;
-    }
-
-    private function hasSummary(SamedayGetParcelStatusHistoryResponse $response): bool
-    {
-        try {
-            $response->getSummary();
-
-            return true;
-        } catch (\Throwable $exception) {
-            return false;
-        }
     }
 }
