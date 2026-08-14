@@ -57,7 +57,7 @@ final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderI
             $this->resolveIsTesting($options),
             $this->resolveHostCountry($options),
             $this->resolveEnabledUnlessNo($options, self::USE_NOMENCLATOR),
-            (int)($options[self::SAMEDAY_SYNC_LOCKERS_TS] ?? 0)
+            (int) ($options[self::SAMEDAY_SYNC_LOCKERS_TS] ?? 0)
         );
     }
 
