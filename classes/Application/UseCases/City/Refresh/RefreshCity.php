@@ -5,51 +5,22 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
-use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Domain\DTOs\CitiesRefreshRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\CitiesServiceProviderInterface;
 
 final class RefreshCity
 {
     /**
-     * @var CacheHandler $cacheHandler
+     * @var CitiesServiceProviderInterface $citiesServiceProvider
      */
-    private CacheHandler $cacheHandler;
-
-    /**
-     * @var DbHandler $dbHandler
-     */
-    private DbHandler $dbHandler;
-
-    /**
-     * @var SchemaHandler $schemaHandler
-     */
-    private SchemaHandler $schemaHandler;
-
-    /**
-     * @var SamedayCityRepository $samedayCityRepository
-     */
-    private SamedayCityRepository $samedayCityRepository;
-
-    /**
-     * @var CountriesHandlerInterface $countriesHandler
-     */
-    private CountriesHandlerInterface $countriesHandler;
+    private CitiesServiceProviderInterface $citiesServiceProvider;
 
     /**
      * @param RefreshCityRequest $refreshCitiesRequest
      */
     public function __construct(RefreshCityRequest $refreshCitiesRequest)
     {
-        $this->cacheHandler = $refreshCitiesRequest->getCacheHandler();
-        $this->dbHandler = $refreshCitiesRequest->getDbHandler();
-        $this->schemaHandler = $refreshCitiesRequest->getSchemaHandler();
-        $this->samedayCityRepository = $refreshCitiesRequest->getSamedayCityRepository();
-        $this->countriesHandler = $refreshCitiesRequest->getCountriesHandler();
+        $this->citiesServiceProvider = $refreshCitiesRequest->getCitiesServiceProvider();
     }
 
     /**
@@ -57,36 +28,15 @@ final class RefreshCity
      */
     public function execute(): RefreshCityResponse
     {
-        if (false === $this->dbHandler->isTableExists($this->samedayCityRepository->getTableName())) {
-            $this->dbHandler->executeQuery($this->schemaHandler->buildCitiesTableQuery());
-        }
-
-        $cities = FileReadHandler::readJsonFile("cities");
-        if (null === $cities) {
-            return new RefreshCityResponse(
-                'Unable to get cities',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        // Remove all previews unnecessary stored data
-        $this->samedayCityRepository->truncate();
-
-        foreach ($cities as $carrierCity) {
-            if (array_key_exists($carrierCity->country_code, $this->countriesHandler->getShippingCountries())) {
-                $this->samedayCityRepository->addCity($carrierCity);
-            }
-        }
-
-        $this->cacheHandler->refreshCachedData(
-            CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
-            $this->samedayCityRepository->getCities(),
-            2592000
+        $citiesRefreshResponse = $this->citiesServiceProvider->refresh(
+            new CitiesRefreshRequestDto()
         );
 
         return new RefreshCityResponse(
-            "All cities have been refreshed",
-            ResponseNoticeType::SUCCESS,
+            $citiesRefreshResponse->getMessage(),
+            $citiesRefreshResponse->isSuccess()
+                ? ResponseNoticeType::SUCCESS
+                : ResponseNoticeType::ERROR,
         );
     }
 }

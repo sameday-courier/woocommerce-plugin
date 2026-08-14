@@ -7,8 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Impo
 use Exception;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Application\Common\Factories\CityRequestFactory;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
-use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
@@ -16,18 +16,13 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 
 final class AllImportController extends AbstractRecursiveBulkController
 {
@@ -118,16 +113,8 @@ final class AllImportController extends AbstractRecursiveBulkController
             AllImportSteps::CITIES => [
                 'label' => TranslatorHandler::translate('Cities'),
                 'execute' => static function (): ResponseInterface {
-                    $dbHandler = new DbHandler();
-
                     return (new RefreshCity(
-                        new RefreshCityRequest(
-                            new SchemaHandler(),
-                            $dbHandler,
-                            new SamedayCityRepository($dbHandler),
-                            new CacheHandler(),
-                            new WooCountriesHandler(),
-                        )
+                        (new CityRequestFactory())->create()
                     ))->execute();
                 },
             ],

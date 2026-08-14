@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
+use SamedayCourier\Shipping\Application\Common\Factories\CityRequestFactory;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
-use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 
 final class RefreshCityController extends AbstractController
 {
@@ -47,15 +42,8 @@ final class RefreshCityController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $dbHandler = new DbHandler();
         $refreshCity = new RefreshCity(
-            new RefreshCityRequest(
-                new SchemaHandler(),
-                $dbHandler,
-                new SamedayCityRepository($dbHandler),
-                new CacheHandler(),
-                new WooCountriesHandler(),
-            )
+            (new CityRequestFactory())->create()
         );
 
         $result = $refreshCity->execute();

@@ -4,98 +4,28 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
-use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Domain\Ports\CitiesServiceProviderInterface;
 
 final class RefreshCityRequest
 {
     /**
-     * @var SamedayCityRepository $samedayCityRepository
+     * @var CitiesServiceProviderInterface $citiesServiceProvider
      */
-    private SamedayCityRepository $samedayCityRepository;
+    private CitiesServiceProviderInterface $citiesServiceProvider;
 
     /**
-     * @var CacheHandler $cacheHandler
+     * @param CitiesServiceProviderInterface $citiesServiceProvider
      */
-    private CacheHandler $cacheHandler;
-
-    /**
-     * @var SchemaHandler $schemaHandler
-     */
-    private SchemaHandler $schemaHandler;
-
-    /**
-     * @var DbHandler $dbHandler
-     */
-    private DbHandler $dbHandler;
-
-    /**
-     * @var CountriesHandlerInterface $countriesHandler
-     */
-    private CountriesHandlerInterface $countriesHandler;
-
-    /**
-     * @param SchemaHandler $schemaHandler
-     * @param DbHandler $dbHandler
-     * @param SamedayCityRepository $samedayCityRepository
-     * @param CacheHandler $cacheHandler
-     * @param CountriesHandlerInterface $countriesHandler
-     */
-    public function __construct(
-        SchemaHandler $schemaHandler,
-        DbHandler $dbHandler,
-        SamedayCityRepository $samedayCityRepository,
-        CacheHandler $cacheHandler,
-        CountriesHandlerInterface $countriesHandler
-    )
+    public function __construct(CitiesServiceProviderInterface $citiesServiceProvider)
     {
-        $this->samedayCityRepository = $samedayCityRepository;
-        $this->cacheHandler = $cacheHandler;
-        $this->schemaHandler = $schemaHandler;
-        $this->dbHandler = $dbHandler;
-        $this->countriesHandler = $countriesHandler;
+        $this->citiesServiceProvider = $citiesServiceProvider;
     }
 
     /**
-     * @return SamedayCityRepository
+     * @return CitiesServiceProviderInterface
      */
-    public function getSamedayCityRepository(): SamedayCityRepository
+    public function getCitiesServiceProvider(): CitiesServiceProviderInterface
     {
-        return $this->samedayCityRepository;
-    }
-
-    /**
-     * @return CacheHandler
-     */
-    public function getCacheHandler(): CacheHandler
-    {
-        return $this->cacheHandler;
-    }
-
-    /**
-     * @return SchemaHandler
-     */
-    public function getSchemaHandler(): SchemaHandler
-    {
-        return $this->schemaHandler;
-    }
-
-    /**
-     * @return DbHandler
-     */
-    public function getDbHandler(): DbHandler
-    {
-        return $this->dbHandler;
-    }
-
-    /**
-     * @return CountriesHandlerInterface
-     */
-    public function getCountriesHandler(): CountriesHandlerInterface
-    {
-        return $this->countriesHandler;
+        return $this->citiesServiceProvider;
     }
 }
