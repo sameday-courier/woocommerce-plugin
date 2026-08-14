@@ -10,7 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 final class ShowOpenPackageFieldAction extends AbstractAction
 {
@@ -72,7 +72,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
             return false;
         }
 
-        return (new WordpressSamedaySettingsProvider())->get()->isOpenPackageStatusEnabled();
+        return (new WordpressCarrierSettingsProvider())->get()->isOpenPackageStatusEnabled();
     }
 
     /**
@@ -86,7 +86,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'type' => 'checkbox',
                 'class' => ['input-checkbox'],
                 'id' => 'sameday_open_package',
-                'label' => (new WordpressSamedaySettingsProvider())->get()->getOpenPackageLabel(),
+                'label' => (new WordpressCarrierSettingsProvider())->get()->getOpenPackageLabel(),
                 'required' => false,
                 'return' => true,
             ],

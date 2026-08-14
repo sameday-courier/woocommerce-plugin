@@ -8,7 +8,7 @@ use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 /**
  * Class Api
@@ -29,7 +29,7 @@ final class SdkInitiator
         ?string $apiUrl = null
     ): SamedayClient
 	{
-        $settings = (new WordpressSamedaySettingsProvider())->get();
+        $settings = (new WordpressCarrierSettingsProvider())->get();
         if (null === $username) {
             $username = $settings->getUser();
         }
@@ -84,7 +84,7 @@ final class SdkInitiator
      */
     public static function getApiUrl(): string
     {
-        $settings = (new WordpressSamedaySettingsProvider())->get();
+        $settings = (new WordpressCarrierSettingsProvider())->get();
 
         return self::getEnvModes()[$settings->getHostCountry()][$settings->getTestingMode()];
     }

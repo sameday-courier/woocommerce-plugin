@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 final class AddExtraFeesAction extends AbstractAction
 {
@@ -43,7 +43,7 @@ final class AddExtraFeesAction extends AbstractAction
         }
 
         if ($this->hasExtraFees()) {
-            $settings = (new WordpressSamedaySettingsProvider())->get();
+            $settings = (new WordpressCarrierSettingsProvider())->get();
             $woocommerce->cart->add_fee(
                 $settings->getRepaymentTaxLabel() ?? TranslatorHandler::translate('Repayment tax'),
                 $settings->getRepaymentTax(),
@@ -58,7 +58,7 @@ final class AddExtraFeesAction extends AbstractAction
      */
     private function hasExtraFees(): bool
     {
-        $repayment_tax = (new WordpressSamedaySettingsProvider())->get()->getRepaymentTax() ?? 0;
+        $repayment_tax = (new WordpressCarrierSettingsProvider())->get()->getRepaymentTax() ?? 0;
         if ($repayment_tax <= 0) {
             return false;
         }

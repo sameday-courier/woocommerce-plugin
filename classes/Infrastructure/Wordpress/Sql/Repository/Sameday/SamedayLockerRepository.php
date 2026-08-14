@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
 class SamedayLockerRepository extends AbstractRepository
@@ -30,7 +30,7 @@ class SamedayLockerRepository extends AbstractRepository
         ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressCarrierSettingsProvider();
     }
 
     public function getTableName(): string

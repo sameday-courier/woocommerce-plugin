@@ -22,7 +22,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -110,7 +110,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                         new RefreshLockerRequest(
                             new SamedayLockerRepository(),
                             new CourierServiceProviderService(),
-                            new WordpressSamedaySettingsProvider()
+                            new WordpressCarrierSettingsProvider()
                         )
                     ))->execute();
                 },

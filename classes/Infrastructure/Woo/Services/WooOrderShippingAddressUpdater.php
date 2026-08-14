@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 use WC_Order;
 
 final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdaterInterface
@@ -72,7 +72,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
         $this->lockerDtoFactory = $lockerDtoFactory;
         $this->hdAddressParser = $hdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
-        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressCarrierSettingsProvider();
     }
 
     /**

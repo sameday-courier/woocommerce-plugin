@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 use WP_List_Table;
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -66,7 +66,7 @@ class Lockers extends WP_List_Table
     {
         $query = GridQueryBuilder::build(
             $this->samedayLockerRepository->getTableName(),
-            (new WordpressSamedaySettingsProvider())->get()->isTesting(),
+            (new WordpressCarrierSettingsProvider())->get()->isTesting(),
             self::ACCEPTED_FILTERS,
             RequestSanitizer::getOrderBy(self::ACCEPTED_FILTERS),
             RequestSanitizer::getOrder(),
@@ -81,7 +81,7 @@ class Lockers extends WP_List_Table
     {
         $query = GridQueryBuilder::buildCount(
             $this->samedayLockerRepository->getTableName(),
-            (new WordpressSamedaySettingsProvider())->get()->isTesting(),
+            (new WordpressCarrierSettingsProvider())->get()->isTesting(),
         );
 
         return (int) $this->dbHandler->getVar($query['sql'], $query['params']);

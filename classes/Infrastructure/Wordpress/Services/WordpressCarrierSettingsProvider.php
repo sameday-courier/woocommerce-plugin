@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
-final class WordpressSamedaySettingsProvider implements CarrierSettingsProviderInterface
+final class WordpressCarrierSettingsProvider implements CarrierSettingsProviderInterface
 {
     private const OPTION_KEY = 'woocommerce_samedaycourier_settings';
     private const ENABLED = 'enabled';

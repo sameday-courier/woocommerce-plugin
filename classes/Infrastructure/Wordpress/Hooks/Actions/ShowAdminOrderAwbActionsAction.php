@@ -15,7 +15,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\SamedayAdminModal;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 final class ShowAdminOrderAwbActionsAction extends AbstractAction
 {
@@ -131,7 +131,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
 
             $redirectToEawbSite = sprintf(
                 '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                CarrierConstants::EAWB_INSTANCES[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()],
+                CarrierConstants::EAWB_INSTANCES[(new WordpressCarrierSettingsProvider())->get()->getHostCountry()],
                 $awb->getAwbNumber()
             );
 

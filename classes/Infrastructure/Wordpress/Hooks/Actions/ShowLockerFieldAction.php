@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 final class ShowLockerFieldAction extends AbstractAction
 {
@@ -73,7 +73,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildHtmlContent(?string $shipTo): string
     {
-        $settings = (new WordpressSamedaySettingsProvider())->get();
+        $settings = (new WordpressCarrierSettingsProvider())->get();
         if ($settings->isLockersMapEnabled()) {
             return $this->buildLockersMapHtml($shipTo);
         }
@@ -88,7 +88,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildLockersMapHtml(?string $shipTo): string
     {
-        $settings = (new WordpressSamedaySettingsProvider())->get();
+        $settings = (new WordpressCarrierSettingsProvider())->get();
         $html = sprintf(
             '<tr class="shipping-pickup-store">
                 <td><strong>%s</strong></td>

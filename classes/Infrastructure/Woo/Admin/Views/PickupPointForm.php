@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 
 class PickupPointForm
 {
@@ -15,7 +15,7 @@ class PickupPointForm
 
     public static function renderModals(): void
     {
-        $hostCountry = (new WordpressSamedaySettingsProvider())->get()->getHostCountry();
+        $hostCountry = (new WordpressCarrierSettingsProvider())->get()->getHostCountry();
         $countryValue = CarrierConstants::DEFAULT_COUNTRIES[$hostCountry]['value'];
         $countryLabel = CarrierConstants::DEFAULT_COUNTRIES[$hostCountry]['label'];
 

@@ -44,7 +44,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
@@ -114,7 +114,7 @@ final class SamedayCourier extends WC_Shipping_Method
             'instance-settings'
         );
 
-        $this->carrierSettingsProvider = new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = new WordpressCarrierSettingsProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
         $this->carrierServiceSelector = new CarrierServiceSelector(
             $samedayServiceRepository,
