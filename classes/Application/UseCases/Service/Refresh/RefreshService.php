@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
-use Exception;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Requests\SamedayGetServicesRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\GetServicesRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class RefreshService
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -31,7 +26,7 @@ final class RefreshService
      */
     public function __construct(RefreshServiceRequest $refreshServiceRequest)
     {
-        $this->sameday = $refreshServiceRequest->getSameday();
+        $this->courier = $refreshServiceRequest->getCourier();
         $this->samedayServiceRepository = $refreshServiceRequest->getSamedayServiceRepository();
     }
 
@@ -44,12 +39,9 @@ final class RefreshService
         $page = 1;
 
         do {
-            $request = new SamedayGetServicesRequest();
-            $request->setPage($page++);
-
             try {
-                $services = $this->sameday->getServices($request);
-            } catch (Exception $e) {
+                $services = $this->courier->getServices(new GetServicesRequestDto($page++));
+            } catch (CourierServiceException $e) {
                 return new RefreshServiceResponse(
                     $e->getMessage(),
                     ResponseNoticeType::ERROR,

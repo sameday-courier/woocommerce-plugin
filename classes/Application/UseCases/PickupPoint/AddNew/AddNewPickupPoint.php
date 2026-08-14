@@ -4,56 +4,46 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
-use Exception;
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
-use Sameday\Requests\SamedayPostPickupPointRequest;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\PostPickupPointRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class AddNewPickupPoint
 {
-    /**
-     * @var AddNewPickupPointItem $addNewPickupPointItem
-     */
     private AddNewPickupPointItem $addNewPickupPointItem;
 
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
-    public function __construct(
-        AddNewPickupPointRequest $addNewPickupPointRequest
-    )
+    public function __construct(AddNewPickupPointRequest $addNewPickupPointRequest)
     {
         $this->addNewPickupPointItem = $addNewPickupPointRequest->getAddNewPickupPointItem();
-        $this->sameday = $addNewPickupPointRequest->getSameday();
+        $this->courier = $addNewPickupPointRequest->getCourier();
     }
 
-    /**
-     * @return AddNewPickupPointResponse
-     */
     public function execute(): AddNewPickupPointResponse
     {
-        $request = new SamedayPostPickupPointRequest(
-            $this->addNewPickupPointItem->getPickupPointCountryId(),
-            $this->addNewPickupPointItem->getPickupPointCountyId(),
-            $this->addNewPickupPointItem->getPickupPointCityId(),
-            $this->addNewPickupPointItem->getPickupPointAddress(),
-            $this->addNewPickupPointItem->getPickupPointPostalCode(),
-            $this->addNewPickupPointItem->getPickupPointAlias(),
-            [
-                new PickupPointContactPersonObject(
-                    $this->addNewPickupPointItem->getPickupPointContactPersonName(),
-                    $this->addNewPickupPointItem->getPickupPointContactPersonPhone(),
-                    true,
-                )
-            ],
-            $this->addNewPickupPointItem->isDefault(),
-        );
         try {
-            $this->sameday->postPickupPoint($request);
-        } catch (Exception $exception) {
+            $this->courier->postPickupPoint(
+                new PostPickupPointRequestDto(
+                    $this->addNewPickupPointItem->getPickupPointCountryId(),
+                    $this->addNewPickupPointItem->getPickupPointCountyId(),
+                    $this->addNewPickupPointItem->getPickupPointCityId(),
+                    $this->addNewPickupPointItem->getPickupPointAddress(),
+                    $this->addNewPickupPointItem->getPickupPointPostalCode(),
+                    $this->addNewPickupPointItem->getPickupPointAlias(),
+                    [
+                        new PickupPointContactPersonObject(
+                            $this->addNewPickupPointItem->getPickupPointContactPersonName(),
+                            $this->addNewPickupPointItem->getPickupPointContactPersonPhone(),
+                            true,
+                        ),
+                    ],
+                    $this->addNewPickupPointItem->isDefault(),
+                )
+            );
+        } catch (CourierServiceException $exception) {
             return new AddNewPickupPointResponse(
                 $exception->getMessage(),
                 ResponseNoticeType::ERROR,

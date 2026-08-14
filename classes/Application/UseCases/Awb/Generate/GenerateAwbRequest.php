@@ -5,31 +5,32 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use Sameday\Objects\ParcelDimensionsObject;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
+use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
-use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
-use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class GenerateAwbRequest
 {
     private GenerateAwbItem $generateAwbItem;
 
-    private Sameday $sameday;
+    /**
+     * @var CourierServiceProviderInterface $courier
+     */
+    private CourierServiceProviderInterface $courier;
 
     private DbHandler $dbHandler;
 
@@ -40,8 +41,6 @@ final class GenerateAwbRequest
     private SamedayAwbRepository $samedayAwbRepository;
 
     private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
-
-    private AwbErrorParser $awbErrorParser;
 
     private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
@@ -66,8 +65,6 @@ final class GenerateAwbRequest
 
     private SamedayServiceRules $samedayServiceRules;
 
-    private AwbRemover $awbRemover;
-
     private OrderAwbProviderInterface $orderAwbProvider;
 
     /**
@@ -75,13 +72,12 @@ final class GenerateAwbRequest
      */
     public function __construct(
         GenerateAwbItem $generateAwbItem,
-        Sameday $sameday,
+        CourierServiceProviderInterface $courier,
         DbHandler $dbHandler,
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayServiceRepository $samedayServiceRepository,
         SamedayAwbRepository $samedayAwbRepository,
         OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
-        AwbErrorParser $awbErrorParser,
         SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
         array $parcelsDimensions,
@@ -90,19 +86,17 @@ final class GenerateAwbRequest
         BillingDtoFactory $billingDtoFactory,
         GenerateAwbValidator $generateAwbValidator,
         SamedayServiceRules $samedayServiceRules,
-        AwbRemover $awbRemover,
         OrderAwbProviderInterface $orderAwbProvider,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
     ) {
         $this->generateAwbItem = $generateAwbItem;
-        $this->sameday = $sameday;
+        $this->courier = $courier;
         $this->dbHandler = $dbHandler;
         $this->samedayServiceRules = $samedayServiceRules;
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->samedayAwbRepository = $samedayAwbRepository;
         $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
-        $this->awbErrorParser = $awbErrorParser;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
         $this->parcelsDimensions = $parcelsDimensions;
@@ -117,7 +111,6 @@ final class GenerateAwbRequest
             $stateCodeResolver,
             $cityPostalCodeProvider,
         );
-        $this->awbRemover = $awbRemover;
         $this->orderAwbProvider = $orderAwbProvider;
     }
 
@@ -126,9 +119,12 @@ final class GenerateAwbRequest
         return $this->generateAwbItem;
     }
 
-    public function getSameday(): Sameday
+    /**
+     * @return CourierServiceProviderInterface
+     */
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 
     public function getDbHandler(): DbHandler
@@ -154,11 +150,6 @@ final class GenerateAwbRequest
     public function getOrderShippingAddressUpdater(): OrderShippingAddressUpdaterInterface
     {
         return $this->orderShippingAddressUpdater;
-    }
-
-    public function getAwbErrorParser(): AwbErrorParser
-    {
-        return $this->awbErrorParser;
     }
 
     public function getSamedayShippingHdAddressParser(): SamedayShippingHdAddressParserInterface
@@ -212,11 +203,6 @@ final class GenerateAwbRequest
     public function getSamedayServiceRules(): SamedayServiceRules
     {
         return $this->samedayServiceRules;
-    }
-
-    public function getAwbRemover(): AwbRemover
-    {
-        return $this->awbRemover;
     }
 
     public function getOrderAwbProvider(): OrderAwbProviderInterface

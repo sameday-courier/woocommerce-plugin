@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County;
 
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCounties;
 use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCountiesRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 
 final class GetCountiesController extends AbstractController
 {
@@ -32,16 +29,7 @@ final class GetCountiesController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
-            $this->sendJsonErrorResponse(
-                TranslatorHandler::translate('Could not instantiate Sameday client service.'),
-                500
-            );
-        }
-
-        $getCounties = new GetCounties(new GetCountiesRequest($samedayApiClient));
+        $getCounties = new GetCounties(new GetCountiesRequest(new CourierServiceProviderService()));
         $result = $getCounties->execute();
 
         if (ResponseNoticeType::ERROR === $result->getNoticeType()) {

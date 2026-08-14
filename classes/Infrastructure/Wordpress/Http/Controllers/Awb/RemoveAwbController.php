@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
-use JsonException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use Exception;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class RemoveAwbController extends AbstractController
 {
@@ -34,40 +31,29 @@ final class RemoveAwbController extends AbstractController
      * @param array $inputParams
      *
      * @return void
-     *
-     * @throws JsonException
-     * @throws SamedaySDKException
      */
     protected function processAction(array $inputParams): void
     {
         $removeAwbItem = RemoveAwbItem::fromArray($inputParams);
 
         try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
+            $removeAwb = new RemoveAwb(
+                new RemoveAwbRequest(
+                    $removeAwbItem,
+                    new AwbRemover(
+                        new CourierServiceProviderService(),
+                        new SamedayAwbRepository()
+                    )
+                )
+            );
+            $result = $removeAwb->execute();
+        } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
             $this->redirectToOrderEdit($removeAwbItem->getOrderId());
-
-            return;
         }
-
-        $samedayAwbRepository = new SamedayAwbRepository();
-
-        $removeAwb = new RemoveAwb(
-            new RemoveAwbRequest(
-                $removeAwbItem,
-                new AwbRemover(
-                    $samedayApiClient,
-                    $samedayAwbRepository
-                ),
-                new AwbErrorParser()
-            )
-        );
-
-        $result = $removeAwb->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(

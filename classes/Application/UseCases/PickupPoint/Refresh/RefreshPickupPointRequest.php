@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 
 final class RefreshPickupPointRequest
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
@@ -20,24 +17,24 @@ final class RefreshPickupPointRequest
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @param Sameday $sameday
+     * @param CourierServiceProviderInterface $courier
      * @param SamedayPickupPointRepository $pickupPointRepository
      */
     public function __construct(
-        Sameday $sameday,
+        CourierServiceProviderInterface $courier,
         SamedayPickupPointRepository $pickupPointRepository
     )
     {
-        $this->sameday = $sameday;
+        $this->courier = $courier;
         $this->samedayPickupPointRepository = $pickupPointRepository;
     }
 
     /**
-     * @return Sameday
+     * @return CourierServiceProviderInterface
      */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 
     /**

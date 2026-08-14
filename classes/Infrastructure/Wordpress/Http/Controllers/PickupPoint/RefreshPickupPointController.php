@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint;
 
-use Sameday\Sameday;
-use Sameday\Exceptions\SamedaySDKException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 
 final class RefreshPickupPointController extends AbstractController
 {
@@ -37,24 +34,8 @@ final class RefreshPickupPointController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($exception->getMessage()),
-                ResponseNoticeType::ERROR,
-            );
-
-            $this->redirectTo('edit.php',
-                [
-                    'post_type' => 'page',
-                    'page' => 'sameday_pickup_points'
-                ]
-            );
-        }
-
         $request = new RefreshPickupPointRequest(
-            $samedayApiClient,
+            new CourierServiceProviderService(),
             new SamedayPickupPointRepository()
         );
         $refreshPickupPoint = new RefreshPickupPoint($request);

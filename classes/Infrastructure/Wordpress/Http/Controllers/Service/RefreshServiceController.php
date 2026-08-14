@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 
 final class RefreshServiceController extends AbstractController
 {
@@ -37,19 +34,8 @@ final class RefreshServiceController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($exception->getMessage()),
-                ResponseNoticeType::ERROR,
-            );
-
-            $this->redirectTo('edit.php', ['post_type' => 'page', 'page' => 'sameday_services']);
-        }
-
         $request = new RefreshServiceRequest(
-            $samedayApiClient,
+            new CourierServiceProviderService(),
             new SamedayServiceRepository()
         );
         $refreshService = new RefreshService($request);

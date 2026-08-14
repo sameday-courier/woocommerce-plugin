@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
@@ -15,10 +15,7 @@ final class RefreshLockerRequest
      */
     private SamedayLockerRepository $samedayLockerRepository;
 
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedaySettingsProviderInterface
@@ -27,17 +24,17 @@ final class RefreshLockerRequest
 
     /**
      * @param SamedayLockerRepository $samedayLockerRepository
-     * @param Sameday $sameday
+     * @param CourierServiceProviderInterface $courier
      * @param SamedaySettingsProviderInterface $samedaySettingsProvider
      */
     public function __construct(
         SamedayLockerRepository $samedayLockerRepository,
-        Sameday $sameday,
+        CourierServiceProviderInterface $courier,
         SamedaySettingsProviderInterface $samedaySettingsProvider
     )
     {
         $this->samedayLockerRepository = $samedayLockerRepository;
-        $this->sameday = $sameday;
+        $this->courier = $courier;
         $this->samedaySettingsProvider = $samedaySettingsProvider;
     }
 
@@ -50,11 +47,11 @@ final class RefreshLockerRequest
     }
 
     /**
-     * @return Sameday
+     * @return CourierServiceProviderInterface
      */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 
     /**

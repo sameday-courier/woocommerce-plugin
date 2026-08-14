@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class BulkRemoveAwbController extends AbstractRecursiveBulkController
@@ -34,16 +32,6 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
      */
     protected function processItem(int $itemId): array
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            return [
-                'status' => ResponseNoticeType::ERROR,
-                'message' => TranslatorHandler::translate($exception->getMessage()),
-                'awbNumber' => null,
-            ];
-        }
-
         $samedayAwbRepository = new SamedayAwbRepository();
         $awb = $samedayAwbRepository->getAwbForOrderId($itemId);
         $awbNumber = null !== $awb ? $awb->getAwbNumber() : null;
@@ -52,8 +40,10 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
             $result = (new RemoveAwb(
                 new RemoveAwbRequest(
                     new RemoveAwbItem($itemId),
-                    new AwbRemover($samedayApiClient, $samedayAwbRepository),
-                    new AwbErrorParser()
+                    new AwbRemover(
+                        new CourierServiceProviderService(),
+                        $samedayAwbRepository
+                    )
                 )
             ))->execute();
 

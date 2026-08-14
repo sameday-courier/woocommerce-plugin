@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import;
 
 use Exception;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
@@ -17,12 +16,12 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
@@ -87,7 +86,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshService(
                         new RefreshServiceRequest(
-                            $this->createSamedayApiClient(),
+                            new CourierServiceProviderService(),
                             new SamedayServiceRepository()
                         )
                     ))->execute();
@@ -98,7 +97,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshPickupPoint(
                         new RefreshPickupPointRequest(
-                            $this->createSamedayApiClient(),
+                            new CourierServiceProviderService(),
                             new SamedayPickupPointRepository()
                         )
                     ))->execute();
@@ -110,7 +109,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                     return (new RefreshLocker(
                         new RefreshLockerRequest(
                             new SamedayLockerRepository(),
-                            $this->createSamedayApiClient(),
+                            new CourierServiceProviderService(),
                             new WordpressSamedaySettingsProvider()
                         )
                     ))->execute();
@@ -135,15 +134,5 @@ final class AllImportController extends AbstractRecursiveBulkController
         ];
 
         return $steps[$itemId] ?? null;
-    }
-
-    /**
-     * @return Sameday
-     *
-     * @throws Exception
-     */
-    private function createSamedayApiClient(): Sameday
-    {
-        return new Sameday(SdkInitiator::init());
     }
 }

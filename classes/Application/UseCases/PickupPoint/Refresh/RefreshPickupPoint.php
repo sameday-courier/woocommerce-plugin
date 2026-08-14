@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-use Exception;
-use Sameday\Requests\SamedayGetPickupPointsRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\GetPickupPointsRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 
 final class RefreshPickupPoint
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
@@ -28,7 +25,7 @@ final class RefreshPickupPoint
      */
     public function __construct(RefreshPickupPointRequest $refreshPickupPointRequest)
     {
-        $this->sameday = $refreshPickupPointRequest->getSameday();
+        $this->courier = $refreshPickupPointRequest->getCourier();
         $this->samedayPickupPointRepository = $refreshPickupPointRequest->getSamedayPickupPointRepository();
     }
 
@@ -41,12 +38,9 @@ final class RefreshPickupPoint
         $page = 1;
 
         do {
-            $request = new SamedayGetPickupPointsRequest();
-            $request->setPage($page++);
-
             try {
-                $pickUpPoints = $this->sameday->getPickupPoints($request);
-            } catch (Exception $e) {
+                $pickUpPoints = $this->courier->getPickupPoints(new GetPickupPointsRequestDto($page++));
+            } catch (CourierServiceException $e) {
 
                 return new RefreshPickupPointResponse(
                     $e->getMessage(),

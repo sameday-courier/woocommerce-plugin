@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
-use Exception;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
 final class RefreshLockerController extends AbstractController
@@ -40,20 +34,9 @@ final class RefreshLockerController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate("Could not instantiate Sameday client service."),
-                ResponseNoticeType::ERROR,
-            );
-
-            $this->redirectTo('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
-        }
-
         $request = new RefreshLockerRequest(
             new SamedayLockerRepository(),
-            $samedayApiClient,
+            new CourierServiceProviderService(),
             new WordpressSamedaySettingsProvider()
         );
         $refreshLocker = new RefreshLocker($request);

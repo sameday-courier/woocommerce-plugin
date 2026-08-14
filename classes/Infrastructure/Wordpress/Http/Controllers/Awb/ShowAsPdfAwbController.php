@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class ShowAsPdfAwbController extends AbstractController
 {
@@ -32,15 +30,21 @@ final class ShowAsPdfAwbController extends AbstractController
      * @param array<string, mixed> $inputParams
      *
      * @return void
-     *
-     * @throws SamedaySDKException
      */
     protected function processAction(array $inputParams): void
     {
         $showAsPdfAwbItem = ShowAsPdfAwbItem::fromArray($inputParams);
 
         try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
+            $showAsPdf = new ShowAsPdfAwb(
+                new ShowAsPdfAwbRequest(
+                    $showAsPdfAwbItem,
+                    (new WordpressSamedaySettingsProvider())->get()->getDefaultLabelFormat(),
+                    new SamedayAwbRepository(),
+                    new CourierServiceProviderService(),
+                )
+            );
+            $result = $showAsPdf->execute();
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 $exception->getMessage(),
@@ -53,19 +57,7 @@ final class ShowAsPdfAwbController extends AbstractController
                     'action' => 'edit',
                 ]
             );
-
-            return;
         }
-
-        $showAsPdf = new ShowAsPdfAwb(
-            new ShowAsPdfAwbRequest(
-                $showAsPdfAwbItem,
-                (new WordpressSamedaySettingsProvider())->get()->getDefaultLabelFormat(),
-                new SamedayAwbRepository(),
-                $samedayApiClient,
-            )
-        );
-        $result = $showAsPdf->execute();
 
         if ($result->hasPdf()) {
             $pdf = $result->getPdf();

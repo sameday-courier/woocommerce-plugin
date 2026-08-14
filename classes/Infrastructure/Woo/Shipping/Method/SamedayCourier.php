@@ -28,6 +28,7 @@ use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -280,7 +281,7 @@ final class SamedayCourier extends WC_Shipping_Method
             (new RefreshLocker(
                 new RefreshLockerRequest(
                     new SamedayLockerRepository(),
-                    new Sameday(SdkInitiator::init()),
+                    new CourierServiceProviderService(),
                     $this->samedaySettingsProvider
                 ))
             )->execute();

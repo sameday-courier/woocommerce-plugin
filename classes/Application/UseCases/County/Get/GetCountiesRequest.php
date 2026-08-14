@@ -4,25 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCountiesRequest
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
-    public function __construct(Sameday $sameday)
+    public function __construct(CourierServiceProviderInterface $courier)
     {
-        $this->sameday = $sameday;
+        $this->courier = $courier;
     }
 
-    /**
-     * @return Sameday
-     */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCitiesRequest
 {
@@ -13,18 +13,15 @@ final class GetCitiesRequest
      */
     private GetCitiesItem $getCitiesItem;
 
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     public function __construct(
         GetCitiesItem $getCitiesItem,
-        Sameday $sameday
+        CourierServiceProviderInterface $courier
     )
     {
         $this->getCitiesItem = $getCitiesItem;
-        $this->sameday = $sameday;
+        $this->courier = $courier;
     }
 
     /**
@@ -35,11 +32,8 @@ final class GetCitiesRequest
         return $this->getCitiesItem;
     }
 
-    /**
-     * @return Sameday
-     */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 }

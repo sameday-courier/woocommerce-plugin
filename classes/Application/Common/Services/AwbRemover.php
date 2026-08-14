@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Common\Services;
 
-use Sameday\Exceptions\SamedayAuthenticationException;
-use Sameday\Exceptions\SamedayAuthorizationException;
-use Sameday\Exceptions\SamedayNotFoundException;
-use Sameday\Exceptions\SamedayOtherException;
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Exceptions\SamedayServerException;
-use Sameday\Requests\SamedayDeleteAwbRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class AwbRemover
 {
     /**
-     * @var Sameday $sameday
+     * @var CourierServiceProviderInterface $courier
      */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayAwbRepository $samedayAwbRepository
@@ -29,11 +24,10 @@ final class AwbRemover
     private SamedayAwbRepository $samedayAwbRepository;
 
     public function __construct(
-        Sameday $sameday,
+        CourierServiceProviderInterface $courier,
         SamedayAwbRepository $samedayAwbRepository
-    )
-    {
-        $this->sameday = $sameday;
+    ) {
+        $this->courier = $courier;
         $this->samedayAwbRepository = $samedayAwbRepository;
     }
 
@@ -43,12 +37,7 @@ final class AwbRemover
      * @return void
      *
      * @throws AwbNotFoundForOrderException
-     * @throws SamedayAuthenticationException
-     * @throws SamedayAuthorizationException
-     * @throws SamedayNotFoundException
-     * @throws SamedayOtherException
-     * @throws SamedaySDKException
-     * @throws SamedayServerException
+     * @throws CourierServiceException
      */
     public function remove(int $orderId): void
     {
@@ -66,16 +55,11 @@ final class AwbRemover
      *
      * @return void
      *
-     * @throws SamedayAuthenticationException
-     * @throws SamedayAuthorizationException
-     * @throws SamedayNotFoundException
-     * @throws SamedayOtherException
-     * @throws SamedaySDKException
-     * @throws SamedayServerException
+     * @throws CourierServiceException
      */
     public function removeRemote(string $awbNumber): void
     {
-        $this->sameday->deleteAwb(new SamedayDeleteAwbRequest($awbNumber));
+        $this->courier->removeAwb(new RemoveAwbRequestDto($awbNumber));
     }
 
     /**

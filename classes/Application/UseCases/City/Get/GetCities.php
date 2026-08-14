@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
-use Exception;
 use Sameday\Objects\CityObject;
-use Sameday\Requests\SamedayGetCitiesRequest;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\GetCitiesRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCities
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var int $countyId
@@ -24,7 +21,7 @@ final class GetCities
 
     public function __construct(GetCitiesRequest $getCitiesRequest)
     {
-        $this->sameday = $getCitiesRequest->getSameday();
+        $this->courier = $getCitiesRequest->getCourier();
         $this->countyId = $getCitiesRequest->getGetCitiesItem()->getCountyId();
     }
 
@@ -37,12 +34,11 @@ final class GetCities
         $remoteCities = [];
 
         do {
-            $request = new SamedayGetCitiesRequest($this->countyId);
-            $request->setPage($page++);
-
             try {
-                $cities = $this->sameday->getCities($request);
-            } catch (Exception $exception) {
+                $cities = $this->courier->getCities(
+                    new GetCitiesRequestDto($this->countyId, null, null, $page++)
+                );
+            } catch (CourierServiceException $exception) {
                 return new GetCitiesResponse(
                     $exception->getMessage(),
                     ResponseNoticeType::ERROR,

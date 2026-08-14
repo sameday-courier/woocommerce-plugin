@@ -4,55 +4,29 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint;
 
-use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPoint;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointItem;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointRequest;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 
 final class DeletePickupPointController extends AbstractController
 {
     private const ACTION = 'delete_pickup_point';
 
-    /**
-     * @return string
-     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
-    /**
-     * @param array $inputParams
-     *
-     * @return void
-     */
     public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {
             NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate("Unable to process the request."),
-                ResponseNoticeType::ERROR,
-            );
-
-            $this->redirectTo('edit.php',
-                [
-                    'post_type' => 'page',
-                    'page' => 'sameday_pickup_points'
-                ]
-            );
-        }
-
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (SamedaySDKException $exception) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate("Could not instantiate Sameday client service."),
+                TranslatorHandler::translate('Unable to process the request.'),
                 ResponseNoticeType::ERROR,
             );
 
@@ -60,14 +34,14 @@ final class DeletePickupPointController extends AbstractController
                 'edit.php',
                 [
                     'post_type' => 'page',
-                    'page' => 'sameday_pickup_points'
+                    'page' => 'sameday_pickup_points',
                 ]
             );
         }
 
         if (null === ($inputParams['sameday_id'] ?? null)) {
             NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate("Invalid data format."),
+                TranslatorHandler::translate('Invalid data format.'),
                 ResponseNoticeType::ERROR,
             );
 
@@ -75,7 +49,7 @@ final class DeletePickupPointController extends AbstractController
                 'edit.php',
                 [
                     'post_type' => 'page',
-                    'page' => 'sameday_pickup_points'
+                    'page' => 'sameday_pickup_points',
                 ]
             );
         }
@@ -84,7 +58,7 @@ final class DeletePickupPointController extends AbstractController
 
         $request = new DeletePickupPointRequest(
             $deletePickupPointItem,
-            $samedayApiClient
+            new CourierServiceProviderService()
         );
 
         $deletePickupPoint = new DeletePickupPoint($request);

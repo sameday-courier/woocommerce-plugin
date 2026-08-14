@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use JsonException;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Factories\AwbRequestFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -33,7 +30,6 @@ final class GenerateAwbController extends AbstractController
      * @param array $inputParams
      *
      * @return void
-     * @throws JsonException
      */
     protected function processAction(array $inputParams): void
     {
@@ -53,15 +49,16 @@ final class GenerateAwbController extends AbstractController
                     'action' => 'edit',
                 ]
             );
-
-            return;
         }
 
         $data = array_merge($inputParams, $orderData);
         $generateAwbItem = GenerateAwbItem::fromArray($data);
 
         try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
+            $generateAwb = new GenerateAwb(
+                (new AwbRequestFactory())->create($generateAwbItem)
+            );
+            $result = $generateAwb->execute();
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($exception->getMessage()),
@@ -76,16 +73,6 @@ final class GenerateAwbController extends AbstractController
                 ]
             );
         }
-
-        $awbRequestFactory = new AwbRequestFactory();
-        $generateAwb = new GenerateAwb(
-            $awbRequestFactory->create(
-                $generateAwbItem,
-                $samedayApiClient
-            )
-        );
-
-        $result = $generateAwb->execute();
 
         if ($result->hasNotices()) {
             NoticerHandler::addFlashNotice(

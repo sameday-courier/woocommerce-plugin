@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class RefreshServiceRequest
 {
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -20,24 +17,24 @@ final class RefreshServiceRequest
     private SamedayServiceRepository $samedayServiceRepository;
 
     /**
-     * @param Sameday $sameday
+     * @param CourierServiceProviderInterface $courier
      * @param SamedayServiceRepository $samedayServiceRepository
      */
     public function __construct(
-        Sameday $sameday,
+        CourierServiceProviderInterface $courier,
         SamedayServiceRepository $samedayServiceRepository
     )
     {
-        $this->sameday = $sameday;
+        $this->courier = $courier;
         $this->samedayServiceRepository = $samedayServiceRepository;
     }
 
     /**
-     * @return Sameday
+     * @return CourierServiceProviderInterface
      */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 
     /**

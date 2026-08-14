@@ -4,38 +4,33 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
-use Exception;
-use JsonException;
-use Throwable;
-use Sameday\Exceptions\SamedayBadRequestException;
-use Sameday\Exceptions\SamedayOtherException;
+use Sameday\Objects\ParcelDimensionsObject;
 use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
-use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\CodCollectorType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayPostAwbRequest;
-use Sameday\Sameday;
-use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
+use SamedayCourier\Shipping\Domain\DTOs\PostAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
-use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
+use Throwable;
 
 final class GenerateAwb
 {
@@ -45,9 +40,9 @@ final class GenerateAwb
     private GenerateAwbItem $awbItem;
 
     /**
-     * @var Sameday $sameday
+     * @var CourierServiceProviderInterface $courier
      */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -68,11 +63,6 @@ final class GenerateAwb
      * @var OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
      */
     private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
-
-    /**
-     * @var AwbErrorParser $awbErrorParser
-     */
-    private AwbErrorParser $awbErrorParser;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
@@ -120,11 +110,6 @@ final class GenerateAwb
     private SamedayServiceRules $samedayServiceRules;
 
     /**
-     * @var AwbRemover $awbRemover
-     */
-    private AwbRemover $awbRemover;
-
-    /**
      * @var OrderAwbProviderInterface $orderAwbProvider
      */
     private OrderAwbProviderInterface $orderAwbProvider;
@@ -137,13 +122,12 @@ final class GenerateAwb
     )
     {
         $this->awbItem = $generateAwbRequest->getGenerateAwbItem();
-        $this->sameday = $generateAwbRequest->getSameday();
+        $this->courier = $generateAwbRequest->getCourier();
         $this->dbHandler = $generateAwbRequest->getDbHandler();
         $this->samedayServiceRepository = $generateAwbRequest->getSamedayServiceRepository();
         $this->samedayPickupPointRepository = $generateAwbRequest->getSamedayPickupPointRepository();
         $this->samedayAwbRepository = $generateAwbRequest->getSamedayAwbRepository();
         $this->orderShippingAddressUpdater = $generateAwbRequest->getOrderShippingAddressUpdater();
-        $this->awbErrorParser = $generateAwbRequest->getAwbErrorParser();
         $this->parcelsDimensions = $generateAwbRequest->getParcelsDimensions();
         $this->lockerDtoFactory = $generateAwbRequest->getLockerDtoFactory();
         $this->shippingDtoFactory = $generateAwbRequest->getShippingDtoFactory();
@@ -152,13 +136,11 @@ final class GenerateAwb
         $this->awbGenerateServiceTaxResolver = $generateAwbRequest->getAwbGenerateServiceTaxResolver();
         $this->awbGenerateRecipientResolver = $generateAwbRequest->getAwbGenerateRecipientResolver();
         $this->samedayServiceRules = $generateAwbRequest->getSamedayServiceRules();
-        $this->awbRemover = $generateAwbRequest->getAwbRemover();
         $this->orderAwbProvider = $generateAwbRequest->getOrderAwbProvider();
     }
 
     /**
      * @return GenerateAwbResponse
-     * @throws JsonException
      */
     public function execute(): GenerateAwbResponse
     {
@@ -206,7 +188,7 @@ final class GenerateAwb
 
         $recipient = $awbRecipient->getRecipient();
 
-        $request = new SamedayPostAwbRequest(
+        $request = new PostAwbRequestDto(
             $pickupPoint->getSamedayId(),
             null,
             new PackageType($item->getPackageType()),
@@ -240,53 +222,11 @@ final class GenerateAwb
             $awbRecipient->getCurrency()
         );
 
-        $errors = null;
-        $awb = null;
         try {
-            $awb = $this->sameday->postAwb($request);
-        } catch (SamedayBadRequestException $e) {
-            $errors = $e->getErrors();
-            if ($errors !== '') {
-                try {
-                    $rawResponse = $e->getRawResponse()->getBody();
-                    $errorMessages = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR)
-                        ->errors
-                        ->errors
-                    ;
-                    $errors[] = [
-                        'key' => ['Validation Failed', ''],
-                        'errors' => $errorMessages,
-                    ];
-                } catch (JsonException $exception) {
-                    $errors[] = [
-                        'key' => 'JSON Validation Failed',
-                        'errors' => $exception->getMessage(),
-                    ];
-                }
-            }
-        } catch (SamedayOtherException $exception) {
-            $error = $exception->getRawResponse()->getBody();
-            if (null !== $error && '' !== $error) {
-                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
-            }
-
-            if (null !== $parsedError = $error['error']) {
-                $errors[] = $parsedError;
-            }
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-            if ('' === $message) {
-                $message = 'The request could not be processed!';
-            }
-            $errors[] = [
-                'code' => $e->getCode(),
-                'message' => $message,
-            ];
-        }
-
-        if (null !== $errors && null === $awb) {
+            $awb = $this->courier->postAwb($request);
+        } catch (CourierServiceException $exception) {
             return new GenerateAwbResponse(
-                $this->awbErrorParser->parse($errors),
+                $exception->getMessage(),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -320,7 +260,7 @@ final class GenerateAwb
     private function rollbackRemoteAwb(string $awbNumber): GenerateAwbResponse
     {
         try {
-            $this->awbRemover->removeRemote($awbNumber);
+            $this->courier->removeAwb(new RemoveAwbRequestDto($awbNumber));
 
             $message = 'The AWB was generated but could not be saved. So it has been cancelled, please try again.';
         } catch (Throwable $rollbackException) {

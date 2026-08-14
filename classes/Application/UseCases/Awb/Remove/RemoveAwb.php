@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
-use Exception;
-use JsonException;
-use Sameday\Exceptions\SamedayOtherException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 
 final class RemoveAwb
 {
@@ -25,26 +22,17 @@ final class RemoveAwb
     private AwbRemover $awbRemover;
 
     /**
-     * @var AwbErrorParser $awbErrorParser
-     */
-    private AwbErrorParser $awbErrorParser;
-
-    /**
      * @param RemoveAwbRequest $removeAwbRequest
      */
     public function __construct(
         RemoveAwbRequest $removeAwbRequest
-    )
-    {
+    ) {
         $this->removeAwbItem = $removeAwbRequest->getRemoveAwbItem();
         $this->awbRemover = $removeAwbRequest->getAwbRemover();
-        $this->awbErrorParser = $removeAwbRequest->getAwbErrorParser();
     }
 
     /**
      * @return RemoveAwbResponse
-     *
-     * @throws JsonException
      */
     public function execute(): RemoveAwbResponse
     {
@@ -55,26 +43,9 @@ final class RemoveAwb
                 "Invalid or inexistent an AWB for this OrderID: {$exception->getOrderId()}",
                 ResponseNoticeType::ERROR,
             );
-        } catch (SamedayOtherException $exception) {
-            $error = $exception->getRawResponse()->getBody();
-            if (null !== $error && '' !== $error) {
-                $error = json_decode($error, true, 512, JSON_THROW_ON_ERROR);
-            }
-
-            if (null !== $parsedError = $error['error']) {
-                $errors[] = $parsedError;
-            }
-        } catch (Exception $e) {
-            $errors[] = [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ];
-        }
-
-        if (isset($errors)) {
-
+        } catch (CourierServiceException $exception) {
             return new RemoveAwbResponse(
-                $this->awbErrorParser->parse($errors),
+                $exception->getMessage(),
                 ResponseNoticeType::ERROR,
             );
         }

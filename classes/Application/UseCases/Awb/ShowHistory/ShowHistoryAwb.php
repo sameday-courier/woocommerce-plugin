@@ -6,12 +6,12 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
 use RuntimeException;
 use Sameday\Objects\PostAwb\ParcelObject;
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\DTOs\GetParcelStatusHistoryRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\ParcelStatusHistoryService;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
-use Throwable;
 
 final class ShowHistoryAwb
 {
@@ -21,17 +21,14 @@ final class ShowHistoryAwb
 
     private SamedayPackageRepository $samedayPackageRepository;
 
-    private Sameday $sameday;
-
-    private ParcelStatusHistoryService $parcelStatusHistoryService;
+    private CourierServiceProviderInterface $courier;
 
     public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
     {
         $this->showHistoryAwbItem = $showHistoryAwbRequest->getShowHistoryAwbItem();
         $this->samedayAwbRepository = $showHistoryAwbRequest->getSamedayAwbRepository();
         $this->samedayPackageRepository = $showHistoryAwbRequest->getSamedayPackageRepository();
-        $this->sameday = $showHistoryAwbRequest->getSameday();
-        $this->parcelStatusHistoryService = $showHistoryAwbRequest->getParcelStatusHistoryService();
+        $this->courier = $showHistoryAwbRequest->getCourier();
     }
 
     public function execute(): ShowHistoryAwbResponse
@@ -61,9 +58,8 @@ final class ShowHistoryAwb
 
         foreach ($parcelAwbNumbers as $parcelAwbNumber) {
             try {
-                $parcelStatus = $this->parcelStatusHistoryService->get(
-                    $this->sameday,
-                    $parcelAwbNumber
+                $parcelStatus = $this->courier->getParcelStatusHistory(
+                    new GetParcelStatusHistoryRequestDto($parcelAwbNumber)
                 );
 
                 if (!$hasRefreshedPackages) {
@@ -78,7 +74,7 @@ final class ShowHistoryAwb
                     $parcelStatus->getHistory(),
                     $parcelStatus->getExpeditionStatus()
                 );
-            } catch (Throwable $exception) {
+            } catch (CourierServiceException $exception) {
                 $errors[] = sprintf('%s: %s', $parcelAwbNumber, $exception->getMessage());
             }
         }

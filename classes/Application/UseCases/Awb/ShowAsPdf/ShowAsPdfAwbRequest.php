@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class ShowAsPdfAwbRequest
@@ -15,18 +15,18 @@ final class ShowAsPdfAwbRequest
 
     private SamedayAwbRepository $samedayAwbRepository;
 
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     public function __construct(
         ShowAsPdfAwbItem $showAsPdfAwbItem,
         string $labelFormat,
         SamedayAwbRepository $samedayAwbRepository,
-        Sameday $sameday
+        CourierServiceProviderInterface $courier
     ) {
         $this->showAsPdfAwbItem = $showAsPdfAwbItem;
         $this->labelFormat = $labelFormat;
         $this->samedayAwbRepository = $samedayAwbRepository;
-        $this->sameday = $sameday;
+        $this->courier = $courier;
     }
 
     public function getShowAsPdfAwbItem(): ShowAsPdfAwbItem
@@ -49,8 +49,8 @@ final class ShowAsPdfAwbRequest
         return $this->samedayAwbRepository;
     }
 
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 }

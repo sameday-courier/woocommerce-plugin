@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\Common\Factories;
 
 use Sameday\Objects\ParcelDimensionsObject;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
-use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
@@ -19,6 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressU
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
@@ -44,7 +42,6 @@ final class AwbRequestFactory
      */
     public function create(
         GenerateAwbItem $generateAwbItem,
-        Sameday $sameday,
         ?array $parcelsDimensions = null
     ): GenerateAwbRequest {
         $dbHandler = new DbHandler();
@@ -63,7 +60,7 @@ final class AwbRequestFactory
 
         return new GenerateAwbRequest(
             $generateAwbItem,
-            $sameday,
+            new CourierServiceProviderService(),
             $dbHandler,
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
@@ -75,7 +72,6 @@ final class AwbRequestFactory
                 $hdAddressParser,
                 $stateCodeResolver,
             ),
-            new AwbErrorParser(),
             $hdAddressParser,
             $stateCodeResolver,
             $parcelsDimensions,
@@ -84,7 +80,6 @@ final class AwbRequestFactory
             new BillingDtoFactory(),
             new GenerateAwbValidator(),
             $samedayServiceRules,
-            new AwbRemover($sameday, $samedayAwbRepository),
             new WooOrderAwbProvider($samedayAwbRepository),
             new SamedayCityRepository($dbHandler),
         );

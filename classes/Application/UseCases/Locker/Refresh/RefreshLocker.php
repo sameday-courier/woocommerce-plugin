@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-use Exception;
-use Sameday\Requests\SamedayGetLockersRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\GetLockersRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
 final class RefreshLocker
 {
@@ -19,10 +19,7 @@ final class RefreshLocker
      */
     public SamedayLockerRepository $samedayLockerRepository;
 
-    /**
-     * @var Sameday $sameday
-     */
-    public Sameday $sameday;
+    public CourierServiceProviderInterface $courier;
 
     /**
      * @var SamedaySettingsProviderInterface
@@ -35,7 +32,7 @@ final class RefreshLocker
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
         $this->samedayLockerRepository = $refreshLockerRequest->getSamedayLockerRepository();
-        $this->sameday = $refreshLockerRequest->getSameday();
+        $this->courier = $refreshLockerRequest->getCourier();
         $this->samedaySettingsProvider = $refreshLockerRequest->getSamedaySettingsProvider();
     }
 
@@ -48,12 +45,9 @@ final class RefreshLocker
         $page = 1;
 
         do {
-            $request = new SamedayGetLockersRequest();
-            $request->setPage($page++);
-
             try {
-                $lockers = $this->sameday->getLockers($request);
-            } catch (Exception $e) {
+                $lockers = $this->courier->getLockers(new GetLockersRequestDto([], $page++));
+            } catch (CourierServiceException $e) {
 
                 return new RefreshLockerResponse(
                     $e->getMessage(),

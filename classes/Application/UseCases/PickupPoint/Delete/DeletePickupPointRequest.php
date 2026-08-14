@@ -4,42 +4,29 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete;
 
-use Sameday\Sameday;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class DeletePickupPointRequest
 {
-    /**
-     * @var DeletePickupPointItem $deletePickupPointItem
-     */
     private DeletePickupPointItem $deletePickupPointItem;
 
-    /**
-     * @var Sameday $sameday
-     */
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     public function __construct(
         DeletePickupPointItem $deletePickupPointItem,
-        Sameday $sameday
-    )
-    {
+        CourierServiceProviderInterface $courier
+    ) {
         $this->deletePickupPointItem = $deletePickupPointItem;
-        $this->sameday = $sameday;
+        $this->courier = $courier;
     }
 
-    /**
-     * @return DeletePickupPointItem
-     */
     public function getDeletePickupPointItem(): DeletePickupPointItem
     {
         return $this->deletePickupPointItem;
     }
 
-    /**
-     * @return Sameday
-     */
-    public function getSameday(): Sameday
+    public function getCourier(): CourierServiceProviderInterface
     {
-        return $this->sameday;
+        return $this->courier;
     }
 }

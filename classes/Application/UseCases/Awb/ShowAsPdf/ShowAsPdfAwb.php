@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
-use Exception;
-use Sameday\Exceptions\SamedaySDKException;
 use Sameday\Objects\Types\AwbPdfType;
-use Sameday\Requests\SamedayGetAwbPdfRequest;
-use Sameday\Sameday;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Domain\DTOs\ShowAsPdfRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class ShowAsPdfAwb
 {
@@ -20,20 +19,18 @@ final class ShowAsPdfAwb
 
     private SamedayAwbRepository $samedayAwbRepository;
 
-    private Sameday $sameday;
+    private CourierServiceProviderInterface $courier;
 
     public function __construct(ShowAsPdfAwbRequest $showAsPdfAwbRequest)
     {
         $this->showAsPdfAwbItem = $showAsPdfAwbRequest->getShowAsPdfAwbItem();
         $this->labelFormat = $showAsPdfAwbRequest->getLabelFormat();
         $this->samedayAwbRepository = $showAsPdfAwbRequest->getSamedayAwbRepository();
-        $this->sameday = $showAsPdfAwbRequest->getSameday();
+        $this->courier = $showAsPdfAwbRequest->getCourier();
     }
 
     /**
      * @return ShowAsPdfAwbResponse
-     *
-     * @throws SamedaySDKException
      */
     public function execute(): ShowAsPdfAwbResponse
     {
@@ -48,26 +45,17 @@ final class ShowAsPdfAwb
             );
         }
 
-        $pdf = null;
-        $errorMessage = null;
-
         try {
-            $content = $this->sameday->getAwbPdf(
-                new SamedayGetAwbPdfRequest(
+            $pdfResponse = $this->courier->showAsPdf(
+                new ShowAsPdfRequestDto(
                     (string) $awb->getAwbNumber(),
                     new AwbPdfType($this->labelFormat)
                 )
             );
-
-            $pdf = $content->getPdf();
-        } catch (Exception $e) {
-            $errorMessage = $e->getMessage();
-        }
-
-        if (null !== $errorMessage && (null === $pdf || '' === $pdf)) {
+        } catch (CourierServiceException $exception) {
             return new ShowAsPdfAwbResponse(
                 $orderId,
-                $errorMessage,
+                $exception->getMessage(),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -76,7 +64,7 @@ final class ShowAsPdfAwb
             $orderId,
             null,
             ResponseNoticeType::SUCCESS,
-            $pdf,
+            $pdfResponse->getPdf(),
         );
     }
 }

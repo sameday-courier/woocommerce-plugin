@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Factories\AwbRequestFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\GenerateAwbItemFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooGenerateAwbOrderProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator;
@@ -39,16 +37,6 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
      */
     protected function processItem(int $itemId): array
     {
-        try {
-            $samedayApiClient = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            return [
-                'status' => ResponseNoticeType::ERROR,
-                'message' => TranslatorHandler::translate($exception->getMessage()),
-                'awbNumber' => null,
-            ];
-        }
-
         $dbHandler = new DbHandler();
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
         $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
@@ -64,7 +52,7 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
         try {
             $generateAwbItem = $generateAwbItemFactory->fromOrderId($itemId);
             $result = (new GenerateAwb(
-                (new AwbRequestFactory())->create($generateAwbItem, $samedayApiClient)
+                (new AwbRequestFactory())->create($generateAwbItem)
             ))->execute();
 
             $status = $result->hasNotices()
