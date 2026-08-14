@@ -1,78 +1,156 @@
 (function ($) {
-    $(document).ready(function () {
-        // Save the original tb_show function
-        const original_tb_show = window.tb_show;
+    'use strict';
 
-        // Override tb_show to include a custom trigger
-        window.tb_show = function (caption, url, imageGroup) {
-            // Call the original tb_show function
-            original_tb_show(caption, url, imageGroup);
+    var BUTTON_SELECTOR = '[data-sameday-generate-awb-open]';
+    var MODAL_SELECTOR = '[data-sameday-generate-awb-modal]';
+    var BODY_OPEN_CLASS = 'sameday-bulk-awb-modal-open';
 
-            // After ThickBox is shown, execute your custom logic
-            let addParcelButton = document.getElementById('addParcelButton');
-            if (addParcelButton) {
-                // Add the event listener only if the element exists
-                addParcelButton.addEventListener('click', function () {
-                    let modalContainer = document.getElementById("TB_window");
-                    let packageDimensionInput = modalContainer.querySelector(".rowPackageDimension");
+    function getModal($from) {
+        if ($from.is(MODAL_SELECTOR)) {
+            return $from;
+        }
 
-                    if (packageDimensionInput) {
-                        let clonedPackageDimensionInput = packageDimensionInput.cloneNode(true);
+        return $from.closest(MODAL_SELECTOR);
+    }
 
-                        clonedPackageDimensionInput.querySelectorAll("input").forEach((input) => {
-                            input.value = "";
-                        });
+    function getModalRoot($modal) {
+        return $modal && $modal.length
+            ? $modal.get(0)
+            : document.querySelector(MODAL_SELECTOR);
+    }
 
-                        packageDimensionInput.parentNode.insertBefore(clonedPackageDimensionInput, packageDimensionInput.nextSibling);
-                        renumberInputs();
-                        checkPackageLength();
+    function openModal(modalId) {
+        var $modal = modalId ? $('#' + modalId) : $(MODAL_SELECTOR).first();
+        if (!$modal.length) {
+            return;
+        }
 
+        $modal.prop('hidden', false);
+        $('body').addClass(BODY_OPEN_CLASS);
+    }
 
-                        document.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (input) {
-                            input.addEventListener('change', function () {
-                                let weight = 0;
-                                document.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (item) {
-                                    weight += parseFloat(item.value) || 0;
-                                });
-                                let weightInput = document.getElementById("sameday-package-weight");
-                                weightInput.value = "Calculated Weight: " + weight + " kg";
-                            });
-                        });
-                    }
-                });
-            }
-        };
+    function closeModal($modal) {
+        if (!$modal || !$modal.length) {
+            return;
+        }
 
-        function checkPackageLength(){
-            let packageWeightClass = document.querySelectorAll(".samedaycourier-package-weight-class");
-            let packageLength = document.getElementById("samedaycourier-package-length");
+        $modal.prop('hidden', true);
+
+        if (!$(MODAL_SELECTOR).filter(':not([hidden])').length) {
+            $('body').removeClass(BODY_OPEN_CLASS);
+        }
+    }
+
+    function checkPackageLength(modalRoot) {
+        var packageWeightClass = modalRoot.querySelectorAll('.samedaycourier-package-weight-class');
+        var packageLength = modalRoot.querySelector('#samedaycourier-package-length');
+        if (packageLength) {
             packageLength.value = packageWeightClass.length;
         }
+    }
 
-        document.addEventListener('click', function (e) {
-            if (document.querySelectorAll('.deleteParcelButton').length > 1) {
-                if (e.target && e.target.classList.contains('deleteParcelButton')) { // Adjust the class as needed
-                    let tableRow = e.target.closest('tr'); // Find the closest <tr> ancestor
-                    if (tableRow) {
-                        tableRow.remove(); // Remove the <tr>
-                        renumberInputs();
-                        checkPackageLength();
-                    }
+    function renumberInputs(modalRoot) {
+        var allRows = modalRoot.querySelectorAll('.rowPackageDimension');
+        allRows.forEach(function (row, index) {
+            row.querySelectorAll('input').forEach(function (input) {
+                var name = input.getAttribute('name');
+                if (name) {
+                    input.setAttribute('name', name.replace(/\[\d+]/, '[' + (index + 1) + ']'));
                 }
-            }
+            });
+        });
+    }
+
+    function bindWeightRecalculation(modalRoot) {
+        modalRoot.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var weight = 0;
+                modalRoot.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (item) {
+                    weight += parseFloat(item.value) || 0;
+                });
+                var weightInput = modalRoot.querySelector('#sameday-package-weight');
+                if (weightInput) {
+                    weightInput.value = 'Calculated Weight: ' + weight + ' kg';
+                }
+            });
+        });
+    }
+
+    function addParcelRow(modalRoot) {
+        var packageDimensionInput = modalRoot.querySelector('.rowPackageDimension');
+        if (!packageDimensionInput) {
+            return;
+        }
+
+        var clonedPackageDimensionInput = packageDimensionInput.cloneNode(true);
+        clonedPackageDimensionInput.querySelectorAll('input').forEach(function (input) {
+            input.value = '';
         });
 
-        function renumberInputs() {
-            let modalContainer = document.getElementById("TB_window");
-            let allRows = modalContainer.querySelectorAll(".rowPackageDimension");
-            allRows.forEach((row, index) => {
-                row.querySelectorAll("input").forEach((input) => {
-                    let name = input.getAttribute("name");
-                    if (name) {
-                        input.setAttribute("name", name.replace(/\[\d+]/, '[' + (index + 1) + ']'));
-                    }
-                });
-            });
-        }
+        packageDimensionInput.parentNode.insertBefore(
+            clonedPackageDimensionInput,
+            packageDimensionInput.nextSibling
+        );
+        renumberInputs(modalRoot);
+        checkPackageLength(modalRoot);
+        bindWeightRecalculation(modalRoot);
+    }
+
+    $(function () {
+        $(document).on('click', BUTTON_SELECTOR, function (event) {
+            event.preventDefault();
+            openModal($(this).data('sameday-generate-awb-open'));
+        });
+
+        $(document).on('click', '[data-sameday-generate-awb-close]', function (event) {
+            event.preventDefault();
+            closeModal(getModal($(this)));
+        });
+
+        $(document).on('keydown', function (event) {
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            var $openModal = $(MODAL_SELECTOR).filter(':not([hidden])').last();
+            if (!$openModal.length) {
+                return;
+            }
+
+            closeModal($openModal);
+        });
+
+        $(document).on('click', '#addParcelButton', function (event) {
+            event.preventDefault();
+            var modalRoot = getModalRoot(getModal($(this)));
+            if (!modalRoot) {
+                return;
+            }
+            addParcelRow(modalRoot);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!e.target || !e.target.classList.contains('deleteParcelButton')) {
+                return;
+            }
+
+            var modalRoot = e.target.closest(MODAL_SELECTOR);
+            if (!modalRoot) {
+                return;
+            }
+
+            if (modalRoot.querySelectorAll('.deleteParcelButton').length <= 1) {
+                return;
+            }
+
+            var tableRow = e.target.closest('tr');
+            if (!tableRow) {
+                return;
+            }
+
+            tableRow.remove();
+            renumberInputs(modalRoot);
+            checkPackageLength(modalRoot);
+        });
     });
 }(jQuery));

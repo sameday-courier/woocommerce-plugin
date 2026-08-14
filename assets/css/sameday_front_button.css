@@ -28,6 +28,6 @@
     transition: 200ms;
 }
 
-#placeOrderError.show {
+#placeOrderError.sameday-is-visible {
     opacity: 1;
 }

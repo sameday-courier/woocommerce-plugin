@@ -1,131 +1,115 @@
 /**
  * Component: Sync and select lockers in Checkout Form
- * ------------------------------------------------------------------------------
- *
- * @namespace selectLocker
  */
+(function (window, jQuery) {
+    'use strict';
 
-/**
- * CLIENT_ID
- *
- * @type {string}
- */
-const CLIENT_ID="b8cb2ee3-41b9-4c3d-aafe-1527b453d65e";
+    var CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
+    var SamedayCourier = window.SamedayCourier || {};
 
-// Validate if element is defined and is not null
-const is_set = (accessor) => {
-    try {
-        return accessor() !== undefined && accessor() !== null
-    } catch (e) {
-        return false
-    }
-}
-
-const _init = () => {
-    /* DOM node selectors. */
-    let selectors = {
-        selectLockerMap: document.querySelector('#select_locker'),
-        selectLocker: document.querySelector('#shipping-pickup-store-select'),
+    var isSet = function (accessor) {
+        try {
+            return accessor() !== undefined && accessor() !== null;
+        } catch (e) {
+            return false;
+        }
     };
 
-    /* Map Event. */
-    if (is_set(() => selectors.selectLockerMap)) {
-        selectors.selectLockerMap.addEventListener('click', _openLockers);
-    } else if (is_set( () => selectors.selectLocker)) {
-        /* Add select2 to lockers dropdown. */
-        jQuery('select#shipping-pickup-store-select').select2();
+    var openLockers = function () {
+        var selectors = {
+            selectLocker: document.getElementById('select_locker'),
+            selectCity: SamedayCourier.getFieldByType('city', SamedayCourier.FIELD_TYPE_OF_SHIPPING),
+            selectCountry: SamedayCourier.getFieldByType('country', SamedayCourier.FIELD_TYPE_OF_SHIPPING),
+        };
 
-        selectors.selectLocker.onchange = (event) => {
-            doAjaxCall({
-                'locker': event.target.value,
+        if (undefined === selectors.selectCity) {
+            selectors.selectCity = SamedayCourier.getFieldByType('city', SamedayCourier.FIELD_TYPE_OF_BILLING);
+        }
+
+        if (undefined === selectors.selectCountry) {
+            selectors.selectCountry = SamedayCourier.getFieldByType('country', SamedayCourier.FIELD_TYPE_OF_BILLING);
+        }
+
+        var samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
+        var city;
+        if (undefined !== selectors.selectCity) {
+            city = selectors.selectCity.value;
+        }
+
+        var country;
+        var langCode;
+        if (undefined !== selectors.selectCountry) {
+            country = selectors.selectCountry.value;
+            langCode = country.toLowerCase();
+        }
+
+        var LockerPlugin = window.LockerPlugin;
+        var LockerData = {
+            apiUsername: samedayUser,
+            clientId: CLIENT_ID,
+            city: city,
+            countryCode: country,
+            langCode: langCode,
+        };
+
+        LockerPlugin.init(LockerData);
+
+        if (LockerPlugin.options.countryCode !== country || LockerPlugin.options.city !== city) {
+            LockerPlugin.reinitializePlugin(LockerData);
+        }
+
+        var pluginInstance = LockerPlugin.getInstance();
+        pluginInstance.open();
+
+        pluginInstance.subscribe(function (locker) {
+            var shippingAddressSpan = document.querySelector('.wc-block-components-shipping-address') || false;
+            if (shippingAddressSpan) {
+                shippingAddressSpan.innerHTML = locker.name + ' - ' + locker.address;
+            }
+
+            var setCookie = function (key, value, days) {
+                var d = new Date();
+                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = 'expires=' + d.toUTCString();
+
+                document.cookie = key + '=' + value + ';' + expires + ';path=/';
+            };
+
+            setCookie('locker', JSON.stringify(locker), 365);
+
+            SamedayCourier.doAjaxCall({
+                locker: locker,
             });
-        }
-    }
-}
 
-const _openLockers = () => {
-    /* DOM node selectors. */
-    let selectors = {
-        selectLocker: document.getElementById('select_locker'),
-        selectCity: getFieldByType('city', FIELD_TYPE_OF_SHIPPING),
-        selectCountry: getFieldByType('country', FIELD_TYPE_OF_SHIPPING),
+            pluginInstance.close();
+        });
     };
 
-    if (undefined === selectors.selectCity) {
-        selectors.selectCity = getFieldByType('city', FIELD_TYPE_OF_BILLING);
-    }
+    var init = function () {
+        var selectors = {
+            selectLockerMap: document.querySelector('#select_locker'),
+            selectLocker: document.querySelector('#shipping-pickup-store-select'),
+        };
 
-    if (undefined === selectors.selectCountry) {
-        selectors.selectCountry = getFieldByType('country', FIELD_TYPE_OF_BILLING);
-    }
+        if (isSet(function () { return selectors.selectLockerMap; })) {
+            selectors.selectLockerMap.addEventListener('click', openLockers);
+        } else if (isSet(function () { return selectors.selectLocker; })) {
+            jQuery('select#shipping-pickup-store-select').select2();
 
-    let samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
-    let city;
-    if (undefined !== selectors.selectCity) {
-        city = selectors.selectCity.value
-    }
-
-    let country;
-    let langCode;
-    if (undefined !== selectors.selectCountry) {
-        country = selectors.selectCountry.value;
-        langCode = country.toLowerCase();
-    }
-
-    const LockerPlugin = window['LockerPlugin'];
-    const LockerData = {
-        apiUsername: samedayUser,
-        clientId: CLIENT_ID,
-        city: city,
-        countryCode: country,
-        langCode: langCode,
+            selectors.selectLocker.onchange = function (event) {
+                SamedayCourier.doAjaxCall({
+                    locker: event.target.value,
+                });
+            };
+        }
     };
 
-    LockerPlugin.init(LockerData);
+    jQuery(document.body).on('updated_checkout', function () {
+        var lockerMapButton = document.getElementById('select_locker') || false;
+        var lockerDropDownField = document.getElementById('shipping-pickup-store-select') || false;
 
-    if (LockerPlugin.options.countryCode !== country || LockerPlugin.options.city !== city) {
-        LockerPlugin.reinitializePlugin(LockerData);
-    }
-
-    let pluginInstance = LockerPlugin.getInstance();
-    pluginInstance.open();
-
-    pluginInstance.subscribe((locker) => {
-        const shipping_address_span = document.querySelector('.wc-block-components-shipping-address') || false;
-        if (shipping_address_span) {
-            shipping_address_span.innerHTML = locker.name + ' - ' + locker.address;
+        if (lockerMapButton || lockerDropDownField) {
+            init();
         }
-
-        const _setCookie = (key, value, days) => {
-            let d = new Date();
-            d.setTime(d.getTime() + (days*24*60*60*1000));
-            let expires = "expires=" + d.toUTCString();
-
-            document.cookie = key + "=" + value + ";" + expires + ";path=/";
-        }
-
-        _setCookie('locker', JSON.stringify(locker), 365);
-
-        doAjaxCall(
-            {
-                'locker': locker,
-            },
-        );
-
-        pluginInstance.close();
     });
-
-}
-
-/**
- * Initialise component after ajax complete
- */
-jQuery(document.body).on("updated_checkout", () => {
-        const locker_map_button = document.getElementById('select_locker') || false;
-        const locker_drop_down_field = document.getElementById('shipping-pickup-store-select') || false;
-
-        if (locker_map_button || locker_drop_down_field) {
-            _init();
-        }
-    }
-);
+}(window, jQuery));

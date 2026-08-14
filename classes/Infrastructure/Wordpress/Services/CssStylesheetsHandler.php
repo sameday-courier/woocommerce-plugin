@@ -30,6 +30,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         'checkout' => 'checkout', // Any WooCommerce checkout page (is_checkout()).
         'checkout_strict' => 'checkout_strict', // Checkout only, excluding order-pay and order-received.
         'orders_list' => 'orders_list', // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
+        'order_edit' => 'order_edit', // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
     ];
 
     private const PLUGIN_ADMIN_PAGES = [
@@ -114,17 +115,21 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'sameday_awb_history',
                 self::WP_CONTEXT['admin_full']
             ),
-            'select2-style' => self::addStyleSheet(
+            'sameday-select2-style' => self::addStyleSheet(
                 'select2',
                 self::WP_CONTEXT['admin_full']
-            ),
-            'sameday-thickboxform-style' => self::addStyleSheet(
-                'tickbox-form',
-                self::WP_CONTEXT['pickup_points']
             ),
             'sameday-bulk-awb-modal-style' => self::addStyleSheet(
                 'sameday_bulk_awb_modal',
                 self::WP_CONTEXT['orders_list']
+            ),
+            'sameday-generate-awb-modal-style' => self::addStyleSheet(
+                'sameday_bulk_awb_modal',
+                self::WP_CONTEXT['order_edit']
+            ),
+            'sameday-pickup-point-modal-style' => self::addStyleSheet(
+                'sameday_bulk_awb_modal',
+                self::WP_CONTEXT['pickup_points']
             ),
             'sameday-locker-checkout-style' => self::addStyleSheet(
                 'sameday_locker_checkout',
@@ -199,6 +204,8 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 return self::isPickupPointsPage();
             case 'orders_list':
                 return self::isOrdersListPage();
+            case 'order_edit':
+                return self::isOrderEditPage();
             case 'checkout':
                 return is_checkout();
             case 'checkout_strict':
@@ -236,6 +243,28 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         global $pagenow;
 
         return 'post.php' === $pagenow || 'admin.php' === $pagenow;
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isOrderEditPage(): bool
+    {
+        global $pagenow;
+
+        if ('post.php' === $pagenow && isset($_GET['post'])) {
+            return 'shop_order' === get_post_type((int) $_GET['post']);
+        }
+
+        if ('admin.php' === $pagenow
+            && isset($_GET['page'], $_GET['action'])
+            && 'wc-orders' === $_GET['page']
+            && 'edit' === $_GET['action']
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

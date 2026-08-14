@@ -84,10 +84,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 continue;
             }
 
-            if (self::WP_CONTEXT['pickup_points'] === $script[self::SCRIPT_CONTEXT]) {
-                add_thickbox();
-            }
-
             self::enqueue(self::resolveHandle($handle, $script), $script);
         }
     }
@@ -120,23 +116,23 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }
 
         self::$scripts = [
-            'select2-script' => self::addScript(
+            'sameday-select2' => self::addScript(
                 'select2',
                 self::WP_CONTEXT['admin_full'],
                 ['jquery'],
                 false
             ),
-            'lockerpluginsdk' => self::addExternalScript(
+            'sameday-lockerpluginsdk' => self::addExternalScript(
                 self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['order_edit']
             ),
-            'lockers-sync-admin' => self::addScript(
+            'sameday-lockers-sync-admin' => self::addScript(
                 'lockers_sync_admin',
                 self::WP_CONTEXT['admin_full'],
                 ['jquery'],
                 false
             ),
-            'add-awb' => self::addScript(
+            'sameday-add-awb' => self::addScript(
                 'add-awb',
                 self::WP_CONTEXT['admin_full'],
                 ['jquery'],
@@ -146,51 +142,68 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 'helper',
                 self::WP_CONTEXT['pickup_points']
             ),
+            'sameday-admin-modal' => self::addScript(
+                'sameday-admin-modal',
+                self::WP_CONTEXT['admin_full'],
+                ['jquery'],
+                true
+            ),
+            'sameday-admin-modal-pickup' => self::withHandle(
+                self::addScript(
+                    'sameday-admin-modal',
+                    self::WP_CONTEXT['pickup_points'],
+                    ['jquery'],
+                    true
+                ),
+                'sameday-admin-modal'
+            ),
             'sameday-admin-script' => self::addScript(
                 'adminPickupPoints',
-                self::WP_CONTEXT['pickup_points']
+                self::WP_CONTEXT['pickup_points'],
+                ['jquery', 'sameday-admin-modal']
             ),
-            'prod-locker-plugin' => self::addExternalScript(
+            'sameday-locker-plugin-checkout' => self::addExternalScript(
                 self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['checkout_strict'],
                 [],
                 false
             ),
-            'helper' => self::addScript(
+            'sameday-helper' => self::addScript(
                 'helper',
-                self::WP_CONTEXT['checkout_strict'],
+                self::WP_CONTEXT['checkout'],
                 ['jquery'],
                 true
             ),
-            'lockers_script' => self::addScript(
+            'sameday-lockers-script' => self::addScript(
                 'lockers_sync',
                 self::WP_CONTEXT['checkout_strict'],
-                ['jquery', 'helper'],
+                ['jquery', 'sameday-helper'],
                 true
             ),
-            'open_package_script' => self::addScript(
+            'sameday-open-package-script' => self::addScript(
                 'open_package_script',
                 self::WP_CONTEXT['checkout_strict'],
-                ['jquery', 'helper'],
+                ['jquery', 'sameday-helper'],
                 true
             ),
-            'lockerpluginsdk_checkout' => self::withHandle(
+            'sameday-lockerpluginsdk-checkout' => self::withHandle(
                 self::addExternalScript(
                     self::LOCKER_PLUGIN_SDK_URL,
                     self::WP_CONTEXT['checkout']
                 ),
-                'lockerpluginsdk'
+                'sameday-lockerpluginsdk'
             ),
-            'custom-checkout-button' => self::addScript(
+            'sameday-custom-checkout-button' => self::addScript(
                 'custom-checkout-button',
                 self::WP_CONTEXT['checkout'],
                 ['jquery'],
                 true
             ),
-            'county-city-handle' => self::addScript(
+            'sameday-county-city-handle' => self::addScript(
                 'county-city-handle',
                 self::WP_CONTEXT['checkout_nomenclator'],
-                ['jquery', 'select2'],
+                // Reuse WooCommerce's registered `select2` on checkout to avoid loading a second copy.
+                ['jquery', 'select2', 'sameday-helper'],
                 false
             ),
             'sameday-settings-actions' => self::addScript(
@@ -199,19 +212,19 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 [],
                 true
             ),
-            'awb-history' => self::addScript(
+            'sameday-awb-history' => self::addScript(
                 'awb_history',
                 self::WP_CONTEXT['admin_full'],
                 ['jquery'],
                 false
             ),
-            'awb-form' => self::addScript(
+            'sameday-awb-form' => self::addScript(
                 'awb_form',
                 self::WP_CONTEXT['admin_full'],
-                ['jquery', 'select2-script'],
+                ['jquery', 'sameday-select2'],
                 false
             ),
-            'bulk-awb' => self::addScript(
+            'sameday-bulk-awb' => self::addScript(
                 'bulk-awb',
                 self::WP_CONTEXT['orders_list'],
                 ['jquery'],
@@ -514,7 +527,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function localizeScript(string $handle): void
     {
         switch ($handle) {
-            case 'lockers-sync-admin':
+            case 'sameday-lockers-sync-admin':
                 wp_localize_script($handle, 'samedayLockerAdmin', [
                     'nonces' => [
                         'change_locker' => wp_create_nonce('change_locker'),
@@ -531,7 +544,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     ],
                 ]);
                 break;
-            case 'helper':
+            case 'sameday-helper':
                 wp_localize_script($handle, 'samedayVars', [
                     'nonces' => [
                         'store_sameday_locker_in_session' => NonceHandler::createNonce(
@@ -546,12 +559,12 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     ],
                 ]);
                 break;
-            case 'county-city-handle':
+            case 'sameday-county-city-handle':
                 wp_localize_script($handle, 'samedayCourierData', [
                     'cities' => self::getCitiesForCheckout(),
                 ]);
                 break;
-            case 'custom-checkout-button':
+            case 'sameday-custom-checkout-button':
                 $settings = (new WordpressSamedaySettingsProvider())->get();
                 wp_localize_script($handle, 'samedayData', [
                     'username' => $settings->getUser(),
@@ -559,7 +572,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     'buttonText' => TranslatorHandler::translate('Show Locations Map'),
                 ]);
                 break;
-            case 'bulk-awb':
+            case 'sameday-bulk-awb':
                 wp_localize_script($handle, 'samedayBulkAwb', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),
                     'modes' => [

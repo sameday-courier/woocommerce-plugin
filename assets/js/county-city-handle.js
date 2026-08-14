@@ -1,5 +1,9 @@
 jQuery(document).ready(() => {
     const $ = jQuery;
+    const SamedayCourier = window.SamedayCourier || {};
+    const getFieldByType = SamedayCourier.getFieldByType;
+    const FIELD_TYPE_OF_BILLING = SamedayCourier.FIELD_TYPE_OF_BILLING;
+    const FIELD_TYPE_OF_SHIPPING = SamedayCourier.FIELD_TYPE_OF_SHIPPING;
     let citySelectElements = {};
     let originalCityFields = {};
     let lastAppliedKey = {};

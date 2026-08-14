@@ -16,7 +16,7 @@ class AwbHistoryTable
      */
     public static function addAwbHistoryTable($packages): string
     {
-        $return = '<h3 class="awb-history-title"> <strong> ' . TranslatorHandler::translate("Awb History") . '</strong> </h3>';
+        $return = '';
 
         $packageRows = '';
         if (empty($packages)) {
@@ -50,7 +50,7 @@ class AwbHistoryTable
             }
             $packageRows .= '
                 <tr>
-                    <td class="showHistoryDetails" value="-" data-awb-number="'.$summary->getParcelAwbNumber().'"> <strong> + </strong> </td>
+                    <td class="sameday-show-history-details" value="-" data-awb-number="'.$summary->getParcelAwbNumber().'"> <strong> + </strong> </td>
                     <td> '.$summary->getParcelAwbNumber().'</td>
                     <td> '.$summary->getParcelWeight().' </td>
                     <td> '.($summary->isDelivered() ? "Yes" : "No").'</td>

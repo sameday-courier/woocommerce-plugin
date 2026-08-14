@@ -79,8 +79,8 @@ final class SamedayConstants
     ];
     public const EURO_CURRENCY = "EUR";
     public const TOGGLE_HTML_ELEMENT = [
-        'show' => 'showElement',
-        'hide' => 'hideElement',
+        'show' => 'sameday-show-element',
+        'hide' => 'sameday-hide-element',
     ];
     public const API_PROD = 0;
     public const API_DEMO = 1;

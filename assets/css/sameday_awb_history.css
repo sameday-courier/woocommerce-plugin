@@ -44,16 +44,16 @@
 }
 
 .packages .packages-empty,
-.packages .showHistoryDetails,
+.packages .sameday-show-history-details,
 .history .history-empty {
   text-align: center;
 }
 
-.packages .showHistoryDetails {
+.packages .sameday-show-history-details {
   cursor: pointer;
 }
 
-.packages .showHistoryDetails:hover {
+.packages .sameday-show-history-details:hover {
   background-color: #e8e8e8;
 }
 

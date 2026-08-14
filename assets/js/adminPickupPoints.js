@@ -63,11 +63,6 @@ if (document.getElementById('pickupPointCounty')) {
     });
 }
 
-jQuery('body').on('click', '.delete-pickup-point', function (e) {
-    e.preventDefault();
+jQuery('body').on('click', '.delete-pickup-point', function () {
     jQuery('#form-deletePickupPoint #input-deletePickupPoint').val(jQuery(this).data('id'));
-});
-
-jQuery('body').on('click', '.sameday-thickbox-cancel', function () {
-    tb_remove();
 });

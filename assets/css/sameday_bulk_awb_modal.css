@@ -64,9 +64,16 @@
     color: #16a34a;
 }
 
-.sameday-bulk-awb-modal__icon svg {
+.sameday-bulk-awb-modal__icon svg,
+.sameday-bulk-awb-modal__icon img {
     width: 26px;
     height: 26px;
+}
+
+.sameday-bulk-awb-modal__icon img.sameday-bulk-awb-modal__icon-svg--package {
+    display: block;
+    border-radius: 4px;
+    object-fit: contain;
 }
 
 .sameday-bulk-awb-modal__icon-svg[hidden] {
@@ -156,11 +163,53 @@
     cursor: pointer;
 }
 
-.sameday-bulk-awb-modal__disclaimer input[type="checkbox"] {
-    margin: 2px 0 0;
-    width: 16px;
-    height: 16px;
+.sameday-bulk-awb-modal__disclaimer .sameday-modal-checkbox {
     flex: 0 0 auto;
+}
+
+.sameday-modal-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    margin: 1px 0 0;
+    padding: 0 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    vertical-align: middle;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.sameday-modal-checkbox:checked {
+    background: linear-gradient(90deg, #ed2224, #b21f24) !important;
+    border-color: #b21f24 !important;
+}
+
+.sameday-modal-checkbox:focus {
+    border-color: #ed2224 !important;
+    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12) !important;
+    outline: none;
+}
+
+.sameday-modal-checkbox:checked::before {
+    content: "" !important;
+    display: block !important;
+    float: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: no-repeat center / 12px 12px
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E") !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
 }
 
 .sameday-bulk-awb-modal__footer {
@@ -500,6 +549,300 @@
         max-width: 100%;
         align-self: flex-start;
     }
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__dialog {
+    width: min(1000px, 96vw);
+    height: min(820px, 90vh);
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body {
+    padding-top: 4px;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body th {
+    text-align: left;
+    padding: 6px 12px 6px 0;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td {
+    padding: 4px 4px;
+    vertical-align: middle;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body label {
+    font-size: 13px;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[type="text"],
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[type="number"],
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body select,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body textarea {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    height: 28px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
+    font-size: 13px;
+    line-height: 1.3;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body select {
+    padding-right: 28px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.4.6 6 5.2 10.6.6 12 2 6 8 0 2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px 7px;
+    cursor: pointer;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body textarea {
+    height: 72px;
+    min-height: 72px;
+    padding: 8px 10px;
+    resize: vertical;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[type="text"]:focus,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[type="number"]:focus,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body select:focus,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body textarea:focus {
+    border-color: #ed2224;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12);
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[readonly] {
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+.sameday-generate-awb-modal .rowPackageDimension td.forminp {
+    width: 18%;
+}
+
+.sameday-generate-awb-modal .rowPackageDimension td.forminp input {
+    width: 100%;
+    min-width: 0;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td > span {
+    display: inline-block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body #addParcelButton,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body .deleteParcelButton,
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body #select_locker {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 26px;
+}
+
+.sameday-generate-awb-modal .select2-container {
+    width: 100% !important;
+}
+
+.sameday-generate-awb-modal .select2-container .select2-selection--single {
+    height: 28px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+.sameday-generate-awb-modal .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 26px !important;
+    padding-left: 10px !important;
+    padding-right: 28px !important;
+    font-size: 13px;
+    color: #111827;
+}
+
+.sameday-generate-awb-modal .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 26px !important;
+    right: 6px;
+}
+
+.sameday-generate-awb-modal .select2-container--default.select2-container--focus .select2-selection--single,
+.sameday-generate-awb-modal .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #ed2224 !important;
+    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12) !important;
+}
+
+.sameday-generate-awb-modal .select2-dropdown {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sameday-generate-awb-modal .select2-container--open {
+    z-index: 100110;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-top: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+    cursor: help;
+    box-shadow: none;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip:hover,
+.sameday-generate-awb-modal .sameday-custom-tooltip:focus-within {
+    border: 0;
+    color: #6b7280;
+    box-shadow: none;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    z-index: 100120;
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip:hover .sameday-tooltiptext,
+.sameday-generate-awb-modal .sameday-custom-tooltip:focus-within .sameday-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    color: #111827;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext th,
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext td {
+    padding: 4px 8px;
+    border: 0;
+    color: #374151;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext th {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext tbody tr:first-child th:first-child,
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext td:first-child {
+    text-align: left;
+    color: #111827;
+    font-weight: 600;
+}
+
+.sameday-generate-awb-modal .sameday-custom-tooltip .sameday-tooltiptext tbody tr + tr td {
+    border-top: 1px solid #f3f4f6;
+}
+
+.sameday-awb-history-modal .sameday-bulk-awb-modal__dialog {
+    width: min(1100px, 96vw);
+    height: min(780px, 90vh);
+}
+
+.sameday-pickup-point-modal .sameday-bulk-awb-modal__dialog {
+    width: min(720px, 96vw);
+    height: min(820px, 90vh);
+}
+
+.sameday-delete-pickup-point-modal .sameday-bulk-awb-modal__dialog {
+    width: min(480px, 96vw);
+    height: auto;
+    max-height: min(360px, 90vh);
+}
+
+.sameday-pickup-point-form__group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+
+.sameday-pickup-point-form__group label {
+    flex: 0 0 38%;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.sameday-pickup-point-form__input {
+    flex: 1 1 auto;
+}
+
+.sameday-pickup-point-form__input input:not([type='checkbox']),
+.sameday-pickup-point-form__input select {
+    width: 100%;
+    max-width: 100%;
+    height: 32px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.sameday-pickup-point-form__input input[type='checkbox'] {
+    margin: 0;
+}
+
+.sameday-add-new-parcel-modal .sameday-bulk-awb-modal__body textarea {
+    min-height: 64px;
+    height: auto;
 }
 
 body.sameday-bulk-awb-modal-open {

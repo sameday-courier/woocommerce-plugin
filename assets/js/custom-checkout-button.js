@@ -106,13 +106,13 @@ waitForElement('.wc-block-components-checkout-place-order-button', function($tar
         ) {
             e.preventDefault();
             e.stopPropagation();
-            jQuery('#placeOrderError').addClass('show');
+            jQuery('#placeOrderError').addClass('sameday-is-visible');
             document.getElementById('select_locker').scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',
             });
             setTimeout(function(){
-                jQuery('#placeOrderError').removeClass('show');
+                jQuery('#placeOrderError').removeClass('sameday-is-visible');
             }, 3000);
         }
     });

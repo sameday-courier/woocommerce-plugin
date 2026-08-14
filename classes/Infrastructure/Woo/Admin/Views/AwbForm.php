@@ -15,6 +15,7 @@ use SamedayCourier\Shipping\Domain\SamedayServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OptionsHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -22,6 +23,8 @@ use WC_Order;
 
 class AwbForm
 {
+    public const MODAL_ID = 'sameday-generate-awb-modal';
+
     /**
      * @var SamedayServiceRules $samedayServiceRules
      */
@@ -179,20 +182,25 @@ class AwbForm
                 : 0;
 
             $checked = ($serviceCode === $samedayService->getSamedayCode()) ? 'selected' : '';
-            $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
+            $optionFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
             if ($firstMileId === $samedayService->getSamedayId()) {
-                $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
+                $optionFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 
-            $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
+            $optionLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
             if ($this->samedayServiceRules->isOohDeliveryOption($samedayService)) {
-                $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
+                $optionLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
+            }
+
+            if ('' !== $checked) {
+                $allowFirstMile = $optionFirstMile;
+                $allowLastMile = $optionLastMile;
             }
 
             $option = sprintf(
                 "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
-                $allowFirstMile,
-                $allowLastMile,
+                $optionFirstMile,
+                $optionLastMile,
                 $samedayService->getSamedayId(),
                 $checked,
                 $samedayService->getSamedayName() ?? '',
@@ -200,161 +208,201 @@ class AwbForm
             $servicesOptions .= $option;
         }
 
-        $form = '<div id="sameday-shipping-content-add-awb" style="display: none;">	        
-                <h3 style="text-align: center; color: #0A246A"> <strong> ' . TranslatorHandler::translate("Generate awb") . '</strong> </h3>      
+        $title = TranslatorHandler::translate('Generate awb');
+        $subtitle = TranslatorHandler::translate('Configure shipment details before generating the AWB.');
+        $cancel = TranslatorHandler::translate('Cancel');
+
+        $formBody = '<div id="sameday-shipping-content-add-awb">
                 <table>
-                    <tbody>       
+                    <tbody>
                          <input type="hidden" form="addAwbForm" name="samedaycourier-order-id" id="samedaycourier-order-id" value="' . $order->get_id() . '">
                          <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-repayment"> ' . sprintf("%s (%s)", TranslatorHandler::translate("Repayment"), $currency) .' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <input type="text" onkeypress="return (event.charCode !== 8 && event.charCode === 0 || ( event.charCode === 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" style="width: 100%; height: 30px;" id="samedaycourier-package-repayment" value="' . $repayment . '">
+                                <input type="text" onkeypress="return (event.charCode !== 8 && event.charCode === 0 || ( event.charCode === 46 || (event.charCode >= 48 && event.charCode <= 57)))" form="addAwbForm" name="samedaycourier-package-repayment" id="samedaycourier-package-repayment" value="' . $repayment . '">
                                 <span>' . TranslatorHandler::translate("Payment type: ") . $payment_gateway->title . '</span>
-                             </td>     
-                             
+                             </td>
+
                         </tr>
                         '. $currencyWarningMessage . '
                         <tr valign="middle" colspan="4">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-insurance-value"> ' . TranslatorHandler::translate("Insured value") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" step="0.1" style="width: 100%; height: 30px;" id="samedaycourier-package-insurance-value" value="0">
-                             </td>                        
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-insurance-value" min="0" step="0.1" id="samedaycourier-package-insurance-value" value="0">
+                             </td>
                         </tr>
                         <tr>
                             <th><label>' . TranslatorHandler::translate("Parcels") . '</label></th>
                             <td class="forminp forminp-text">
-                                <input readonly type="number" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" value="' . TranslatorHandler::translate("1") . '">
+                                <input readonly type="number" form="addAwbForm" min="0" step="0.1" id="samedaycourier-package-length" value="' . TranslatorHandler::translate("1") . '">
                             </td>
                              <td class="forminp forminp-text">
-                                <input readonly type="text" form="addAwbForm" min="0" step="0.1" style="height: 30px;" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . OptionsHandler::getOption('woocommerce_weight_unit', 'kg') . '">
+                                <input readonly type="text" form="addAwbForm" min="0" step="0.1" id="sameday-package-weight" value="Calculated Weight: ' . $total_weight . ' ' . OptionsHandler::getOption('woocommerce_weight_unit', 'kg') . '">
                              </td>
                              <td>
-                                <button class="sameday_admin_button" id="addParcelButton">+</button>
+                                <button type="button" class="sameday_admin_button" id="addParcelButton">+</button>
                              </td>
                         </tr>
                         <tr valign="middle" class="rowPackageDimension">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-weight"> ' . TranslatorHandler::translate("Package Dimensions") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
-                            <td class="forminp forminp-text" style="width: 20%;">
-                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][weight]" min="0.1" step="0.1" style="height: 30px;" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . TranslatorHandler::translate("Package Weight") . '">
+                            </th>
+                            <td class="forminp forminp-text">
+                                <input class="samedaycourier-package-weight-class" type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][weight]" min="0.1" step="0.1" id="samedaycourier-package-weight" value="' . $total_weight . '" placeholder="' . TranslatorHandler::translate("Package Weight") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][length]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-length" placeholder="' . TranslatorHandler::translate("Package Length") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][length]" min="0" step="0.1" id="samedaycourier-package-length" placeholder="' . TranslatorHandler::translate("Package Length") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][height]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-height" placeholder="' . TranslatorHandler::translate("Package Height") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][height]" min="0" step="0.1" id="samedaycourier-package-height" placeholder="' . TranslatorHandler::translate("Package Height") . '">
                              </td>
                              <td class="forminp forminp-text">
-                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][width]" min="0" step="0.1" style="height: 30px;" id="samedaycourier-package-width" placeholder="' . TranslatorHandler::translate("Package Width") . '">
+                                <input type="number" form="addAwbForm" name="samedaycourier-package-dimensions[1][width]" min="0" step="0.1" id="samedaycourier-package-width" placeholder="' . TranslatorHandler::translate("Package Width") . '">
                              </td>
-                             <td><button class="sameday_admin_button deleteParcelButton">✖</button></td>
+                             <td><button type="button" class="sameday_admin_button deleteParcelButton">✖</button></td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-pickup-point"> ' . TranslatorHandler::translate("Pickup-point") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" style="width: 100%; height: 30px;" id="samedaycourier-package-pickup-point" >
+                                <select form="addAwbForm" name="samedaycourier-package-pickup-point" id="samedaycourier-package-pickup-point" >
                                     ' . $pickupPointOptions . '
                                 </select>
                              </td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-type"> ' . TranslatorHandler::translate("Package type") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <select form="addAwbForm" name="samedaycourier-package-type" style="width: 100%; height: 30px;" id="samedaycourier-package-type">
+                                <select form="addAwbForm" name="samedaycourier-package-type" id="samedaycourier-package-type">
                                     ' . $packageTypeOptions . '
                                 </select>
                              </td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-awb-payment"> ' . TranslatorHandler::translate("Awb payment") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <select form="addAwbForm" name="samedaycourier-package-awb-payment" style="width: 100%; height: 30px;" id="samedaycourier-package-awb-payment">
+                                <select form="addAwbForm" name="samedaycourier-package-awb-payment" id="samedaycourier-package-awb-payment">
                                     ' . $awbPaymentTypeOptions . '
                                 </select>
                              </td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-service"> ' . TranslatorHandler::translate("Service") . ' <span style="color: #ff2222"> * </span>  </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <select form="addAwbForm" name="samedaycourier-service" style="width: 100%; height: 30px;" id="samedaycourier-service">
+                                <select form="addAwbForm" name="samedaycourier-service" id="samedaycourier-service">
                                     ' . $servicesOptions . '
                                 </select>
                                 <input type="hidden" form="addAwbForm" name="samedaycourier-service-optional-tax-id" id="samedaycourier-service-optional-tax-id">
                              </td>
                         </tr> ';
-        $form .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'"><th scope="row" class="titledesc" > 
+        $formBody .= '<tr id="LockerFirstMile" class="'.$allowFirstMile.'">
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-locker_first_mile"> ' . TranslatorHandler::translate("Personal delivery at locker") . '</label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile">
+                                <input type="checkbox" form="addAwbForm" name="samedaycourier-locker_first_mile" id="samedaycourier-locker_first_mile" class="sameday-modal-checkbox">
                                 <span style="display:block;width:100%">' . TranslatorHandler::translate("Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.") . '</span>
                                 <span style="display:block;width:100%"><a href="https://sameday.ro/easybox#lockers-intro" target="_blank">' . TranslatorHandler::translate("Show map") . '</a></span>
-                                <span class="custom_tooltip"> ' . TranslatorHandler::translate("Show locker dimensions") . '    <span class="tooltiptext">        <table class="table table-hover"> <tbody style="color: #ffffff"> <tr> <th></th> <th style="text-align: center;">L</th> <th style="text-align: center;">l</th> <th style="text-align: center;">h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
-                                <tr></td>';
+                                <span class="sameday-custom-tooltip"> ' . TranslatorHandler::translate("Show locker dimensions") . '    <span class="sameday-tooltiptext">        <table class="table table-hover"> <tbody> <tr> <th></th> <th>L</th> <th>l</th> <th>h</th> </tr><tr> <td>Small (cm)</td><td> 47</td><td> 44.5</td><td> 10</td></tr><tr> <td>Medium (cm)</td><td> 47</td><td> 44.5</td><td> 19</td></tr><tr> <td>Large (cm)</td><td> 47</td><td> 44.5</td><td> 39</td></tr> </tbody></table>    </span></span>
+                            </td>
+                        </tr>';
 
-        $form .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
-                            	<th scope="row" class="titledesc"> 
+        $formBody .=  '<tr id="LockerLastMile" class="'.$allowLastMile.'" style="vertical-align: middle;">
+                             	<th scope="row" class="titledesc">
                                     <label for="samedaycourier-locker-details"> ' . TranslatorHandler::translate("Location details") . ' </label>
-                                </th> 
-                                <td class="forminp forminp-text">';
-        $form .= '<input type="hidden" form="addAwbForm" id="locker" name="locker" value="' . esc_attr((string) $lockerDetailsForm) . '">';
-        $form .='  <textarea id="sameday_locker_name" disabled="disabled" style="width: 100%">' . esc_html((string) $lockerDetails) . '</textarea><br/>
+                                </th>
+                                <td class="forminp forminp-text" colspan="4">';
+        $formBody .= '<input type="hidden" form="addAwbForm" id="locker" name="locker" value="' . esc_attr((string) $lockerDetailsForm) . '">';
+        $formBody .='  <textarea id="sameday_locker_name" disabled="disabled">' . esc_html((string) $lockerDetails) . '</textarea><br/>
                                     <button class="sameday_admin_button"
                                         data-username="' . esc_attr((string) $username) . '"
                                         data-country="' . esc_attr((string) $hostCountry) . '"
                                         data-dest_city="' . esc_attr($destCity) . '"
                                         data-dest_country="' . esc_attr($destCountry) . '"
-                                        type="button" 
-                                        id="select_locker"> ' . TranslatorHandler::translate("Change location") . ' 
-                                    </button> 
+                                        type="button"
+                                        id="select_locker"> ' . TranslatorHandler::translate("Change location") . '
+                                    </button>
                                 </td>
                             </tr>';
 
-        $form .= '<tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+        $formBody .= '<tr valign="middle">
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-open-package-status"> ' . TranslatorHandler::translate("Open package") . '</label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <input type="checkbox" form="addAwbForm" name="samedaycourier-open-package-status" id="samedaycourier-open-package-status" '.$openPackage.'>
+                                <input type="checkbox" form="addAwbForm" name="samedaycourier-open-package-status" id="samedaycourier-open-package-status" class="sameday-modal-checkbox" '.$openPackage.'>
                              </td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-package-observation"> ' . TranslatorHandler::translate("Observation") . ' </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text" colspan="4">
-                                <textarea form="addAwbForm" name="samedaycourier-package-observation" style="width: 100%; height: 100px;" id="samedaycourier-package-observation" ></textarea>
+                                <textarea form="addAwbForm" name="samedaycourier-package-observation" id="samedaycourier-package-observation" ></textarea>
                              </td>
                         </tr>
                         <tr valign="middle">
-                            <th scope="row" class="titledesc"> 
+                            <th scope="row" class="titledesc">
                                 <label for="samedaycourier-client-reference"> ' . TranslatorHandler::translate("Client Reference") . ' </label>
-                            </th> 
+                            </th>
                             <td class="forminp forminp-text">
-                                <input type="text" form="addAwbForm" name="samedaycourier-client-reference" style="width: 100%; height: 30px;" id="samedaycourier-client-reference" value="' . $order->get_id() . '">
-                             	<span>' . TranslatorHandler::translate("By default this field is complete with Order ID") . '</span>
+                                <input type="text" form="addAwbForm" name="samedaycourier-client-reference" id="samedaycourier-client-reference" value="' . $order->get_id() . '">
+                              	<span>' . TranslatorHandler::translate("By default this field is complete with Order ID") . '</span>
                              </td>
-                        </tr>                  
-                        <tr>
-                            <th><button class="sameday_admin_button" type="submit" value="Submit" form="addAwbForm"> ' . TranslatorHandler::translate("Generate Awb") . ' </button> </th>
                         </tr>
                     </tbody>
                 </table>
             </div>';
 
-        return $form;
+        return sprintf(
+            '<div id="%1$s" class="sameday-bulk-awb-modal sameday-generate-awb-modal" hidden data-sameday-generate-awb-modal>
+                <div class="sameday-bulk-awb-modal__backdrop" data-sameday-generate-awb-close></div>
+                <div class="sameday-bulk-awb-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="%1$s-title">
+                    <div class="sameday-bulk-awb-modal__header">
+                        <div class="sameday-bulk-awb-modal__heading">
+                            <div class="sameday-bulk-awb-modal__icon" aria-hidden="true">
+                                %7$s
+                            </div>
+                            <div class="sameday-bulk-awb-modal__titles">
+                                <h2 id="%1$s-title">%2$s</h2>
+                                <p>%3$s</p>
+                            </div>
+                        </div>
+                        <button type="button" class="sameday-bulk-awb-modal__close" data-sameday-generate-awb-close aria-label="%4$s">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="sameday-bulk-awb-modal__body">
+                        %5$s
+                    </div>
+                    <div class="sameday-bulk-awb-modal__footer">
+                        <button type="button" class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--cancel" data-sameday-generate-awb-close>
+                            %4$s
+                        </button>
+                        <button type="submit" form="addAwbForm" value="Submit" class="sameday_button sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm">
+                            %6$s
+                        </button>
+                    </div>
+                </div>
+            </div>',
+            esc_attr(self::MODAL_ID),
+            esc_html($title),
+            esc_html($subtitle),
+            esc_html($cancel),
+            $formBody,
+            esc_html(TranslatorHandler::translate('Generate Awb')),
+            SamedayIcon::render('sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--package', 26)
+        );
     }
 }

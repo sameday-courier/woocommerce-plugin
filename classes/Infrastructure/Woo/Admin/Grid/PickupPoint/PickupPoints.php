@@ -8,6 +8,7 @@ if (!defined( 'ABSPATH')) {
     exit;
 }
 
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\SamedayConstants;
@@ -97,7 +98,7 @@ class PickupPoints extends WP_List_Table
 			case 'default_pickup_point':
 				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
-                return '<a href="#TB_inline?width=400&height=100&inlineId=smd-thickbox-delete" class="sameday_admin_button delete-pickup-point thickbox" data-id="' . esc_attr((string) (int) $item['sameday_id']) . '">Delete</a>';
+                return '<a href="#" class="sameday_admin_button delete-pickup-point" role="button" data-sameday-modal-open="' . esc_attr(PickupPointForm::DELETE_MODAL_ID) . '" data-id="' . esc_attr((string) (int) $item['sameday_id']) . '">Delete</a>';
 			default:
 				return $item[$column_name];
 		}

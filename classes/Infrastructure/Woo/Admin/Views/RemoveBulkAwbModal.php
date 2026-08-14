@@ -62,12 +62,7 @@ final class RemoveBulkAwbModal
                     <div class="sameday-bulk-awb-modal__header">
                         <div class="sameday-bulk-awb-modal__heading">
                             <div class="sameday-bulk-awb-modal__icon" data-sameday-bulk-awb-header-icon aria-hidden="true">
-                                <svg class="sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--package" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4.5 7h15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                                    <path d="M9.5 7V5.8c0-.7.6-1.3 1.3-1.3h2.4c.7 0 1.3.6 1.3 1.3V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                                    <path d="M18.2 7l-.7 11.2c-.1 1-.9 1.8-1.9 1.8H8.4c-1 0-1.8-.8-1.9-1.8L5.8 7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                                    <path d="M10 11v5.5M14 11v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                                </svg>
+                                %22$s
                                 <svg class="sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--success" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" hidden>
                                     <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -87,7 +82,7 @@ final class RemoveBulkAwbModal
                             <ul class="sameday-bulk-awb-modal__orders" data-sameday-bulk-awb-order-list></ul>
                             <p class="sameday-bulk-awb-modal__empty" data-sameday-bulk-awb-empty hidden>%6$s</p>
                             <label class="sameday-bulk-awb-modal__disclaimer">
-                                <input type="checkbox" data-sameday-bulk-awb-agree>
+                                <input type="checkbox" class="sameday-modal-checkbox" data-sameday-bulk-awb-agree>
                                 <span>%7$s</span>
                             </label>
                         </div>
@@ -201,7 +196,8 @@ final class RemoveBulkAwbModal
             $logsTitle,
             $filterAll,
             $filterSuccess,
-            $filterFailed
+            $filterFailed,
+            SamedayIcon::render('sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--package', 26)
         );
 
         $modal = str_replace(

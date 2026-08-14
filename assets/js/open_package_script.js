@@ -1,13 +1,19 @@
-jQuery(document).on('change', '#sameday_open_package', (ev) => {
-    doAjaxCall({
-        'open_package': ev.target.checked ? "yes" : "no"
-    });
-});
+(function (window, jQuery) {
+    'use strict';
 
-jQuery('body').on('updated_checkout', () => {
-    jQuery('input[name="payment_method"]').change(() => {
-        doAjaxCall({
-            'payment_method': jQuery("input[name='payment_method']:checked").val()
-        })
+    var SamedayCourier = window.SamedayCourier || {};
+
+    jQuery(document).on('change', '#sameday_open_package', function (ev) {
+        SamedayCourier.doAjaxCall({
+            open_package: ev.target.checked ? 'yes' : 'no'
+        });
     });
-});
+
+    jQuery('body').on('updated_checkout', function () {
+        jQuery('input[name="payment_method"]').change(function () {
+            SamedayCourier.doAjaxCall({
+                payment_method: jQuery('input[name="payment_method"]:checked').val()
+            });
+        });
+    });
+}(window, jQuery));

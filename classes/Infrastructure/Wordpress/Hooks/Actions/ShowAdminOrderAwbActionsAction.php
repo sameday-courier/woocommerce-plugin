@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Domain\SamedayConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\SamedayAdminModal;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TranslatorHandler;
@@ -19,6 +20,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySe
 final class ShowAdminOrderAwbActionsAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_admin_order_data_after_shipping_address';
+    private const HISTORY_MODAL_ID = 'sameday-awb-history-modal';
 
     /**
      * @return string
@@ -48,8 +50,6 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
             return;
         }
 
-        add_thickbox();
-
         if (!isset($_GET['action']) || 'edit' !== $_GET['action']) {
             return;
         }
@@ -66,21 +66,24 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
     {
         $generateAwb = sprintf(
             '<p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=1000&height=470&inlineId=sameday-shipping-content-add-awb" class="sameday_admin_button button-samll thickbox"> %s </a>
+                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-generate-awb-open="%s"> %s </a>
             </p>',
+            esc_attr(AwbForm::MODAL_ID),
             TranslatorHandler::translate('Generate awb')
         );
 
         $showAwb = sprintf(
             '<p class="form-field form-field-wide wc-customer-user">
-                <a href="#TB_inline?&width=670&height=470&inlineId=sameday-shipping-content-add-new-parcel" class="sameday_admin_button button-samll thickbox"> %s </a>
-                <a href="#TB_inline?&width=1024&height=400&inlineId=sameday-shipping-content-awb-history" class="sameday_admin_button button-samll thickbox"> %s </a>
+                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-modal-open="%s"> %s </a>
+                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-modal-open="%s"> %s </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="%s">
                 <button type="submit" form="showAsPdf" formtarget="_blank" class="sameday_admin_button button-samll">%s </button>
             </p>',
+            esc_attr(NewParcelForm::MODAL_ID),
             TranslatorHandler::translate('Add new parcel'),
+            esc_attr(self::HISTORY_MODAL_ID),
             TranslatorHandler::translate('Awb history'),
-            $order->get_id(),
+            esc_attr((string) $order->get_id()),
             TranslatorHandler::translate('Show as pdf')
         );
 
@@ -89,7 +92,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                 <input type="hidden" form="removeAwb" name="order-id" value="%s">
                 <button type="submit" form="removeAwb" class="sameday_admin_button button-samll">%s </button>
             </p>',
-            $order->get_id(),
+            esc_attr((string) $order->get_id()),
             TranslatorHandler::translate('Remove Awb')
         );
 
@@ -114,17 +117,17 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
             );
 
             $awbHistoryTable = (new ShowHistoryAwbController())->render((int) $order->get_id());
-            $addNewParcelForm = NewParcelForm::addNewParcelForm($order->get_id());
+            $newParcelModal = NewParcelForm::addNewParcelForm($order->get_id());
 
-            $newParcelModal = sprintf(
-                '<div id="sameday-shipping-content-add-new-parcel" style="display: none;">%s</div>',
-                $addNewParcelForm
-            );
-
-            $historyModal = sprintf(
-                '<div id="sameday-shipping-content-awb-history" style="display: none;">%s</div>',
-                $awbHistoryTable
-            );
+            $historyModal = SamedayAdminModal::render([
+                'id' => self::HISTORY_MODAL_ID,
+                'title' => TranslatorHandler::translate('Awb History'),
+                'subtitle' => TranslatorHandler::translate('Parcel status history for this AWB.'),
+                'body' => '<div id="sameday-shipping-content-awb-history">' . $awbHistoryTable . '</div>',
+                'class' => 'sameday-awb-history-modal',
+                'confirmLabel' => null,
+                'cancelLabel' => TranslatorHandler::translate('Close'),
+            ]);
 
             $redirectToEawbSite = sprintf(
                 '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
@@ -136,7 +139,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                 '<p class="form-field form-field-wide wc-customer-user">
                     <a href="%s" target="_blank" class="sameday_admin_button button-samll">%s </a>
                 </p>',
-                $redirectToEawbSite,
+                esc_url($redirectToEawbSite),
                 TranslatorHandler::translate('Sameday eAwb')
             );
         }

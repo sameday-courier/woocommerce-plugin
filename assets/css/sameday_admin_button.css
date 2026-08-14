@@ -13,7 +13,9 @@
     padding: 0;
 }
 
-.tablenav.top .alignleft.actions input[type="search"] {
+body.toplevel_page_sameday_services .tablenav.top .alignleft.actions input[type="search"],
+body.toplevel_page_sameday_lockers .tablenav.top .alignleft.actions input[type="search"],
+body.toplevel_page_sameday_pickup_points .tablenav.top .alignleft.actions input[type="search"] {
     width: 130px;
     max-width: 100%;
     margin-right: 6px;

@@ -5,90 +5,104 @@
  * @namespace selectLocker
  */
 
-function init() {
-    let selectors = {
-        selectLockerMap: document.querySelector('#select_locker')
-    };
-    if(selectors.selectLockerMap){
-        selectors.selectLockerMap.addEventListener('click', openLockers);
-        changeServices();
+(function ($) {
+    'use strict';
+
+    function displayDetails(optionFistMile, optionLastMile) {
+        var $firstMile = $('#LockerFirstMile');
+        var $lastMile = $('#LockerLastMile');
+        var $firstMileCheckbox = $('#samedaycourier-locker_first_mile');
+
+        if (!$firstMile.length || !$lastMile.length) {
+            return;
+        }
+
+        $firstMileCheckbox.prop('checked', false);
+        $firstMile.removeClass('sameday-show-element sameday-hide-element').addClass(optionFistMile || 'sameday-hide-element');
+        $lastMile.removeClass('sameday-show-element sameday-hide-element').addClass(optionLastMile || 'sameday-hide-element');
     }
 
-}      
+    function syncServiceDetails() {
+        var $service = $('#samedaycourier-service');
+        if (!$service.length) {
+            return;
+        }
 
+        var $selected = $service.find('option:selected');
+        displayDetails(
+            $selected.attr('data-fistMile'),
+            $selected.attr('data-lastMile')
+        );
+    }
 
-function changeServices(){
-    let samedayCourierService = document.getElementById('samedaycourier-service');
+    function openLockers() {
+        var changeLockerButton = document.querySelector('#select_locker');
+        if (!changeLockerButton || !window.LockerPlugin) {
+            return;
+        }
 
-    if ("undefined" !== typeof samedayCourierService.selectedOptions[0]) {
-        let optionFistMile = samedayCourierService.selectedOptions[0].getAttribute("data-fistMile");
-        let optionLastMile = samedayCourierService.selectedOptions[0].getAttribute("data-lastMile");
+        var clientId = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
+        var samedayUser = changeLockerButton.getAttribute('data-username');
+        var countryCode = changeLockerButton.getAttribute('data-country') || '';
+        var langCode = countryCode.toLowerCase();
+        var destCity = changeLockerButton.getAttribute('data-dest_city');
+        var destCountry = changeLockerButton.getAttribute('data-dest_country');
 
-        displayDetails(optionFistMile, optionLastMile);
-
-        samedayCourierService.addEventListener('change', function() {
-            let optionFistMile = this.selectedOptions[0].getAttribute("data-fistMile");
-            let optionLastMile = this.selectedOptions[0].getAttribute("data-lastMile");
-            displayDetails(optionFistMile, optionLastMile);
+        window.LockerPlugin.init({
+            apiUsername: samedayUser,
+            city: destCity,
+            countryCode: destCountry,
+            clientId: clientId,
+            langCode: langCode
         });
-    }
-}
 
-function displayDetails(optionFistMile, optionLastMile){
-    document.getElementById("samedaycourier-locker_first_mile").checked = false;
-    document.getElementById("LockerFirstMile").className = '';
-    document.getElementById("LockerLastMile").className = '';
-    document.getElementById("LockerFirstMile").classList.add(optionFistMile);
-    document.getElementById("LockerLastMile").classList.add(optionLastMile);
-}
-function openLockers() {
-    /* DOM node selectors. */
-    const clientId = "b8cb2ee3-41b9-4c3d-aafe-1527b453d65e"; // each integrator will have unique clientId
-    const changeLockerButton = document.querySelector('#select_locker');
+        var pluginInstance = window.LockerPlugin.getInstance();
+        pluginInstance.open();
 
-    let samedayUser = changeLockerButton.getAttribute('data-username'); // Sameday username
-    let countryCode= changeLockerButton.getAttribute('data-country'); // correspond to user eAWB instance
-    let langCode = countryCode.toLowerCase(); //language of the plugin
-    let destCity = changeLockerButton.getAttribute('data-dest_city');
-    let destCountry = changeLockerButton.getAttribute('data-dest_country');
+        pluginInstance.subscribe(function (locker) {
+            pluginInstance.close();
 
-    const LockerData = {
-        apiUsername: samedayUser,
-        city: destCity,
-        countryCode: destCountry,
-        clientId: clientId,
-        langCode: langCode
-    }
+            var _locker = JSON.stringify(locker);
 
-    window['LockerPlugin'].init(LockerData);
-    let pluginInstance = window['LockerPlugin'].getInstance();
-
-    pluginInstance.open();
-
-    pluginInstance.subscribe((locker) => {
-        pluginInstance.close();
-
-        let _locker = JSON.stringify(locker);
-
-        jQuery.post(
-            {
+            $.post({
                 url: ajaxurl,
                 data: {
-                    'action': 'change_locker',
-                    'orderId': jQuery('#samedaycourier-order-id').val(),
-                    'locker': _locker,
-                    '_wpnonce': samedayLockerAdmin.nonces.change_locker,
+                    action: 'change_locker',
+                    orderId: $('#samedaycourier-order-id').val(),
+                    locker: _locker,
+                    _wpnonce: (window.samedayLockerAdmin && window.samedayLockerAdmin.nonces)
+                        ? window.samedayLockerAdmin.nonces.change_locker
+                        : ''
                 },
-                success: () => {
-                    document.querySelector('#sameday_locker_name').innerHTML = locker.name + " - " + locker.address;
-                    document.querySelector('#locker').value = _locker;
+                success: function () {
+                    $('#sameday_locker_name').val(locker.name + ' - ' + locker.address);
+                    $('#locker').val(_locker);
                 },
-                error: () => {
+                error: function () {
                     alert('Something went wrong! Please try again latter!');
-                },
-            }
-        );
-    });
-}
+                }
+            });
+        });
+    }
 
-setTimeout(init, 1000);
+    function init() {
+        syncServiceDetails();
+
+        $(document)
+            .off('change.samedayLockerService', '#samedaycourier-service')
+            .on('change.samedayLockerService', '#samedaycourier-service', syncServiceDetails);
+
+        $(document)
+            .off('select2:select.samedayLockerService', '#samedaycourier-service')
+            .on('select2:select.samedayLockerService', '#samedaycourier-service', syncServiceDetails);
+
+        $(document)
+            .off('click.samedayLockerMap', '#select_locker')
+            .on('click.samedayLockerMap', '#select_locker', function (event) {
+                event.preventDefault();
+                openLockers();
+            });
+    }
+
+    $(init);
+}(jQuery));

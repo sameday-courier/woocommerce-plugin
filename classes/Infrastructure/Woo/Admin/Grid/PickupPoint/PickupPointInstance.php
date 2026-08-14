@@ -66,7 +66,7 @@ class PickupPointInstance
 									<input type="hidden" name="_wpnonce" value="<?php echo esc_attr(wp_create_nonce('refresh_pickup_points')); ?>">
 									<input type="submit" class="sameday_admin_button" value="Refresh Pickup point">
 								</form>
-								<a href="#TB_inline?width=800&height=530&inlineId=smd-thickbox" class="sameday_admin_button button-samll thickbox">
+								<a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-modal-open="<?php echo esc_attr(PickupPointForm::ADD_MODAL_ID); ?>">
 									<?php echo TranslatorHandler::translate('Add Pickup Point') ?>
 								</a>
 							</div>

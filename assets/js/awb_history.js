@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-    $(document).on('click', '.showHistoryDetails', function () {
+    $(document).on('click', '.sameday-show-history-details', function () {
         const show = $(this).val();
         const awbNumber = $(this).data('awb-number');
         const $historyTable = $('#history-' + awbNumber);
@@ -15,5 +15,5 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('.showHistoryDetails').trigger('click');
+    $('.sameday-show-history-details').trigger('click');
 });
