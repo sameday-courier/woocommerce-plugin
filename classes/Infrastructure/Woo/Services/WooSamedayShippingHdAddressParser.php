@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use JsonException;
-use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 
-final class WooSamedayShippingHdAddressParser implements SamedayShippingHdAddressParserInterface
+final class WooSamedayShippingHdAddressParser implements CarrierShippingHdAddressParserInterface
 {
     /**
      * @param int $orderId
@@ -20,7 +20,7 @@ final class WooSamedayShippingHdAddressParser implements SamedayShippingHdAddres
     {
         $postMeta = PostMetaHandler::get(
             $orderId,
-            SamedayConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             true
         );
 

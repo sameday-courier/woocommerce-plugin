@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use Sameday\Objects\Types\AwbPdfType;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayAwbPdfTypes;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySettings;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierSettings;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
-final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderInterface
+final class WordpressSamedaySettingsProvider implements CarrierSettingsProviderInterface
 {
     private const OPTION_KEY = 'woocommerce_samedaycourier_settings';
     private const ENABLED = 'enabled';
@@ -34,13 +34,13 @@ final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderI
     private const SAMEDAY_SYNC_LOCKERS_TS = 'sameday_sync_lockers_ts';
 
     /**
-     * @return SamedaySettings
+     * @return CarrierSettings
      */
-    public function get(): SamedaySettings
+    public function get(): CarrierSettings
     {
         $options = $this->getSamedayOptions();
 
-        return new SamedaySettings(
+        return new CarrierSettings(
             $this->resolveEnabled($options),
             $this->resolveTitle($options),
             $this->resolveNullableString($options, self::USER),
@@ -121,7 +121,7 @@ final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderI
 
         return is_string($format) && $format !== ''
             ? $format
-            : SamedayAwbPdfTypes::getLabelKeys()[AwbPdfType::A4];
+            : CarrierAwbPdfTypes::getLabelKeys()[AwbPdfType::A4];
     }
 
     /**
@@ -163,7 +163,7 @@ final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderI
 
         return null !== $lockerMaxItems
             ? (int)$lockerMaxItems
-            : SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
+            : CarrierConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS;
     }
 
     /**
@@ -189,7 +189,7 @@ final class WordpressSamedaySettingsProvider implements SamedaySettingsProviderI
 
         return is_string($hostCountry) && $hostCountry !== '' && $hostCountry !== 'none'
             ? $hostCountry
-            : SamedayConstants::API_HOST_LOCALE_RO;
+            : CarrierConstants::API_HOST_LOCALE_RO;
     }
 
     /**

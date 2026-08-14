@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 
 final class SamedayLockerMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayLocker
+     * @return CarrierLocker
      */
-    public function map(array $row): SamedayLocker
+    public function map(array $row): CarrierLocker
     {
-        $locker = new SamedayLocker();
+        $locker = new CarrierLocker();
 
         $locker->setId(isset($row['id']) ? (int) $row['id'] : 0);
         $locker->setLockerId(

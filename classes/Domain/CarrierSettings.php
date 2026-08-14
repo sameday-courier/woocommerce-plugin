@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-final class SamedaySettings
+final class CarrierSettings
 {
     /**
      * @var bool
@@ -282,7 +282,7 @@ final class SamedaySettings
      */
     public function getTestingMode(): int
     {
-        return $this->testing ? SamedayConstants::API_DEMO : SamedayConstants::API_PROD;
+        return $this->testing ? CarrierConstants::API_DEMO : CarrierConstants::API_PROD;
     }
 
     /**

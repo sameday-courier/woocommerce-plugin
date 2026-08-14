@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\ShippingMethodProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Shipping\ShippingMethodCodeParser;
 
 final class WooShippingMethodProvider implements ShippingMethodProviderInterface
@@ -29,7 +29,7 @@ final class WooShippingMethodProvider implements ShippingMethodProviderInterface
      */
     public function getChosenServiceCode(): string
     {
-        $chosenShippingMethods = $this->sessionHandler->get(SamedaySessionKeys::CHOSEN_SHIPPING_METHODS);
+        $chosenShippingMethods = $this->sessionHandler->get(CarrierSessionKeys::CHOSEN_SHIPPING_METHODS);
         $chosenShippingMethod = is_array($chosenShippingMethods) ? ($chosenShippingMethods[0] ?? null) : null;
 
         if (null === $chosenShippingMethod) {

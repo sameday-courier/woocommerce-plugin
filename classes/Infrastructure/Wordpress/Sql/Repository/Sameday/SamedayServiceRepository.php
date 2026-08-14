@@ -8,34 +8,34 @@ use Sameday\Objects\Service\OptionalTaxObject;
 use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
-use SamedayCourier\Shipping\Domain\Ports\SamedayServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
+use SamedayCourier\Shipping\Domain\Ports\CarrierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
-class SamedayServiceRepository extends AbstractRepository implements SamedayServiceProviderInterface
+class SamedayServiceRepository extends AbstractRepository implements CarrierServiceProviderInterface
 {
     private const TABLE_NAME = 'sameday_service';
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param DbHandlerInterface|null $dbHandler
-     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     * @param CarrierSettingsProviderInterface|null $carrierSettingsProvider
      */
     public function __construct(
         ?DbHandlerInterface $dbHandler = null,
-        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
     }
 
     public function getTableName(): string
@@ -44,7 +44,7 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     }
 
     /**
-     * @return SamedayService[]
+     * @return CarrierService[]
      */
     public function getAvailableServices(): array
     {
@@ -59,7 +59,7 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     }
 
     /**
-     * @return SamedayService[]
+     * @return CarrierService[]
      */
     public function getServices(): array
     {
@@ -109,9 +109,9 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     /**
      * @param int $id
      *
-     * @return SamedayService|null
+     * @return CarrierService|null
      */
-    public function getServiceById(int $id): ?SamedayService
+    public function getServiceById(int $id): ?CarrierService
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE id = %d LIMIT 1",
@@ -130,9 +130,9 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     /**
      * @param int $samedayId
      *
-     * @return SamedayService|null
+     * @return CarrierService|null
      */
-    public function getServiceSameday(int $samedayId): ?SamedayService
+    public function getServiceSameday(int $samedayId): ?CarrierService
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
@@ -152,9 +152,9 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     /**
      * @param string $samedayCode
      *
-     * @return SamedayService|null
+     * @return CarrierService|null
      */
-    public function getServiceSamedayByCode(string $samedayCode): ?SamedayService
+    public function getServiceSamedayByCode(string $samedayCode): ?CarrierService
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE sameday_code = %s AND is_testing = %s LIMIT 1",
@@ -221,8 +221,8 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
     public function updateServiceCode(ServiceObject $serviceObject, int $id): bool
     {
         $serviceName = $serviceObject->getName();
-        if ($serviceObject->getCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[$this->samedaySettingsProvider->get()->getHostCountry()];
+        if ($serviceObject->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
+            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$this->carrierSettingsProvider->get()->getHostCountry()];
         }
 
         return $this->dbHandler->updateRow(
@@ -255,6 +255,6 @@ class SamedayServiceRepository extends AbstractRepository implements SamedayServ
      */
     private function isTesting(): bool
     {
-        return $this->samedaySettingsProvider->get()->isTesting();
+        return $this->carrierSettingsProvider->get()->isTesting();
     }
 }

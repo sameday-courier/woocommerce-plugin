@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-final class SamedaySessionKeys
+final class CarrierSessionKeys
 {
     public const OPEN_PACKAGE = 'open_package';
     public const LOCKER = 'locker';

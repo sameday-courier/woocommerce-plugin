@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
-interface SamedayShippingHdAddressParserInterface
+interface CarrierShippingHdAddressParserInterface
 {
     /**
      * @param int $orderId

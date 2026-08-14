@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Models;
 
-final class SamedayCity implements ModelInterface
+final class CarrierCity implements ModelInterface
 {
     public int $id;
     public ?int $cityId;

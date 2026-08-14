@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout;
 
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractNoPrivController;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 
@@ -29,7 +29,7 @@ final class StoreOpenPackageInSessionController extends AbstractNoPrivController
         }
 
         (new WooSessionHandler())->set(
-            SamedaySessionKeys::OPEN_PACKAGE,
+            CarrierSessionKeys::OPEN_PACKAGE,
             $openPackage
         );
     }

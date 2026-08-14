@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 
 final class SamedayAwbMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayAwb
+     * @return CarrierAwb
      */
-    public function map(array $row): SamedayAwb
+    public function map(array $row): CarrierAwb
     {
-        $awb = new SamedayAwb();
+        $awb = new CarrierAwb();
 
         $awb->setId((int) $row["id"]);
         $awb->setOrderId((int) $row["order_id"]);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
 
 final class WooOrderAwbProvider implements OrderAwbProviderInterface
@@ -31,9 +31,9 @@ final class WooOrderAwbProvider implements OrderAwbProviderInterface
      *
      * @param int $orderId
      *
-     * @return SamedayAwb|null
+     * @return CarrierAwb|null
      */
-    public function get(int $orderId): ?SamedayAwb
+    public function get(int $orderId): ?CarrierAwb
     {
         $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
 

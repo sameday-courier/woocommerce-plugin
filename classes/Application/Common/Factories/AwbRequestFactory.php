@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\Common\Factories;
 use Sameday\Objects\ParcelDimensionsObject;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
@@ -17,6 +17,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddr
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostAwbGenerationServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
@@ -50,7 +51,7 @@ final class AwbRequestFactory
         $lockerDtoFactory = new LockerDtoFactory(new SamedayLockerRepository($dbHandler));
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
         $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
-        $samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
+        $carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
 
         if (null === $parcelsDimensions) {
             $parcelsDimensions = $this->parcelDimensionsFactory->fromList(
@@ -61,16 +62,18 @@ final class AwbRequestFactory
         return new GenerateAwbRequest(
             $generateAwbItem,
             new CourierServiceProviderService(),
-            $dbHandler,
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
-            $samedayAwbRepository,
-            new WooOrderShippingAddressUpdater(
-                new WooOrderAddressRepository($dbHandler),
-                new WooOrderShippingAddressArchive(),
-                $lockerDtoFactory,
-                $hdAddressParser,
-                $stateCodeResolver,
+            new PostAwbGenerationServiceProvider(
+                $dbHandler,
+                new WooOrderShippingAddressUpdater(
+                    new WooOrderAddressRepository($dbHandler),
+                    new WooOrderShippingAddressArchive(),
+                    $lockerDtoFactory,
+                    $hdAddressParser,
+                    $stateCodeResolver,
+                ),
+                $samedayAwbRepository
             ),
             $hdAddressParser,
             $stateCodeResolver,
@@ -79,7 +82,7 @@ final class AwbRequestFactory
             new ShippingDtoFactory(),
             new BillingDtoFactory(),
             new GenerateAwbValidator(),
-            $samedayServiceRules,
+            $carrierServiceRules,
             new WooOrderAwbProvider($samedayAwbRepository),
             new SamedayCityRepository($dbHandler),
         );

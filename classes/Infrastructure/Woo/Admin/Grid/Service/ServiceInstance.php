@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
@@ -126,9 +126,9 @@ class ServiceInstance
 
         $greyedOut = "";
         $serviceName = $service->getSamedayName() ?? '';
-        if ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+        if ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $greyedOut = "disabled";
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
+            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
         }
 
 	    $statuses = '';

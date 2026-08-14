@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
 final class RefreshLockerRequest
@@ -18,24 +18,24 @@ final class RefreshLockerRequest
     private CourierServiceProviderInterface $courier;
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param SamedayLockerRepository $samedayLockerRepository
      * @param CourierServiceProviderInterface $courier
-     * @param SamedaySettingsProviderInterface $samedaySettingsProvider
+     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
      */
     public function __construct(
         SamedayLockerRepository $samedayLockerRepository,
         CourierServiceProviderInterface $courier,
-        SamedaySettingsProviderInterface $samedaySettingsProvider
+        CarrierSettingsProviderInterface $carrierSettingsProvider
     )
     {
         $this->samedayLockerRepository = $samedayLockerRepository;
         $this->courier = $courier;
-        $this->samedaySettingsProvider = $samedaySettingsProvider;
+        $this->carrierSettingsProvider = $carrierSettingsProvider;
     }
 
     /**
@@ -55,10 +55,10 @@ final class RefreshLockerRequest
     }
 
     /**
-     * @return SamedaySettingsProviderInterface
+     * @return CarrierSettingsProviderInterface
      */
-    public function getSamedaySettingsProvider(): SamedaySettingsProviderInterface
+    public function getCarrierSettingsProvider(): CarrierSettingsProviderInterface
     {
-        return $this->samedaySettingsProvider;
+        return $this->carrierSettingsProvider;
     }
 }

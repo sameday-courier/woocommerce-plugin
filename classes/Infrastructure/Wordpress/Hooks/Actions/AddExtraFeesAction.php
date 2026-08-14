@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -63,8 +63,8 @@ final class AddExtraFeesAction extends AbstractAction
             return false;
         }
 
-        $chosenDeliveryMethod = (new WooSessionHandler())->get(SamedaySessionKeys::CHOSEN_PAYMENT_METHOD);
-        $isCod = SamedayConstants::CASH_ON_DELIVERY;
+        $chosenDeliveryMethod = (new WooSessionHandler())->get(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD);
+        $isCod = CarrierConstants::CASH_ON_DELIVERY;
 
         return $chosenDeliveryMethod === $isCod;
     }

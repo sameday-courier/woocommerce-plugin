@@ -6,12 +6,12 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
-use SamedayCourier\Shipping\Domain\SamedayCurrencyRules;
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
@@ -26,9 +26,9 @@ class AwbForm
     public const MODAL_ID = 'sameday-generate-awb-modal';
 
     /**
-     * @var SamedayServiceRules $samedayServiceRules
+     * @var CarrierServiceRules $carrierServiceRules
      */
-    private SamedayServiceRules $samedayServiceRules;
+    private CarrierServiceRules $carrierServiceRules;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -54,7 +54,7 @@ class AwbForm
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->samedayLockerRepository = $samedayLockerRepository;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
-        $this->samedayServiceRules = new SamedayServiceRules($this->samedayServiceRepository);
+        $this->carrierServiceRules = new CarrierServiceRules($this->samedayServiceRepository);
     }
 
     /**
@@ -65,14 +65,14 @@ class AwbForm
     {
         $postMetaLocker = PostMetaHandler::get(
             $order->get_id(),
-            SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
 
         $lockerDto = (new LockerDtoFactory($this->samedayLockerRepository))->fromInput($postMetaLocker);
 
         $serviceCode = null;
         foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
-            if ($shippingLine->get_method_id() !== SamedayConstants::PLUGIN_NAME) {
+            if ($shippingLine->get_method_id() !== CarrierConstants::PLUGIN_NAME) {
                 continue;
             }
 
@@ -80,9 +80,9 @@ class AwbForm
                 if (
                     null !== $lockerDto
                     && '1' === $lockerDto->getOohType()
-                    && $this->samedayServiceRules->isOohDeliveryOptionByCode($serviceCode)
+                    && $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)
                 ) {
-                    $serviceCode = SamedayConstants::OOH_TYPES['1'] ;
+                    $serviceCode = CarrierConstants::OOH_TYPES['1'] ;
                 }
 
                 break;
@@ -125,7 +125,7 @@ class AwbForm
         $payment_gateway = wc_get_payment_gateway_by_order($order);
         $repayment = (float) $order->get_total();
 
-        if ($payment_gateway->id !== SamedayConstants::CASH_ON_DELIVERY) {
+        if ($payment_gateway->id !== CarrierConstants::CASH_ON_DELIVERY) {
             $repayment = 0;
         }
 
@@ -150,10 +150,10 @@ class AwbForm
         $destCity = $order->get_data()['shipping']['city'] ?? '';
         $destCountry = $order->get_data()['shipping']['country'] ?? '';
 
-        $destCurrency = SamedayConstants::CURRENCY_MAPPER[$destCountry];
+        $destCurrency = CarrierConstants::CURRENCY_MAPPER[$destCountry];
         $currency = $order->get_currency() ?? get_woocommerce_currency();
         $currencyWarningMessage = '';
-        if (SamedayCurrencyRules::hasCurrencyIssue($repayment, $destCurrency, $currency)) {
+        if (CarrierCurrencyRules::hasCurrencyIssue($repayment, $destCurrency, $currency)) {
             $message = sprintf(
                 'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
              Please consider a conversion !!',
@@ -173,23 +173,23 @@ class AwbForm
 
         $samedayServices = $this->samedayServiceRepository->getAvailableServices();
 
-        $allowLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-        $allowFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
+        $allowLastMile = CarrierConstants::TOGGLE_HTML_ELEMENT['hide'];
+        $allowFirstMile = CarrierConstants::TOGGLE_HTML_ELEMENT['hide'];
         $servicesOptions = '';
-        foreach ($samedayServices as $samedayService) {
-            $firstMileId = $this->samedayServiceRules->isEligibleToLockerFirstMile($samedayService)
-                ? $samedayService->getSamedayId()
+        foreach ($samedayServices as $carrierService) {
+            $firstMileId = $this->carrierServiceRules->isEligibleToLockerFirstMile($carrierService)
+                ? $carrierService->getSamedayId()
                 : 0;
 
-            $checked = ($serviceCode === $samedayService->getSamedayCode()) ? 'selected' : '';
-            $optionFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-            if ($firstMileId === $samedayService->getSamedayId()) {
-                $optionFirstMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
+            $checked = ($serviceCode === $carrierService->getSamedayCode()) ? 'selected' : '';
+            $optionFirstMile = CarrierConstants::TOGGLE_HTML_ELEMENT['hide'];
+            if ($firstMileId === $carrierService->getSamedayId()) {
+                $optionFirstMile = CarrierConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 
-            $optionLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['hide'];
-            if ($this->samedayServiceRules->isOohDeliveryOption($samedayService)) {
-                $optionLastMile = SamedayConstants::TOGGLE_HTML_ELEMENT['show'];
+            $optionLastMile = CarrierConstants::TOGGLE_HTML_ELEMENT['hide'];
+            if ($this->carrierServiceRules->isOohDeliveryOption($carrierService)) {
+                $optionLastMile = CarrierConstants::TOGGLE_HTML_ELEMENT['show'];
             }
 
             if ('' !== $checked) {
@@ -201,9 +201,9 @@ class AwbForm
                 "<option data-fistMile='%s' data-lastMile='%s' value='%s' %s> %s </option>",
                 $optionFirstMile,
                 $optionLastMile,
-                $samedayService->getSamedayId(),
+                $carrierService->getSamedayId(),
                 $checked,
-                $samedayService->getSamedayName() ?? '',
+                $carrierService->getSamedayName() ?? '',
             );
             $servicesOptions .= $option;
         }

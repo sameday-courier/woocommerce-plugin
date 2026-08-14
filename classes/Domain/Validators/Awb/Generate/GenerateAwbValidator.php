@@ -9,7 +9,7 @@ final class GenerateAwbValidator
     public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse
     {
         $billing = $request->getBilling();
-        $service = $request->getSamedayService();
+        $service = $request->getCarrierService();
         $pickupPoint = $request->getPickupPoint();
 
         $response = new GenerateAwbValidatorResponse();

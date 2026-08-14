@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use Sameday\Objects\Service\OptionalTaxObject;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -51,7 +51,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
 
         $taxOpenPackage = null;
         foreach ($optionalTaxes as $optionalTax) {
-            if ($optionalTax->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE) {
+            if ($optionalTax->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE) {
                 $taxOpenPackage = $optionalTax->getId();
             }
         }
@@ -90,7 +90,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'required' => false,
                 'return' => true,
             ],
-            'yes' === (new WooSessionHandler())->get(SamedaySessionKeys::OPEN_PACKAGE)
+            'yes' === (new WooSessionHandler())->get(CarrierSessionKeys::OPEN_PACKAGE)
         );
     }
 

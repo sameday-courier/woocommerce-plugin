@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services;
 
-use SamedayCourier\Shipping\Domain\SamedayAwbPaymentTypes;
-use SamedayCourier\Shipping\Domain\SamedayPackageTypes;
+use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
+use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 final class AwbFormOptionsProvider
@@ -17,7 +17,7 @@ final class AwbFormOptionsProvider
     {
         $options = [];
 
-        foreach (SamedayPackageTypes::getLabelKeys() as $value => $labelKey) {
+        foreach (CarrierPackageTypes::getLabelKeys() as $value => $labelKey) {
             $options[] = [
                 'name' => TranslatorHandler::translate($labelKey),
                 'value' => $value,
@@ -34,7 +34,7 @@ final class AwbFormOptionsProvider
     {
         $options = [];
 
-        foreach (SamedayAwbPaymentTypes::getLabelKeys() as $value => $labelKey) {
+        foreach (CarrierAwbPaymentTypes::getLabelKeys() as $value => $labelKey) {
             $options[] = [
                 'name' => TranslatorHandler::translate($labelKey),
                 'value' => $value,

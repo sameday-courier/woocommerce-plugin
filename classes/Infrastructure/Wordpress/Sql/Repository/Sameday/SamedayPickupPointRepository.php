@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use Sameday\Objects\PickupPoint\PickupPointObject;
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -17,20 +17,20 @@ class SamedayPickupPointRepository extends AbstractRepository
     private const TABLE_NAME = 'sameday_pickup_point';
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param DbHandlerInterface|null $dbHandler
-     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     * @param CarrierSettingsProviderInterface|null $carrierSettingsProvider
      */
     public function __construct(
         ?DbHandlerInterface $dbHandler = null,
-        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
     }
 
     public function getTableName(): string
@@ -41,9 +41,9 @@ class SamedayPickupPointRepository extends AbstractRepository
     /**
      * @param int $samedayId
      *
-     * @return SamedayPickupPoint|null
+     * @return CarrierPickupPoint|null
      */
-    public function getPickupPointSameday(int $samedayId): ?SamedayPickupPoint
+    public function getPickupPointSameday(int $samedayId): ?CarrierPickupPoint
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE sameday_id = %d AND is_testing = %s LIMIT 1",
@@ -61,7 +61,7 @@ class SamedayPickupPointRepository extends AbstractRepository
     }
 
     /**
-     * @return SamedayPickupPoint[]
+     * @return CarrierPickupPoint[]
      */
     public function getPickupPoints(): array
     {
@@ -151,6 +151,6 @@ class SamedayPickupPointRepository extends AbstractRepository
      */
     private function isTesting(): bool
     {
-        return $this->samedaySettingsProvider->get()->isTesting();
+        return $this->carrierSettingsProvider->get()->isTesting();
     }
 }

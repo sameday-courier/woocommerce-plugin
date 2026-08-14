@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
+use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 
 final class SamedayPickupPointMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayPickupPoint
+     * @return CarrierPickupPoint
      */
-    public function map(array $row): SamedayPickupPoint
+    public function map(array $row): CarrierPickupPoint
     {
-        $pickupPoint = new SamedayPickupPoint();
+        $pickupPoint = new CarrierPickupPoint();
 
         $pickupPoint->setId((int) $row["id"]);
         $pickupPoint->setSamedayId((int) $row["sameday_id"]);

@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use Exception;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
@@ -48,7 +48,7 @@ final class PostOrderPlacementAction extends AbstractAction
             try {
                 (new WooLockerOrderDataHandler())->add(
                     $orderId,
-                    (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER)
+                    (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER)
                 );
             } catch (Exception $exception) {}
         }
@@ -61,7 +61,7 @@ final class PostOrderPlacementAction extends AbstractAction
      */
     private function isOutOfHomeDelivery(): bool
     {
-        return (new SamedayServiceRules(new SamedayServiceRepository()))
+        return (new CarrierServiceRules(new SamedayServiceRepository()))
             ->isOohDeliveryOptionByCode((new WooShippingMethodProvider())->getChosenServiceCode());
     }
 }

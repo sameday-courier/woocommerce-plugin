@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout;
 
 use JsonException;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractNoPrivController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
@@ -39,11 +39,11 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
                 return;
             }
 
-            $sessionHandler->set(SamedaySessionKeys::LOCKER, $locker);
+            $sessionHandler->set(CarrierSessionKeys::LOCKER, $locker);
 
             return;
         }
 
-        $sessionHandler->set(SamedaySessionKeys::LOCKER, (int) $locker);
+        $sessionHandler->set(CarrierSessionKeys::LOCKER, (int) $locker);
     }
 }

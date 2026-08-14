@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SqlSanitizer;
 
 final class GridQueryBuilder
@@ -48,7 +48,7 @@ final class GridQueryBuilder
             $sql .= sprintf(' ORDER BY %s ', SqlSanitizer::escSql($orderBy));
         }
 
-        if (null !== $order && in_array(strtoupper($order), SamedayConstants::ORDER_BY_TYPES, true)) {
+        if (null !== $order && in_array(strtoupper($order), CarrierConstants::ORDER_BY_TYPES, true)) {
             $sql .= strtoupper($order);
         }
 

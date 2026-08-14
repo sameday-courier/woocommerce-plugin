@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -90,7 +90,7 @@ class Lockers extends WP_List_Table
 	/** Text displayed when no lockers data is available */
 	public function no_items(): void
 	{
-		_e('No lockers available!', SamedayConstants::TEXT_DOMAIN);
+		_e('No lockers available!', CarrierConstants::TEXT_DOMAIN);
 	}
 
 	/**

@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\Common\Services;
 use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
@@ -65,11 +65,11 @@ final class AwbRemover
     /**
      * Removes the local persistence of the AWB and its parcels.
      *
-     * @param SamedayAwb $awb
+     * @param CarrierAwb $awb
      *
      * @return void
      */
-    private function removeLocal(SamedayAwb $awb): void
+    private function removeLocal(CarrierAwb $awb): void
     {
         $this->samedayAwbRepository->deleteAwbAndParcels($awb);
     }

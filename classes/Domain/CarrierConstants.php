@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-final class SamedayConstants
+final class CarrierConstants
 {
     public const PLUGIN_NAME = 'samedaycourier';
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';

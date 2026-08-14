@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 
 final class EditService
@@ -107,9 +107,9 @@ final class EditService
             );
         }
 
-        if ($currentService->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
+        if ($currentService->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
-                SamedayConstants::PUDO_CODE
+                CarrierConstants::PUDO_CODE
             );
 
             if (null !== $pudoService

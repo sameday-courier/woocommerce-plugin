@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshot;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use WC_Order;
 use WC_Order_Item_Shipping;
@@ -40,7 +40,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
             $this->resolveSamedayServiceCode($shippingLines),
             PostMetaHandler::get(
                 $orderId,
-                SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
+                CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
             ),
         );
     }
@@ -55,7 +55,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
                 continue;
             }
 
-            if ($shippingLine->get_method_id() !== SamedayConstants::PLUGIN_NAME) {
+            if ($shippingLine->get_method_id() !== CarrierConstants::PLUGIN_NAME) {
                 continue;
             }
 

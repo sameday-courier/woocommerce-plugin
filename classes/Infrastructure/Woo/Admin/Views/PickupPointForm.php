@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
@@ -16,8 +16,8 @@ class PickupPointForm
     public static function renderModals(): void
     {
         $hostCountry = (new WordpressSamedaySettingsProvider())->get()->getHostCountry();
-        $countryValue = SamedayConstants::DEFAULT_COUNTRIES[$hostCountry]['value'];
-        $countryLabel = SamedayConstants::DEFAULT_COUNTRIES[$hostCountry]['label'];
+        $countryValue = CarrierConstants::DEFAULT_COUNTRIES[$hostCountry]['value'];
+        $countryLabel = CarrierConstants::DEFAULT_COUNTRIES[$hostCountry]['label'];
 
         $addBody = sprintf(
             '<form id="sameday-pickup-point-form" method="POST" action="%1$s">

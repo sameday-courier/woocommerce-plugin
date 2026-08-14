@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use RuntimeException;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
@@ -21,9 +21,9 @@ class SamedayAwbRepository extends AbstractRepository
     /**
      * @param int $orderId
      *
-     * @return SamedayAwb|null
+     * @return CarrierAwb|null
      */
-    public function getAwbForOrderId(int $orderId): ?SamedayAwb
+    public function getAwbForOrderId(int $orderId): ?CarrierAwb
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE order_id = %d LIMIT 1",
@@ -54,11 +54,11 @@ class SamedayAwbRepository extends AbstractRepository
     }
 
     /**
-     * @param SamedayAwb $awb
+     * @param CarrierAwb $awb
      *
      * @return void
      */
-    public function deleteAwbAndParcels(SamedayAwb $awb): void
+    public function deleteAwbAndParcels(CarrierAwb $awb): void
     {
         $id = $awb->getId();
         $orderId = $awb->getOrderId();

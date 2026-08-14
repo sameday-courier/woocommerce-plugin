@@ -7,9 +7,9 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\GetLockersRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
+use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
 final class RefreshLocker
@@ -22,9 +22,9 @@ final class RefreshLocker
     public CourierServiceProviderInterface $courier;
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param RefreshLockerRequest $refreshLockerRequest
@@ -33,7 +33,7 @@ final class RefreshLocker
     {
         $this->samedayLockerRepository = $refreshLockerRequest->getSamedayLockerRepository();
         $this->courier = $refreshLockerRequest->getCourier();
-        $this->samedaySettingsProvider = $refreshLockerRequest->getSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $refreshLockerRequest->getCarrierSettingsProvider();
     }
 
     /**
@@ -71,7 +71,7 @@ final class RefreshLocker
         } while ($page <= $lockers->getPages());
 
         $localLockers = array_map(
-            static function (SamedayLocker $locker) {
+            static function (CarrierLocker $locker) {
                 return [
                     'id' => $locker->getId(),
                     'locker_id' => (int) $locker->getLockerId(),
@@ -99,6 +99,6 @@ final class RefreshLocker
      */
     private function updateLastSyncTimestamp(): void
     {
-        $this->samedaySettingsProvider->setSamedaySyncLockersTs(time());
+        $this->carrierSettingsProvider->setSamedaySyncLockersTs(time());
     }
 }

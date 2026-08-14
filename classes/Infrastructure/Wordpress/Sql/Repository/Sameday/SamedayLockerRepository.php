@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use Sameday\Objects\Locker\LockerObject;
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -17,20 +17,20 @@ class SamedayLockerRepository extends AbstractRepository
     private const TABLE_NAME = 'sameday_locker';
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param DbHandlerInterface|null $dbHandler
-     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     * @param CarrierSettingsProviderInterface|null $carrierSettingsProvider
      */
     public function __construct(
         ?DbHandlerInterface $dbHandler = null,
-        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
     }
 
     public function getTableName(): string
@@ -39,7 +39,7 @@ class SamedayLockerRepository extends AbstractRepository
     }
 
     /**
-     * @return SamedayLocker[]
+     * @return CarrierLocker[]
      */
     public function getCitiesWithLockers(): array
     {
@@ -54,7 +54,7 @@ class SamedayLockerRepository extends AbstractRepository
     }
 
     /**
-     * @return SamedayLocker[]
+     * @return CarrierLocker[]
      */
     public function getLockers(): array
     {
@@ -71,7 +71,7 @@ class SamedayLockerRepository extends AbstractRepository
     /**
      * @param string $city
      *
-     * @return SamedayLocker[]
+     * @return CarrierLocker[]
      */
     public function getLockersByCity(string $city): array
     {
@@ -89,9 +89,9 @@ class SamedayLockerRepository extends AbstractRepository
     /**
      * @param int $samedayId
      *
-     * @return SamedayLocker|null
+     * @return CarrierLocker|null
      */
-    public function getLockerSameday(int $samedayId): ?SamedayLocker
+    public function getLockerSameday(int $samedayId): ?CarrierLocker
     {
         $row = $this->dbHandler->getRow(
             "SELECT * FROM {$this->getTableName()} WHERE locker_id = %d AND is_testing = %s LIMIT 1",
@@ -169,6 +169,6 @@ class SamedayLockerRepository extends AbstractRepository
      */
     private function isTesting(): bool
     {
-        return $this->samedaySettingsProvider->get()->isTesting();
+        return $this->carrierSettingsProvider->get()->isTesting();
     }
 }

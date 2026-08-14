@@ -26,9 +26,9 @@ class BgnCurrencyConverter
     public function convert(): string
     {
         switch ($this->currency) {
-            case SamedayConstants::EURO_CURRENCY:
+            case CarrierConstants::EURO_CURRENCY:
                 return $this->convertBGNtoEUR($this->amount);
-            case SamedayConstants::CURRENCY_MAPPER[SamedayConstants::API_HOST_LOCALE_BG]:
+            case CarrierConstants::CURRENCY_MAPPER[CarrierConstants::API_HOST_LOCALE_BG]:
                 return $this->convertEURtoBGN($this->amount);
             default:
                 throw new RuntimeException('Invalid currency');

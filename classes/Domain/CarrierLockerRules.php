@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-final class SamedayLockerRules
+final class CarrierLockerRules
 {
     private const OOH_TYPE_PUDO_THRESHOLD = 500000;
 

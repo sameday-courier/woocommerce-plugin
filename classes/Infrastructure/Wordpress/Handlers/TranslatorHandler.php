@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 
 final class TranslatorHandler
 {
@@ -15,6 +15,6 @@ final class TranslatorHandler
      */
     public static function translate(string $text): string
     {
-        return esc_html(__($text, SamedayConstants::TEXT_DOMAIN));
+        return esc_html(__($text, CarrierConstants::TEXT_DOMAIN));
     }
 }

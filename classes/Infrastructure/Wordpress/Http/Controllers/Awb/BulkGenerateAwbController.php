@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\Common\Factories\AwbRequestFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\GenerateAwbItemFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooGenerateAwbOrderProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator;
@@ -46,7 +46,7 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
             new WooOpenPackageOrderDataHandler(),
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
-            new SamedayServiceRules($samedayServiceRepository),
+            new CarrierServiceRules($samedayServiceRepository),
         );
 
         try {

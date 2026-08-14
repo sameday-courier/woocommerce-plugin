@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Security;
 
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 
 final class RequestSanitizer
 {
@@ -26,7 +26,7 @@ final class RequestSanitizer
     {
         $order = strtoupper(sanitize_text_field(wp_unslash($_REQUEST['order'] ?? '')));
 
-        if ('' === $order || !in_array($order, SamedayConstants::ORDER_BY_TYPES, true)) {
+        if ('' === $order || !in_array($order, CarrierConstants::ORDER_BY_TYPES, true)) {
             return null;
         }
 

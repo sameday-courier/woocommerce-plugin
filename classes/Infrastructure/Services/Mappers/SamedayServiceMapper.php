@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 
 final class SamedayServiceMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayService
+     * @return CarrierService
      */
-    public function map(array $row): SamedayService
+    public function map(array $row): CarrierService
     {
-        $service = new SamedayService();
+        $service = new CarrierService();
 
         $service->setId((int) $row["id"]);
         $service->setSamedayId((int) $row["sameday_id"]);

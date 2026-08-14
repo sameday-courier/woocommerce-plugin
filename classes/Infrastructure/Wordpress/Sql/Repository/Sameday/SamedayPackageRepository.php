@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameda
 
 use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject;
-use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
+use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 class SamedayPackageRepository extends AbstractRepository
@@ -51,7 +51,7 @@ class SamedayPackageRepository extends AbstractRepository
     /**
      * @param int $orderId
      *
-     * @return SamedayPackage[]
+     * @return CarrierPackage[]
      */
     public function getPackagesForOrderId(int $orderId): array
     {

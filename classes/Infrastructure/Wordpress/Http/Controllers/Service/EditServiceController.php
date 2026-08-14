@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceItem;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
@@ -38,7 +38,7 @@ final class EditServiceController extends AbstractController
     {
         $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
         if (null === $serviceName) {
-            $serviceName = SamedayConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
+            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
         }
 
         $inputParams['samedaycourier-service-name'] = $serviceName;

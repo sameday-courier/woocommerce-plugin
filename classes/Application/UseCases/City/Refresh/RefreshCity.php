@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\SchemaHandler;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
@@ -72,14 +72,14 @@ final class RefreshCity
         // Remove all previews unnecessary stored data
         $this->samedayCityRepository->truncate();
 
-        foreach ($cities as $samedayCity) {
-            if (array_key_exists($samedayCity->country_code, $this->countriesHandler->getShippingCountries())) {
-                $this->samedayCityRepository->addCity($samedayCity);
+        foreach ($cities as $carrierCity) {
+            if (array_key_exists($carrierCity->country_code, $this->countriesHandler->getShippingCountries())) {
+                $this->samedayCityRepository->addCity($carrierCity);
             }
         }
 
         $this->cacheHandler->refreshCachedData(
-            SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
+            CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
             $this->samedayCityRepository->getCities(),
             2592000
         );

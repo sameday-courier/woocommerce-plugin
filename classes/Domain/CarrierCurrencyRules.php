@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-class SamedayCurrencyRules
+class CarrierCurrencyRules
 {
     /**
      * @param float $repayment

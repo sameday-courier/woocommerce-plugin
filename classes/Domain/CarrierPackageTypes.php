@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-use Sameday\Objects\Types\AwbPaymentType;
+use Sameday\Objects\Types\PackageType;
 
-final class SamedayAwbPaymentTypes
+final class CarrierPackageTypes
 {
     /**
      * @var array<int, string>
      */
     private const LABEL_KEYS = [
-        AwbPaymentType::CLIENT => 'Client',
+        PackageType::PARCEL => 'Parcel',
+        PackageType::ENVELOPE => 'Envelope',
+        PackageType::LARGE => 'Large package',
     ];
 
     /**

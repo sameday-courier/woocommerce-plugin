@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Domain;
 
 use Sameday\Objects\Types\AwbPdfType;
 
-final class SamedayAwbPdfTypes
+final class CarrierAwbPdfTypes
 {
     /**
      * @var array<string, string>

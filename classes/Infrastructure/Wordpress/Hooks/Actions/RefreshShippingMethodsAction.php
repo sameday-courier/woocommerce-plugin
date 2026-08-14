@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use WC_Cache_Helper;
@@ -38,7 +38,7 @@ final class RefreshShippingMethodsAction extends AbstractAction
                 md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'))
             );
             $package['package_hash'] = $packageHash;
-            $sessionHandler->set(SamedaySessionKeys::shippingForPackage((int) $package_key), $package);
+            $sessionHandler->set(CarrierSessionKeys::shippingForPackage((int) $package_key), $package);
         }
 
         $wooHandler->getWC()->cart->calculate_shipping();

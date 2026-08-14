@@ -11,8 +11,8 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderWeightCalculatorInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
@@ -28,7 +28,7 @@ final class GenerateAwbItemFactory
 
     private SamedayServiceRepository $samedayServiceRepository;
 
-    private SamedayServiceRules $samedayServiceRules;
+    private CarrierServiceRules $carrierServiceRules;
 
     private LockerDtoFactory $lockerDtoFactory;
 
@@ -38,14 +38,14 @@ final class GenerateAwbItemFactory
         OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler,
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayServiceRepository $samedayServiceRepository,
-        SamedayServiceRules $samedayServiceRules,
+        CarrierServiceRules $carrierServiceRules,
         ?LockerDtoFactory $lockerDtoFactory = null
     ) {
         $this->orderProvider = $orderProvider;
         $this->orderWeightCalculator = $orderWeightCalculator;
         $this->openPackageOrderDataHandler = $openPackageOrderDataHandler;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
-        $this->samedayServiceRules = $samedayServiceRules;
+        $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayServiceRepository = $samedayServiceRepository;
         $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
     }
@@ -86,7 +86,7 @@ final class GenerateAwbItemFactory
         }
 
         $repayment = $order->getOrderTotal();
-        if ($order->getPaymentMethodId() !== SamedayConstants::CASH_ON_DELIVERY) {
+        if ($order->getPaymentMethodId() !== CarrierConstants::CASH_ON_DELIVERY) {
             $repayment = 0;
         }
 
@@ -127,9 +127,9 @@ final class GenerateAwbItemFactory
         if (
             null !== $lockerDto
             && '1' === $lockerDto->getOohType()
-            && $this->samedayServiceRules->isOohDeliveryOptionByCode($serviceCode)
+            && $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)
         ) {
-            $serviceCode = SamedayConstants::OOH_TYPES[1];
+            $serviceCode = CarrierConstants::OOH_TYPES[1];
         }
 
         $service = $this->samedayServiceRepository->getServiceSamedayByCode($serviceCode);

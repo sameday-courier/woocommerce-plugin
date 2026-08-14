@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
+use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 class AwbHistoryTable
@@ -24,8 +24,8 @@ class AwbHistoryTable
         }
 
         foreach ($packages as $package) {
-            $summarySerialized = $package instanceof SamedayPackage ? ($package->getSummary() ?? '') : ($package['summary'] ?? '');
-            $historySerialized = $package instanceof SamedayPackage ? ($package->getHistory() ?? '') : ($package['history'] ?? '');
+            $summarySerialized = $package instanceof CarrierPackage ? ($package->getSummary() ?? '') : ($package['summary'] ?? '');
+            $historySerialized = $package instanceof CarrierPackage ? ($package->getHistory() ?? '') : ($package['history'] ?? '');
             $summary = unserialize($summarySerialized, ['']);
             $packageHistory = unserialize($historySerialized, ['']);
             $historyRows = '';

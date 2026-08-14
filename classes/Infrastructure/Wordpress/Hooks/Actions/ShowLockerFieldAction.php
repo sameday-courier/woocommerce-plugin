@@ -7,8 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 use Exception;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -34,7 +34,7 @@ final class ShowLockerFieldAction extends AbstractAction
     public function handle(...$args): void
     {
         $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
-        if (!(new SamedayServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode)
+        if (!(new CarrierServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode)
             || !is_checkout()
         ) {
             return;
@@ -48,7 +48,7 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function resolveShipTo(): ?string
     {
-        $lockerSession = (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER);
+        $lockerSession = (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER);
         if (null === $lockerSession) {
             return null;
         }
@@ -167,7 +167,7 @@ final class ShowLockerFieldAction extends AbstractAction
             foreach ($cityLockers as $locker) {
                 $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
                 $isSelected = '';
-                if ((int) (new WooSessionHandler())->get(SamedaySessionKeys::LOCKER) === (int) $locker->getLockerId()) {
+                if ((int) (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER) === (int) $locker->getLockerId()) {
                     $isSelected = "selected='selected'";
                 }
                 $options .= sprintf(

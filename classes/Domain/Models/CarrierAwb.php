@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Models;
 
-final class SamedayAwb implements ModelInterface
+final class CarrierAwb implements ModelInterface
 {
     public int $id;
     public int $orderId;

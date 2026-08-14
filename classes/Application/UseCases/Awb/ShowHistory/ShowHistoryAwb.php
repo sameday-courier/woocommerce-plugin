@@ -8,7 +8,7 @@ use RuntimeException;
 use Sameday\Objects\PostAwb\ParcelObject;
 use SamedayCourier\Shipping\Domain\DTOs\GetParcelStatusHistoryRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\SamedayAwb;
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
@@ -95,7 +95,7 @@ final class ShowHistoryAwb
     /**
      * @return string[]
      */
-    private function resolveParcelAwbNumbers(SamedayAwb $awb): array
+    private function resolveParcelAwbNumbers(CarrierAwb $awb): array
     {
         $parcelAwbNumbers = $this->extractParcelAwbNumbers($awb->getParcels());
         if ([] !== $parcelAwbNumbers) {

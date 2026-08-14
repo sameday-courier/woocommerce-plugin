@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\SamedayApi;
 
 use Sameday\Exceptions\SamedaySDKException;
 use Sameday\SamedayClient;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 
@@ -64,17 +64,17 @@ final class SdkInitiator
     public static function getEnvModes(): array
     {
         return [
-            SamedayConstants::API_HOST_LOCALE_RO => [
-                SamedayConstants::API_PROD => 'https://api.sameday.ro',
-                SamedayConstants::API_DEMO => 'https://sameday-api.demo.zitec.com',
+            CarrierConstants::API_HOST_LOCALE_RO => [
+                CarrierConstants::API_PROD => 'https://api.sameday.ro',
+                CarrierConstants::API_DEMO => 'https://sameday-api.demo.zitec.com',
             ],
-            SamedayConstants::API_HOST_LOCALE_HU => [
-                SamedayConstants::API_PROD => 'https://api.sameday.hu',
-                SamedayConstants::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
+            CarrierConstants::API_HOST_LOCALE_HU => [
+                CarrierConstants::API_PROD => 'https://api.sameday.hu',
+                CarrierConstants::API_DEMO => 'https://sameday-api-hu.demo.zitec.com',
             ],
-            SamedayConstants::API_HOST_LOCALE_BG => [
-                SamedayConstants::API_PROD => 'https://api.sameday.bg',
-                SamedayConstants::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
+            CarrierConstants::API_HOST_LOCALE_BG => [
+                CarrierConstants::API_PROD => 'https://api.sameday.bg',
+                CarrierConstants::API_DEMO => 'https://sameday-api-bg.demo.zitec.com',
             ],
         ];
     }

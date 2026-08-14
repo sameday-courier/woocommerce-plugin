@@ -6,8 +6,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 
 final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandlerInterface
@@ -32,18 +32,18 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
      */
     public function saveFromSession(int $orderId): void
     {
-        if ('yes' !== $this->sessionHandler->get(SamedaySessionKeys::OPEN_PACKAGE)) {
+        if ('yes' !== $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE)) {
             return;
         }
 
         PostMetaHandler::update(
             $orderId,
-            SamedayConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
             1,
             true
         );
 
-        $this->sessionHandler->set(SamedaySessionKeys::OPEN_PACKAGE, 'no');
+        $this->sessionHandler->set(CarrierSessionKeys::OPEN_PACKAGE, 'no');
     }
 
     /**
@@ -55,7 +55,7 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
     {
         return '' !== PostMetaHandler::get(
             $orderId,
-            SamedayConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
             true
         );
     }

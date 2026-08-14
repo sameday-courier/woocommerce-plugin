@@ -7,8 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 use InvalidArgumentException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
-use SamedayCourier\Shipping\Domain\Models\SamedayCity;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\Models\CarrierCity;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
@@ -394,7 +394,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         return isset($_GET['page'], $_GET['tab'], $_GET['section'])
             && 'wc-settings' === $_GET['page']
             && 'shipping' === $_GET['tab']
-            && SamedayConstants::PLUGIN_NAME === $_GET['section'];
+            && CarrierConstants::PLUGIN_NAME === $_GET['section'];
     }
 
     /**
@@ -464,7 +464,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     {
         $section = $_GET['section'] ?? null;
 
-        if (SamedayConstants::PLUGIN_NAME === $section) {
+        if (CarrierConstants::PLUGIN_NAME === $section) {
             return true;
         }
 
@@ -632,7 +632,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         return array_map(static function ($cityModels) {
             return array_map(
                 static function ($city) {
-                    if ($city instanceof SamedayCity) {
+                    if ($city instanceof CarrierCity) {
                         return $city->toArray();
                     }
 

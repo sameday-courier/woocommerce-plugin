@@ -1,0 +1,143 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
+
+use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
+use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use Throwable;
+
+final class PostAwbGenerationServiceProvider implements PostAwbGenerationServiceProviderInterface
+{
+    private DbHandler $dbHandler;
+
+    private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
+
+    private SamedayAwbRepository $samedayAwbRepository;
+
+    public function __construct(
+        DbHandler $dbHandler,
+        OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
+        SamedayAwbRepository $samedayAwbRepository
+    ) {
+        $this->dbHandler = $dbHandler;
+        $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
+        $this->samedayAwbRepository = $samedayAwbRepository;
+    }
+
+    /**
+     * @param PostAwbGenerationRequestDto $postAwbGenerationRequestDto
+     * @param CarrierServiceRules $rules
+     * @param CourierServiceProviderInterface $courier
+     *
+     * @return PostAwbGenerationResponseDto
+     */
+    public function apply(
+        PostAwbGenerationRequestDto $postAwbGenerationRequestDto,
+        CarrierServiceRules $rules,
+        CourierServiceProviderInterface $courier
+    ): PostAwbGenerationResponseDto {
+        $awbNumber = $postAwbGenerationRequestDto->getAwbNumber();
+
+        try {
+            $this->samedayAwbRepository->saveAwb([
+                'order_id' => $postAwbGenerationRequestDto->getOrderId(),
+                'awb_number' => $awbNumber,
+                'parcels' => serialize($postAwbGenerationRequestDto->getParcels()),
+                'awb_cost' => $postAwbGenerationRequestDto->getAwbCost(),
+            ]);
+        } catch (Throwable $exception) {
+            return $this->rollbackRemoteAwb($courier, $awbNumber);
+        }
+
+        $this->applyOrderChanges($postAwbGenerationRequestDto, $rules);
+
+        return new PostAwbGenerationResponseDto(
+            true,
+            'Awb generated successfully.'
+        );
+    }
+
+    /**
+     * @param CourierServiceProviderInterface $courier
+     * @param string $awbNumber
+     *
+     * @return PostAwbGenerationResponseDto
+     */
+    private function rollbackRemoteAwb(
+        CourierServiceProviderInterface $courier,
+        string $awbNumber
+    ): PostAwbGenerationResponseDto {
+        try {
+            $courier->removeAwb(new RemoveAwbRequestDto($awbNumber));
+
+            $message = 'The AWB was generated but could not be saved. So it has been cancelled, please try again.';
+        } catch (Throwable $rollbackException) {
+            $message = sprintf(
+                'The AWB %s was generated but could not be saved, and the automatic cancellation failed. 
+                Please remove it manually.',
+                $awbNumber
+            );
+        }
+
+        return new PostAwbGenerationResponseDto(false, $message);
+    }
+
+    /**
+     * @param PostAwbGenerationRequestDto $postAwbGenerationRequestDto
+     * @param CarrierServiceRules $rules
+     *
+     * @return void
+     */
+    private function applyOrderChanges(
+        PostAwbGenerationRequestDto $postAwbGenerationRequestDto,
+        CarrierServiceRules $rules
+    ): void {
+        $orderId = $postAwbGenerationRequestDto->getOrderId();
+        $service = $postAwbGenerationRequestDto->getService();
+        $shippingLines = $postAwbGenerationRequestDto->getShippingLines();
+        $samedayOrderItemId = array_key_first($shippingLines);
+        $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
+
+        try {
+            if ($rules->isOohDeliveryOption($service)) {
+                $this->orderShippingAddressUpdater->activateOutOfHome($orderId);
+            } else {
+                $this->orderShippingAddressUpdater->activateHomeDelivery($orderId);
+            }
+        } catch (Throwable $exception) {
+        }
+
+        if (null !== $shippingLine) {
+            try {
+                $shippingLine->update_meta_data('service_id', $service->getSamedayId());
+                $shippingLine->update_meta_data('service_code', $service->getSamedayCode());
+                $shippingLine->save_meta_data();
+
+                $shippingLine->set_method_id(CarrierConstants::PLUGIN_NAME);
+                $shippingLine->save();
+            } catch (Throwable $exception) {
+            }
+        }
+
+        if (null !== $samedayOrderItemId) {
+            try {
+                $this->dbHandler->updateRow(
+                    $this->dbHandler->buildTableName('woocommerce_order_items'),
+                    ['order_item_name' => $service->getName() ?? $service->getSamedayName() ?? ''],
+                    ['order_item_id' => $samedayOrderItemId]
+                );
+            } catch (Throwable $exception) {
+            }
+        }
+    }
+}

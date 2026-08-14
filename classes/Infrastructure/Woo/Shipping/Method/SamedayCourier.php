@@ -15,16 +15,16 @@ use Sameday\Responses\SamedayPostAwbEstimationResponse;
 use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Domain\SamedayAwbPdfTypes;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceSelector;
+use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
+use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
@@ -32,7 +32,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProv
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedaySessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
@@ -42,7 +42,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressSamedaySettingsProvider;
 use WC_Admin_Settings;
@@ -51,9 +51,9 @@ use WC_Shipping_Method;
 final class SamedayCourier extends WC_Shipping_Method
 {
     /**
-     * @var SamedayServiceSelector
+     * @var CarrierServiceSelector
      */
-    private SamedayServiceSelector $samedayServiceSelector;
+    private CarrierServiceSelector $carrierServiceSelector;
 
     /**
      * @var SamedayServiceRepository $samedayServiceRepository
@@ -66,9 +66,9 @@ final class SamedayCourier extends WC_Shipping_Method
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /**
-     * @var SamedayServiceRules
+     * @var CarrierServiceRules
      */
-    private SamedayServiceRules $samedayServiceRules;
+    private CarrierServiceRules $carrierServiceRules;
 
     /**
      * @var StateCodeResolverInterface
@@ -91,9 +91,9 @@ final class SamedayCourier extends WC_Shipping_Method
     private WeightConverterInterface $weightConverter;
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * SamedayCourier_Shipping_Method constructor.
@@ -104,7 +104,7 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         parent::__construct($instance_id);
 
-        $this->id = SamedayConstants::PLUGIN_NAME;
+        $this->id = CarrierConstants::PLUGIN_NAME;
         $this->method_title = TranslatorHandler::translate('SamedayCourier');
         $this->method_description = TranslatorHandler::translate('Custom Shipping Method for SamedayCourier');
 
@@ -114,15 +114,15 @@ final class SamedayCourier extends WC_Shipping_Method
             'instance-settings'
         );
 
-        $this->samedaySettingsProvider = new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = new WordpressSamedaySettingsProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
-        $this->samedayServiceSelector = new SamedayServiceSelector(
+        $this->carrierServiceSelector = new CarrierServiceSelector(
             $samedayServiceRepository,
-            $this->samedaySettingsProvider
+            $this->carrierSettingsProvider
         );
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
         $this->samedayServiceRepository = new SamedayServiceRepository();
-        $this->samedayServiceRules = new SamedayServiceRules($samedayServiceRepository);
+        $this->carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
         $this->wooCommerceHandler = new WooHandler();
         $this->sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
         $this->weightConverter = new WooWeightHandler();
@@ -139,13 +139,13 @@ final class SamedayCourier extends WC_Shipping_Method
      */
     public function calculate_shipping($package = array()): void
     {
-        $settings = $this->samedaySettingsProvider->get();
+        $settings = $this->carrierSettingsProvider->get();
         if (!$settings->isEnabled()) {
             return;
         }
 
-        $eligibleServices = $this->samedayServiceSelector->getEligibleServices(
-            $package['destination']['country'] ?? SamedayConstants::API_HOST_LOCALE_RO
+        $eligibleServices = $this->carrierServiceSelector->getEligibleServices(
+            $package['destination']['country'] ?? CarrierConstants::API_HOST_LOCALE_RO
         );
 
         if (empty($eligibleServices)) {
@@ -167,11 +167,11 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         foreach ($eligibleServices as $service) {
-            if (false === $this->samedayServiceRules->isEligibleTo6H($service, $stateName)) {
+            if (false === $this->carrierServiceRules->isEligibleTo6H($service, $stateName)) {
                 continue;
             }
 
-            if ($this->samedayServiceRules->isOohDeliveryOption($service)) {
+            if ($this->carrierServiceRules->isOohDeliveryOption($service)) {
                 $lockerMaxItems = $settings->getLockerMaxItems();
 
                 if (count($this->wooCommerceHandler->getWC()->cart->get_cart()) > $lockerMaxItems) {
@@ -202,7 +202,7 @@ final class SamedayCourier extends WC_Shipping_Method
                         // Business logic for Bulgaria Currency Rules
                         $storeCurrency = get_woocommerce_currency();
                         if (($storeCurrency !== $estimatedCurrency)
-                            && ($settings->getHostCountry() === SamedayConstants::API_HOST_LOCALE_BG)
+                            && ($settings->getHostCountry() === CarrierConstants::API_HOST_LOCALE_BG)
                         ) {
                             try {
                                 $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
@@ -240,11 +240,11 @@ final class SamedayCourier extends WC_Shipping_Method
             }
 
             if ((false === $useLockerMap)
-                && ($service->getSamedayCode() === SamedayConstants::LOCKER_NEXT_DAY_CODE)
+                && ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE)
             ) {
                 $this->syncLockers();
                 $rate['lockers'] = array_map(
-                    static function (SamedayLocker $locker): array {
+                    static function (CarrierLocker $locker): array {
                         return [
                             'id' => $locker->getId(),
                             'locker_id' => $locker->getLockerId(),
@@ -275,14 +275,14 @@ final class SamedayCourier extends WC_Shipping_Method
     {
         $time = time();
 
-        $ltSync = $this->samedaySettingsProvider->get()->getSamedaySyncLockersTs();
+        $ltSync = $this->carrierSettingsProvider->get()->getSamedaySyncLockersTs();
 
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
                 new RefreshLockerRequest(
                     new SamedayLockerRepository(),
                     new CourierServiceProviderService(),
-                    $this->samedaySettingsProvider
+                    $this->carrierSettingsProvider
                 ))
             )->execute();
         }
@@ -305,13 +305,13 @@ final class SamedayCourier extends WC_Shipping_Method
             $address['state']
         );
         $city = RomanianDiacriticsNormalizer::normalize($address['city']);
-        $currency = SamedayConstants::CURRENCY_MAPPER[$address['country']];
+        $currency = CarrierConstants::CURRENCY_MAPPER[$address['country']];
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int)$serviceId);
         $serviceTaxIds = array();
-        if ('yes' === $this->sessionHandler->get(SamedaySessionKeys::OPEN_PACKAGE)) {
+        if ('yes' === $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE)) {
             foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === SamedayConstants::OPEN_PACKAGE_OPTION_CODE
+                if ($optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === PackageType::PARCEL
                 ) {
                     $serviceTaxIds[] = $optionalService->getId();
@@ -322,8 +322,8 @@ final class SamedayCourier extends WC_Shipping_Method
 
         // Check if the client has to pay anything as repayment value
         $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
-        $paymentMethod = $this->sessionHandler->get(SamedaySessionKeys::PAYMENT_METHOD);
-        if (isset($paymentMethod) && ($paymentMethod !== SamedayConstants::CASH_ON_DELIVERY)) {
+        $paymentMethod = $this->sessionHandler->get(CarrierSessionKeys::PAYMENT_METHOD);
+        if (isset($paymentMethod) && ($paymentMethod !== CarrierConstants::CASH_ON_DELIVERY)) {
             $repaymentAmount = 0;
         }
 
@@ -373,7 +373,7 @@ final class SamedayCourier extends WC_Shipping_Method
             static function ($labelKey) {
                 return TranslatorHandler::translate($labelKey);
             },
-            SamedayAwbPdfTypes::getLabelKeys()
+            CarrierAwbPdfTypes::getLabelKeys()
         );
 
         $this->form_fields = array(
@@ -484,7 +484,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 'title' => TranslatorHandler::translate('Locker max. items'),
                 'type' => 'number',
                 'description' => TranslatorHandler::translate('The maximum amount of items accepted inside the locker'),
-                'default' => SamedayConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS
+                'default' => CarrierConstants::DEFAULT_VALUE_LOCKER_MAX_ITEMS
             ),
 
             'lockers_map' => array(
@@ -504,8 +504,8 @@ final class SamedayCourier extends WC_Shipping_Method
                 'default' => 2,
                 'disabled' => true,
                 'options' => array(
-                    SamedayConstants::API_PROD => TranslatorHandler::translate('Prod'),
-                    SamedayConstants::API_DEMO => TranslatorHandler::translate('Demo'),
+                    CarrierConstants::API_PROD => TranslatorHandler::translate('Prod'),
+                    CarrierConstants::API_DEMO => TranslatorHandler::translate('Demo'),
                     2 => '',
                 ),
             ),
@@ -517,9 +517,9 @@ final class SamedayCourier extends WC_Shipping_Method
                 'default' => 'none',
                 'disabled' => true,
                 'options' => array(
-                    SamedayConstants::API_HOST_LOCALE_RO => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_RO),
-                    SamedayConstants::API_HOST_LOCALE_HU => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_HU),
-                    SamedayConstants::API_HOST_LOCALE_BG => TranslatorHandler::translate(SamedayConstants::API_HOST_LOCALE_BG),
+                    CarrierConstants::API_HOST_LOCALE_RO => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_RO),
+                    CarrierConstants::API_HOST_LOCALE_HU => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_HU),
+                    CarrierConstants::API_HOST_LOCALE_BG => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_BG),
                     'none' => '',
                 ),
             ),
@@ -537,7 +537,7 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         // Show on checkout:
-        $settings = $this->samedaySettingsProvider->get();
+        $settings = $this->carrierSettingsProvider->get();
         $this->enabled = $settings->isEnabled() ? 'yes' : 'no';
         $this->title = $settings->getTitle();
 
@@ -569,7 +569,7 @@ final class SamedayCourier extends WC_Shipping_Method
                         $apiUrl
                     );
                     if ($sameday->login()) {
-                        $isTesting = (int)(SamedayConstants::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
+                        $isTesting = (int)(CarrierConstants::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
                         $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
                         $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
                         $isLogged = true;

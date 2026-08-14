@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\GetPickupPointsRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
+use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 
@@ -64,7 +64,7 @@ final class RefreshPickupPoint
         } while ($page <= $pickUpPoints->getPages());
 
         $localPickupPoints = array_map(
-            static function (SamedayPickupPoint $pickupPoint) {
+            static function (CarrierPickupPoint $pickupPoint) {
                 return [
                     'id' => $pickupPoint->getId(),
                     'sameday_id' => $pickupPoint->getSamedayId(),

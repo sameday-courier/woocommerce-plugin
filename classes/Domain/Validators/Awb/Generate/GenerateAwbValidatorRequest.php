@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
-use SamedayCourier\Shipping\Domain\Models\SamedayPickupPoint;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 
 class GenerateAwbValidatorRequest
 {
     private int $orderId;
 
-    private ?SamedayService $samedayService;
+    private ?CarrierService $carrierService;
 
-    private ?SamedayPickupPoint $pickupPoint;
+    private ?CarrierPickupPoint $pickupPoint;
 
     private BillingDto $billing;
 
@@ -29,15 +29,15 @@ class GenerateAwbValidatorRequest
 
     public function __construct(
         int $orderId,
-        ?SamedayService $samedayService,
-        ?SamedayPickupPoint $pickupPoint,
+        ?CarrierService $carrierService,
+        ?CarrierPickupPoint $pickupPoint,
         BillingDto $billing,
         array $shippingLines,
         bool $hasExistingAwb,
         bool $hasParcels
     ) {
         $this->orderId = $orderId;
-        $this->samedayService = $samedayService;
+        $this->carrierService = $carrierService;
         $this->pickupPoint = $pickupPoint;
         $this->billing = $billing;
         $this->shippingLines = $shippingLines;
@@ -50,12 +50,12 @@ class GenerateAwbValidatorRequest
         return $this->orderId;
     }
 
-    public function getSamedayService(): ?SamedayService
+    public function getCarrierService(): ?CarrierService
     {
-        return $this->samedayService;
+        return $this->carrierService;
     }
 
-    public function getPickupPoint(): ?SamedayPickupPoint
+    public function getPickupPoint(): ?CarrierPickupPoint
     {
         return $this->pickupPoint;
     }

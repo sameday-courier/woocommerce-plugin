@@ -7,9 +7,9 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\GetServicesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class RefreshService
@@ -64,7 +64,7 @@ final class RefreshService
         } while ($page <= $services->getPages());
 
         $localServices = array_map(
-            static function (SamedayService $service) {
+            static function (CarrierService $service) {
                 return [
                     'id' => $service->getId(),
                     'sameday_id' => $service->getSamedayId(),
@@ -80,11 +80,11 @@ final class RefreshService
         }
 
         $lnService = $this->samedayServiceRepository->getServiceSamedayByCode(
-            SamedayConstants::LOCKER_NEXT_DAY_CODE
+            CarrierConstants::LOCKER_NEXT_DAY_CODE
         );
 
         $pudoService = $this->samedayServiceRepository->getServiceSamedayByCode(
-            SamedayConstants::PUDO_CODE
+            CarrierConstants::PUDO_CODE
         );
 
         if (null !== $lnService && null !== $pudoService

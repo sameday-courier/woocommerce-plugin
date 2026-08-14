@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
 use SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method\SamedayCourier;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 
 final class RegisterShippingMethodFilter extends AbstractFilter
 {
@@ -47,7 +47,7 @@ final class RegisterShippingMethodFilter extends AbstractFilter
             $methods = [];
         }
 
-        $methods[SamedayConstants::PLUGIN_NAME] = SamedayCourier::class;
+        $methods[CarrierConstants::PLUGIN_NAME] = SamedayCourier::class;
 
         return $methods;
     }

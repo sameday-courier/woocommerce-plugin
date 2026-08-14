@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayCity;
+use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 
 final class SamedayCityMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayCity
+     * @return CarrierCity
      */
-    public function map(array $row): SamedayCity
+    public function map(array $row): CarrierCity
     {
-        $city = new SamedayCity();
+        $city = new CarrierCity();
 
         $city->setId(isset($row['id']) ? (int) $row['id'] : 0);
         $city->setCityId(

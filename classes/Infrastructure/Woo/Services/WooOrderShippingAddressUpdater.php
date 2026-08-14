@@ -9,10 +9,10 @@ use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedaySettingsProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
@@ -37,9 +37,9 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     private LockerDtoFactory $lockerDtoFactory;
 
     /**
-     * @var SamedayShippingHdAddressParserInterface $hdAddressParser
+     * @var CarrierShippingHdAddressParserInterface $hdAddressParser
      */
-    private SamedayShippingHdAddressParserInterface $hdAddressParser;
+    private CarrierShippingHdAddressParserInterface $hdAddressParser;
 
     /**
      * @var StateCodeResolverInterface $stateCodeResolver
@@ -47,32 +47,32 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     private StateCodeResolverInterface $stateCodeResolver;
 
     /**
-     * @var SamedaySettingsProviderInterface
+     * @var CarrierSettingsProviderInterface
      */
-    private SamedaySettingsProviderInterface $samedaySettingsProvider;
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
      * @param WooOrderAddressRepository $wooOrderAddressRepository
      * @param OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive
      * @param LockerDtoFactory $lockerDtoFactory
-     * @param SamedayShippingHdAddressParserInterface $hdAddressParser
+     * @param CarrierShippingHdAddressParserInterface $hdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
-     * @param SamedaySettingsProviderInterface|null $samedaySettingsProvider
+     * @param CarrierSettingsProviderInterface|null $carrierSettingsProvider
      */
     public function __construct(
         WooOrderAddressRepository $wooOrderAddressRepository,
         OrderShippingAddressArchiveInterface $wooOrderShippingAddressArchive,
         LockerDtoFactory $lockerDtoFactory,
-        SamedayShippingHdAddressParserInterface $hdAddressParser,
+        CarrierShippingHdAddressParserInterface $hdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
-        ?SamedaySettingsProviderInterface $samedaySettingsProvider = null
+        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         $this->wooOrderAddressRepository = $wooOrderAddressRepository;
         $this->wooOrderShippingAddressArchive = $wooOrderShippingAddressArchive;
         $this->lockerDtoFactory = $lockerDtoFactory;
         $this->hdAddressParser = $hdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
-        $this->samedaySettingsProvider = $samedaySettingsProvider ?? new WordpressSamedaySettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressSamedaySettingsProvider();
     }
 
     /**
@@ -133,7 +133,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
             InputSanitizer::sanitizeInput(
                 (string) PostMetaHandler::get(
                     $orderId,
-                    SamedayConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
+                    CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
                     true
                 )
             )
@@ -166,7 +166,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     private function applyLockerFields(int $orderId, array $lockerFields): void
     {
         $order = wc_get_order($orderId);
-        $hostCountry = $this->samedaySettingsProvider->get()->getHostCountry();
+        $hostCountry = $this->carrierSettingsProvider->get()->getHostCountry();
         $country = $hostCountry;
 
         if ($order instanceof WC_Order) {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayCity;
+use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
@@ -22,17 +22,17 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @return array<string, SamedayCity[]>
+     * @return array<string, CarrierCity[]>
      */
     public function getCachedCities(): array
     {
         $cacheHandler = new CacheHandler();
-        $cities = $cacheHandler->getCachedData(SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES);
+        $cities = $cacheHandler->getCachedData(CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES);
 
         if ([] === $cities) {
             $cities = $this->getCities();
             $cacheHandler->refreshCachedData(
-                SamedayConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
+                CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
                 $cities,
                 31556926
             );
@@ -42,13 +42,13 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @return array<string, SamedayCity[]>
+     * @return array<string, CarrierCity[]>
      */
     public function getCities(): array
     {
         $mapper = $this->getMapper(SamedayCityMapper::class);
         $cities = [];
-        foreach (SamedayConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
+        foreach (CarrierConstants::DEFAULT_COUNTRIES as $countryKey => $value) {
             $rows = $this->dbHandler->getRows(
                 "SELECT * FROM {$this->getTableName()} WHERE country_code = %s",
                 [
@@ -77,8 +77,8 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     public function addCity(stdClass $cityObject): void
     {
         $countyCode = $cityObject->county_code;
-        if ($cityObject->country_code === SamedayConstants::API_HOST_LOCALE_BG) {
-            $countyCode = SamedayConstants::API_HOST_LOCALE_BG . "-" . $cityObject->county_code;
+        if ($cityObject->country_code === CarrierConstants::API_HOST_LOCALE_BG) {
+            $countyCode = CarrierConstants::API_HOST_LOCALE_BG . "-" . $cityObject->county_code;
         }
 
         $data = [

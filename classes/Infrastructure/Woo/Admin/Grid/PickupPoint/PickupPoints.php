@@ -11,7 +11,7 @@ if (!defined( 'ABSPATH')) {
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -317,7 +317,7 @@ class PickupPoints extends WP_List_Table
 
             <?php if ($this->has_active_filters()) : ?>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>" class="button">
-                    <?php esc_html_e('Reset', SamedayConstants::TEXT_DOMAIN); ?>
+                    <?php esc_html_e('Reset', CarrierConstants::TEXT_DOMAIN); ?>
                 </a>
             <?php endif; ?>
         </div>

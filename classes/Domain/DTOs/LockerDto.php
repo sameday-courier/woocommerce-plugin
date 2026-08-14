@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayLocker;
-use SamedayCourier\Shipping\Domain\SamedayLockerRules;
+use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
+use SamedayCourier\Shipping\Domain\CarrierLockerRules;
 
 final class LockerDto
 {
@@ -61,13 +61,13 @@ final class LockerDto
         );
     }
 
-    public static function fromSamedayLocker(SamedayLocker $locker): self
+    public static function fromSamedayLocker(CarrierLocker $locker): self
     {
         $lockerId = $locker->getLockerId();
 
         return new self(
             $lockerId,
-            SamedayLockerRules::resolveOohType($lockerId),
+            CarrierLockerRules::resolveOohType($lockerId),
             $locker->getName(),
             $locker->getCounty(),
             $locker->getCity(),

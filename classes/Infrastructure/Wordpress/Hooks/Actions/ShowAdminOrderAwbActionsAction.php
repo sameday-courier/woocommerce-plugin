@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\SamedayAdminModal;
@@ -131,7 +131,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
 
             $redirectToEawbSite = sprintf(
                 '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                SamedayConstants::EAWB_INSTANCES[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()],
+                CarrierConstants::EAWB_INSTANCES[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()],
                 $awb->getAwbNumber()
             );
 

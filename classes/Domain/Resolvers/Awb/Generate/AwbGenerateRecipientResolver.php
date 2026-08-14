@@ -8,28 +8,28 @@ use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
-use SamedayCourier\Shipping\Domain\Models\SamedayService;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\SamedayShippingHdAddressParserInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
-use SamedayCourier\Shipping\Domain\SamedayServiceRules;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
 
 class AwbGenerateRecipientResolver
 {
     /**
-     * @var SamedayServiceRules $samedayServiceRules
+     * @var CarrierServiceRules $carrierServiceRules
      */
-    private SamedayServiceRules $samedayServiceRules;
+    private CarrierServiceRules $carrierServiceRules;
 
     /**
-     * @var SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @var CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser
      */
-    private SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser;
+    private CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser;
 
     /**
      * @var StateCodeResolverInterface $stateCodeResolver
@@ -42,19 +42,19 @@ class AwbGenerateRecipientResolver
     private CityPostalCodeProviderInterface $cityPostalCodeProvider;
 
     /**
-     * @param SamedayServiceRules $samedayServiceRules
-     * @param SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser
+     * @param CarrierServiceRules $carrierServiceRules
+     * @param CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
      * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
      */
     public function __construct(
-        SamedayServiceRules $samedayServiceRules,
-        SamedayShippingHdAddressParserInterface $samedayShippingHdAddressParser,
+        CarrierServiceRules $carrierServiceRules,
+        CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
     )
     {
-        $this->samedayServiceRules = $samedayServiceRules;
+        $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
         $this->cityPostalCodeProvider = $cityPostalCodeProvider;
@@ -64,7 +64,7 @@ class AwbGenerateRecipientResolver
      * @param int $orderId
      * @param ShippingDto $shipping
      * @param BillingDto $billing
-     * @param SamedayService $service
+     * @param CarrierService $service
      * @param LockerDto|null $locker
      *
      * @return AwbGenerateRecipientResponse
@@ -73,7 +73,7 @@ class AwbGenerateRecipientResolver
         int $orderId,
         ShippingDto $shipping,
         BillingDto $billing,
-        SamedayService $service,
+        CarrierService $service,
         ?LockerDto $locker
     ): AwbGenerateRecipientResponse
     {
@@ -152,7 +152,7 @@ class AwbGenerateRecipientResolver
             $oohLastMile
         );
 
-        $currency = SamedayConstants::CURRENCY_MAPPER[$country];
+        $currency = CarrierConstants::CURRENCY_MAPPER[$country];
 
         return new AwbGenerateRecipientResponse(
             $awbRecipient,
@@ -172,33 +172,33 @@ class AwbGenerateRecipientResolver
     }
 
     /**
-     * @param SamedayService $samedayService
+     * @param CarrierService $carrierService
      *
      * @return bool
      */
-    private function isEasyBoxServiceType(SamedayService $samedayService): bool
+    private function isEasyBoxServiceType(CarrierService $carrierService): bool
     {
-        return $this->samedayServiceRules->isEasyBoxServiceType($samedayService);
+        return $this->carrierServiceRules->isEasyBoxServiceType($carrierService);
     }
 
     /**
-     * @param SamedayService $samedayService
+     * @param CarrierService $carrierService
      *
      * @return bool
      */
-    private function isPudoServiceType(SamedayService $samedayService): bool
+    private function isPudoServiceType(CarrierService $carrierService): bool
     {
-        return $this->samedayServiceRules->isPudoServiceType($samedayService);
+        return $this->carrierServiceRules->isPudoServiceType($carrierService);
     }
 
     /**
-     * @param SamedayService $service
+     * @param CarrierService $service
      *
      * @return bool
      */
-    private function isOohDeliveryType(SamedayService $service): bool
+    private function isOohDeliveryType(CarrierService $service): bool
     {
-        return $this->samedayServiceRules->isOohDeliveryOption($service);
+        return $this->carrierServiceRules->isOohDeliveryOption($service);
     }
 
     /**

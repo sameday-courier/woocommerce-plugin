@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
 }
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
-use SamedayCourier\Shipping\Domain\SamedayConstants;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -75,15 +75,15 @@ class Services extends WP_List_Table
 			$perPage,
 			$pageNumber,
 			'sameday_code',
-			SamedayConstants::IN_USE_SERVICES,
+			CarrierConstants::IN_USE_SERVICES,
 		);
 
         $services = $this->dbHandler->getRows($query['sql'], $query['params']);
 
         foreach ($services as &$service) {
-            if ($service['sameday_code'] === SamedayConstants::LOCKER_NEXT_DAY_CODE) {
-                $service['name'] = TranslatorHandler::translate(SamedayConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()]);
-                $service['sameday_name'] = TranslatorHandler::translate(SamedayConstants::SAMEDAY_OOH_LABEL);
+            if ($service['sameday_code'] === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
+                $service['name'] = TranslatorHandler::translate(CarrierConstants::OOH_SERVICES_LABELS[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()]);
+                $service['sameday_name'] = TranslatorHandler::translate(CarrierConstants::SAMEDAY_OOH_LABEL);
             }
         }
 
@@ -96,7 +96,7 @@ class Services extends WP_List_Table
             $this->samedayRepository->getTableName(),
             (new WordpressSamedaySettingsProvider())->get()->isTesting(),
             'sameday_code',
-            SamedayConstants::IN_USE_SERVICES,
+            CarrierConstants::IN_USE_SERVICES,
         );
 
         return (int) $this->dbHandler->getVar($query['sql'], $query['params']);
@@ -136,9 +136,9 @@ class Services extends WP_List_Table
         }
 
         if (("sameday_name" === $column_name)
-            && $item[$column_name] === TranslatorHandler::translate(SamedayConstants::SAMEDAY_OOH_LABEL)
+            && $item[$column_name] === TranslatorHandler::translate(CarrierConstants::SAMEDAY_OOH_LABEL)
         ) {
-            $title = SamedayConstants::OOH_POPUP_TITLE[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
+            $title = CarrierConstants::OOH_POPUP_TITLE[(new WordpressSamedaySettingsProvider())->get()->getHostCountry()];
             return sprintf(
                 "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
                 $title,

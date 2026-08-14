@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
-use SamedayCourier\Shipping\Domain\Models\SamedayPackage;
+use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 
 final class SamedayPackageMapper extends AbstractMapper
 {
     /**
      * @param array $row
      *
-     * @return SamedayPackage
+     * @return CarrierPackage
      */
-    public function map(array $row): SamedayPackage
+    public function map(array $row): CarrierPackage
     {
-        $package = new SamedayPackage();
+        $package = new CarrierPackage();
 
         $package->setOrderId((int) $row["order_id"]);
         $package->setAwbParcel($row["awb_parcel"] ?? null);
