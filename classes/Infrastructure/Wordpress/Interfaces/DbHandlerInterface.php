@@ -71,6 +71,14 @@ interface DbHandlerInterface
 
     /**
      * @param string $tableName
+     * @param string $columnName
+     *
+     * @return bool
+     */
+    public function columnExists(string $tableName, string $columnName): bool;
+
+    /**
+     * @param string $tableName
      *
      * @return void
      */

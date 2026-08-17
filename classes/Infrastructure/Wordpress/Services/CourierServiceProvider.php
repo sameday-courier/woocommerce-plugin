@@ -489,14 +489,17 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $errors = $exception->getErrors();
             try {
                 $rawResponse = $exception->getRawResponse()->getBody();
-                $errorMessages = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR)
-                    ->errors
-                    ->errors
-                ;
-                $errors[] = [
-                    'key' => ['Validation Failed', ''],
-                    'errors' => $errorMessages,
-                ];
+                $decoded = json_decode($rawResponse, true, 512, JSON_THROW_ON_ERROR);
+                $errorMessages = is_array($decoded)
+                    ? ($decoded['errors']['errors'] ?? null)
+                    : null;
+
+                if (null !== $errorMessages) {
+                    $errors[] = [
+                        'key' => ['Validation Failed', ''],
+                        'errors' => $errorMessages,
+                    ];
+                }
             } catch (JsonException $jsonException) {
                 $errors[] = [
                     'key' => 'JSON Validation Failed',

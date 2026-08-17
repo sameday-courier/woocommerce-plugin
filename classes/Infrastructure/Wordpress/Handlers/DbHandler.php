@@ -117,6 +117,22 @@ final class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $tableName
+     * @param string $columnName
+     *
+     * @return bool
+     */
+    public function columnExists(string $tableName, string $columnName): bool
+    {
+        return null !== $this->db->get_var(
+            $this->db->prepare(
+                "SHOW COLUMNS FROM `{$tableName}` LIKE %s",
+                $columnName
+            )
+        );
+    }
+
+    /**
+     * @param string $tableName
      * 
      * @return void
      */
