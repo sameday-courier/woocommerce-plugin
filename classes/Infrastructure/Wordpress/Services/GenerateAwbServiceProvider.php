@@ -22,7 +22,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
@@ -30,7 +30,6 @@ use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxR
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
@@ -69,7 +68,7 @@ final class GenerateAwbServiceProvider implements GenerateAwbServiceProviderInte
 
     private CarrierServiceRules $carrierServiceRules;
 
-    private OrderAwbProviderInterface $orderAwbProvider;
+    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
 
     public function __construct(
         ?CourierServiceProviderInterface $courier = null,
@@ -85,7 +84,7 @@ final class GenerateAwbServiceProvider implements GenerateAwbServiceProviderInte
         ?BillingDtoFactory $billingDtoFactory = null,
         ?GenerateAwbValidator $generateAwbValidator = null,
         ?CarrierServiceRules $carrierServiceRules = null,
-        ?OrderAwbProviderInterface $orderAwbProvider = null,
+        ?OrderAwbStoreServiceProviderInterface $orderAwbStore = null,
         ?CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser = null,
         ?StateCodeResolverInterface $stateCodeResolver = null,
         ?WooCountriesHandler $wooCountriesHandler = null,
@@ -129,7 +128,7 @@ final class GenerateAwbServiceProvider implements GenerateAwbServiceProviderInte
             $resolvedStateCodeResolver,
             $cityPostalCodeProvider ?? $resolvedSamedayCityRepository,
         );
-        $this->orderAwbProvider = $orderAwbProvider ?? new WooOrderAwbProvider($resolvedSamedayAwbRepository);
+        $this->orderAwbStore = $orderAwbStore ?? new OrderAwbStoreServiceProvider($resolvedSamedayAwbRepository);
     }
 
     /**
@@ -158,7 +157,7 @@ final class GenerateAwbServiceProvider implements GenerateAwbServiceProviderInte
                 $pickupPoint,
                 $billing,
                 $generateAwbServiceRequestDto->getShippingLines(),
-                null !== $this->orderAwbProvider->get($generateAwbServiceRequestDto->getOrderId()),
+                null !== $this->orderAwbStore->getByOrderId($generateAwbServiceRequestDto->getOrderId()),
                 [] !== $parcelsDimensions,
             )
         );

@@ -12,7 +12,8 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAw
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\AddNewParcelAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 
 final class AddNewParcelAwbController extends AbstractController
 {
@@ -41,7 +42,8 @@ final class AddNewParcelAwbController extends AbstractController
             $addNewParcelAwb = new AddNewParcelAwb(
                 new AddNewParcelAwbRequest(
                     $addNewParcelAwbItem,
-                    new AddNewParcelAwbServiceProvider()
+                    new OrderAwbStoreServiceProvider(),
+                    new CourierServiceProvider()
                 )
             );
             $result = $addNewParcelAwb->execute();

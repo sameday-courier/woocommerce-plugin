@@ -4,13 +4,29 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Requests;
 
-use Sameday\Objects\ParcelDimensionsObject;
-
 final class PostParcelRequestDto
 {
     private string $awbNumber;
 
-    private ParcelDimensionsObject $parcelDimensions;
+    /**
+     * @var mixed
+     */
+    private $parcelWeight;
+
+    /**
+     * @var mixed
+     */
+    private $parcelWidth;
+
+    /**
+     * @var mixed
+     */
+    private $parcelLength;
+
+    /**
+     * @var mixed
+     */
+    private $parcelHeight;
 
     private int $position;
 
@@ -20,16 +36,28 @@ final class PostParcelRequestDto
 
     private bool $last;
 
+    /**
+     * @param mixed $parcelWeight
+     * @param mixed $parcelWidth
+     * @param mixed $parcelLength
+     * @param mixed $parcelHeight
+     */
     public function __construct(
         string $awbNumber,
-        ParcelDimensionsObject $parcelDimensions,
+        $parcelWeight,
+        $parcelWidth,
+        $parcelLength,
+        $parcelHeight,
         int $position,
         ?string $observation = null,
         ?string $priceObservation = null,
         bool $last = false
     ) {
         $this->awbNumber = $awbNumber;
-        $this->parcelDimensions = $parcelDimensions;
+        $this->parcelWeight = $parcelWeight;
+        $this->parcelWidth = $parcelWidth;
+        $this->parcelLength = $parcelLength;
+        $this->parcelHeight = $parcelHeight;
         $this->position = $position;
         $this->observation = $observation;
         $this->priceObservation = $priceObservation;
@@ -41,9 +69,36 @@ final class PostParcelRequestDto
         return $this->awbNumber;
     }
 
-    public function getParcelDimensions(): ParcelDimensionsObject
+    /**
+     * @return mixed
+     */
+    public function getParcelWeight()
     {
-        return $this->parcelDimensions;
+        return $this->parcelWeight;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelWidth()
+    {
+        return $this->parcelWidth;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelLength()
+    {
+        return $this->parcelLength;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelHeight()
+    {
+        return $this->parcelHeight;
     }
 
     public function getPosition(): int

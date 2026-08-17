@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColumnInWcOrderGrid;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
 final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
@@ -55,9 +54,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        $awb = (new WooOrderAwbProvider(
-            new SamedayAwbRepository()
-        ))->get((int) $order->get_id());
+        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId((int) $order->get_id());
 
         if (null === $awb) {
             return;

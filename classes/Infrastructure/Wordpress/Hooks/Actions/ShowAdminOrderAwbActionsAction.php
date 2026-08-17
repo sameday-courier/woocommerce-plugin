@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -12,10 +11,10 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\SamedayAdminModal;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 
 final class ShowAdminOrderAwbActionsAction extends AbstractAction
 {
@@ -101,9 +100,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
             $generateAwb
         );
 
-        $awb = (new WooOrderAwbProvider(
-            new SamedayAwbRepository(),
-        ))->get((int) $order->get_id());
+        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId((int) $order->get_id());
 
         $newParcelModal = '';
         $historyModal = '';

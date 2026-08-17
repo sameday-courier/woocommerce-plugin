@@ -9,29 +9,28 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveOrderAwbRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\RemoveOrderAwbResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\RemoveAwbServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\RemoveOrderAwbServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class RemoveOrderAwbServiceProvider implements RemoveOrderAwbServiceProviderInterface
 {
-    private OrderAwbProviderInterface $orderAwbProvider;
+    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
 
     private RemoveAwbServiceProviderInterface $removeAwbServiceProvider;
 
     private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
     public function __construct(
-        ?OrderAwbProviderInterface $orderAwbProvider = null,
+        ?OrderAwbStoreServiceProviderInterface $orderAwbStore = null,
         ?RemoveAwbServiceProviderInterface $removeAwbServiceProvider = null,
         ?PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider = null
     ) {
         $samedayAwbRepository = new SamedayAwbRepository();
 
-        $this->orderAwbProvider = $orderAwbProvider ?? new WooOrderAwbProvider($samedayAwbRepository);
+        $this->orderAwbStore = $orderAwbStore ?? new OrderAwbStoreServiceProvider($samedayAwbRepository);
         $this->removeAwbServiceProvider = $removeAwbServiceProvider ?? new RemoveAwbServiceProvider();
         $this->postRemoveAwbServiceProvider = $postRemoveAwbServiceProvider
             ?? new PostRemoveAwbServiceProvider($samedayAwbRepository);
@@ -45,7 +44,7 @@ final class RemoveOrderAwbServiceProvider implements RemoveOrderAwbServiceProvid
     public function remove(RemoveOrderAwbRequestDto $removeOrderAwbRequestDto): RemoveOrderAwbResponseDto
     {
         $orderId = $removeOrderAwbRequestDto->getOrderId();
-        $awb = $this->orderAwbProvider->get($orderId);
+        $awb = $this->orderAwbStore->getByOrderId($orderId);
 
         if (null === $awb) {
             return new RemoveOrderAwbResponseDto(

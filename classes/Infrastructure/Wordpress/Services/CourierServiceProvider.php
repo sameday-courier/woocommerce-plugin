@@ -21,6 +21,7 @@ use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
+use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\DeletePickupPointResponseDto;
@@ -59,17 +60,21 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
     private ParcelStatusHistoryService $parcelStatusHistoryService;
 
+    private ParcelDimensionsFactory $parcelDimensionsFactory;
+
     /**
      * @throws SamedaySDKException
      */
     public function __construct(
         ?Sameday $sameday = null,
         ?AwbErrorParser $awbErrorParser = null,
-        ?ParcelStatusHistoryService $parcelStatusHistoryService = null
+        ?ParcelStatusHistoryService $parcelStatusHistoryService = null,
+        ?ParcelDimensionsFactory $parcelDimensionsFactory = null
     ) {
         $this->sameday = $sameday ?? new Sameday(SdkInitiator::init());
         $this->awbErrorParser = $awbErrorParser ?? new AwbErrorParser();
         $this->parcelStatusHistoryService = $parcelStatusHistoryService ?? new ParcelStatusHistoryService();
+        $this->parcelDimensionsFactory = $parcelDimensionsFactory ?? new ParcelDimensionsFactory();
     }
 
     /**
@@ -159,7 +164,12 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $parcel = $this->sameday->postParcel(
                 new SamedayPostParcelRequest(
                     $postParcelRequestDto->getAwbNumber(),
-                    $postParcelRequestDto->getParcelDimensions(),
+                    $this->parcelDimensionsFactory->fromAttributes(
+                        $postParcelRequestDto->getParcelWeight(),
+                        $postParcelRequestDto->getParcelWidth(),
+                        $postParcelRequestDto->getParcelLength(),
+                        $postParcelRequestDto->getParcelHeight()
+                    ),
                     $postParcelRequestDto->getPosition(),
                     $postParcelRequestDto->getObservation(),
                     $postParcelRequestDto->getPriceObservation(),

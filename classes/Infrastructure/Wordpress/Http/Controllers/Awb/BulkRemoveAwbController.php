@@ -9,9 +9,9 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveOrderAwbServiceProvider;
@@ -35,8 +35,8 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
     protected function processItem(int $itemId): array
     {
         $samedayAwbRepository = new SamedayAwbRepository();
-        $orderAwbProvider = new WooOrderAwbProvider($samedayAwbRepository);
-        $awb = $orderAwbProvider->get($itemId);
+        $orderAwbStore = new OrderAwbStoreServiceProvider($samedayAwbRepository);
+        $awb = $orderAwbStore->getByOrderId($itemId);
         $awbNumber = null !== $awb ? $awb->getAwbNumber() : null;
 
         try {
@@ -44,7 +44,7 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
                 new RemoveAwbRequest(
                     new RemoveAwbItem($itemId),
                     new RemoveOrderAwbServiceProvider(
-                        $orderAwbProvider,
+                        $orderAwbStore,
                         new RemoveAwbServiceProvider(),
                         new PostRemoveAwbServiceProvider($samedayAwbRepository)
                     )
