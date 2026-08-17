@@ -73,7 +73,7 @@ final class TransientBulkJobStore implements BulkJobStoreInterface
 
     public function delete(string $jobId, int $userId): void
     {
-        delete_transient($this->buildKey($jobId, $userId));
+        $this->cacheHandler->invalidateCachedData($this->buildKey($jobId, $userId));
     }
 
     private function buildKey(string $jobId, int $userId): string

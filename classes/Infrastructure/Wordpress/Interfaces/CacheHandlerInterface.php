@@ -21,4 +21,11 @@ interface CacheHandlerInterface
      * @return void
      */
     public function refreshCachedData(string $key, array $data, int $timeToLive): void;
+
+    /**
+     * @param string $key
+     *
+     * @return void
+     */
+    public function invalidateCachedData(string $key): void;
 }

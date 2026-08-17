@@ -10,11 +10,15 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
+use RuntimeException;
 use stdClass;
+use Throwable;
 
 class SamedayCityRepository extends AbstractRepository implements CityPostalCodeProviderInterface
 {
     private const TABLE_NAME = 'sameday_cities';
+
+    private const CITIES_CACHE_TTL_SECONDS = 31556926;
 
     public function getTableName(): string
     {
@@ -27,14 +31,25 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     public function getCachedCities(): array
     {
         $cacheHandler = new CacheHandler();
-        $cities = $cacheHandler->getCachedData(CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES);
+        $cacheKey = CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES;
+
+        try {
+            $cities = $cacheHandler->getCachedData($cacheKey);
+
+            if ([] !== $cities && !$this->hasValidCachedCities($cities)) {
+                throw new RuntimeException('Cached cities payload is invalid.');
+            }
+        } catch (Throwable $exception) {
+            $cacheHandler->invalidateCachedData($cacheKey);
+            $cities = [];
+        }
 
         if ([] === $cities) {
             $cities = $this->getCities();
             $cacheHandler->refreshCachedData(
-                CarrierConstants::TRANSIENT_CACHE_KEY_FOR_CITIES,
+                $cacheKey,
                 $cities,
-                31556926
+                self::CITIES_CACHE_TTL_SECONDS
             );
         }
 
@@ -109,5 +124,30 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
         );
 
         return isset($row['postal_code']) ? (string) $row['postal_code'] : null;
+    }
+
+    /**
+     * @param array<string, mixed> $cities
+     *
+     * @return bool
+     */
+    private function hasValidCachedCities(array $cities): bool
+    {
+        foreach ($cities as $cityModels) {
+            if (!is_array($cityModels)) {
+                return false;
+            }
+
+            if ([] === $cityModels) {
+                continue;
+            }
+
+            $city = reset($cityModels);
+            if (!$city instanceof CarrierCity) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

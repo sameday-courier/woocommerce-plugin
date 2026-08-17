@@ -28,7 +28,17 @@ final class CacheHandler implements CacheHandlerInterface
      */
     public function refreshCachedData(string $key, array $data, int $timeToLiveInSeconds = 0): void
     {
-        delete_transient($key);
+        $this->invalidateCachedData($key);
         set_transient($key, $data, $timeToLiveInSeconds);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return void
+     */
+    public function invalidateCachedData(string $key): void
+    {
+        delete_transient($key);
     }
 }
