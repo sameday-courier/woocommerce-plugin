@@ -4,29 +4,45 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
-use SamedayCourier\Shipping\Domain\Ports\AddNewParcelServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\AddNewParcelAwbServiceProviderInterface;
 
 final class AddNewParcelAwbRequest
 {
+    /**
+     * @var AddNewParcelAwbItem $awbItem
+     */
     private AddNewParcelAwbItem $awbItem;
 
-    private AddNewParcelServiceProviderInterface $addNewParcelServiceProvider;
+    /**
+     * @var AddNewParcelAwbServiceProviderInterface $addNewParcelAwbServiceProvider
+     */
+    private AddNewParcelAwbServiceProviderInterface $addNewParcelAwbServiceProvider;
 
+    /**
+     * @param AddNewParcelAwbItem $awbItem
+     * @param AddNewParcelAwbServiceProviderInterface $addNewParcelAwbServiceProvider
+     */
     public function __construct(
         AddNewParcelAwbItem $awbItem,
-        AddNewParcelServiceProviderInterface $addNewParcelServiceProvider
+        AddNewParcelAwbServiceProviderInterface $addNewParcelAwbServiceProvider
     ) {
         $this->awbItem = $awbItem;
-        $this->addNewParcelServiceProvider = $addNewParcelServiceProvider;
+        $this->addNewParcelAwbServiceProvider = $addNewParcelAwbServiceProvider;
     }
 
+    /**
+     * @return AddNewParcelAwbItem
+     */
     public function getAwbItem(): AddNewParcelAwbItem
     {
         return $this->awbItem;
     }
 
-    public function getAddNewParcelServiceProvider(): AddNewParcelServiceProviderInterface
+    /**
+     * @return AddNewParcelAwbServiceProviderInterface
+     */
+    public function getAddNewParcelAwbServiceProvider(): AddNewParcelAwbServiceProviderInterface
     {
-        return $this->addNewParcelServiceProvider;
+        return $this->addNewParcelAwbServiceProvider;
     }
 }

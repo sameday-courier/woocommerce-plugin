@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-final class AddNewParcelResponseDto
+final class AddNewParcelAwbResponseDto
 {
     private int $orderId;
 

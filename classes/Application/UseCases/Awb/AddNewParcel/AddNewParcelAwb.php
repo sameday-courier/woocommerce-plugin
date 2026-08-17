@@ -5,25 +5,25 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\AddNewParcelRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\AddNewParcelServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\AddNewParcelAwbRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\AddNewParcelAwbServiceProviderInterface;
 
 final class AddNewParcelAwb
 {
     private AddNewParcelAwbItem $awbItem;
 
-    private AddNewParcelServiceProviderInterface $addNewParcelServiceProvider;
+    private AddNewParcelAwbServiceProviderInterface $addNewParcelAwbServiceProvider;
 
     public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
     {
         $this->awbItem = $addNewParcelAwbRequest->getAwbItem();
-        $this->addNewParcelServiceProvider = $addNewParcelAwbRequest->getAddNewParcelServiceProvider();
+        $this->addNewParcelAwbServiceProvider = $addNewParcelAwbRequest->getAddNewParcelAwbServiceProvider();
     }
 
     public function execute(): AddNewParcelAwbResponse
     {
-        $addNewParcelResponse = $this->addNewParcelServiceProvider->add(
-            new AddNewParcelRequestDto(
+        $addNewParcelAwbResponse = $this->addNewParcelAwbServiceProvider->add(
+            new AddNewParcelAwbRequestDto(
                 $this->awbItem->getOrderId(),
                 $this->awbItem->getParcelWeight(),
                 $this->awbItem->getParcelWidth(),
@@ -35,9 +35,9 @@ final class AddNewParcelAwb
         );
 
         return new AddNewParcelAwbResponse(
-            $addNewParcelResponse->getOrderId(),
-            $addNewParcelResponse->getMessage(),
-            $addNewParcelResponse->isSuccess()
+            $addNewParcelAwbResponse->getOrderId(),
+            $addNewParcelAwbResponse->getMessage(),
+            $addNewParcelAwbResponse->isSuccess()
                 ? ResponseNoticeType::SUCCESS
                 : ResponseNoticeType::ERROR,
         );
