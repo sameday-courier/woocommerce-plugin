@@ -9,10 +9,12 @@ use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class RemoveAwbController extends AbstractController
@@ -37,12 +39,14 @@ final class RemoveAwbController extends AbstractController
         $removeAwbItem = RemoveAwbItem::fromArray($inputParams);
 
         try {
+            $samedayAwbRepository = new SamedayAwbRepository();
             $removeAwb = new RemoveAwb(
                 new RemoveAwbRequest(
                     $removeAwbItem,
                     new AwbRemover(
-                        new CourierServiceProvider(),
-                        new SamedayAwbRepository()
+                        new WooOrderAwbProvider($samedayAwbRepository),
+                        new RemoveAwbServiceProvider(),
+                        new PostRemoveAwbServiceProvider($samedayAwbRepository)
                     )
                 )
             );
@@ -53,6 +57,8 @@ final class RemoveAwbController extends AbstractController
             );
 
             $this->redirectToOrderEdit($removeAwbItem->getOrderId());
+
+            return;
         }
 
         if ($result->hasNotices()) {

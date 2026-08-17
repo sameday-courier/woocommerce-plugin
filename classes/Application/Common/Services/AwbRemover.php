@@ -4,31 +4,40 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Common\Services;
 
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostRemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\RemoveAwbServiceProviderInterface;
 
 final class AwbRemover
 {
     /**
-     * @var CourierServiceProviderInterface $courier
+     * @var OrderAwbProviderInterface $orderAwbProvider
      */
-    private CourierServiceProviderInterface $courier;
+    private OrderAwbProviderInterface $orderAwbProvider;
 
     /**
-     * @var SamedayAwbRepository $samedayAwbRepository
+     * @var RemoveAwbServiceProviderInterface $removeAwbServiceProvider
      */
-    private SamedayAwbRepository $samedayAwbRepository;
+    private RemoveAwbServiceProviderInterface $removeAwbServiceProvider;
+
+    /**
+     * @var PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
+     */
+    private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
     public function __construct(
-        CourierServiceProviderInterface $courier,
-        SamedayAwbRepository $samedayAwbRepository
+        OrderAwbProviderInterface $orderAwbProvider,
+        RemoveAwbServiceProviderInterface $removeAwbServiceProvider,
+        PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
     ) {
-        $this->courier = $courier;
-        $this->samedayAwbRepository = $samedayAwbRepository;
+        $this->orderAwbProvider = $orderAwbProvider;
+        $this->removeAwbServiceProvider = $removeAwbServiceProvider;
+        $this->postRemoveAwbServiceProvider = $postRemoveAwbServiceProvider;
     }
 
     /**
@@ -41,7 +50,7 @@ final class AwbRemover
      */
     public function remove(int $orderId): void
     {
-        $awb = $this->samedayAwbRepository->getAwbForOrderId($orderId);
+        $awb = $this->orderAwbProvider->get($orderId);
         if (null === $awb) {
             throw new AwbNotFoundForOrderException($orderId);
         }
@@ -59,7 +68,7 @@ final class AwbRemover
      */
     public function removeRemote(string $awbNumber): void
     {
-        $this->courier->removeAwb(new RemoveAwbRequestDto($awbNumber));
+        $this->removeAwbServiceProvider->remove(new RemoveAwbRequestDto($awbNumber));
     }
 
     /**
@@ -71,6 +80,6 @@ final class AwbRemover
      */
     private function removeLocal(CarrierAwb $awb): void
     {
-        $this->samedayAwbRepository->deleteAwbAndParcels($awb);
+        $this->postRemoveAwbServiceProvider->apply(new PostRemoveAwbRequestDto($awb));
     }
 }

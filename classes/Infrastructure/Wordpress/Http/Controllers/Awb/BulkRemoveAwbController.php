@@ -10,9 +10,11 @@ use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderAwbProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class BulkRemoveAwbController extends AbstractRecursiveBulkController
@@ -33,7 +35,8 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
     protected function processItem(int $itemId): array
     {
         $samedayAwbRepository = new SamedayAwbRepository();
-        $awb = $samedayAwbRepository->getAwbForOrderId($itemId);
+        $orderAwbProvider = new WooOrderAwbProvider($samedayAwbRepository);
+        $awb = $orderAwbProvider->get($itemId);
         $awbNumber = null !== $awb ? $awb->getAwbNumber() : null;
 
         try {
@@ -41,8 +44,9 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
                 new RemoveAwbRequest(
                     new RemoveAwbItem($itemId),
                     new AwbRemover(
-                        new CourierServiceProvider(),
-                        $samedayAwbRepository
+                        $orderAwbProvider,
+                        new RemoveAwbServiceProvider(),
+                        new PostRemoveAwbServiceProvider($samedayAwbRepository)
                     )
                 )
             ))->execute();
