@@ -181,6 +181,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 2.0.0 =
 
 * Complete rewrite of entire module to ensure better performance, scalability, code consistency and testability.
+* Implement Bulk AWB generation.
 
 = 1.11.0 =
 
