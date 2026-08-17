@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Requests;
 
-use Sameday\Objects\ParcelDimensionsObject;
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
-use Sameday\Objects\PostAwb\Request\ThirdPartyPickupEntityObject;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\CodCollectorType;
-use Sameday\Objects\Types\DeliveryIntervalServiceType;
-use Sameday\Objects\Types\PackageType;
+use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 
 final class PostAwbRequestDto
 {
@@ -18,33 +12,36 @@ final class PostAwbRequestDto
 
     private ?int $contactPersonId;
 
-    private PackageType $packageType;
+    private int $packageType;
 
     /**
-     * @var ParcelDimensionsObject[]
+     * @var array<int, array<string, mixed>>
      */
     private array $parcelsDimensions;
 
     private int $serviceId;
 
-    private AwbPaymentType $awbPayment;
+    private int $awbPayment;
 
-    private AwbRecipientEntityObject $awbRecipient;
+    private RecipientDto $awbRecipient;
 
     private float $insuredValue;
 
     private float $cashOnDeliveryAmount;
 
-    private ?CodCollectorType $cashOnDeliveryCollector;
-
-    private ?ThirdPartyPickupEntityObject $thirdPartyPickup;
+    private ?int $cashOnDeliveryCollector;
 
     /**
-     * @var int[]
+     * @var mixed
+     */
+    private $thirdPartyPickup;
+
+    /**
+     * @var array<int, int|string>
      */
     private array $serviceTaxIds;
 
-    private ?DeliveryIntervalServiceType $deliveryIntervalServiceType;
+    private ?int $deliveryIntervalServiceType;
 
     private ?string $reference;
 
@@ -65,23 +62,24 @@ final class PostAwbRequestDto
     private ?string $currency;
 
     /**
-     * @param ParcelDimensionsObject[] $parcelsDimensions
-     * @param int[] $serviceTaxIds
+     * @param array<int, array<string, mixed>> $parcelsDimensions
+     * @param array<int, int|string> $serviceTaxIds
+     * @param mixed $thirdPartyPickup
      */
     public function __construct(
         int $pickupPointId,
         ?int $contactPersonId,
-        PackageType $packageType,
+        int $packageType,
         array $parcelsDimensions,
         int $serviceId,
-        AwbPaymentType $awbPayment,
-        AwbRecipientEntityObject $awbRecipient,
+        int $awbPayment,
+        RecipientDto $awbRecipient,
         float $insuredValue,
         float $cashOnDeliveryAmount = 0.0,
-        ?CodCollectorType $cashOnDeliveryCollector = null,
-        ?ThirdPartyPickupEntityObject $thirdPartyPickup = null,
+        ?int $cashOnDeliveryCollector = null,
+        $thirdPartyPickup = null,
         array $serviceTaxIds = [],
-        ?DeliveryIntervalServiceType $deliveryIntervalServiceType = null,
+        ?int $deliveryIntervalServiceType = null,
         ?string $reference = null,
         ?string $observation = null,
         ?string $priceObservation = null,
@@ -126,13 +124,13 @@ final class PostAwbRequestDto
         return $this->contactPersonId;
     }
 
-    public function getPackageType(): PackageType
+    public function getPackageType(): int
     {
         return $this->packageType;
     }
 
     /**
-     * @return ParcelDimensionsObject[]
+     * @return array<int, array<string, mixed>>
      */
     public function getParcelsDimensions(): array
     {
@@ -144,12 +142,12 @@ final class PostAwbRequestDto
         return $this->serviceId;
     }
 
-    public function getAwbPayment(): AwbPaymentType
+    public function getAwbPayment(): int
     {
         return $this->awbPayment;
     }
 
-    public function getAwbRecipient(): AwbRecipientEntityObject
+    public function getAwbRecipient(): RecipientDto
     {
         return $this->awbRecipient;
     }
@@ -164,25 +162,28 @@ final class PostAwbRequestDto
         return $this->cashOnDeliveryAmount;
     }
 
-    public function getCashOnDeliveryCollector(): ?CodCollectorType
+    public function getCashOnDeliveryCollector(): ?int
     {
         return $this->cashOnDeliveryCollector;
     }
 
-    public function getThirdPartyPickup(): ?ThirdPartyPickupEntityObject
+    /**
+     * @return mixed
+     */
+    public function getThirdPartyPickup()
     {
         return $this->thirdPartyPickup;
     }
 
     /**
-     * @return int[]
+     * @return array<int, int|string>
      */
     public function getServiceTaxIds(): array
     {
         return $this->serviceTaxIds;
     }
 
-    public function getDeliveryIntervalServiceType(): ?DeliveryIntervalServiceType
+    public function getDeliveryIntervalServiceType(): ?int
     {
         return $this->deliveryIntervalServiceType;
     }

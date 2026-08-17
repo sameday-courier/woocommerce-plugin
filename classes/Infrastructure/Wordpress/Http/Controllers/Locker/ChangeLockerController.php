@@ -8,9 +8,9 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerItem;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ChangeLockerServiceProvider;
 
 final class ChangeLockerController extends AbstractController
 {
@@ -39,7 +39,7 @@ final class ChangeLockerController extends AbstractController
         $result = (new ChangeLocker(
             new ChangeLockerRequest(
                 $changeLockerItem,
-                new ChangeLockerServiceProvider(),
+                new WooLockerOrderDataHandler(),
             )
         ))->execute();
 

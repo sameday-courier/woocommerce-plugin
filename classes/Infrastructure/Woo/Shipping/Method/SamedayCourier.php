@@ -28,7 +28,9 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshLockerServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -44,7 +46,6 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
@@ -280,11 +281,9 @@ final class SamedayCourier extends WC_Shipping_Method
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
                 new RefreshLockerRequest(
-                    new RefreshLockerServiceProvider(
-                        null,
-                        null,
-                        $this->carrierSettingsProvider
-                    )
+                    new CourierServiceProvider(),
+                    new LockerStoreServiceProvider(),
+                    $this->carrierSettingsProvider
                 )
             ))->execute();
         }

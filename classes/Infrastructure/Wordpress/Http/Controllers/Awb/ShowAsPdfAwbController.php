@@ -10,7 +10,9 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ShowAsPdfAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 
 final class ShowAsPdfAwbController extends AbstractController
 {
@@ -37,7 +39,9 @@ final class ShowAsPdfAwbController extends AbstractController
             $showAsPdf = new ShowAsPdfAwb(
                 new ShowAsPdfAwbRequest(
                     $showAsPdfAwbItem,
-                    new ShowAsPdfAwbServiceProvider()
+                    new OrderAwbStoreServiceProvider(),
+                    new CourierServiceProvider(),
+                    new CarrierSettingsServiceProvider()
                 )
             );
             $result = $showAsPdf->execute();

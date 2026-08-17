@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\CityObject;
-
 final class GetCitiesResponseDto
 {
     /**
-     * @var CityObject[]
+     * @var array<int, array{id: int, name: string}>
      */
     private array $cities;
 
     private int $pages;
 
     /**
-     * @param CityObject[] $cities
+     * @param array<int, array{id: int, name: string}> $cities
      */
     public function __construct(array $cities, int $pages)
     {
@@ -25,7 +23,7 @@ final class GetCitiesResponseDto
     }
 
     /**
-     * @return CityObject[]
+     * @return array<int, array{id: int, name: string}>
      */
     public function getCities(): array
     {

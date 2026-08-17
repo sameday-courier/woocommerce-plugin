@@ -10,7 +10,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulk
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\StartBulkGenerateAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 
 final class StartBulkGenerateAwbController extends AbstractController
 {
@@ -39,7 +39,7 @@ final class StartBulkGenerateAwbController extends AbstractController
                         ['samedaycourier-user-id' => $this->getCurrentUserId()]
                     )
                 ),
-                new StartBulkGenerateAwbServiceProvider()
+                new BulkJobStoreServiceProvider()
             )
         ))->execute();
 

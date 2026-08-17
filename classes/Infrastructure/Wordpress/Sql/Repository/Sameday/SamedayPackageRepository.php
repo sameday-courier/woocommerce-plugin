@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
-use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
-use Sameday\Objects\ParcelStatusHistory\SummaryObject;
 use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
@@ -21,18 +19,18 @@ class SamedayPackageRepository extends AbstractRepository
     /**
      * @param int $orderId
      * @param string $awbParcel
-     * @param SummaryObject $summary
+     * @param mixed $summary
      * @param array $history
-     * @param ExpeditionObject $expedition
+     * @param mixed $expedition
      *
      * @return void
      */
     public function refreshPackageHistory(
         int $orderId,
         string $awbParcel,
-        SummaryObject $summary,
+        $summary,
         array $history,
-        ExpeditionObject $expedition
+        $expedition
     ): void
     {
         $this->dbHandler->insertRow(

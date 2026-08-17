@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\PickupPoint\PickupPointObject;
+use SamedayCourier\Shipping\Domain\DTOs\CourierPickupPointDto;
 
 final class GetPickupPointsResponseDto
 {
     /**
-     * @var PickupPointObject[]
+     * @var CourierPickupPointDto[]
      */
     private array $pickupPoints;
 
     private int $pages;
 
     /**
-     * @param PickupPointObject[] $pickupPoints
+     * @param CourierPickupPointDto[] $pickupPoints
      */
     public function __construct(array $pickupPoints, int $pages)
     {
@@ -25,7 +25,7 @@ final class GetPickupPointsResponseDto
     }
 
     /**
-     * @return PickupPointObject[]
+     * @return CourierPickupPointDto[]
      */
     public function getPickupPoints(): array
     {

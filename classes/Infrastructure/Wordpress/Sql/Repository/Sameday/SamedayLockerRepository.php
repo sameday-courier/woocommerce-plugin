@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
-use Sameday\Objects\Locker\LockerObject;
+use SamedayCourier\Shipping\Domain\DTOs\CourierLockerDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayLockerMapper;
@@ -108,45 +108,45 @@ class SamedayLockerRepository extends AbstractRepository
         return $this->getMapper(SamedayLockerMapper::class)->map($row);
     }
 
-    public function addLocker(LockerObject $lockerObject): void
+    public function addLocker(CourierLockerDto $locker): void
     {
         $this->dbHandler->insertRow(
             $this->getTableName(),
             [
-                'locker_id' => $lockerObject->getId(),
-                'name' => $lockerObject->getName(),
-                'city' => $lockerObject->getCity(),
-                'county' => $lockerObject->getCounty(),
-                'address' => $lockerObject->getAddress(),
-                'lat' => $lockerObject->getLat(),
-                'lng' => $lockerObject->getLong(),
-                'postal_code' => $lockerObject->getPostalCode(),
-                'boxes' => serialize($lockerObject->getBoxes()),
+                'locker_id' => $locker->getId(),
+                'name' => $locker->getName(),
+                'city' => $locker->getCity(),
+                'county' => $locker->getCounty(),
+                'address' => $locker->getAddress(),
+                'lat' => $locker->getLat(),
+                'lng' => $locker->getLng(),
+                'postal_code' => $locker->getPostalCode(),
+                'boxes' => $locker->getSerializedBoxes(),
                 'is_testing' => $this->isTesting(),
             ]
         );
     }
 
     /**
-     * @param LockerObject $lockerObject
+     * @param CourierLockerDto $locker
      * @param int $id
      *
      * @return bool
      */
-    public function updateLocker(LockerObject $lockerObject, int $id): bool
+    public function updateLocker(CourierLockerDto $locker, int $id): bool
     {
         return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
-                'locker_id' => $lockerObject->getId(),
-                'name' => $lockerObject->getName(),
-                'city' => $lockerObject->getCity(),
-                'county' => $lockerObject->getCounty(),
-                'address' => $lockerObject->getAddress(),
-                'lat' => $lockerObject->getLat(),
-                'lng' => $lockerObject->getLong(),
-                'postal_code' => $lockerObject->getPostalCode(),
-                'boxes' => serialize($lockerObject->getBoxes()),
+                'locker_id' => $locker->getId(),
+                'name' => $locker->getName(),
+                'city' => $locker->getCity(),
+                'county' => $locker->getCounty(),
+                'address' => $locker->getAddress(),
+                'lat' => $locker->getLat(),
+                'lng' => $locker->getLng(),
+                'postal_code' => $locker->getPostalCode(),
+                'boxes' => $locker->getSerializedBoxes(),
             ],
             [
                 'id' => $id

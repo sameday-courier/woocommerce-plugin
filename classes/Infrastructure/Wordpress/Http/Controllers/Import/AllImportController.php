@@ -7,8 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Impo
 use Exception;
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Common\Factories\CityRequestFactory;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
+use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPoint;
@@ -16,11 +16,16 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshLockerServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshPickupPointServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshServiceServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CityCatalogStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CitySourceServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PickupPointStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
 
 final class AllImportController extends AbstractRecursiveBulkController
 {
@@ -79,7 +84,8 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshService(
                         new RefreshServiceRequest(
-                            new RefreshServiceServiceProvider()
+                            new CourierServiceProvider(),
+                            new ServiceCatalogStoreServiceProvider()
                         )
                     ))->execute();
                 },
@@ -89,7 +95,8 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshPickupPoint(
                         new RefreshPickupPointRequest(
-                            new RefreshPickupPointServiceProvider()
+                            new CourierServiceProvider(),
+                            new PickupPointStoreServiceProvider()
                         )
                     ))->execute();
                 },
@@ -99,7 +106,9 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshLocker(
                         new RefreshLockerRequest(
-                            new RefreshLockerServiceProvider()
+                            new CourierServiceProvider(),
+                            new LockerStoreServiceProvider(),
+                            new CarrierSettingsServiceProvider()
                         )
                     ))->execute();
                 },
@@ -108,7 +117,11 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'label' => TranslatorHandler::translate('Cities'),
                 'execute' => static function (): ResponseInterface {
                     return (new RefreshCity(
-                        (new CityRequestFactory())->create()
+                        new RefreshCityRequest(
+                            new CityCatalogStoreServiceProvider(),
+                            new CitySourceServiceProvider(),
+                            new WooCountriesHandler()
+                        )
                     ))->execute();
                 },
             ],

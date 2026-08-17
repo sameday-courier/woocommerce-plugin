@@ -11,7 +11,10 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveOrderAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class RemoveAwbController extends AbstractController
 {
@@ -35,10 +38,13 @@ final class RemoveAwbController extends AbstractController
         $removeAwbItem = RemoveAwbItem::fromArray($inputParams);
 
         try {
+            $samedayAwbRepository = new SamedayAwbRepository();
             $removeAwb = new RemoveAwb(
                 new RemoveAwbRequest(
                     $removeAwbItem,
-                    new RemoveOrderAwbServiceProvider()
+                    new OrderAwbStoreServiceProvider($samedayAwbRepository),
+                    new CourierServiceProvider(),
+                    new PostRemoveAwbServiceProvider($samedayAwbRepository)
                 )
             );
             $result = $removeAwb->execute();

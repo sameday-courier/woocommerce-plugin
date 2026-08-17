@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-use SamedayCourier\Shipping\Domain\Ports\StartBulkGenerateAwbServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartBulkGenerateAwbRequest
 {
     private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
 
-    private StartBulkGenerateAwbServiceProviderInterface $startBulkGenerateAwbServiceProvider;
+    private BulkJobStoreInterface $bulkJobStore;
 
     public function __construct(
         StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
-        StartBulkGenerateAwbServiceProviderInterface $startBulkGenerateAwbServiceProvider
+        BulkJobStoreInterface $bulkJobStore
     ) {
         $this->startBulkGenerateAwbItem = $startBulkGenerateAwbItem;
-        $this->startBulkGenerateAwbServiceProvider = $startBulkGenerateAwbServiceProvider;
+        $this->bulkJobStore = $bulkJobStore;
     }
 
     public function getStartBulkGenerateAwbItem(): StartBulkGenerateAwbItem
@@ -25,8 +25,8 @@ final class StartBulkGenerateAwbRequest
         return $this->startBulkGenerateAwbItem;
     }
 
-    public function getStartBulkGenerateAwbServiceProvider(): StartBulkGenerateAwbServiceProviderInterface
+    public function getBulkJobStore(): BulkJobStoreInterface
     {
-        return $this->startBulkGenerateAwbServiceProvider;
+        return $this->bulkJobStore;
     }
 }

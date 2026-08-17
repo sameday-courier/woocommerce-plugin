@@ -4,25 +4,30 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-use SamedayCourier\Shipping\Domain\Ports\RefreshPickupPointServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterface;
 
 final class RefreshPickupPointRequest
 {
-    private RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider;
+    private CourierServiceProviderInterface $courierServiceProvider;
 
-    /**
-     * @param RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider
-     */
-    public function __construct(RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider)
-    {
-        $this->refreshPickupPointServiceProvider = $refreshPickupPointServiceProvider;
+    private PickupPointStoreServiceProviderInterface $pickupPointStore;
+
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider,
+        PickupPointStoreServiceProviderInterface $pickupPointStore
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->pickupPointStore = $pickupPointStore;
     }
 
-    /**
-     * @return RefreshPickupPointServiceProviderInterface
-     */
-    public function getRefreshPickupPointServiceProvider(): RefreshPickupPointServiceProviderInterface
+    public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
-        return $this->refreshPickupPointServiceProvider;
+        return $this->courierServiceProvider;
+    }
+
+    public function getPickupPointStore(): PickupPointStoreServiceProviderInterface
+    {
+        return $this->pickupPointStore;
     }
 }

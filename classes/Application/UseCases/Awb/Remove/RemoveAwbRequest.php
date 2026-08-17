@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
-use SamedayCourier\Shipping\Domain\Ports\RemoveOrderAwbServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
 
 final class RemoveAwbRequest
 {
     private RemoveAwbItem $removeAwbItem;
 
-    private RemoveOrderAwbServiceProviderInterface $removeOrderAwbServiceProvider;
+    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
+
+    private CourierServiceProviderInterface $courierServiceProvider;
+
+    private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
     public function __construct(
         RemoveAwbItem $removeAwbItem,
-        RemoveOrderAwbServiceProviderInterface $removeOrderAwbServiceProvider
+        OrderAwbStoreServiceProviderInterface $orderAwbStore,
+        CourierServiceProviderInterface $courierServiceProvider,
+        PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
     ) {
         $this->removeAwbItem = $removeAwbItem;
-        $this->removeOrderAwbServiceProvider = $removeOrderAwbServiceProvider;
+        $this->orderAwbStore = $orderAwbStore;
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->postRemoveAwbServiceProvider = $postRemoveAwbServiceProvider;
     }
 
     public function getRemoveAwbItem(): RemoveAwbItem
@@ -25,8 +35,18 @@ final class RemoveAwbRequest
         return $this->removeAwbItem;
     }
 
-    public function getRemoveOrderAwbServiceProvider(): RemoveOrderAwbServiceProviderInterface
+    public function getOrderAwbStore(): OrderAwbStoreServiceProviderInterface
     {
-        return $this->removeOrderAwbServiceProvider;
+        return $this->orderAwbStore;
+    }
+
+    public function getCourierServiceProvider(): CourierServiceProviderInterface
+    {
+        return $this->courierServiceProvider;
+    }
+
+    public function getPostRemoveAwbServiceProvider(): PostRemoveAwbServiceProviderInterface
+    {
+        return $this->postRemoveAwbServiceProvider;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Requests;
 
-use Sameday\Objects\PostAwb\ParcelObject;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 
 final class PostAwbGenerationRequestDto
@@ -23,13 +22,13 @@ final class PostAwbGenerationRequestDto
     private float $awbCost;
 
     /**
-     * @var ParcelObject[] $parcels
+     * @var array<int, array{position: int, awbNumber: string}>
      */
     private array $parcels;
 
     /**
      * @param array<int, mixed> $shippingLines
-     * @param ParcelObject[] $parcels
+     * @param array<int, array{position: int, awbNumber: string}> $parcels
      */
     public function __construct(
         int $orderId,
@@ -76,7 +75,7 @@ final class PostAwbGenerationRequestDto
     }
 
     /**
-     * @return ParcelObject[]
+     * @return array<int, array{position: int, awbNumber: string}>
      */
     public function getParcels(): array
     {

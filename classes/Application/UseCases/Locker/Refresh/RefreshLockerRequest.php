@@ -4,25 +4,40 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-use SamedayCourier\Shipping\Domain\Ports\RefreshLockerServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\LockerStoreServiceProviderInterface;
 
 final class RefreshLockerRequest
 {
-    private RefreshLockerServiceProviderInterface $refreshLockerServiceProvider;
+    private CourierServiceProviderInterface $courierServiceProvider;
 
-    /**
-     * @param RefreshLockerServiceProviderInterface $refreshLockerServiceProvider
-     */
-    public function __construct(RefreshLockerServiceProviderInterface $refreshLockerServiceProvider)
-    {
-        $this->refreshLockerServiceProvider = $refreshLockerServiceProvider;
+    private LockerStoreServiceProviderInterface $lockerStore;
+
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
+
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider,
+        LockerStoreServiceProviderInterface $lockerStore,
+        CarrierSettingsProviderInterface $carrierSettingsProvider
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->lockerStore = $lockerStore;
+        $this->carrierSettingsProvider = $carrierSettingsProvider;
     }
 
-    /**
-     * @return RefreshLockerServiceProviderInterface
-     */
-    public function getRefreshLockerServiceProvider(): RefreshLockerServiceProviderInterface
+    public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
-        return $this->refreshLockerServiceProvider;
+        return $this->courierServiceProvider;
+    }
+
+    public function getLockerStore(): LockerStoreServiceProviderInterface
+    {
+        return $this->lockerStore;
+    }
+
+    public function getCarrierSettingsProvider(): CarrierSettingsProviderInterface
+    {
+        return $this->carrierSettingsProvider;
     }
 }

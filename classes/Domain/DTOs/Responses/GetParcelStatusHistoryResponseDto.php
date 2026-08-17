@@ -4,48 +4,55 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\ParcelStatusHistory\ExpeditionObject;
-use Sameday\Objects\ParcelStatusHistory\HistoryObject;
-use Sameday\Objects\ParcelStatusHistory\SummaryObject;
-
 final class GetParcelStatusHistoryResponseDto
 {
-    private SummaryObject $summary;
+    /**
+     * @var mixed
+     */
+    private $summary;
 
     /**
-     * @var HistoryObject[]
+     * @var array<int, mixed>
      */
     private array $history;
 
-    private ExpeditionObject $expeditionStatus;
+    /**
+     * @var mixed
+     */
+    private $expeditionStatus;
 
     /**
-     * @param HistoryObject[] $history
+     * @param mixed $summary
+     * @param array<int, mixed> $history
+     * @param mixed $expeditionStatus
      */
-    public function __construct(
-        SummaryObject $summary,
-        array $history,
-        ExpeditionObject $expeditionStatus
-    ) {
+    public function __construct($summary, array $history, $expeditionStatus)
+    {
         $this->summary = $summary;
         $this->history = $history;
         $this->expeditionStatus = $expeditionStatus;
     }
 
-    public function getSummary(): SummaryObject
+    /**
+     * @return mixed
+     */
+    public function getSummary()
     {
         return $this->summary;
     }
 
     /**
-     * @return HistoryObject[]
+     * @return array<int, mixed>
      */
     public function getHistory(): array
     {
         return $this->history;
     }
 
-    public function getExpeditionStatus(): ExpeditionObject
+    /**
+     * @return mixed
+     */
+    public function getExpeditionStatus()
     {
         return $this->expeditionStatus;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
-use Sameday\Objects\PickupPoint\PickupPointObject;
+use SamedayCourier\Shipping\Domain\DTOs\CourierPickupPointDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
@@ -91,44 +91,44 @@ class SamedayPickupPointRepository extends AbstractRepository
     }
 
     /**
-     * @param PickupPointObject $pickupPointObject
+     * @param CourierPickupPointDto $pickupPoint
      *
      * @return void
      */
-    public function addPickupPoint(PickupPointObject $pickupPointObject): void
+    public function addPickupPoint(CourierPickupPointDto $pickupPoint): void
     {
         $this->dbHandler->insertRow(
             $this->getTableName(),
             [
-                'sameday_id' => $pickupPointObject->getId(),
-                'sameday_alias' => $pickupPointObject->getAlias(),
+                'sameday_id' => $pickupPoint->getId(),
+                'sameday_alias' => $pickupPoint->getAlias(),
                 'is_testing' => $this->isTesting(),
-                'city' => $pickupPointObject->getCity()->getName(),
-                'county' => $pickupPointObject->getCounty()->getName(),
-                'address' => $pickupPointObject->getAddress(),
-                'default_pickup_point' => $pickupPointObject->isDefault(),
-                'contactPersons' => serialize($pickupPointObject->getContactPersons()),
+                'city' => $pickupPoint->getCityName(),
+                'county' => $pickupPoint->getCountyName(),
+                'address' => $pickupPoint->getAddress(),
+                'default_pickup_point' => $pickupPoint->isDefault(),
+                'contactPersons' => $pickupPoint->getSerializedContactPersons(),
             ]
         );
     }
 
     /**
-     * @param PickupPointObject $pickupPointObject
+     * @param CourierPickupPointDto $pickupPoint
      * @param int $id
      *
      * @return bool
      */
-    public function updatePickupPoint(PickupPointObject $pickupPointObject, int $id): bool
+    public function updatePickupPoint(CourierPickupPointDto $pickupPoint, int $id): bool
     {
         return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
-                'sameday_alias' => $pickupPointObject->getAlias(),
-                'city' => $pickupPointObject->getCity()->getName(),
-                'county' => $pickupPointObject->getCounty()->getName(),
-                'address' => $pickupPointObject->getAddress(),
-                'default_pickup_point' => $pickupPointObject->isDefault(),
-                'contactPersons' => serialize($pickupPointObject->getContactPersons()),
+                'sameday_alias' => $pickupPoint->getAlias(),
+                'city' => $pickupPoint->getCityName(),
+                'county' => $pickupPoint->getCountyName(),
+                'address' => $pickupPoint->getAddress(),
+                'default_pickup_point' => $pickupPoint->isDefault(),
+                'contactPersons' => $pickupPoint->getSerializedContactPersons(),
             ],
             [
                 'id' => $id,

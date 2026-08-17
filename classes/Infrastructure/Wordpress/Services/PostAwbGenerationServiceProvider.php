@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
+use Sameday\Objects\PostAwb\ParcelObject;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbGenerationResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
@@ -12,8 +14,15 @@ use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressArchive;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressUpdater;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
 use Throwable;
 
 final class PostAwbGenerationServiceProvider implements PostAwbGenerationServiceProviderInterface
@@ -25,13 +34,20 @@ final class PostAwbGenerationServiceProvider implements PostAwbGenerationService
     private SamedayAwbRepository $samedayAwbRepository;
 
     public function __construct(
-        DbHandler $dbHandler,
-        OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater,
-        SamedayAwbRepository $samedayAwbRepository
+        ?DbHandler $dbHandler = null,
+        ?OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater = null,
+        ?SamedayAwbRepository $samedayAwbRepository = null
     ) {
-        $this->dbHandler = $dbHandler;
-        $this->orderShippingAddressUpdater = $orderShippingAddressUpdater;
-        $this->samedayAwbRepository = $samedayAwbRepository;
+        $resolvedDbHandler = $dbHandler ?? new DbHandler();
+        $this->dbHandler = $resolvedDbHandler;
+        $this->samedayAwbRepository = $samedayAwbRepository ?? new SamedayAwbRepository($resolvedDbHandler);
+        $this->orderShippingAddressUpdater = $orderShippingAddressUpdater ?? new WooOrderShippingAddressUpdater(
+            new WooOrderAddressRepository($resolvedDbHandler),
+            new WooOrderShippingAddressArchive(),
+            new LockerDtoFactory(new SamedayLockerRepository($resolvedDbHandler)),
+            new WooSamedayShippingHdAddressParser(),
+            new WooStateCodeResolver(new WooCountriesHandler()),
+        );
     }
 
     /**
@@ -49,10 +65,20 @@ final class PostAwbGenerationServiceProvider implements PostAwbGenerationService
         $awbNumber = $postAwbGenerationRequestDto->getAwbNumber();
 
         try {
+            $parcels = array_map(
+                static function (array $parcel): ParcelObject {
+                    return new ParcelObject(
+                        (int) $parcel['position'],
+                        (string) $parcel['awbNumber']
+                    );
+                },
+                $postAwbGenerationRequestDto->getParcels()
+            );
+
             $this->samedayAwbRepository->saveAwb([
                 'order_id' => $postAwbGenerationRequestDto->getOrderId(),
                 'awb_number' => $awbNumber,
-                'parcels' => serialize($postAwbGenerationRequestDto->getParcels()),
+                'parcels' => serialize($parcels),
                 'awb_cost' => $postAwbGenerationRequestDto->getAwbCost(),
             ]);
         } catch (Throwable $exception) {

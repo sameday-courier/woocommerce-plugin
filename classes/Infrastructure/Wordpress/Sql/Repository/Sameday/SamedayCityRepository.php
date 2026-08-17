@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
+use SamedayCourier\Shipping\Domain\DTOs\CitySourceDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -11,7 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayCityMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use RuntimeException;
-use stdClass;
 use Throwable;
 
 class SamedayCityRepository extends AbstractRepository implements CityPostalCodeProviderInterface
@@ -85,23 +85,23 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @param stdClass $cityObject
+     * @param CitySourceDto $city
      *
      * @return void
      */
-    public function addCity(stdClass $cityObject): void
+    public function addCity(CitySourceDto $city): void
     {
-        $countyCode = $cityObject->county_code;
-        if ($cityObject->country_code === CarrierConstants::API_HOST_LOCALE_BG) {
-            $countyCode = CarrierConstants::API_HOST_LOCALE_BG . "-" . $cityObject->county_code;
+        $countyCode = $city->getCountyCode();
+        if ($city->getCountryCode() === CarrierConstants::API_HOST_LOCALE_BG) {
+            $countyCode = CarrierConstants::API_HOST_LOCALE_BG . "-" . $city->getCountyCode();
         }
 
         $data = [
-            'city_id' => $cityObject->city_id,
-            'city_name' => $cityObject->city_name,
+            'city_id' => $city->getCityId(),
+            'city_name' => $city->getCityName(),
             'county_code' => $countyCode,
-            'postal_code' => $cityObject->postal_code,
-            'country_code' => $cityObject->country_code,
+            'postal_code' => $city->getPostalCode(),
+            'country_code' => $city->getCountryCode(),
         ];
 
         $this->dbHandler->insertRow($this->getTableName(), $data);

@@ -9,6 +9,20 @@ use JsonException;
 use Sameday\Exceptions\SamedayBadRequestException;
 use Sameday\Exceptions\SamedayOtherException;
 use Sameday\Exceptions\SamedaySDKException;
+use Sameday\Objects\CityObject;
+use Sameday\Objects\CountyObject;
+use Sameday\Objects\Locker\LockerObject;
+use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
+use Sameday\Objects\PickupPoint\PickupPointObject;
+use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
+use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
+use Sameday\Objects\PostAwb\Request\ThirdPartyPickupEntityObject;
+use Sameday\Objects\Service\ServiceObject;
+use Sameday\Objects\Types\AwbPaymentType;
+use Sameday\Objects\Types\AwbPdfType;
+use Sameday\Objects\Types\CodCollectorType;
+use Sameday\Objects\Types\DeliveryIntervalServiceType;
+use Sameday\Objects\Types\PackageType;
 use Sameday\Requests\SamedayDeleteAwbRequest;
 use Sameday\Requests\SamedayDeletePickupPointRequest;
 use Sameday\Requests\SamedayGetAwbPdfRequest;
@@ -23,6 +37,10 @@ use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
 use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
+use SamedayCourier\Shipping\Domain\DTOs\CourierLockerDto;
+use SamedayCourier\Shipping\Domain\DTOs\CourierPickupPointDto;
+use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
+use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\DeletePickupPointResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
@@ -83,21 +101,32 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function postAwb(PostAwbRequestDto $awbRequestDto): PostAwbResponseDto
     {
         try {
+            $cashOnDeliveryCollector = null !== $awbRequestDto->getCashOnDeliveryCollector()
+                ? new CodCollectorType($awbRequestDto->getCashOnDeliveryCollector())
+                : null;
+            $deliveryIntervalServiceType = null !== $awbRequestDto->getDeliveryIntervalServiceType()
+                ? new DeliveryIntervalServiceType($awbRequestDto->getDeliveryIntervalServiceType())
+                : null;
+            $thirdPartyPickup = $awbRequestDto->getThirdPartyPickup();
+            if (!$thirdPartyPickup instanceof ThirdPartyPickupEntityObject) {
+                $thirdPartyPickup = null;
+            }
+
             $postAwb = $this->sameday->postAwb(
                 new SamedayPostAwbRequest(
                     $awbRequestDto->getPickupPointId(),
                     $awbRequestDto->getContactPersonId(),
-                    $awbRequestDto->getPackageType(),
-                    $awbRequestDto->getParcelsDimensions(),
+                    new PackageType($awbRequestDto->getPackageType()),
+                    $this->parcelDimensionsFactory->fromList($awbRequestDto->getParcelsDimensions()),
                     $awbRequestDto->getServiceId(),
-                    $awbRequestDto->getAwbPayment(),
-                    $awbRequestDto->getAwbRecipient(),
+                    new AwbPaymentType($awbRequestDto->getAwbPayment()),
+                    $this->toAwbRecipientEntity($awbRequestDto->getAwbRecipient()),
                     $awbRequestDto->getInsuredValue(),
                     $awbRequestDto->getCashOnDeliveryAmount(),
-                    $awbRequestDto->getCashOnDeliveryCollector(),
-                    $awbRequestDto->getThirdPartyPickup(),
+                    $cashOnDeliveryCollector,
+                    $thirdPartyPickup,
                     $awbRequestDto->getServiceTaxIds(),
-                    $awbRequestDto->getDeliveryIntervalServiceType(),
+                    $deliveryIntervalServiceType,
                     $awbRequestDto->getReference(),
                     $awbRequestDto->getObservation(),
                     $awbRequestDto->getPriceObservation(),
@@ -113,11 +142,38 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             return new PostAwbResponseDto(
                 $postAwb->getAwbNumber(),
                 (float) $postAwb->getCost(),
-                $postAwb->getParcels()
+                array_map(
+                    static function ($parcel): array {
+                        return [
+                            'position' => (int) $parcel->getPosition(),
+                            'awbNumber' => (string) $parcel->getAwbNumber(),
+                        ];
+                    },
+                    $postAwb->getParcels()
+                )
             );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
+    }
+
+    private function toAwbRecipientEntity(RecipientDto $recipient): AwbRecipientEntityObject
+    {
+        $companyName = $recipient->getCompany();
+        $company = (null !== $companyName && '' !== $companyName)
+            ? new CompanyEntityObject($companyName)
+            : null;
+
+        return new AwbRecipientEntityObject(
+            $recipient->getCity(),
+            $recipient->getCounty(),
+            $recipient->getAddress(),
+            $recipient->getName(),
+            $recipient->getPhone(),
+            $recipient->getEmail(),
+            $company,
+            $recipient->getPostcode(),
+        );
     }
 
     /**
@@ -145,7 +201,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $pdfResponse = $this->sameday->getAwbPdf(
                 new SamedayGetAwbPdfRequest(
                     $showAsPdfRequestDto->getAwbNumber(),
-                    $showAsPdfRequestDto->getAwbPdfType()
+                    new AwbPdfType($showAsPdfRequestDto->getAwbPdfType())
                 )
             );
 
@@ -219,7 +275,18 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $request->setPage($requestDto->getPage());
             $response = $this->sameday->getCities($request);
 
-            return new GetCitiesResponseDto($response->getCities(), $response->getPages());
+            return new GetCitiesResponseDto(
+                array_map(
+                    static function (CityObject $city): array {
+                        return [
+                            'id' => $city->getId(),
+                            'name' => $city->getName(),
+                        ];
+                    },
+                    $response->getCities()
+                ),
+                $response->getPages()
+            );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
@@ -235,7 +302,17 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 new SamedayGetCountiesRequest($requestDto->getName())
             );
 
-            return new GetCountiesResponseDto($response->getCounties());
+            return new GetCountiesResponseDto(
+                array_map(
+                    static function (CountyObject $county): array {
+                        return [
+                            'id' => $county->getId(),
+                            'name' => $county->getName(),
+                        ];
+                    },
+                    $response->getCounties()
+                )
+            );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
@@ -251,7 +328,22 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $request->setPage($requestDto->getPage());
             $response = $this->sameday->getServices($request);
 
-            return new GetServicesResponseDto($response->getServices(), $response->getPages());
+            return new GetServicesResponseDto(
+                array_map(
+                    static function (ServiceObject $service): CourierServiceDto {
+                        $optionalTaxes = $service->getOptionalTaxes();
+
+                        return new CourierServiceDto(
+                            $service->getId(),
+                            $service->getName(),
+                            $service->getCode(),
+                            !empty($optionalTaxes) ? serialize($optionalTaxes) : null
+                        );
+                    },
+                    $response->getServices()
+                ),
+                $response->getPages()
+            );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
@@ -267,7 +359,25 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $request->setPage($requestDto->getPage());
             $response = $this->sameday->getLockers($request);
 
-            return new GetLockersResponseDto($response->getLockers(), $response->getPages());
+            return new GetLockersResponseDto(
+                array_map(
+                    static function (LockerObject $locker): CourierLockerDto {
+                        return new CourierLockerDto(
+                            $locker->getId(),
+                            $locker->getName(),
+                            $locker->getCity(),
+                            $locker->getCounty(),
+                            $locker->getAddress(),
+                            (string) $locker->getLat(),
+                            (string) $locker->getLong(),
+                            (string) $locker->getPostalCode(),
+                            serialize($locker->getBoxes())
+                        );
+                    },
+                    $response->getLockers()
+                ),
+                $response->getPages()
+            );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
@@ -284,7 +394,20 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $response = $this->sameday->getPickupPoints($request);
 
             return new GetPickupPointsResponseDto(
-                $response->getPickupPoints(),
+                array_map(
+                    static function (PickupPointObject $pickupPoint): CourierPickupPointDto {
+                        return new CourierPickupPointDto(
+                            $pickupPoint->getId(),
+                            $pickupPoint->getAlias(),
+                            $pickupPoint->getCity()->getName(),
+                            $pickupPoint->getCounty()->getName(),
+                            $pickupPoint->getAddress(),
+                            $pickupPoint->isDefault(),
+                            serialize($pickupPoint->getContactPersons())
+                        );
+                    },
+                    $response->getPickupPoints()
+                ),
                 $response->getPages()
             );
         } catch (Exception $exception) {
@@ -298,6 +421,17 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function postPickupPoint(PostPickupPointRequestDto $requestDto): PostPickupPointResponseDto
     {
         try {
+            $contactPersons = array_map(
+                static function (array $contactPerson): PickupPointContactPersonObject {
+                    return new PickupPointContactPersonObject(
+                        $contactPerson['name'],
+                        $contactPerson['phone'],
+                        $contactPerson['default']
+                    );
+                },
+                $requestDto->getContactPersons()
+            );
+
             $this->sameday->postPickupPoint(
                 new SamedayPostPickupPointRequest(
                     $requestDto->getCountryId(),
@@ -306,7 +440,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                     $requestDto->getAddress(),
                     $requestDto->getPostalCode(),
                     $requestDto->getAlias(),
-                    $requestDto->getContactPersons(),
+                    $contactPersons,
                     $requestDto->isDefaultPickupPoint()
                 )
             );

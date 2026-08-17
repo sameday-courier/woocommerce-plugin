@@ -30,4 +30,11 @@ interface OrderAwbStoreServiceProviderInterface
      * @return bool
      */
     public function appendParcel(CarrierAwb $awb, int $position, string $parcelAwbNumber): bool;
+
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string[]
+     */
+    public function parcelAwbNumbers(CarrierAwb $awb): array;
 }

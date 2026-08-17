@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\Service\ServiceObject;
+use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
 
 final class GetServicesResponseDto
 {
     /**
-     * @var ServiceObject[]
+     * @var CourierServiceDto[]
      */
     private array $services;
 
     private int $pages;
 
     /**
-     * @param ServiceObject[] $services
+     * @param CourierServiceDto[] $services
      */
     public function __construct(array $services, int $pages)
     {
@@ -25,7 +25,7 @@ final class GetServicesResponseDto
     }
 
     /**
-     * @return ServiceObject[]
+     * @return CourierServiceDto[]
      */
     public function getServices(): array
     {

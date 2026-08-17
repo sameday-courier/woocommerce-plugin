@@ -4,39 +4,29 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
-use SamedayCourier\Shipping\Domain\Ports\EditServiceServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 
 final class EditServiceRequest
 {
     private EditServiceItem $editServiceItem;
 
-    private EditServiceServiceProviderInterface $editServiceServiceProvider;
+    private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
-    /**
-     * @param EditServiceItem $editServiceItem
-     * @param EditServiceServiceProviderInterface $editServiceServiceProvider
-     */
     public function __construct(
         EditServiceItem $editServiceItem,
-        EditServiceServiceProviderInterface $editServiceServiceProvider
+        ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
     ) {
         $this->editServiceItem = $editServiceItem;
-        $this->editServiceServiceProvider = $editServiceServiceProvider;
+        $this->serviceCatalogStore = $serviceCatalogStore;
     }
 
-    /**
-     * @return EditServiceItem
-     */
     public function getEditServiceItem(): EditServiceItem
     {
         return $this->editServiceItem;
     }
 
-    /**
-     * @return EditServiceServiceProviderInterface
-     */
-    public function getEditServiceServiceProvider(): EditServiceServiceProviderInterface
+    public function getServiceCatalogStore(): ServiceCatalogStoreServiceProviderInterface
     {
-        return $this->editServiceServiceProvider;
+        return $this->serviceCatalogStore;
     }
 }

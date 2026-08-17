@@ -10,6 +10,7 @@ final class CarrierConstants
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
     public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
     public const CASH_ON_DELIVERY = 'cod';
+    public const COD_COLLECTOR_CLIENT = 1;
     public const LOCKER_NEXT_DAY_CODE = "LN";
     public const SAMEDAY_6H_CODE = "6H";
     public const STANDARD_24H_CODE = "24";

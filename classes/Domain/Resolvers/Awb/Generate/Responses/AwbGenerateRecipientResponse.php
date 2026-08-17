@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses;
 
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 

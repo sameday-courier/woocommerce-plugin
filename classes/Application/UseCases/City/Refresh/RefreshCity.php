@@ -5,38 +5,51 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\CitiesRefreshRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\CitiesServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CityCatalogStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CitySourceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 
 final class RefreshCity
 {
-    /**
-     * @var CitiesServiceProviderInterface $citiesServiceProvider
-     */
-    private CitiesServiceProviderInterface $citiesServiceProvider;
+    private CityCatalogStoreServiceProviderInterface $cityCatalogStore;
 
-    /**
-     * @param RefreshCityRequest $refreshCitiesRequest
-     */
+    private CitySourceProviderInterface $citySourceProvider;
+
+    private CountriesHandlerInterface $countriesHandler;
+
     public function __construct(RefreshCityRequest $refreshCitiesRequest)
     {
-        $this->citiesServiceProvider = $refreshCitiesRequest->getCitiesServiceProvider();
+        $this->cityCatalogStore = $refreshCitiesRequest->getCityCatalogStore();
+        $this->citySourceProvider = $refreshCitiesRequest->getCitySourceProvider();
+        $this->countriesHandler = $refreshCitiesRequest->getCountriesHandler();
     }
 
-    /**
-     * @return RefreshCityResponse
-     */
     public function execute(): RefreshCityResponse
     {
-        $citiesRefreshResponse = $this->citiesServiceProvider->refresh(
-            new CitiesRefreshRequestDto()
-        );
+        $this->cityCatalogStore->ensureTableExists();
+
+        $cities = $this->citySourceProvider->readCities();
+        if (null === $cities) {
+            return new RefreshCityResponse(
+                'Unable to get cities',
+                ResponseNoticeType::ERROR
+            );
+        }
+
+        $this->cityCatalogStore->truncate();
+
+        $shippingCountries = $this->countriesHandler->getShippingCountries();
+        foreach ($cities as $city) {
+            if (array_key_exists($city->getCountryCode(), $shippingCountries)) {
+                $this->cityCatalogStore->insert($city);
+            }
+        }
+
+        $this->cityCatalogStore->refreshCache();
 
         return new RefreshCityResponse(
-            $citiesRefreshResponse->getMessage(),
-            $citiesRefreshResponse->isSuccess()
-                ? ResponseNoticeType::SUCCESS
-                : ResponseNoticeType::ERROR,
+            'All cities have been refreshed',
+            ResponseNoticeType::SUCCESS
         );
     }
 }

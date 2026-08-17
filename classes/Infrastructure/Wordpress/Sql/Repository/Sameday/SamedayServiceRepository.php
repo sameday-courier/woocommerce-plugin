@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Objects\Service\ServiceObject;
 use Sameday\Objects\Types\CostType;
 use Sameday\Objects\Types\PackageType;
+use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
@@ -172,14 +172,12 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
     }
 
     /**
-     * @param ServiceObject $service
+     * @param CourierServiceDto $service
      *
      * @return void
      */
-    public function addService(ServiceObject $service): void
+    public function addService(CourierServiceDto $service): void
     {
-        $optionalTaxes = $service->getOptionalTaxes();
-
         $this->dbHandler->insertRow(
             $this->getTableName(),
             [
@@ -188,7 +186,7 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
                 'sameday_code' => $service->getCode(),
                 'is_testing' => $this->isTesting(),
                 'status' => 0,
-                'service_optional_taxes' => !empty($optionalTaxes) ? serialize($optionalTaxes) : null,
+                'service_optional_taxes' => $service->getSerializedOptionalTaxes(),
             ]
         );
     }
@@ -213,26 +211,24 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
     }
 
     /**
-     * @param ServiceObject $serviceObject
+     * @param CourierServiceDto $service
      * @param int $id
      *
      * @return bool
      */
-    public function updateServiceCode(ServiceObject $serviceObject, int $id): bool
+    public function updateServiceCode(CourierServiceDto $service, int $id): bool
     {
-        $serviceName = $serviceObject->getName();
-        if ($serviceObject->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
+        $serviceName = $service->getName();
+        if ($service->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$this->carrierSettingsProvider->get()->getHostCountry()];
         }
 
         return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
-                'sameday_code' => $serviceObject->getCode(),
+                'sameday_code' => $service->getCode(),
                 'name' => $serviceName,
-                'service_optional_taxes' => !empty($serviceObject->getOptionalTaxes())
-                    ? serialize($serviceObject->getOptionalTaxes())
-                    : null,
+                'service_optional_taxes' => $service->getSerializedOptionalTaxes(),
             ],
             [
                 'id' => $id,

@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\EditServiceServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
 
 final class EditServiceController extends AbstractController
 {
@@ -46,7 +46,7 @@ final class EditServiceController extends AbstractController
         $editService = new EditService(
             new EditServiceRequest(
                 EditServiceItem::fromArray($inputParams),
-                new EditServiceServiceProvider()
+                new ServiceCatalogStoreServiceProvider()
             )
         );
 

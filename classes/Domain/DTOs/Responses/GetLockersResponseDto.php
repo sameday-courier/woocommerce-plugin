@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\Locker\LockerObject;
+use SamedayCourier\Shipping\Domain\DTOs\CourierLockerDto;
 
 final class GetLockersResponseDto
 {
     /**
-     * @var LockerObject[]
+     * @var CourierLockerDto[]
      */
     private array $lockers;
 
     private int $pages;
 
     /**
-     * @param LockerObject[] $lockers
+     * @param CourierLockerDto[] $lockers
      */
     public function __construct(array $lockers, int $pages)
     {
@@ -25,7 +25,7 @@ final class GetLockersResponseDto
     }
 
     /**
-     * @return LockerObject[]
+     * @return CourierLockerDto[]
      */
     public function getLockers(): array
     {

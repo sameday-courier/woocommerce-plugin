@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Requests;
 
-use Sameday\Objects\Types\AwbPdfType;
-
 final class ShowAsPdfRequestDto
 {
     private string $awbNumber;
 
-    private AwbPdfType $awbPdfType;
+    private string $awbPdfType;
 
-    public function __construct(string $awbNumber, AwbPdfType $awbPdfType)
+    public function __construct(string $awbNumber, string $awbPdfType)
     {
         $this->awbNumber = $awbNumber;
         $this->awbPdfType = $awbPdfType;
@@ -23,7 +21,7 @@ final class ShowAsPdfRequestDto
         return $this->awbNumber;
     }
 
-    public function getAwbPdfType(): AwbPdfType
+    public function getAwbPdfType(): string
     {
         return $this->awbPdfType;
     }

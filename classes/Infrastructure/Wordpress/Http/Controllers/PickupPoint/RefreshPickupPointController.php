@@ -8,7 +8,8 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPick
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh\RefreshPickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshPickupPointServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PickupPointStoreServiceProvider;
 
 final class RefreshPickupPointController extends AbstractController
 {
@@ -33,7 +34,8 @@ final class RefreshPickupPointController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         $request = new RefreshPickupPointRequest(
-            new RefreshPickupPointServiceProvider()
+            new CourierServiceProvider(),
+            new PickupPointStoreServiceProvider()
         );
         $refreshPickupPoint = new RefreshPickupPoint($request);
 

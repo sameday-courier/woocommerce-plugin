@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
 
-use SamedayCourier\Shipping\Application\Common\Factories\CityRequestFactory;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
+use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CityCatalogStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CitySourceServiceProvider;
 
 final class RefreshCityController extends AbstractController
 {
@@ -43,7 +46,11 @@ final class RefreshCityController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         $refreshCity = new RefreshCity(
-            (new CityRequestFactory())->create()
+            new RefreshCityRequest(
+                new CityCatalogStoreServiceProvider(),
+                new CitySourceServiceProvider(),
+                new WooCountriesHandler()
+            )
         );
 
         $result = $refreshCity->execute();

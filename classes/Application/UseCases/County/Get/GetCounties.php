@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesServiceRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\GetCountiesServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCounties
 {
-    private GetCountiesServiceProviderInterface $getCountiesServiceProvider;
+    private CourierServiceProviderInterface $courierServiceProvider;
 
     public function __construct(GetCountiesRequest $getCountiesRequest)
     {
-        $this->getCountiesServiceProvider = $getCountiesRequest->getGetCountiesServiceProvider();
+        $this->courierServiceProvider = $getCountiesRequest->getCourierServiceProvider();
     }
 
     /**
@@ -22,11 +23,13 @@ final class GetCounties
      */
     public function execute(): GetCountiesResponse
     {
-        $response = $this->getCountiesServiceProvider->get(new GetCountiesServiceRequestDto());
-
-        if (!$response->isSuccess()) {
+        try {
+            $counties = $this->courierServiceProvider
+                ->getCounties(new GetCountiesRequestDto(null))
+                ->getCounties();
+        } catch (CourierServiceException $exception) {
             return new GetCountiesResponse(
-                $response->getMessage(),
+                $exception->getMessage(),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -34,7 +37,7 @@ final class GetCounties
         return new GetCountiesResponse(
             null,
             ResponseNoticeType::SUCCESS,
-            $response->getCounties(),
+            $counties,
         );
     }
 }

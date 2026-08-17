@@ -12,8 +12,16 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\GenerateAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PickupPointStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostAwbGenerationServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 
 final class GenerateAwbController extends AbstractController
 {
@@ -59,7 +67,14 @@ final class GenerateAwbController extends AbstractController
             $generateAwb = new GenerateAwb(
                 new GenerateAwbRequest(
                     $generateAwbItem,
-                    new GenerateAwbServiceProvider()
+                    new ServiceCatalogStoreServiceProvider(),
+                    new PickupPointStoreServiceProvider(),
+                    new OrderAwbStoreServiceProvider(),
+                    new CourierServiceProvider(),
+                    new PostAwbGenerationServiceProvider(),
+                    new WooSamedayShippingHdAddressParser(),
+                    new WooStateCodeResolver(new WooCountriesHandler()),
+                    new SamedayCityRepository()
                 )
             );
             $result = $generateAwb->execute();

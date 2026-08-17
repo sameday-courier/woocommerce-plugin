@@ -75,6 +75,59 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
     }
 
     /**
+     * @param CarrierAwb $awb
+     *
+     * @return string[]
+     */
+    public function parcelAwbNumbers(CarrierAwb $awb): array
+    {
+        $parcelAwbNumbers = $this->extractParcelAwbNumbers($awb->getParcels());
+        if ([] !== $parcelAwbNumbers) {
+            return $parcelAwbNumbers;
+        }
+
+        $mainAwbNumber = trim((string) $awb->getAwbNumber());
+        if ('' === $mainAwbNumber) {
+            return [];
+        }
+
+        return [$mainAwbNumber];
+    }
+
+    /**
+     * @param string|null $serializedParcels
+     *
+     * @return string[]
+     */
+    private function extractParcelAwbNumbers(?string $serializedParcels): array
+    {
+        if (null === $serializedParcels || '' === $serializedParcels) {
+            return [];
+        }
+
+        $parcels = $this->unserializeParcels($serializedParcels);
+        $parcelAwbNumbers = [];
+
+        foreach ($parcels as $parcel) {
+            if ($parcel instanceof ParcelObject) {
+                $parcelAwbNumber = trim($parcel->getAwbNumber());
+            } elseif (is_object($parcel) && method_exists($parcel, 'getAwbNumber')) {
+                $parcelAwbNumber = trim((string) $parcel->getAwbNumber());
+            } else {
+                continue;
+            }
+
+            if ('' === $parcelAwbNumber) {
+                continue;
+            }
+
+            $parcelAwbNumbers[] = $parcelAwbNumber;
+        }
+
+        return array_values(array_unique($parcelAwbNumbers));
+    }
+
+    /**
      * @return array<int, mixed>
      */
     private function unserializeParcels(string $parcels): array

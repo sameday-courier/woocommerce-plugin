@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Requests;
 
-use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
-
 final class PostPickupPointRequestDto
 {
     private $countryId;
@@ -21,7 +19,7 @@ final class PostPickupPointRequestDto
     private string $alias;
 
     /**
-     * @var PickupPointContactPersonObject[]
+     * @var array<int, array{name: string, phone: string, default: bool}>
      */
     private array $contactPersons;
 
@@ -31,7 +29,7 @@ final class PostPickupPointRequestDto
      * @param mixed $countryId
      * @param mixed $countyId
      * @param mixed $cityId
-     * @param PickupPointContactPersonObject[] $contactPersons
+     * @param array<int, array{name: string, phone: string, default?: bool}> $contactPersons
      */
     public function __construct(
         $countryId,
@@ -49,7 +47,16 @@ final class PostPickupPointRequestDto
         $this->address = $address;
         $this->postalCode = $postalCode;
         $this->alias = $alias;
-        $this->contactPersons = $contactPersons;
+        $this->contactPersons = array_map(
+            static function (array $contactPerson): array {
+                return [
+                    'name' => (string) ($contactPerson['name'] ?? ''),
+                    'phone' => (string) ($contactPerson['phone'] ?? ''),
+                    'default' => (bool) ($contactPerson['default'] ?? false),
+                ];
+            },
+            $contactPersons
+        );
         $this->defaultPickupPoint = $defaultPickupPoint;
     }
 
@@ -93,7 +100,7 @@ final class PostPickupPointRequestDto
     }
 
     /**
-     * @return PickupPointContactPersonObject[]
+     * @return array<int, array{name: string, phone: string, default: bool}>
      */
     public function getContactPersons(): array
     {

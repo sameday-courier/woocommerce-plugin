@@ -4,31 +4,87 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
-use SamedayCourier\Shipping\Domain\DTOs\Requests\ShowHistoryAwbRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\ShowHistoryAwbServiceProviderInterface;
+use RuntimeException;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetParcelStatusHistoryRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\PackageHistoryStoreServiceProviderInterface;
 
 final class ShowHistoryAwb
 {
     private ShowHistoryAwbItem $showHistoryAwbItem;
 
-    private ShowHistoryAwbServiceProviderInterface $showHistoryAwbServiceProvider;
+    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
+
+    private CourierServiceProviderInterface $courierServiceProvider;
+
+    private PackageHistoryStoreServiceProviderInterface $packageHistoryStore;
 
     public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
     {
         $this->showHistoryAwbItem = $showHistoryAwbRequest->getShowHistoryAwbItem();
-        $this->showHistoryAwbServiceProvider = $showHistoryAwbRequest->getShowHistoryAwbServiceProvider();
+        $this->orderAwbStore = $showHistoryAwbRequest->getOrderAwbStore();
+        $this->courierServiceProvider = $showHistoryAwbRequest->getCourierServiceProvider();
+        $this->packageHistoryStore = $showHistoryAwbRequest->getPackageHistoryStore();
     }
 
     public function execute(): ShowHistoryAwbResponse
     {
-        $showHistoryAwbResponse = $this->showHistoryAwbServiceProvider->showHistory(
-            new ShowHistoryAwbRequestDto($this->showHistoryAwbItem->getOrderId())
-        );
+        $orderId = $this->showHistoryAwbItem->getOrderId();
+        $awb = $this->orderAwbStore->getByOrderId($orderId);
+
+        if (null === $awb) {
+            return new ShowHistoryAwbResponse(
+                $orderId,
+                false,
+                []
+            );
+        }
+
+        $parcelAwbNumbers = $this->orderAwbStore->parcelAwbNumbers($awb);
+        if ([] === $parcelAwbNumbers) {
+            return new ShowHistoryAwbResponse(
+                $orderId,
+                true,
+                $this->packageHistoryStore->getForOrder($orderId)
+            );
+        }
+
+        $errors = [];
+        $hasRefreshedPackages = false;
+
+        foreach ($parcelAwbNumbers as $parcelAwbNumber) {
+            try {
+                $parcelStatus = $this->courierServiceProvider->getParcelStatusHistory(
+                    new GetParcelStatusHistoryRequestDto($parcelAwbNumber)
+                );
+
+                if (!$hasRefreshedPackages) {
+                    $this->packageHistoryStore->deleteByOrder($orderId);
+                    $hasRefreshedPackages = true;
+                }
+
+                $this->packageHistoryStore->refresh(
+                    $orderId,
+                    $parcelAwbNumber,
+                    $parcelStatus
+                );
+            } catch (CourierServiceException $exception) {
+                $errors[] = sprintf('%s: %s', $parcelAwbNumber, $exception->getMessage());
+            }
+        }
+
+        $packages = $this->packageHistoryStore->getForOrder($orderId);
+
+        if ([] === $packages && [] !== $errors) {
+            throw new RuntimeException(implode(' ', $errors));
+        }
 
         return new ShowHistoryAwbResponse(
-            $showHistoryAwbResponse->getOrderId(),
-            $showHistoryAwbResponse->isSuccess(),
-            $showHistoryAwbResponse->getPackages(),
+            $orderId,
+            true,
+            $packages
         );
     }
 }

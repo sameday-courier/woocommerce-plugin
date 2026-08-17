@@ -5,32 +5,59 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveOrderAwbRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\RemoveOrderAwbServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostRemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
 
 final class RemoveAwb
 {
     private RemoveAwbItem $removeAwbItem;
 
-    private RemoveOrderAwbServiceProviderInterface $removeOrderAwbServiceProvider;
+    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
+
+    private CourierServiceProviderInterface $courierServiceProvider;
+
+    private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
     public function __construct(RemoveAwbRequest $removeAwbRequest)
     {
         $this->removeAwbItem = $removeAwbRequest->getRemoveAwbItem();
-        $this->removeOrderAwbServiceProvider = $removeAwbRequest->getRemoveOrderAwbServiceProvider();
+        $this->orderAwbStore = $removeAwbRequest->getOrderAwbStore();
+        $this->courierServiceProvider = $removeAwbRequest->getCourierServiceProvider();
+        $this->postRemoveAwbServiceProvider = $removeAwbRequest->getPostRemoveAwbServiceProvider();
     }
 
     public function execute(): RemoveAwbResponse
     {
-        $removeOrderAwbResponse = $this->removeOrderAwbServiceProvider->remove(
-            new RemoveOrderAwbRequestDto($this->removeAwbItem->getOrderId())
-        );
+        $orderId = $this->removeAwbItem->getOrderId();
+        $awb = $this->orderAwbStore->getByOrderId($orderId);
+
+        if (null === $awb) {
+            return new RemoveAwbResponse(
+                "Invalid or inexistent an AWB for this OrderID: {$orderId}",
+                ResponseNoticeType::ERROR
+            );
+        }
+
+        try {
+            $this->courierServiceProvider->removeAwb(
+                new RemoveAwbRequestDto((string) $awb->getAwbNumber())
+            );
+        } catch (CourierServiceException $exception) {
+            return new RemoveAwbResponse(
+                $exception->getMessage(),
+                ResponseNoticeType::ERROR
+            );
+        }
+
+        $this->postRemoveAwbServiceProvider->apply(new PostRemoveAwbRequestDto($awb));
 
         return new RemoveAwbResponse(
-            $removeOrderAwbResponse->getMessage(),
-            $removeOrderAwbResponse->isSuccess()
-                ? ResponseNoticeType::SUCCESS
-                : ResponseNoticeType::ERROR,
+            'Awb removed with success.',
+            ResponseNoticeType::SUCCESS
         );
     }
 }

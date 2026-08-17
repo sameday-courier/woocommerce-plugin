@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickup
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\AddNewPickupPointServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 
 class AddNewPickupPointController extends AbstractController
 {
@@ -74,7 +74,7 @@ class AddNewPickupPointController extends AbstractController
 
         $request = new AddNewPickupPointRequest(
             AddNewPickupPointItem::fromArray($inputParams),
-            new AddNewPickupPointServiceProvider()
+            new CourierServiceProvider()
         );
 
         $addNewPickupPoint = new AddNewPickupPoint($request);

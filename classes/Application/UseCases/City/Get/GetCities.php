@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesServiceRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\GetCitiesServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCities
 {
     private GetCitiesItem $getCitiesItem;
 
-    private GetCitiesServiceProviderInterface $getCitiesServiceProvider;
+    private CourierServiceProviderInterface $courierServiceProvider;
 
     public function __construct(GetCitiesRequest $getCitiesRequest)
     {
         $this->getCitiesItem = $getCitiesRequest->getGetCitiesItem();
-        $this->getCitiesServiceProvider = $getCitiesRequest->getGetCitiesServiceProvider();
+        $this->courierServiceProvider = $getCitiesRequest->getCourierServiceProvider();
     }
 
     /**
@@ -25,21 +26,35 @@ final class GetCities
      */
     public function execute(): GetCitiesResponse
     {
-        $response = $this->getCitiesServiceProvider->get(
-            new GetCitiesServiceRequestDto($this->getCitiesItem->getCountyId())
-        );
+        $page = 1;
+        $remoteCities = [];
 
-        if (!$response->isSuccess()) {
-            return new GetCitiesResponse(
-                $response->getMessage(),
-                ResponseNoticeType::ERROR,
-            );
-        }
+        do {
+            try {
+                $cities = $this->courierServiceProvider->getCities(
+                    new GetCitiesRequestDto(
+                        $this->getCitiesItem->getCountyId(),
+                        null,
+                        null,
+                        $page++
+                    )
+                );
+            } catch (CourierServiceException $exception) {
+                return new GetCitiesResponse(
+                    $exception->getMessage(),
+                    ResponseNoticeType::ERROR,
+                );
+            }
+
+            foreach ($cities->getCities() as $city) {
+                $remoteCities[] = $city;
+            }
+        } while ($page <= $cities->getPages());
 
         return new GetCitiesResponse(
             null,
             ResponseNoticeType::SUCCESS,
-            $response->getCities(),
+            $remoteCities,
         );
     }
 }

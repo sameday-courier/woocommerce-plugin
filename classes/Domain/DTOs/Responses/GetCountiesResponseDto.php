@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
-use Sameday\Objects\CountyObject;
-
 final class GetCountiesResponseDto
 {
     /**
-     * @var CountyObject[]
+     * @var array<int, array{id: int, name: string}>
      */
     private array $counties;
 
     /**
-     * @param CountyObject[] $counties
+     * @param array<int, array{id: int, name: string}> $counties
      */
     public function __construct(array $counties)
     {
@@ -22,7 +20,7 @@ final class GetCountiesResponseDto
     }
 
     /**
-     * @return CountyObject[]
+     * @return array<int, array{id: int, name: string}>
      */
     public function getCounties(): array
     {

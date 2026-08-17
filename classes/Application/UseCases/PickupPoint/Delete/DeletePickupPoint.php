@@ -5,32 +5,38 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointServiceRequestDto;
-use SamedayCourier\Shipping\Domain\Ports\DeletePickupPointServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointRequestDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class DeletePickupPoint
 {
     private DeletePickupPointItem $deletePickupPointItem;
 
-    private DeletePickupPointServiceProviderInterface $deletePickupPointServiceProvider;
+    private CourierServiceProviderInterface $courierServiceProvider;
 
     public function __construct(DeletePickupPointRequest $deletePickupPointRequest)
     {
         $this->deletePickupPointItem = $deletePickupPointRequest->getDeletePickupPointItem();
-        $this->deletePickupPointServiceProvider = $deletePickupPointRequest->getDeletePickupPointServiceProvider();
+        $this->courierServiceProvider = $deletePickupPointRequest->getCourierServiceProvider();
     }
 
     public function execute(): DeletePickupPointResponse
     {
-        $response = $this->deletePickupPointServiceProvider->delete(
-            new DeletePickupPointServiceRequestDto($this->deletePickupPointItem->getSamedayId())
-        );
+        try {
+            $this->courierServiceProvider->deletePickupPoint(
+                new DeletePickupPointRequestDto($this->deletePickupPointItem->getSamedayId())
+            );
+        } catch (CourierServiceException $exception) {
+            return new DeletePickupPointResponse(
+                'Failed to delete pickup point: ' . $exception->getMessage(),
+                ResponseNoticeType::ERROR,
+            );
+        }
 
         return new DeletePickupPointResponse(
-            $response->getMessage(),
-            $response->isSuccess()
-                ? ResponseNoticeType::SUCCESS
-                : ResponseNoticeType::ERROR,
+            'Pickup point successfully deleted.',
+            ResponseNoticeType::SUCCESS,
         );
     }
 }
