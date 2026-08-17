@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
 use Sameday\Objects\CountyObject;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\GetCountiesRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartBulkRemoveAwb
@@ -42,7 +42,7 @@ final class StartBulkRemoveAwb
             );
         }
 
-        $job = BulkJob::create(
+        $job = BulkJobDto::create(
             $jobId,
             $this->userId,
             $orderIds

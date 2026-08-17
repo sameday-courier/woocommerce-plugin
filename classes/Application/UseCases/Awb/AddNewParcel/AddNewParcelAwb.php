@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 use Sameday\Objects\PostAwb\ParcelObject;
 use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\PostParcelRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostParcelRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;

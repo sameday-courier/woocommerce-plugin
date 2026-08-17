@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 
 interface BulkJobStoreInterface
 {
     /**
-     * @param BulkJob $job
+     * @param BulkJobDto $job
      *
      * @return void
      */
-    public function create(BulkJob $job): void;
+    public function create(BulkJobDto $job): void;
 
     /**
      * @param string $jobId
      * @param int $userId
      *
-     * @return BulkJob|null
+     * @return BulkJobDto|null
      */
-    public function get(string $jobId, int $userId): ?BulkJob;
+    public function get(string $jobId, int $userId): ?BulkJobDto;
 
     /**
-     * @param BulkJob $job
+     * @param BulkJobDto $job
      *
      * @return void
      */
-    public function save(BulkJob $job): void;
+    public function save(BulkJobDto $job): void;
 
     /**
      * @param string $jobId

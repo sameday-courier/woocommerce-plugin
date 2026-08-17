@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
@@ -27,7 +27,7 @@ final class TransientBulkJobStore implements BulkJobStoreInterface
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }
 
-    public function create(BulkJob $job): void
+    public function create(BulkJobDto $job): void
     {
         $this->cacheHandler->refreshCachedData(
             $this->buildKey($job->getJobId(), $job->getUserId()),
@@ -40,16 +40,16 @@ final class TransientBulkJobStore implements BulkJobStoreInterface
      * @param string $jobId
      * @param int $userId
      *
-     * @return BulkJob|null
+     * @return BulkJobDto|null
      */
-    public function get(string $jobId, int $userId): ?BulkJob
+    public function get(string $jobId, int $userId): ?BulkJobDto
     {
         $data = $this->cacheHandler->getCachedData($this->buildKey($jobId, $userId));
         if ([] === $data) {
             return null;
         }
 
-        $job = BulkJob::fromArray($data);
+        $job = BulkJobDto::fromArray($data);
         if ($job->getJobId() !== $jobId || $job->getUserId() !== $userId) {
             return null;
         }
@@ -58,11 +58,11 @@ final class TransientBulkJobStore implements BulkJobStoreInterface
     }
 
     /**
-     * @param BulkJob $job
+     * @param BulkJobDto $job
      *
      * @return void
      */
-    public function save(BulkJob $job): void
+    public function save(BulkJobDto $job): void
     {
         $this->cacheHandler->refreshCachedData(
             $this->buildKey($job->getJobId(), $job->getUserId()),

@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartAllImport
@@ -40,7 +40,7 @@ final class StartAllImport
             );
         }
 
-        $job = BulkJob::create(
+        $job = BulkJobDto::create(
             $jobId,
             $this->userId,
             $itemIds

@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\PostPickupPointRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostPickupPointRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 

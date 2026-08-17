@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
 use RuntimeException;
 use Sameday\Objects\PostAwb\ParcelObject;
-use SamedayCourier\Shipping\Domain\DTOs\GetParcelStatusHistoryRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetParcelStatusHistoryRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;

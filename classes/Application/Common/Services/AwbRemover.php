@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\Common\Services;
 
-use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\AwbNotFoundForOrderException;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;

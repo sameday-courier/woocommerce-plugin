@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
-use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationRequestDto;
-use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbGenerationResponseDto;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 
 interface PostAwbGenerationServiceProviderInterface

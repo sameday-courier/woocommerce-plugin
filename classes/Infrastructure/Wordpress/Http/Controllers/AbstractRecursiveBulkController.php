@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\BulkJob;
+use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
@@ -85,11 +85,11 @@ abstract class AbstractRecursiveBulkController extends AbstractController
 
     /**
      * @param TransientBulkJobStore $jobStore
-     * @param BulkJob $job
+     * @param BulkJobDto $job
      *
      * @return void
      */
-    private function sendDoneResponse(TransientBulkJobStore $jobStore, BulkJob $job): void
+    private function sendDoneResponse(TransientBulkJobStore $jobStore, BulkJobDto $job): void
     {
         $payload = [
             'done' => true,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\GetLockersRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetLockersRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;

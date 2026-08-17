@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\CitiesRefreshRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\CitiesRefreshRequestDto;
 use SamedayCourier\Shipping\Domain\Ports\CitiesServiceProviderInterface;
 
 final class RefreshCity

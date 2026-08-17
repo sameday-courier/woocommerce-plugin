@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
-use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshot;
+use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 
 interface GenerateAwbOrderProviderInterface
 {
     /**
      * @param int $orderId
      *
-     * @return GenerateAwbOrderSnapshot|null
+     * @return GenerateAwbOrderSnapshotDto|null
      */
-    public function getById(int $orderId): ?GenerateAwbOrderSnapshot;
+    public function getById(int $orderId): ?GenerateAwbOrderSnapshotDto;
 }

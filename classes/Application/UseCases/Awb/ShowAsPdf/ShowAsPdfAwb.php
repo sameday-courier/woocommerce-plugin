@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
 use Sameday\Objects\Types\AwbPdfType;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\ShowAsPdfRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\ShowAsPdfRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationRequestDto;
-use SamedayCourier\Shipping\Domain\DTOs\PostAwbGenerationResponseDto;
-use SamedayCourier\Shipping\Domain\DTOs\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbGenerationResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;

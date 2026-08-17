@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshot;
+use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
@@ -17,9 +17,9 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
     /**
      * @param int $orderId
      *
-     * @return GenerateAwbOrderSnapshot|null
+     * @return GenerateAwbOrderSnapshotDto|null
      */
-    public function getById(int $orderId): ?GenerateAwbOrderSnapshot
+    public function getById(int $orderId): ?GenerateAwbOrderSnapshotDto
     {
         $order = wc_get_order($orderId);
         if (!$order instanceof WC_Order) {
@@ -29,7 +29,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
         $shippingLines = $order->get_items('shipping');
         $paymentGateway = wc_get_payment_gateway_by_order($order);
 
-        return new GenerateAwbOrderSnapshot(
+        return new GenerateAwbOrderSnapshotDto(
             $orderId,
             $order->get_order_number(),
             (float) $order->get_total(),

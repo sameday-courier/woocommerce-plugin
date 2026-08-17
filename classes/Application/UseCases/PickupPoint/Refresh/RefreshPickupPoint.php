@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\GetPickupPointsRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetPickupPointsRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;

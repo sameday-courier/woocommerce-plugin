@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Domain\DTOs\CitiesRefreshRequestDto;
-use SamedayCourier\Shipping\Domain\DTOs\CitiesRefreshResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\CitiesRefreshRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\CitiesRefreshResponseDto;
 use SamedayCourier\Shipping\Domain\Ports\CitiesServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\FileReadHandler;
