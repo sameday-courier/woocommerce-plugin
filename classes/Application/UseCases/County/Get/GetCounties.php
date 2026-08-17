@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
-use Sameday\Objects\CountyObject;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
-use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesServiceRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\GetCountiesServiceProviderInterface;
 
 final class GetCounties
 {
-    private CourierServiceProviderInterface $courier;
+    private GetCountiesServiceProviderInterface $getCountiesServiceProvider;
 
     public function __construct(GetCountiesRequest $getCountiesRequest)
     {
-        $this->courier = $getCountiesRequest->getCourier();
+        $this->getCountiesServiceProvider = $getCountiesRequest->getGetCountiesServiceProvider();
     }
 
     /**
@@ -24,13 +22,11 @@ final class GetCounties
      */
     public function execute(): GetCountiesResponse
     {
-        try {
-            $samedayCounties = $this->courier
-                ->getCounties(new GetCountiesRequestDto(null))
-                ->getCounties();
-        } catch (CourierServiceException $exception) {
+        $response = $this->getCountiesServiceProvider->get(new GetCountiesServiceRequestDto());
+
+        if (!$response->isSuccess()) {
             return new GetCountiesResponse(
-                $exception->getMessage(),
+                $response->getMessage(),
                 ResponseNoticeType::ERROR,
             );
         }
@@ -38,15 +34,7 @@ final class GetCounties
         return new GetCountiesResponse(
             null,
             ResponseNoticeType::SUCCESS,
-            array_map(
-                static function (CountyObject $county): array {
-                    return [
-                        'id' => $county->getId(),
-                        'name' => $county->getName(),
-                    ];
-                },
-                $samedayCounties
-            ),
+            $response->getCounties(),
         );
     }
 }

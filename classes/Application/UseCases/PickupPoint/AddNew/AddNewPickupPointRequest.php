@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\AddNewPickupPointServiceProviderInterface;
 
 final class AddNewPickupPointRequest
 {
     private AddNewPickupPointItem $addNewPickupPointItem;
 
-    private CourierServiceProviderInterface $courier;
+    private AddNewPickupPointServiceProviderInterface $addNewPickupPointServiceProvider;
 
     public function __construct(
         AddNewPickupPointItem $addNewPickupPointItem,
-        CourierServiceProviderInterface $courier
+        AddNewPickupPointServiceProviderInterface $addNewPickupPointServiceProvider
     ) {
         $this->addNewPickupPointItem = $addNewPickupPointItem;
-        $this->courier = $courier;
+        $this->addNewPickupPointServiceProvider = $addNewPickupPointServiceProvider;
     }
 
     public function getAddNewPickupPointItem(): AddNewPickupPointItem
@@ -25,8 +25,8 @@ final class AddNewPickupPointRequest
         return $this->addNewPickupPointItem;
     }
 
-    public function getCourier(): CourierServiceProviderInterface
+    public function getAddNewPickupPointServiceProvider(): AddNewPickupPointServiceProviderInterface
     {
-        return $this->courier;
+        return $this->addNewPickupPointServiceProvider;
     }
 }

@@ -5,35 +5,19 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\GetLockersRequestDto;
-use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\RefreshLockerRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\RefreshLockerServiceProviderInterface;
 
 final class RefreshLocker
 {
-    /**
-     * @var SamedayLockerRepository $samedayLockerRepository
-     */
-    public SamedayLockerRepository $samedayLockerRepository;
-
-    public CourierServiceProviderInterface $courier;
-
-    /**
-     * @var CarrierSettingsProviderInterface
-     */
-    private CarrierSettingsProviderInterface $carrierSettingsProvider;
+    private RefreshLockerServiceProviderInterface $refreshLockerServiceProvider;
 
     /**
      * @param RefreshLockerRequest $refreshLockerRequest
      */
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
-        $this->samedayLockerRepository = $refreshLockerRequest->getSamedayLockerRepository();
-        $this->courier = $refreshLockerRequest->getCourier();
-        $this->carrierSettingsProvider = $refreshLockerRequest->getCarrierSettingsProvider();
+        $this->refreshLockerServiceProvider = $refreshLockerRequest->getRefreshLockerServiceProvider();
     }
 
     /**
@@ -41,64 +25,15 @@ final class RefreshLocker
      */
     public function execute(): RefreshLockerResponse
     {
-        $remoteLockers = [];
-        $page = 1;
-
-        do {
-            try {
-                $lockers = $this->courier->getLockers(new GetLockersRequestDto([], $page++));
-            } catch (CourierServiceException $e) {
-
-                return new RefreshLockerResponse(
-                    $e->getMessage(),
-                    ResponseNoticeType::ERROR,
-                );
-            }
-
-            foreach ($lockers->getLockers() as $lockerObject) {
-                $locker = $this->samedayLockerRepository->getLockerSameday($lockerObject->getId());
-                if (null === $locker) {
-                    $this->samedayLockerRepository->addLocker($lockerObject);
-                } elseif (!$this->samedayLockerRepository->updateLocker($lockerObject, $locker->getId())) {
-                    return new RefreshLockerResponse(
-                        'Unable to update locker',
-                        ResponseNoticeType::ERROR,
-                    );
-                }
-
-                $remoteLockers[] = $lockerObject->getId();
-            }
-        } while ($page <= $lockers->getPages());
-
-        $localLockers = array_map(
-            static function (CarrierLocker $locker) {
-                return [
-                    'id' => $locker->getId(),
-                    'locker_id' => (int) $locker->getLockerId(),
-                ];
-            },
-            $this->samedayLockerRepository->getLockers()
+        $refreshLockerResponse = $this->refreshLockerServiceProvider->refresh(
+            new RefreshLockerRequestDto()
         );
-
-        foreach ($localLockers as $localLocker) {
-            if (!in_array($localLocker['locker_id'], $remoteLockers, true)) {
-                $this->samedayLockerRepository->deleteLocker((int) $localLocker['id']);
-            }
-        }
-
-        $this->updateLastSyncTimestamp();
 
         return new RefreshLockerResponse(
-            "Lockers successfully refreshed.",
-            ResponseNoticeType::SUCCESS,
+            $refreshLockerResponse->getMessage(),
+            $refreshLockerResponse->isSuccess()
+                ? ResponseNoticeType::SUCCESS
+                : ResponseNoticeType::ERROR,
         );
-    }
-
-    /**
-     * @return void
-     */
-    private function updateLastSyncTimestamp(): void
-    {
-        $this->carrierSettingsProvider->setSamedaySyncLockersTs(time());
     }
 }

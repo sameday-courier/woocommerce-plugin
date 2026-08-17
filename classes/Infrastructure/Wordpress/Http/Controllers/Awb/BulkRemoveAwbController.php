@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\Common\Services\AwbRemover;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
@@ -15,6 +14,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRe
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveAwbServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RemoveOrderAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class BulkRemoveAwbController extends AbstractRecursiveBulkController
@@ -43,7 +43,7 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
             $result = (new RemoveAwb(
                 new RemoveAwbRequest(
                     new RemoveAwbItem($itemId),
-                    new AwbRemover(
+                    new RemoveOrderAwbServiceProvider(
                         $orderAwbProvider,
                         new RemoveAwbServiceProvider(),
                         new PostRemoveAwbServiceProvider($samedayAwbRepository)

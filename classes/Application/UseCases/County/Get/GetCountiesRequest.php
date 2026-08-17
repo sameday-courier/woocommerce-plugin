@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\GetCountiesServiceProviderInterface;
 
 final class GetCountiesRequest
 {
-    private CourierServiceProviderInterface $courier;
+    private GetCountiesServiceProviderInterface $getCountiesServiceProvider;
 
-    public function __construct(CourierServiceProviderInterface $courier)
+    public function __construct(GetCountiesServiceProviderInterface $getCountiesServiceProvider)
     {
-        $this->courier = $courier;
+        $this->getCountiesServiceProvider = $getCountiesServiceProvider;
     }
 
-    public function getCourier(): CourierServiceProviderInterface
+    public function getGetCountiesServiceProvider(): GetCountiesServiceProviderInterface
     {
-        return $this->courier;
+        return $this->getCountiesServiceProvider;
     }
 }

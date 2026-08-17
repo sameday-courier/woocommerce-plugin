@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceItem;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
@@ -13,6 +12,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\EditServiceServiceProvider;
 
 final class EditServiceController extends AbstractController
 {
@@ -46,7 +46,7 @@ final class EditServiceController extends AbstractController
         $editService = new EditService(
             new EditServiceRequest(
                 EditServiceItem::fromArray($inputParams),
-                new SamedayServiceRepository()
+                new EditServiceServiceProvider()
             )
         );
 

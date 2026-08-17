@@ -13,12 +13,16 @@ final class StartBulkGenerateAwbItem implements ItemInterface
      */
     private array $orderIds;
 
+    private int $userId;
+
     /**
      * @param int[] $orderIds
+     * @param int $userId
      */
-    public function __construct(array $orderIds)
+    public function __construct(array $orderIds, int $userId)
     {
         $this->orderIds = $orderIds;
+        $this->userId = $userId;
     }
 
     /**
@@ -47,7 +51,10 @@ final class StartBulkGenerateAwbItem implements ItemInterface
             )
         );
 
-        return new self($orderIds);
+        return new self(
+            $orderIds,
+            (int) ($inputParams['samedaycourier-user-id'] ?? 0)
+        );
     }
 
     /**
@@ -56,5 +63,10 @@ final class StartBulkGenerateAwbItem implements ItemInterface
     public function getOrderIds(): array
     {
         return $this->orderIds;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
     }
 }

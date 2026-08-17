@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\Common\Factories\AwbRequestFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\GenerateAwbItemFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooGenerateAwbOrderProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
@@ -16,6 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\GenerateAwbServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -52,7 +53,10 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
         try {
             $generateAwbItem = $generateAwbItemFactory->fromOrderId($itemId);
             $result = (new GenerateAwb(
-                (new AwbRequestFactory())->create($generateAwbItem)
+                new GenerateAwbRequest(
+                    $generateAwbItem,
+                    new GenerateAwbServiceProvider()
+                )
             ))->execute();
 
             $status = $result->hasNotices()

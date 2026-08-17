@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\Common\Factories\AwbRequestFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\GenerateAwbServiceProvider;
 
 final class GenerateAwbController extends AbstractController
 {
@@ -56,7 +57,10 @@ final class GenerateAwbController extends AbstractController
 
         try {
             $generateAwb = new GenerateAwb(
-                (new AwbRequestFactory())->create($generateAwbItem)
+                new GenerateAwbRequest(
+                    $generateAwbItem,
+                    new GenerateAwbServiceProvider()
+                )
             );
             $result = $generateAwb->execute();
         } catch (Exception $exception) {

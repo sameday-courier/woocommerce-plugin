@@ -4,30 +4,24 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Domain\Ports\EditServiceServiceProviderInterface;
 
 final class EditServiceRequest
 {
-    /**
-     * @var EditServiceItem $editServiceItem
-     */
     private EditServiceItem $editServiceItem;
 
-    /**
-     * @var SamedayServiceRepository $samedayServiceRepository
-     */
-    private SamedayServiceRepository $samedayServiceRepository;
+    private EditServiceServiceProviderInterface $editServiceServiceProvider;
 
     /**
      * @param EditServiceItem $editServiceItem
-     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param EditServiceServiceProviderInterface $editServiceServiceProvider
      */
     public function __construct(
         EditServiceItem $editServiceItem,
-        SamedayServiceRepository $samedayServiceRepository
+        EditServiceServiceProviderInterface $editServiceServiceProvider
     ) {
         $this->editServiceItem = $editServiceItem;
-        $this->samedayServiceRepository = $samedayServiceRepository;
+        $this->editServiceServiceProvider = $editServiceServiceProvider;
     }
 
     /**
@@ -39,10 +33,10 @@ final class EditServiceRequest
     }
 
     /**
-     * @return SamedayServiceRepository
+     * @return EditServiceServiceProviderInterface
      */
-    public function getSamedayServiceRepository(): SamedayServiceRepository
+    public function getEditServiceServiceProvider(): EditServiceServiceProviderInterface
     {
-        return $this->samedayServiceRepository;
+        return $this->editServiceServiceProvider;
     }
 }

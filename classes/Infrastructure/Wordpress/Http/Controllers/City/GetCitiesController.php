@@ -10,7 +10,7 @@ use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesItem;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\GetCitiesServiceProvider;
 
 final class GetCitiesController extends AbstractController
 {
@@ -40,7 +40,7 @@ final class GetCitiesController extends AbstractController
         $getCities = new GetCities(
             new GetCitiesRequest(
                 GetCitiesItem::fromArray($inputParams),
-                new CourierServiceProvider()
+                new GetCitiesServiceProvider()
             )
         );
 

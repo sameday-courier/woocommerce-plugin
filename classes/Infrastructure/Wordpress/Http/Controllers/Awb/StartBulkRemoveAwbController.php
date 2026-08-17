@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\StartBulkRemoveAwbServiceProvider;
 
 final class StartBulkRemoveAwbController extends AbstractController
 {
@@ -33,9 +33,13 @@ final class StartBulkRemoveAwbController extends AbstractController
     {
         $result = (new StartBulkRemoveAwb(
             new StartBulkRemoveAwbRequest(
-                StartBulkRemoveAwbItem::fromArray($inputParams),
-                $this->getCurrentUserId(),
-                new BulkJobStoreServiceProvider()
+                StartBulkRemoveAwbItem::fromArray(
+                    array_merge(
+                        $inputParams,
+                        ['samedaycourier-user-id' => $this->getCurrentUserId()]
+                    )
+                ),
+                new StartBulkRemoveAwbServiceProvider()
             )
         ))->execute();
 

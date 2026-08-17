@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshLockerServiceProvider;
 
 final class RefreshLockerController extends AbstractController
 {
@@ -35,9 +33,7 @@ final class RefreshLockerController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         $request = new RefreshLockerRequest(
-            new SamedayLockerRepository(),
-            new CourierServiceProvider(),
-            new CarrierSettingsServiceProvider()
+            new RefreshLockerServiceProvider()
         );
         $refreshLocker = new RefreshLocker($request);
 

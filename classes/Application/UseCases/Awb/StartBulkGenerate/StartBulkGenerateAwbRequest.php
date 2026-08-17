@@ -4,55 +4,29 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
+use SamedayCourier\Shipping\Domain\Ports\StartBulkGenerateAwbServiceProviderInterface;
 
 final class StartBulkGenerateAwbRequest
 {
     private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
 
-    private int $userId;
+    private StartBulkGenerateAwbServiceProviderInterface $startBulkGenerateAwbServiceProvider;
 
-    /**
-     * @var BulkJobStoreInterface
-     */
-    private BulkJobStoreInterface $bulkJobStore;
-
-    /**
-     * @param StartBulkGenerateAwbItem $startBulkGenerateAwbItem
-     * @param int $userId
-     * @param BulkJobStoreInterface $bulkJobStore
-     */
     public function __construct(
         StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
-        int $userId,
-        BulkJobStoreInterface $bulkJobStore
+        StartBulkGenerateAwbServiceProviderInterface $startBulkGenerateAwbServiceProvider
     ) {
         $this->startBulkGenerateAwbItem = $startBulkGenerateAwbItem;
-        $this->userId = $userId;
-        $this->bulkJobStore = $bulkJobStore;
+        $this->startBulkGenerateAwbServiceProvider = $startBulkGenerateAwbServiceProvider;
     }
 
-    /**
-     * @return StartBulkGenerateAwbItem
-     */
     public function getStartBulkGenerateAwbItem(): StartBulkGenerateAwbItem
     {
         return $this->startBulkGenerateAwbItem;
     }
 
-    /**
-     * @return int
-     */
-    public function getUserId(): int
+    public function getStartBulkGenerateAwbServiceProvider(): StartBulkGenerateAwbServiceProviderInterface
     {
-        return $this->userId;
-    }
-
-    /**
-     * @return BulkJobStoreInterface
-     */
-    public function getBulkJobStore(): BulkJobStoreInterface
-    {
-        return $this->bulkJobStore;
+        return $this->startBulkGenerateAwbServiceProvider;
     }
 }

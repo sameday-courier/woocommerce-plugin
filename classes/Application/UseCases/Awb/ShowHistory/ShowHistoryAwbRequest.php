@@ -4,30 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPackageRepository;
+use SamedayCourier\Shipping\Domain\Ports\ShowHistoryAwbServiceProviderInterface;
 
 final class ShowHistoryAwbRequest
 {
     private ShowHistoryAwbItem $showHistoryAwbItem;
 
-    private SamedayAwbRepository $samedayAwbRepository;
-
-    private SamedayPackageRepository $samedayPackageRepository;
-
-    private CourierServiceProviderInterface $courier;
+    private ShowHistoryAwbServiceProviderInterface $showHistoryAwbServiceProvider;
 
     public function __construct(
         ShowHistoryAwbItem $showHistoryAwbItem,
-        SamedayAwbRepository $samedayAwbRepository,
-        SamedayPackageRepository $samedayPackageRepository,
-        CourierServiceProviderInterface $courier
+        ShowHistoryAwbServiceProviderInterface $showHistoryAwbServiceProvider
     ) {
         $this->showHistoryAwbItem = $showHistoryAwbItem;
-        $this->samedayAwbRepository = $samedayAwbRepository;
-        $this->samedayPackageRepository = $samedayPackageRepository;
-        $this->courier = $courier;
+        $this->showHistoryAwbServiceProvider = $showHistoryAwbServiceProvider;
     }
 
     public function getShowHistoryAwbItem(): ShowHistoryAwbItem
@@ -35,18 +25,8 @@ final class ShowHistoryAwbRequest
         return $this->showHistoryAwbItem;
     }
 
-    public function getSamedayAwbRepository(): SamedayAwbRepository
+    public function getShowHistoryAwbServiceProvider(): ShowHistoryAwbServiceProviderInterface
     {
-        return $this->samedayAwbRepository;
-    }
-
-    public function getSamedayPackageRepository(): SamedayPackageRepository
-    {
-        return $this->samedayPackageRepository;
-    }
-
-    public function getCourier(): CourierServiceProviderInterface
-    {
-        return $this->courier;
+        return $this->showHistoryAwbServiceProvider;
     }
 }

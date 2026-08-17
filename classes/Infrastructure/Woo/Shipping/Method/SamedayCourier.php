@@ -28,7 +28,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\RefreshLockerServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -280,11 +280,13 @@ final class SamedayCourier extends WC_Shipping_Method
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
                 new RefreshLockerRequest(
-                    new SamedayLockerRepository(),
-                    new CourierServiceProvider(),
-                    $this->carrierSettingsProvider
-                ))
-            )->execute();
+                    new RefreshLockerServiceProvider(
+                        null,
+                        null,
+                        $this->carrierSettingsProvider
+                    )
+                )
+            ))->execute();
         }
     }
 

@@ -5,70 +5,44 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\StartBulkGenerateAwbRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\StartBulkGenerateAwbServiceProviderInterface;
 
 final class StartBulkGenerateAwb
 {
     private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
 
-    private int $userId;
-
-    private BulkJobStoreInterface $bulkJobStore;
+    private StartBulkGenerateAwbServiceProviderInterface $startBulkGenerateAwbServiceProvider;
 
     public function __construct(StartBulkGenerateAwbRequest $request)
     {
         $this->startBulkGenerateAwbItem = $request->getStartBulkGenerateAwbItem();
-        $this->userId = $request->getUserId();
-        $this->bulkJobStore = $request->getBulkJobStore();
+        $this->startBulkGenerateAwbServiceProvider = $request->getStartBulkGenerateAwbServiceProvider();
     }
 
     public function execute(): StartBulkGenerateAwbResponse
     {
-        $orderIds = $this->startBulkGenerateAwbItem->getOrderIds();
-        if ([] === $orderIds) {
-            return new StartBulkGenerateAwbResponse(
-                'There is no data to process.',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        try {
-            $jobId = $this->generateJobId();
-        } catch (\Throwable $exception) {
-            return new StartBulkGenerateAwbResponse(
-                'Unable to start bulk job.',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        $job = BulkJobDto::create(
-            $jobId,
-            $this->userId,
-            $orderIds
+        $response = $this->startBulkGenerateAwbServiceProvider->start(
+            new StartBulkGenerateAwbRequestDto(
+                $this->startBulkGenerateAwbItem->getOrderIds(),
+                $this->startBulkGenerateAwbItem->getUserId()
+            )
         );
 
-        $this->bulkJobStore->create($job);
+        if (!$response->isSuccess()) {
+            return new StartBulkGenerateAwbResponse(
+                $response->getMessage(),
+                ResponseNoticeType::ERROR,
+            );
+        }
 
         return new StartBulkGenerateAwbResponse(
             null,
             ResponseNoticeType::SUCCESS,
-            $job->getJobId(),
-            $job->getTotal(),
-            0,
-            false
-        );
-    }
-
-    private function generateJobId(): string
-    {
-        $data = random_bytes(16);
-        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-
-        return vsprintf(
-            '%s%s-%s-%s-%s-%s%s%s',
-            str_split(bin2hex($data), 4)
+            $response->getJobId(),
+            $response->getTotal(),
+            $response->getProcessed(),
+            $response->isDone()
         );
     }
 }

@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
+use SamedayCourier\Shipping\Domain\Ports\StartBulkRemoveAwbServiceProviderInterface;
 
 final class StartBulkRemoveAwbRequest
 {
     private StartBulkRemoveAwbItem $startBulkRemoveAwbItem;
 
-    private int $userId;
-
-    private BulkJobStoreInterface $bulkJobStore;
+    private StartBulkRemoveAwbServiceProviderInterface $startBulkRemoveAwbServiceProvider;
 
     public function __construct(
         StartBulkRemoveAwbItem $startBulkRemoveAwbItem,
-        int $userId,
-        BulkJobStoreInterface $bulkJobStore
+        StartBulkRemoveAwbServiceProviderInterface $startBulkRemoveAwbServiceProvider
     ) {
         $this->startBulkRemoveAwbItem = $startBulkRemoveAwbItem;
-        $this->userId = $userId;
-        $this->bulkJobStore = $bulkJobStore;
+        $this->startBulkRemoveAwbServiceProvider = $startBulkRemoveAwbServiceProvider;
     }
 
     public function getStartBulkRemoveAwbItem(): StartBulkRemoveAwbItem
@@ -29,13 +25,8 @@ final class StartBulkRemoveAwbRequest
         return $this->startBulkRemoveAwbItem;
     }
 
-    public function getUserId(): int
+    public function getStartBulkRemoveAwbServiceProvider(): StartBulkRemoveAwbServiceProviderInterface
     {
-        return $this->userId;
-    }
-
-    public function getBulkJobStore(): BulkJobStoreInterface
-    {
-        return $this->bulkJobStore;
+        return $this->startBulkRemoveAwbServiceProvider;
     }
 }

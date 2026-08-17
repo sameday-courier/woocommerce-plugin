@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwb;
+use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\StartBulkGenerateAwbServiceProvider;
 
 final class StartBulkGenerateAwbController extends AbstractController
 {
@@ -33,9 +33,13 @@ final class StartBulkGenerateAwbController extends AbstractController
     {
         $result = (new StartBulkGenerateAwb(
             new StartBulkGenerateAwbRequest(
-                StartBulkGenerateAwbItem::fromArray($inputParams),
-                $this->getCurrentUserId(),
-                new BulkJobStoreServiceProvider()
+                StartBulkGenerateAwbItem::fromArray(
+                    array_merge(
+                        $inputParams,
+                        ['samedaycourier-user-id' => $this->getCurrentUserId()]
+                    )
+                ),
+                new StartBulkGenerateAwbServiceProvider()
             )
         ))->execute();
 

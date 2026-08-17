@@ -4,38 +4,23 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
-use Exception;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\ChangeLockerRequestDto;
+use SamedayCourier\Shipping\Domain\Ports\ChangeLockerServiceProviderInterface;
 
 final class ChangeLocker
 {
-    /**
-     * @var int $orderId
-     */
-    private int $orderId;
+    private ChangeLockerItem $changeLockerItem;
 
-    /**
-     * @var mixed $locker
-     */
-    private $locker;
-
-    /**
-     * @var LockerOrderDataHandlerInterface $lockerOrderDataHandler
-     */
-    private LockerOrderDataHandlerInterface $lockerOrderDataHandler;
+    private ChangeLockerServiceProviderInterface $changeLockerServiceProvider;
 
     /**
      * @param ChangeLockerRequest $changeLockerRequest
      */
-    public function __construct(
-        ChangeLockerRequest $changeLockerRequest
-    )
+    public function __construct(ChangeLockerRequest $changeLockerRequest)
     {
-        $changeLockerItem = $changeLockerRequest->getChangeLockerItem();
-        $this->orderId = $changeLockerItem->getOrderId();
-        $this->locker = $changeLockerItem->getLocker();
-        $this->lockerOrderDataHandler = $changeLockerRequest->getLockerOrderDataHandler();
+        $this->changeLockerItem = $changeLockerRequest->getChangeLockerItem();
+        $this->changeLockerServiceProvider = $changeLockerRequest->getChangeLockerServiceProvider();
     }
 
     /**
@@ -43,32 +28,18 @@ final class ChangeLocker
      */
     public function execute(): ChangeLockerResponse
     {
-        if ($this->orderId <= 0) {
-            return new ChangeLockerResponse(
-                'Invalid order id.',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        if (null === $this->locker || '' === $this->locker) {
-            return new ChangeLockerResponse(
-                'Locker data is required.',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
-        try {
-            $this->lockerOrderDataHandler->add($this->orderId, $this->locker);
-        } catch (Exception $exception) {
-            return new ChangeLockerResponse(
-                $exception->getMessage(),
-                ResponseNoticeType::ERROR,
-            );
-        }
+        $changeLockerResponse = $this->changeLockerServiceProvider->change(
+            new ChangeLockerRequestDto(
+                $this->changeLockerItem->getOrderId(),
+                $this->changeLockerItem->getLocker()
+            )
+        );
 
         return new ChangeLockerResponse(
-            'Locker successfully updated.',
-            ResponseNoticeType::SUCCESS,
+            $changeLockerResponse->getMessage(),
+            $changeLockerResponse->isSuccess()
+                ? ResponseNoticeType::SUCCESS
+                : ResponseNoticeType::ERROR,
         );
     }
 }

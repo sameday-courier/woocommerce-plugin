@@ -4,61 +4,25 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Domain\Ports\RefreshLockerServiceProviderInterface;
 
 final class RefreshLockerRequest
 {
-    /**
-     * @var SamedayLockerRepository $samedayLockerRepository
-     */
-    private SamedayLockerRepository $samedayLockerRepository;
-
-    private CourierServiceProviderInterface $courier;
+    private RefreshLockerServiceProviderInterface $refreshLockerServiceProvider;
 
     /**
-     * @var CarrierSettingsProviderInterface
+     * @param RefreshLockerServiceProviderInterface $refreshLockerServiceProvider
      */
-    private CarrierSettingsProviderInterface $carrierSettingsProvider;
-
-    /**
-     * @param SamedayLockerRepository $samedayLockerRepository
-     * @param CourierServiceProviderInterface $courier
-     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
-     */
-    public function __construct(
-        SamedayLockerRepository $samedayLockerRepository,
-        CourierServiceProviderInterface $courier,
-        CarrierSettingsProviderInterface $carrierSettingsProvider
-    )
+    public function __construct(RefreshLockerServiceProviderInterface $refreshLockerServiceProvider)
     {
-        $this->samedayLockerRepository = $samedayLockerRepository;
-        $this->courier = $courier;
-        $this->carrierSettingsProvider = $carrierSettingsProvider;
+        $this->refreshLockerServiceProvider = $refreshLockerServiceProvider;
     }
 
     /**
-     * @return SamedayLockerRepository
+     * @return RefreshLockerServiceProviderInterface
      */
-    public function getSamedayLockerRepository(): SamedayLockerRepository
+    public function getRefreshLockerServiceProvider(): RefreshLockerServiceProviderInterface
     {
-        return $this->samedayLockerRepository;
-    }
-
-    /**
-     * @return CourierServiceProviderInterface
-     */
-    public function getCourier(): CourierServiceProviderInterface
-    {
-        return $this->courier;
-    }
-
-    /**
-     * @return CarrierSettingsProviderInterface
-     */
-    public function getCarrierSettingsProvider(): CarrierSettingsProviderInterface
-    {
-        return $this->carrierSettingsProvider;
+        return $this->refreshLockerServiceProvider;
     }
 }

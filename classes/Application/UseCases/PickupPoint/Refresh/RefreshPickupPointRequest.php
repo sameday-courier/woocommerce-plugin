@@ -4,44 +4,25 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Domain\Ports\RefreshPickupPointServiceProviderInterface;
 
 final class RefreshPickupPointRequest
 {
-    private CourierServiceProviderInterface $courier;
+    private RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider;
 
     /**
-     * @var SamedayPickupPointRepository $samedayPickupPointRepository
+     * @param RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider
      */
-    private SamedayPickupPointRepository $samedayPickupPointRepository;
-
-    /**
-     * @param CourierServiceProviderInterface $courier
-     * @param SamedayPickupPointRepository $pickupPointRepository
-     */
-    public function __construct(
-        CourierServiceProviderInterface $courier,
-        SamedayPickupPointRepository $pickupPointRepository
-    )
+    public function __construct(RefreshPickupPointServiceProviderInterface $refreshPickupPointServiceProvider)
     {
-        $this->courier = $courier;
-        $this->samedayPickupPointRepository = $pickupPointRepository;
+        $this->refreshPickupPointServiceProvider = $refreshPickupPointServiceProvider;
     }
 
     /**
-     * @return CourierServiceProviderInterface
+     * @return RefreshPickupPointServiceProviderInterface
      */
-    public function getCourier(): CourierServiceProviderInterface
+    public function getRefreshPickupPointServiceProvider(): RefreshPickupPointServiceProviderInterface
     {
-        return $this->courier;
-    }
-
-    /**
-     * @return SamedayPickupPointRepository
-     */
-    public function getSamedayPickupPointRepository(): SamedayPickupPointRepository
-    {
-        return $this->samedayPickupPointRepository;
+        return $this->refreshPickupPointServiceProvider;
     }
 }

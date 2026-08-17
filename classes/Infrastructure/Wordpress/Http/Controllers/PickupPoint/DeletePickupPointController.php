@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickup
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\DeletePickupPointServiceProvider;
 
 final class DeletePickupPointController extends AbstractController
 {
@@ -58,7 +58,7 @@ final class DeletePickupPointController extends AbstractController
 
         $request = new DeletePickupPointRequest(
             $deletePickupPointItem,
-            new CourierServiceProvider()
+            new DeletePickupPointServiceProvider()
         );
 
         $deletePickupPoint = new DeletePickupPoint($request);
