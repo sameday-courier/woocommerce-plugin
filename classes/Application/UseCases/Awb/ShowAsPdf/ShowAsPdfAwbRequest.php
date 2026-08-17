@@ -4,29 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Domain\Ports\ShowAsPdfAwbServiceProviderInterface;
 
 final class ShowAsPdfAwbRequest
 {
     private ShowAsPdfAwbItem $showAsPdfAwbItem;
 
-    private string $labelFormat;
-
-    private SamedayAwbRepository $samedayAwbRepository;
-
-    private CourierServiceProviderInterface $courier;
+    private ShowAsPdfAwbServiceProviderInterface $showAsPdfAwbServiceProvider;
 
     public function __construct(
         ShowAsPdfAwbItem $showAsPdfAwbItem,
-        string $labelFormat,
-        SamedayAwbRepository $samedayAwbRepository,
-        CourierServiceProviderInterface $courier
+        ShowAsPdfAwbServiceProviderInterface $showAsPdfAwbServiceProvider
     ) {
         $this->showAsPdfAwbItem = $showAsPdfAwbItem;
-        $this->labelFormat = $labelFormat;
-        $this->samedayAwbRepository = $samedayAwbRepository;
-        $this->courier = $courier;
+        $this->showAsPdfAwbServiceProvider = $showAsPdfAwbServiceProvider;
     }
 
     public function getShowAsPdfAwbItem(): ShowAsPdfAwbItem
@@ -34,23 +25,8 @@ final class ShowAsPdfAwbRequest
         return $this->showAsPdfAwbItem;
     }
 
-    public function getOrderId(): int
+    public function getShowAsPdfAwbServiceProvider(): ShowAsPdfAwbServiceProviderInterface
     {
-        return $this->showAsPdfAwbItem->getOrderId();
-    }
-
-    public function getLabelFormat(): string
-    {
-        return $this->labelFormat;
-    }
-
-    public function getSamedayAwbRepository(): SamedayAwbRepository
-    {
-        return $this->samedayAwbRepository;
-    }
-
-    public function getCourier(): CourierServiceProviderInterface
-    {
-        return $this->courier;
+        return $this->showAsPdfAwbServiceProvider;
     }
 }
