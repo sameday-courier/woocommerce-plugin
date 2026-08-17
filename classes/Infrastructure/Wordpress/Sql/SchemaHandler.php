@@ -111,6 +111,8 @@ class SchemaHandler
             price DOUBLE(10, 2),
             price_free DOUBLE(10, 2),
             status INT(11),
+            sameday_code VARCHAR(255) NOT NULL DEFAULT '',
+            service_optional_taxes TEXT DEFAULT NULL,
             PRIMARY KEY (id),
             UNIQUE KEY id (id)
         ) " . $this->dbHandler->getCharsetCollate() . ";";
@@ -201,25 +203,18 @@ class SchemaHandler
     public function alterTables(): void
     {
         $service = $this->samedayServiceRepository->getTableName();
-        $servicesRows = $this->dbHandler->getRow("SELECT * FROM $service LIMIT 1");
 
         $tablesToAlter = [];
-        if (!isset($servicesRows->sameday_code)) {
-            $alterServiceTable = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '';";
-
-            $tablesToAlter[] = $alterServiceTable;
+        if (!$this->dbHandler->columnExists($service, 'sameday_code')) {
+            $tablesToAlter[] = "ALTER TABLE $service ADD `sameday_code` VARCHAR(255) NOT NULL DEFAULT '';";
         }
 
-        if (!isset($servicesRows->service_optional_taxes)) {
-            $alterServiceTable = "ALTER TABLE $service ADD `service_optional_taxes` TEXT DEFAULT NULL ;";
-
-            $tablesToAlter[] = $alterServiceTable;
+        if (!$this->dbHandler->columnExists($service, 'service_optional_taxes')) {
+            $tablesToAlter[] = "ALTER TABLE $service ADD `service_optional_taxes` TEXT DEFAULT NULL ;";
         }
 
-        if (!empty($tablesToAlter)) {
-            foreach ($tablesToAlter as $sql) {
-                $this->dbHandler->executeQuery($sql);
-            }
+        foreach ($tablesToAlter as $sql) {
+            $this->dbHandler->executeQuery($sql);
         }
     }
 }
