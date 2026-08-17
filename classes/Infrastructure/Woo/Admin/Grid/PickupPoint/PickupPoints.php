@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WP_List_Table;
 
 if (!class_exists( 'WP_List_Table' ) ) {
@@ -163,7 +163,7 @@ class PickupPoints extends WP_List_Table
 
         $countQuery = GridQueryBuilder::buildCount(
             $this->samedayPickupPointRepository->getTableName(),
-            (new WordpressCarrierSettingsProvider())->get()->isTesting(),
+            (new CarrierSettingsServiceProvider())->get()->isTesting(),
             null,
             null,
             self::ACCEPTED_SEARCH_COLUMNS,
@@ -180,7 +180,7 @@ class PickupPoints extends WP_List_Table
 
         $dataQuery = GridQueryBuilder::build(
             $this->samedayPickupPointRepository->getTableName(),
-            (new WordpressCarrierSettingsProvider())->get()->isTesting(),
+            (new CarrierSettingsServiceProvider())->get()->isTesting(),
             self::ACCEPTED_ORDER_BY_COLUMNS,
             RequestSanitizer::getOrderBy(self::ACCEPTED_ORDER_BY_COLUMNS),
             RequestSanitizer::getOrder(),

@@ -18,8 +18,8 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceR
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -81,7 +81,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshService(
                         new RefreshServiceRequest(
-                            new CourierServiceProviderService(),
+                            new CourierServiceProvider(),
                             new SamedayServiceRepository()
                         )
                     ))->execute();
@@ -92,7 +92,7 @@ final class AllImportController extends AbstractRecursiveBulkController
                 'execute' => function (): ResponseInterface {
                     return (new RefreshPickupPoint(
                         new RefreshPickupPointRequest(
-                            new CourierServiceProviderService(),
+                            new CourierServiceProvider(),
                             new SamedayPickupPointRepository()
                         )
                     ))->execute();
@@ -104,8 +104,8 @@ final class AllImportController extends AbstractRecursiveBulkController
                     return (new RefreshLocker(
                         new RefreshLockerRequest(
                             new SamedayLockerRepository(),
-                            new CourierServiceProviderService(),
-                            new WordpressCarrierSettingsProvider()
+                            new CourierServiceProvider(),
+                            new CarrierSettingsServiceProvider()
                         )
                     ))->execute();
                 },

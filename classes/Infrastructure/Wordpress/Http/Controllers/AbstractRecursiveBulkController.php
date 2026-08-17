@@ -6,7 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 /**
@@ -31,7 +31,7 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         }
 
         $userId = $this->getCurrentUserId();
-        $jobStore = new TransientBulkJobStore();
+        $jobStore = new BulkJobStoreServiceProvider();
         $job = $jobStore->get($jobId, $userId);
 
         if (null === $job) {
@@ -84,12 +84,12 @@ abstract class AbstractRecursiveBulkController extends AbstractController
     abstract protected function processItem(int $itemId): array;
 
     /**
-     * @param TransientBulkJobStore $jobStore
+     * @param BulkJobStoreServiceProvider $jobStore
      * @param BulkJobDto $job
      *
      * @return void
      */
-    private function sendDoneResponse(TransientBulkJobStore $jobStore, BulkJobDto $job): void
+    private function sendDoneResponse(BulkJobStoreServiceProvider $jobStore, BulkJobDto $job): void
     {
         $payload = [
             'done' => true,

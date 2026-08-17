@@ -11,7 +11,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory\ShowHistoryAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbHistoryTable;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 
 final class ShowHistoryAwbController
 {
@@ -28,7 +28,7 @@ final class ShowHistoryAwbController
                     ShowHistoryAwbItem::fromArray(['order-id' => $orderId]),
                     new SamedayAwbRepository(),
                     new SamedayPackageRepository(),
-                    new CourierServiceProviderService(),
+                    new CourierServiceProvider(),
                 )
             ))->execute();
         } catch (Exception $exception) {

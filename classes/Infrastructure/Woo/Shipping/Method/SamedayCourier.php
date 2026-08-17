@@ -28,7 +28,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -44,7 +44,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Admin_Settings;
 use WC_Shipping_Method;
 
@@ -114,7 +114,7 @@ final class SamedayCourier extends WC_Shipping_Method
             'instance-settings'
         );
 
-        $this->carrierSettingsProvider = new WordpressCarrierSettingsProvider();
+        $this->carrierSettingsProvider = new CarrierSettingsServiceProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
         $this->carrierServiceSelector = new CarrierServiceSelector(
             $samedayServiceRepository,
@@ -281,7 +281,7 @@ final class SamedayCourier extends WC_Shipping_Method
             (new RefreshLocker(
                 new RefreshLockerRequest(
                     new SamedayLockerRepository(),
-                    new CourierServiceProviderService(),
+                    new CourierServiceProvider(),
                     $this->carrierSettingsProvider
                 ))
             )->execute();

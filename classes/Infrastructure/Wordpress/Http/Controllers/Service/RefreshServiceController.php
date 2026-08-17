@@ -10,7 +10,7 @@ use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 
 final class RefreshServiceController extends AbstractController
 {
@@ -35,7 +35,7 @@ final class RefreshServiceController extends AbstractController
     protected function processAction(array $inputParams): void
     {
         $request = new RefreshServiceRequest(
-            new CourierServiceProviderService(),
+            new CourierServiceProvider(),
             new SamedayServiceRepository()
         );
         $refreshService = new RefreshService($request);

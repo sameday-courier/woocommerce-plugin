@@ -14,7 +14,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
 class SamedayServiceRepository extends AbstractRepository implements CarrierServiceProviderInterface
@@ -35,7 +35,7 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
         ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressCarrierSettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
     public function getTableName(): string

@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WP_List_Table;
 
 if (!class_exists( 'WP_List_Table' )) {
@@ -68,7 +68,7 @@ class Services extends WP_List_Table
 	{
 		$query = GridQueryBuilder::build(
 			$this->samedayRepository->getTableName(),
-			(new WordpressCarrierSettingsProvider())->get()->isTesting(),
+			(new CarrierSettingsServiceProvider())->get()->isTesting(),
 			self::ACCEPTED_FILTERS,
 			RequestSanitizer::getOrderBy(self::ACCEPTED_FILTERS),
 			RequestSanitizer::getOrder(),
@@ -82,7 +82,7 @@ class Services extends WP_List_Table
 
         foreach ($services as &$service) {
             if ($service['sameday_code'] === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-                $service['name'] = TranslatorHandler::translate(CarrierConstants::OOH_SERVICES_LABELS[(new WordpressCarrierSettingsProvider())->get()->getHostCountry()]);
+                $service['name'] = TranslatorHandler::translate(CarrierConstants::OOH_SERVICES_LABELS[(new CarrierSettingsServiceProvider())->get()->getHostCountry()]);
                 $service['sameday_name'] = TranslatorHandler::translate(CarrierConstants::SAMEDAY_OOH_LABEL);
             }
         }
@@ -94,7 +94,7 @@ class Services extends WP_List_Table
     {
         $query = GridQueryBuilder::buildCount(
             $this->samedayRepository->getTableName(),
-            (new WordpressCarrierSettingsProvider())->get()->isTesting(),
+            (new CarrierSettingsServiceProvider())->get()->isTesting(),
             'sameday_code',
             CarrierConstants::IN_USE_SERVICES,
         );
@@ -138,7 +138,7 @@ class Services extends WP_List_Table
         if (("sameday_name" === $column_name)
             && $item[$column_name] === TranslatorHandler::translate(CarrierConstants::SAMEDAY_OOH_LABEL)
         ) {
-            $title = CarrierConstants::OOH_POPUP_TITLE[(new WordpressCarrierSettingsProvider())->get()->getHostCountry()];
+            $title = CarrierConstants::OOH_POPUP_TITLE[(new CarrierSettingsServiceProvider())->get()->getHostCountry()];
             return sprintf(
                 "<span style='font-weight: bolder; cursor: help;' title='%s'>%s</span>",
                 $title,

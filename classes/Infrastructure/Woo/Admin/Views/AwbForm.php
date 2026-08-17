@@ -18,7 +18,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Order;
 
 class AwbForm
@@ -144,7 +144,7 @@ class AwbForm
             }
         }
 
-        $settings = (new WordpressCarrierSettingsProvider())->get();
+        $settings = (new CarrierSettingsServiceProvider())->get();
         $username = $settings->getUser();
         $hostCountry = $settings->getHostCountry();
         $destCity = $order->get_data()['shipping']['city'] ?? '';

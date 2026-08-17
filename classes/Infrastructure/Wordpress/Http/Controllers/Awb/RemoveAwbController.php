@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 
 final class RemoveAwbController extends AbstractController
@@ -41,7 +41,7 @@ final class RemoveAwbController extends AbstractController
                 new RemoveAwbRequest(
                     $removeAwbItem,
                     new AwbRemover(
-                        new CourierServiceProviderService(),
+                        new CourierServiceProvider(),
                         new SamedayAwbRepository()
                     )
                 )

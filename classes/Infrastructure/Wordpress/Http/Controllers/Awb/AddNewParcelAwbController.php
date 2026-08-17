@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
@@ -13,8 +12,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAw
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\AddNewParcelServiceProvider;
 
 final class AddNewParcelAwbController extends AbstractController
 {
@@ -43,9 +41,7 @@ final class AddNewParcelAwbController extends AbstractController
             $addNewParcelAwb = new AddNewParcelAwb(
                 new AddNewParcelAwbRequest(
                     $addNewParcelAwbItem,
-                    new CourierServiceProviderService(),
-                    new SamedayAwbRepository(),
-                    new ParcelDimensionsFactory()
+                    new AddNewParcelServiceProvider()
                 )
             );
             $result = $addNewParcelAwb->execute();

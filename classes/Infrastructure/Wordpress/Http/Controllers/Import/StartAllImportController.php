@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImport;
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImportRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 final class StartAllImportController extends AbstractController
@@ -33,7 +33,7 @@ final class StartAllImportController extends AbstractController
         $result = (new StartAllImport(
             new StartAllImportRequest(
                 $this->getCurrentUserId(),
-                new TransientBulkJobStore()
+                new BulkJobStoreServiceProvider()
             )
         ))->execute();
 

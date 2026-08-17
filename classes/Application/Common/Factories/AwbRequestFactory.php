@@ -16,7 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderShippingAddressU
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostAwbGenerationServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
@@ -61,7 +61,7 @@ final class AwbRequestFactory
 
         return new GenerateAwbRequest(
             $generateAwbItem,
-            new CourierServiceProviderService(),
+            new CourierServiceProvider(),
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
             new PostAwbGenerationServiceProvider(

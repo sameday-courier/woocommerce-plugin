@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRe
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwb;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\TransientBulkJobStore;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 final class StartBulkRemoveAwbController extends AbstractController
@@ -35,7 +35,7 @@ final class StartBulkRemoveAwbController extends AbstractController
             new StartBulkRemoveAwbRequest(
                 StartBulkRemoveAwbItem::fromArray($inputParams),
                 $this->getCurrentUserId(),
-                new TransientBulkJobStore()
+                new BulkJobStoreServiceProvider()
             )
         ))->execute();
 

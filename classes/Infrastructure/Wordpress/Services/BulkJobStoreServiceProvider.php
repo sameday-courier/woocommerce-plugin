@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
-final class TransientBulkJobStore implements BulkJobStoreInterface
+final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
 {
     private const KEY_PREFIX = 'sameday_bulk_job_';
 

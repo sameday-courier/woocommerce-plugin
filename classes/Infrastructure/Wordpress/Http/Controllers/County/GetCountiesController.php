@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCounties;
 use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCountiesRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 
 final class GetCountiesController extends AbstractController
 {
@@ -29,7 +29,7 @@ final class GetCountiesController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $getCounties = new GetCounties(new GetCountiesRequest(new CourierServiceProviderService()));
+        $getCounties = new GetCounties(new GetCountiesRequest(new CourierServiceProvider()));
         $result = $getCounties->execute();
 
         if (ResponseNoticeType::ERROR === $result->getNoticeType()) {

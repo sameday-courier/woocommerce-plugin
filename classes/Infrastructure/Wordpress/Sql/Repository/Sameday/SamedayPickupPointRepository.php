@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPickupPointMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
 class SamedayPickupPointRepository extends AbstractRepository
@@ -30,7 +30,7 @@ class SamedayPickupPointRepository extends AbstractRepository
         ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
     ) {
         parent::__construct($dbHandler);
-        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new WordpressCarrierSettingsProvider();
+        $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
     public function getTableName(): string

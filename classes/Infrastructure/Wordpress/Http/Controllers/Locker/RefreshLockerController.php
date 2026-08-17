@@ -9,8 +9,8 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProviderService;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\WordpressCarrierSettingsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 final class RefreshLockerController extends AbstractController
 {
@@ -36,8 +36,8 @@ final class RefreshLockerController extends AbstractController
     {
         $request = new RefreshLockerRequest(
             new SamedayLockerRepository(),
-            new CourierServiceProviderService(),
-            new WordpressCarrierSettingsProvider()
+            new CourierServiceProvider(),
+            new CarrierSettingsServiceProvider()
         );
         $refreshLocker = new RefreshLocker($request);
 

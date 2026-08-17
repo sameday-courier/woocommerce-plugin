@@ -51,7 +51,7 @@ use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ParcelStatusHistoryService;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
-class CourierServiceProviderService implements CourierServiceProviderInterface
+class CourierServiceProvider implements CourierServiceProviderInterface
 {
     private Sameday $sameday;
 
