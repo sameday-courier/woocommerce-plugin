@@ -61,7 +61,6 @@ class AddNewPickupPointController extends AbstractController
             $errorMessage = implode(' <br/> ', $requiredFieldsErrors);
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($errorMessage),
-                ResponseNoticeType::ERROR,
             );
 
             $this->redirectTo(
