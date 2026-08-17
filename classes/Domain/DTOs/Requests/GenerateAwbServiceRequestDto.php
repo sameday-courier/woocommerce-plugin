@@ -40,15 +40,9 @@ final class GenerateAwbServiceRequestDto
 
     private int $awbPayment;
 
-    /**
-     * @var mixed $insuranceValue
-     */
-    private $insuranceValue;
+    private float $insuranceValue;
 
-    /**
-     * @var mixed $repayment
-     */
-    private $repayment;
+    private float $repayment;
 
     private ?string $clientReference;
 
@@ -64,8 +58,6 @@ final class GenerateAwbServiceRequestDto
      * @param array<string, mixed> $shipping
      * @param array<string, mixed> $billing
      * @param mixed $locker
-     * @param mixed $insuranceValue
-     * @param mixed $repayment
      * @param array<int|string, mixed> $packageDimensions
      */
     public function __construct(
@@ -80,8 +72,8 @@ final class GenerateAwbServiceRequestDto
         bool $hasLockerFirstMile,
         int $packageType,
         int $awbPayment,
-        $insuranceValue,
-        $repayment,
+        float $insuranceValue,
+        float $repayment,
         ?string $clientReference,
         ?string $observation,
         array $packageDimensions
@@ -171,18 +163,12 @@ final class GenerateAwbServiceRequestDto
         return $this->awbPayment;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getInsuranceValue()
+    public function getInsuranceValue(): float
     {
         return $this->insuranceValue;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRepayment()
+    public function getRepayment(): float
     {
         return $this->repayment;
     }

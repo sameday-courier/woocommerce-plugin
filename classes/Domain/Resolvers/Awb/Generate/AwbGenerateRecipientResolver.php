@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate;
 
-use Sameday\Objects\PostAwb\Request\CompanyEntityObject;
 use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
@@ -87,25 +86,21 @@ class AwbGenerateRecipientResolver
         $address_2 = $shipping->getAddress2() ?? $billing->getAddress2();
         $postalCode = PostalCode::tryCreate(
             $shipping->getPostcode() ?? $billing->getPostcode(),
-            $state,
-            $country,
+            (string) ($state ?? ''),
+            (string) ($country ?? ''),
             $this->cityPostalCodeProvider
         )->getCode();
         $phone = $shipping->getPhone() ?? $billing->getPhone();
         $email = $shipping->getEmail() ?? $billing->getEmail();
-        $companyObject = null;
         $company = $shipping->getCompany() ?? $billing->getCompany();
-        if ('' !== ($shipping->getCompany() ?? '')) {
-            $companyObject = new CompanyEntityObject(
-                $company,
-                ...['', '', '', '']
-            );
+        if ('' === ($company ?? '')) {
+            $company = null;
         }
 
         $awbRecipient = new RecipientDto(
             $firstName,
             $lastName,
-            $companyObject,
+            $company,
             $address_1,
             $address_2,
             $city,
@@ -136,15 +131,31 @@ class AwbGenerateRecipientResolver
         $post_meta_samedaycourier_address_hd = $this->samedayShippingHdAddressParser->parse($orderId);
 
         if (!$this->isOohDeliveryType($service) && $this->isHomeDeliveryType($orderId)) {
-            $awbRecipient->setCity($post_meta_samedaycourier_address_hd['city']);
+            $awbRecipient->setCity(
+                isset($post_meta_samedaycourier_address_hd['city'])
+                    ? (string) $post_meta_samedaycourier_address_hd['city']
+                    : null
+            );
             $county = $this->stateCodeResolver->resolveNameFromCode(
-                $post_meta_samedaycourier_address_hd['country'],
-                $post_meta_samedaycourier_address_hd['state']
+                (string) ($post_meta_samedaycourier_address_hd['country'] ?? ''),
+                (string) ($post_meta_samedaycourier_address_hd['state'] ?? '')
             );
             $awbRecipient->setCounty($county);
-            $awbRecipient->setAddress1($post_meta_samedaycourier_address_hd['address_1']);
-            $awbRecipient->setAddress2($post_meta_samedaycourier_address_hd['address_2']);
-            $awbRecipient->setPostalCode($post_meta_samedaycourier_address_hd['postcode']);
+            $awbRecipient->setAddress1(
+                isset($post_meta_samedaycourier_address_hd['address_1'])
+                    ? (string) $post_meta_samedaycourier_address_hd['address_1']
+                    : null
+            );
+            $awbRecipient->setAddress2(
+                isset($post_meta_samedaycourier_address_hd['address_2'])
+                    ? (string) $post_meta_samedaycourier_address_hd['address_2']
+                    : null
+            );
+            $awbRecipient->setPostalCode(
+                isset($post_meta_samedaycourier_address_hd['postcode'])
+                    ? (string) $post_meta_samedaycourier_address_hd['postcode']
+                    : null
+            );
         }
 
         $ooh = new OohDto(

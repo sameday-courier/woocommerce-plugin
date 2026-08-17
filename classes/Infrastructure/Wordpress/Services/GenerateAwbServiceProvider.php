@@ -236,7 +236,7 @@ final class GenerateAwbServiceProvider implements GenerateAwbServiceProviderInte
                 $generateAwbServiceRequestDto->getShippingLines(),
                 $service,
                 $awb->getAwbNumber(),
-                $awb->getCost(),
+                (float) $awb->getCost(),
                 $awb->getParcels()
             ),
             $this->carrierServiceRules,

@@ -205,7 +205,7 @@ final class SamedayCourier extends WC_Shipping_Method
                             && ($settings->getHostCountry() === CarrierConstants::API_HOST_LOCALE_BG)
                         ) {
                             try {
-                                $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, $price);
+                                $bgnCurrencyConverter = new BgnCurrencyConverter($storeCurrency, (float) $price);
                                 $price = $bgnCurrencyConverter->convert();
                                 $currencyConversionLabel = $bgnCurrencyConverter->buildCurrencyConversionLabel(
                                     $service->getName() ?? '',

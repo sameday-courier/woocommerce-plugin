@@ -107,7 +107,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new PostAwbResponseDto(
                 $postAwb->getAwbNumber(),
-                $postAwb->getCost(),
+                (float) $postAwb->getCost(),
                 $postAwb->getParcels()
             );
         } catch (Exception $exception) {

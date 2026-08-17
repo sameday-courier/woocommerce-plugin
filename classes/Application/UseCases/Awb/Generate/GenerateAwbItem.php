@@ -64,14 +64,14 @@ final class GenerateAwbItem implements ItemInterface
     private int $awbPayment;
 
     /**
-     * @var mixed $insuranceValue
+     * @var float $insuranceValue
      */
-    private $insuranceValue;
+    private float $insuranceValue;
 
     /**
-     * @var mixed $repayment
+     * @var float $repayment
      */
-    private $repayment;
+    private float $repayment;
 
     /**
      * @var string|null $clientReference
@@ -100,8 +100,8 @@ final class GenerateAwbItem implements ItemInterface
      * @param bool $hasLockerFirstMile
      * @param int $packageType
      * @param int $awbPayment
-     * @param mixed $insuranceValue
-     * @param mixed $repayment
+     * @param float $insuranceValue
+     * @param float $repayment
      * @param string|null $clientReference
      * @param string|null $observation
      * @param array $packageDimensions
@@ -118,8 +118,8 @@ final class GenerateAwbItem implements ItemInterface
         bool $hasLockerFirstMile,
         int $packageType,
         int $awbPayment,
-        $insuranceValue,
-        $repayment,
+        float $insuranceValue,
+        float $repayment,
         ?string $clientReference,
         ?string $observation,
         array $packageDimensions
@@ -164,8 +164,8 @@ final class GenerateAwbItem implements ItemInterface
             isset($inputParams['samedaycourier-locker_first_mile']),
             (int) ($inputParams['samedaycourier-package-type'] ?? 0),
             (int) ($inputParams['samedaycourier-package-awb-payment'] ?? 0),
-            $inputParams['samedaycourier-package-insurance-value'] ?? null,
-            $inputParams['samedaycourier-package-repayment'] ?? null,
+            self::toFloat($inputParams['samedaycourier-package-insurance-value'] ?? 0),
+            self::toFloat($inputParams['samedaycourier-package-repayment'] ?? 0),
             null !== $clientReference ? (string) $clientReference : null,
             null !== $observation ? (string) $observation : null,
             (array) ($inputParams['samedaycourier-package-dimensions'] ?? []),
@@ -261,19 +261,31 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return mixed
+     * @return float
      */
-    public function getInsuranceValue()
+    public function getInsuranceValue(): float
     {
         return $this->insuranceValue;
     }
 
     /**
-     * @return mixed
+     * @return float
      */
-    public function getRepayment()
+    public function getRepayment(): float
     {
         return $this->repayment;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private static function toFloat($value): float
+    {
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
+        return 0.0;
     }
 
     /**
