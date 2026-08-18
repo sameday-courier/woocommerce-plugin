@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\FrontPageValidatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
@@ -34,9 +35,13 @@ final class ShowLockerFieldAction extends AbstractAction
     public function handle(...$args): void
     {
         $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
-        if (!(new CarrierServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode)
-            || !is_checkout()
-        ) {
+        if (!FrontPageValidatorHandler::isCheckoutPage()) {
+            return;
+        }
+
+        $carrierServiceRules = new CarrierServiceRules(new SamedayServiceRepository());
+
+        if (false === $carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
             return;
         }
 
@@ -113,13 +118,13 @@ final class ShowLockerFieldAction extends AbstractAction
         }
 
         return $html . sprintf(
-            '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
+                '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
                 <td><strong>%s</strong></td>
                 <th><span id="showLockerDetails">%s</span></th>
             </tr>',
-            TranslatorHandler::translate('Ship to'),
-            wp_kses_post($shipTo)
-        );
+                TranslatorHandler::translate('Ship to'),
+                wp_kses_post($shipTo)
+            );
     }
 
     /**
@@ -155,7 +160,7 @@ final class ShowLockerFieldAction extends AbstractAction
         foreach ($cities as $city) {
             if (null !== $city->getCity()) {
                 $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = $samedayLockerRepository->getLockersByCity(
-                    (string) $city->getCity()
+                    (string)$city->getCity()
                 );
             }
         }
@@ -167,12 +172,12 @@ final class ShowLockerFieldAction extends AbstractAction
             foreach ($cityLockers as $locker) {
                 $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
                 $isSelected = '';
-                if ((int) (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER) === (int) $locker->getLockerId()) {
+                if ((int)(new WooSessionHandler())->get(CarrierSessionKeys::LOCKER) === (int)$locker->getLockerId()) {
                     $isSelected = "selected='selected'";
                 }
                 $options .= sprintf(
                     '<option value="%s" class="sameday-locker-option" %s> %s </option>',
-                    esc_attr((string) $locker->getLockerId()),
+                    esc_attr((string)$locker->getLockerId()),
                     $isSelected,
                     $lockerDetails
                 );

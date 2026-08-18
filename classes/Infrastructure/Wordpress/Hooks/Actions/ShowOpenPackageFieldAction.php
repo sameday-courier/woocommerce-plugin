@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\FrontPageValidatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 final class ShowOpenPackageFieldAction extends AbstractAction
@@ -31,7 +32,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        if (!is_checkout()) {
+        if (!FrontPageValidatorHandler::isCheckoutPage()) {
             return;
         }
 
@@ -100,7 +101,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
     private function buildHtmlContent(): string
     {
         return sprintf(
-    '<tr class="shipping-pickup-store">
+            '<tr class="shipping-pickup-store">
                 <th></th>
                 <td>
                     <ul id="shipping_method" class="woocommerce-shipping-methods sameday-shipping-methods">

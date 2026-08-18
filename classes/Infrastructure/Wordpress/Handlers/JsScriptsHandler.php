@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
@@ -44,12 +43,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         'admin_settings' => 'admin_settings', // Sameday WooCommerce shipping settings section only.
         'order_edit' => 'order_edit', // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
         'orders_list' => 'orders_list', // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
-    ];
-
-    private const PLUGIN_ADMIN_PAGES = [
-        'sameday_pickup_points',
-        'sameday_lockers',
-        'sameday_services',
     ];
 
     /**
@@ -123,7 +116,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 false
             ),
             'sameday-lockerpluginsdk' => self::addExternalScript(
-                self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['order_edit']
             ),
             'sameday-lockers-sync-admin' => self::addScript(
@@ -163,7 +155,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'sameday-admin-modal']
             ),
             'sameday-locker-plugin-checkout' => self::addExternalScript(
-                self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['checkout_strict'],
                 [],
                 false
@@ -188,7 +179,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             ),
             'sameday-lockerpluginsdk-checkout' => self::withHandle(
                 self::addExternalScript(
-                    self::LOCKER_PLUGIN_SDK_URL,
                     self::WP_CONTEXT['checkout']
                 ),
                 'sameday-lockerpluginsdk'
@@ -269,7 +259,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     }
 
     /**
-     * @param string $url
      * @param string $context
      * @param array $deps
      * @param bool $inFooter
@@ -355,140 +344,26 @@ final class JsScriptsHandler implements RegistryHandlerInterface
 
         switch ($context) {
             case 'admin_common':
-                return self::isAdminCommonPage();
+                return AdminPageValidatorHandler::isAdminCommonPage();
             case 'admin_full':
-                return self::isAdminFullPage();
+                return AdminPageValidatorHandler::isAdminFullPage();
             case 'pickup_points':
-                return self::isPickupPointsPage();
+                return AdminPageValidatorHandler::isPickupPointsPage();
             case 'checkout':
-                return is_checkout();
+                return FrontPageValidatorHandler::isCheckoutPage();
             case 'checkout_strict':
-                return self::isStrictCheckoutPage();
+                return FrontPageValidatorHandler::isStrictCheckoutPage();
             case 'checkout_nomenclator':
-                return is_checkout() && (new CarrierSettingsServiceProvider())->get()->isUseSamedayNomenclator();
+                return FrontPageValidatorHandler::isCheckoutNomenclatorPage();
             case 'admin_settings':
-                return self::isSamedaySettingsPage();
+                return AdminPageValidatorHandler::isSamedaySettingsPage();
             case 'order_edit':
-                return self::isOrderEditPage();
+                return AdminPageValidatorHandler::isOrderEditPage();
             case 'orders_list':
-                return self::isOrdersListPage();
+                return AdminPageValidatorHandler::isOrdersListPage();
             default:
                 return false;
         }
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isPluginAdminPage(): bool
-    {
-        return isset($_GET['page'])
-            && in_array($_GET['page'], self::PLUGIN_ADMIN_PAGES, true);
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isSamedaySettingsPage(): bool
-    {
-        return isset($_GET['page'], $_GET['tab'], $_GET['section'])
-            && 'wc-settings' === $_GET['page']
-            && 'shipping' === $_GET['tab']
-            && CarrierConstants::PLUGIN_NAME === $_GET['section'];
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isOrderAdminPage(): bool
-    {
-        global $pagenow;
-
-        return 'post.php' === $pagenow || 'admin.php' === $pagenow;
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isOrderEditPage(): bool
-    {
-        global $pagenow;
-
-        if ('post.php' === $pagenow && isset($_GET['post'])) {
-            return 'shop_order' === get_post_type((int)$_GET['post']);
-        }
-
-        if ('admin.php' === $pagenow
-            && isset($_GET['page'], $_GET['action'])
-            && 'wc-orders' === $_GET['page']
-            && 'edit' === $_GET['action']
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isOrdersListPage(): bool
-    {
-        if (isset($_GET['page']) && 'wc-orders' === $_GET['page']) {
-            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string)$_GET['action'])) : '';
-
-            return !in_array($action, ['edit', 'new'], true);
-        }
-
-        global $pagenow;
-
-        return 'edit.php' === $pagenow
-            && isset($_GET['post_type'])
-            && 'shop_order' === $_GET['post_type'];
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isAdminCommonPage(): bool
-    {
-        return self::isPluginAdminPage()
-            || self::isSamedaySettingsPage()
-            || self::isOrderAdminPage();
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isAdminFullPage(): bool
-    {
-        $section = $_GET['section'] ?? null;
-
-        if (CarrierConstants::PLUGIN_NAME === $section) {
-            return true;
-        }
-
-        return self::isOrderAdminPage();
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isPickupPointsPage(): bool
-    {
-        return isset($_GET['page']) && 'sameday_pickup_points' === $_GET['page'];
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isStrictCheckoutPage(): bool
-    {
-        global $wp;
-
-        return is_checkout()
-            && empty($wp->query_vars['order-pay'])
-            && !isset($wp->query_vars['order-received']);
     }
 
     /**

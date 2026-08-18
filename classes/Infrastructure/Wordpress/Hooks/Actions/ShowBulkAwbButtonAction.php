@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateBulkAwbModal;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\RemoveBulkAwbModal;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\AdminPageValidatorHandler;
 
 final class ShowBulkAwbButtonAction extends AbstractAction
 {
@@ -26,33 +27,11 @@ final class ShowBulkAwbButtonAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        if (!$this->isOrdersListPage()) {
+        if (!AdminPageValidatorHandler::isOrdersListPage()) {
             return;
         }
 
         echo GenerateBulkAwbModal::render();
         echo RemoveBulkAwbModal::render();
-    }
-
-    /**
-     * @return bool
-     */
-    private function isOrdersListPage(): bool
-    {
-        if (!is_admin()) {
-            return false;
-        }
-
-        if (isset($_GET['page']) && 'wc-orders' === $_GET['page']) {
-            $action = isset($_GET['action']) ? sanitize_text_field(wp_unslash((string) $_GET['action'])) : '';
-
-            return !in_array($action, ['edit', 'new'], true);
-        }
-
-        global $pagenow;
-
-        return 'edit.php' === $pagenow
-            && isset($_GET['post_type'])
-            && 'shop_order' === $_GET['post_type'];
     }
 }
