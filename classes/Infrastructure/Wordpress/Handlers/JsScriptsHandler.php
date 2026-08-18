@@ -116,6 +116,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 false
             ),
             'sameday-lockerpluginsdk' => self::addExternalScript(
+                self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['order_edit']
             ),
             'sameday-lockers-sync-admin' => self::addScript(
@@ -155,6 +156,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'sameday-admin-modal']
             ),
             'sameday-locker-plugin-checkout' => self::addExternalScript(
+                self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['checkout_strict'],
                 [],
                 false
@@ -179,6 +181,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             ),
             'sameday-lockerpluginsdk-checkout' => self::withHandle(
                 self::addExternalScript(
+                    self::LOCKER_PLUGIN_SDK_URL,
                     self::WP_CONTEXT['checkout']
                 ),
                 'sameday-lockerpluginsdk'
@@ -259,6 +262,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     }
 
     /**
+     * @param string $url
      * @param string $context
      * @param array $deps
      * @param bool $inFooter
@@ -541,7 +545,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . $relativePath;
 
         if (file_exists($absolutePath)) {
-            return (string)filemtime($absolutePath);
+            return (string) filemtime($absolutePath);
         }
 
         return (new WooHandler())->getPluginVersion();
