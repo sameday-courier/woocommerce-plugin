@@ -21,11 +21,13 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      */
     public function ensureHomeDeliverySnapshot(int $orderId): void
     {
-        if ('' !== PostMetaHandler::get(
-            $orderId,
-            CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-            true
-        )) {
+        if (
+            '' !== PostMetaHandler::get(
+                $orderId,
+                CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+                true
+            )
+        ) {
             return;
         }
 

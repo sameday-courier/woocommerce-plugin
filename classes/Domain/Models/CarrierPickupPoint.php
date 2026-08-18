@@ -26,7 +26,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param int $id
-     * 
+     *
      * @return self
      */
     public function setId(int $id): self
@@ -46,7 +46,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param int $samedayId
-     * 
+     *
      * @return self
      */
     public function setSamedayId(int $samedayId): self
@@ -66,7 +66,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param string|null $samedayAlias
-     * 
+     *
      * @return self
      */
     public function setSamedayAlias(?string $samedayAlias): self
@@ -86,7 +86,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param bool|null $isTesting
-     * 
+     *
      * @return self
      */
     public function setIsTesting(?bool $isTesting): self
@@ -106,7 +106,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param string|null $city
-     * 
+     *
      * @return self
      */
     public function setCity(?string $city): self
@@ -126,7 +126,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param string|null $county
-     * 
+     *
      * @return self
      */
     public function setCounty(?string $county): self
@@ -146,7 +146,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param string|null $address
-     * 
+     *
      * @return self
      */
     public function setAddress(?string $address): self
@@ -166,7 +166,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param string|null $contactPersons
-     * 
+     *
      * @return self
      */
     public function setContactPersons(?string $contactPersons): self
@@ -186,7 +186,7 @@ final class CarrierPickupPoint implements ModelInterface
 
     /**
      * @param bool|null $defaultPickupPoint
-     * 
+     *
      * @return self
      */
     public function setDefaultPickupPoint(?bool $defaultPickupPoint): self

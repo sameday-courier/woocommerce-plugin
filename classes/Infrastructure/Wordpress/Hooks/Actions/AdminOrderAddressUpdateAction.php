@@ -79,7 +79,8 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
         }
 
         foreach (array_keys($changes) as $changedProp) {
-            if (0 === strpos((string) $changedProp, 'billing_')
+            if (
+                0 === strpos((string) $changedProp, 'billing_')
                 || 0 === strpos((string) $changedProp, 'shipping_')
             ) {
                 return true;

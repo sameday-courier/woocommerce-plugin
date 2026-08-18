@@ -19,7 +19,6 @@ use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
-use SamedayCourier\Shipping\Domain\ValueObject\Address\County;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
@@ -192,17 +191,20 @@ final class SamedayCourier extends WC_Shipping_Method
                 if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
                     $estimatedPrice = $estimatedCost->getCost();
                     $estimatedCurrency = $estimatedCost->getCurrency();
-                    if (($useEstimatedCost === 'yes')
+                    if (
+                        ($useEstimatedCost === 'yes')
                         || ($useEstimatedCost === 'btfp' && ($service->getPrice() ?? 0) < $estimatedPrice)
                     ) {
                         if ($estimatedCostExtraFee > 0) {
-                            $estimatedPrice += (float)number_format($price * ($estimatedCostExtraFee / 100), 2, '.', '');
+                            $extraFee = $price * ($estimatedCostExtraFee / 100);
+                            $estimatedPrice += (float) number_format($extraFee, 2, '.', '');
                         }
                         $price = $estimatedPrice;
 
                         // Business logic for Bulgaria Currency Rules
                         $storeCurrency = get_woocommerce_currency();
-                        if (($storeCurrency !== $estimatedCurrency)
+                        if (
+                            ($storeCurrency !== $estimatedCurrency)
                             && ($settings->getHostCountry() === CarrierConstants::API_HOST_LOCALE_BG)
                         ) {
                             try {
@@ -240,7 +242,8 @@ final class SamedayCourier extends WC_Shipping_Method
                 $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
             }
 
-            if ((false === $useLockerMap)
+            if (
+                (false === $useLockerMap)
                 && ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE)
             ) {
                 $this->syncLockers();
@@ -312,7 +315,8 @@ final class SamedayCourier extends WC_Shipping_Method
         $serviceTaxIds = array();
         if ('yes' === $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE)) {
             foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
+                if (
+                    $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === PackageType::PARCEL
                 ) {
                     $serviceTaxIds[] = $optionalService->getId();
@@ -423,22 +427,29 @@ final class SamedayCourier extends WC_Shipping_Method
                     'yes' => TranslatorHandler::translate('Always'),
                     'btfp' => TranslatorHandler::translate('If its cost is bigger than fixed price')
                 ],
-                'description' => TranslatorHandler::translate('This is the shipping cost calculated by Sameday Api for each service. <br/> 
+                'description' => TranslatorHandler::translate(
+                    'This is the shipping cost calculated by Sameday Api for each service. <br/>
                             Never* You choose to display only the fixed price that you set for each service<br/>
                             Always* You choose to display only the price estimated by SamedayCourier API<br/>
-                            If its cost is bigger than fixed price* You choose to display the cost estimated by 
-                            SamedayCourier Api only in the situation that this cost exceed the fixed price set by you for each service.
-                        ')
+                            If its cost is bigger than fixed price* You choose to display the cost
+                            estimated by SamedayCourier Api only if this cost exceeds the fixed price
+                            set by you for each service.'
+                )
             ),
 
             'estimated_cost_extra_fee' => array(
                 'title' => TranslatorHandler::translate('Extra fee'),
                 'type' => 'number',
                 'css' => 'width:100px;',
-                'description' => TranslatorHandler::translate('Apply extra fee on estimated cost. This is a % value. <br/> If you don\'t want to add extra fee on estimated cost value, such as T.V.A. leave this field blank or 0'),
+                'description' => TranslatorHandler::translate(
+                    'Apply extra fee on estimated cost. This is a % value. <br/>'
+                    . ' If you don\'t want to add extra fee on estimated cost value,'
+                    . ' such as T.V.A. leave this field blank or 0'
+                ),
                 'custom_attributes' => array(
                     'min' => 0,
-                    'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
+                    'onkeypress' => 'return (event.charCode !=8 && event.charCode == 0 ||'
+                        . ' ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))',
                     'data-placeholder' => TranslatorHandler::translate('Extra fee')
                 ),
                 'default' => 0
@@ -461,16 +472,21 @@ final class SamedayCourier extends WC_Shipping_Method
             'open_package_status' => array(
                 'title' => TranslatorHandler::translate('Open package status'),
                 'type' => 'checkbox',
-                'description' => TranslatorHandler::translate('Enable this option if you want to offer your customers the opening of the package at delivery time.'),
+                'description' => TranslatorHandler::translate(
+                    'Enable this option if you want to offer your customers'
+                    . ' the opening of the package at delivery time.'
+                ),
                 'default' => 'no'
             ),
 
             'discount_free_shipping' => array(
                 'title' => TranslatorHandler::translate('Free shipping after discount'),
                 'type' => 'checkbox',
-                'description' => TranslatorHandler::translate('Enable this option if you want to apply free shipping to be calculated after discount.
+                'description' => TranslatorHandler::translate(
+                    'Enable this option if you want to apply free shipping to be calculated after discount.
                             Otherwise the free shipping will be apply without taking into account the applied discount.
-                            This field is relevant if you choose free delivery price option.'),
+                            This field is relevant if you choose free delivery price option.'
+                ),
                 'default' => 'no'
             ),
 
@@ -501,7 +517,9 @@ final class SamedayCourier extends WC_Shipping_Method
             'is_testing' => array(
                 'title' => TranslatorHandler::translate('Env. Mode'),
                 'type' => 'select',
-                'description' => TranslatorHandler::translate('The value of this field will be appear automatically after you complete the authentication'),
+                'description' => TranslatorHandler::translate(
+                    'The value of this field will be appear automatically after you complete the authentication'
+                ),
                 'default' => 2,
                 'disabled' => true,
                 'options' => array(
@@ -514,13 +532,21 @@ final class SamedayCourier extends WC_Shipping_Method
             'host_country' => array(
                 'title' => TranslatorHandler::translate('Env. Host Country'),
                 'type' => 'select',
-                'description' => TranslatorHandler::translate('The value of this field will be appear automatically after you complete the authentication'),
+                'description' => TranslatorHandler::translate(
+                    'The value of this field will be appear automatically after you complete the authentication'
+                ),
                 'default' => 'none',
                 'disabled' => true,
                 'options' => array(
-                    CarrierConstants::API_HOST_LOCALE_RO => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_RO),
-                    CarrierConstants::API_HOST_LOCALE_HU => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_HU),
-                    CarrierConstants::API_HOST_LOCALE_BG => TranslatorHandler::translate(CarrierConstants::API_HOST_LOCALE_BG),
+                    CarrierConstants::API_HOST_LOCALE_RO => TranslatorHandler::translate(
+                        CarrierConstants::API_HOST_LOCALE_RO
+                    ),
+                    CarrierConstants::API_HOST_LOCALE_HU => TranslatorHandler::translate(
+                        CarrierConstants::API_HOST_LOCALE_HU
+                    ),
+                    CarrierConstants::API_HOST_LOCALE_BG => TranslatorHandler::translate(
+                        CarrierConstants::API_HOST_LOCALE_BG
+                    ),
                     'none' => '',
                 ),
             ),
@@ -528,7 +554,9 @@ final class SamedayCourier extends WC_Shipping_Method
             'use_nomenclator' => array(
                 'title' => TranslatorHandler::translate('Use Nomenclator'),
                 'type' => 'select',
-                'description' => TranslatorHandler::translate('Use the imported cities during checkout for faster processing'),
+                'description' => TranslatorHandler::translate(
+                    'Use the imported cities during checkout for faster processing'
+                ),
                 'default' => 'no',
                 'options' => [
                     'no' => TranslatorHandler::translate('No'),
@@ -598,7 +626,11 @@ final class SamedayCourier extends WC_Shipping_Method
 
             parent::process_admin_options();
         } else {
-            WC_Admin_Settings::add_error(TranslatorHandler::translate('Invalid username/password combination provided! Settings have not been changed!'));
+            WC_Admin_Settings::add_error(
+                TranslatorHandler::translate(
+                    'Invalid username/password combination provided! Settings have not been changed!'
+                )
+            );
         }
     }
 
@@ -631,14 +663,25 @@ final class SamedayCourier extends WC_Shipping_Method
                 <button type="button" id="sameday-all-import-button" class="sameday_admin_button">'
             . TranslatorHandler::translate('Import all') .
             '</button>
-                <a href="' . $serviceUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Services') . '</a>
-                <a href="' . $pickupPointUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Pickup-point') . '</a>
-                <a href="' . $lockerUrl . '" class="sameday_admin_button">' . TranslatorHandler::translate('Lockers') . '</a>
+                <a href="' . $serviceUrl . '" class="sameday_admin_button">'
+            . TranslatorHandler::translate('Services') .
+            '</a>
+                <a href="' . $pickupPointUrl . '" class="sameday_admin_button">'
+            . TranslatorHandler::translate('Pickup-point') .
+            '</a>
+                <a href="' . $lockerUrl . '" class="sameday_admin_button">'
+            . TranslatorHandler::translate('Lockers') .
+            '</a>
                 <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
             . TranslatorHandler::translate('Import Cities') .
             '</button>
             </div>
-            <div id="sameday-all-import-overlay" class="sameday-all-import-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="sameday-all-import-title">
+            <div id="sameday-all-import-overlay"
+                 class="sameday-all-import-overlay"
+                 hidden
+                 role="alertdialog"
+                 aria-modal="true"
+                 aria-labelledby="sameday-all-import-title">
                 <div class="sameday-all-import-overlay__card">
                     <div class="sameday-all-import-overlay__spinner" aria-hidden="true"></div>
                     <p id="sameday-all-import-title" class="sameday-all-import-overlay__title">'

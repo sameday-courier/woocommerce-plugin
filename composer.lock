@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab2770a005b2579f4354b43eec6e67f6",
+    "content-hash": "bde602cfcefc130a12095ffc53355b10",
     "packages": [
         {
             "name": "sameday-courier/php-sdk",
@@ -69,7 +69,9 @@
     "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": ">=7.4"
+    },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
 }

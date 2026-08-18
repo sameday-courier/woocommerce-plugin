@@ -38,7 +38,9 @@ final class EditServiceController extends AbstractController
     {
         $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
         if (null === $serviceName) {
-            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[(new CarrierSettingsServiceProvider())->get()->getHostCountry()];
+            $carrierSettingsProvider = new CarrierSettingsServiceProvider();
+            $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
+            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
         $inputParams['samedaycourier-service-name'] = $serviceName;

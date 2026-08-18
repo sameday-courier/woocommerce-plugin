@@ -36,4 +36,3 @@ abstract class AbstractAction implements ActionInterface
         return count($this->getParams());
     }
 }
-

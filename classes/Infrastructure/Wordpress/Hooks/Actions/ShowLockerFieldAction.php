@@ -118,13 +118,13 @@ final class ShowLockerFieldAction extends AbstractAction
         }
 
         return $html . sprintf(
-                '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
+            '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
                 <td><strong>%s</strong></td>
                 <th><span id="showLockerDetails">%s</span></th>
             </tr>',
-                TranslatorHandler::translate('Ship to'),
-                wp_kses_post($shipTo)
-            );
+            TranslatorHandler::translate('Ship to'),
+            wp_kses_post($shipTo)
+        );
     }
 
     /**
@@ -159,9 +159,8 @@ final class ShowLockerFieldAction extends AbstractAction
         $lockers = [];
         foreach ($cities as $city) {
             if (null !== $city->getCity()) {
-                $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = $samedayLockerRepository->getLockersByCity(
-                    (string)$city->getCity()
-                );
+                $lockers[$city->getCity() . ' (' . $city->getCounty() . ')']
+                    = $samedayLockerRepository->getLockersByCity((string) $city->getCity());
             }
         }
 

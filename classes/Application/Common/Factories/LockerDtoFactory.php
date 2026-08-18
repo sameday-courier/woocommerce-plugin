@@ -22,8 +22,7 @@ final class LockerDtoFactory
 
     public function __construct(
         ?SamedayLockerRepository $samedayLockerRepository = null
-    )
-    {
+    ) {
         $this->samedayLockerRepository = $samedayLockerRepository ?? new SamedayLockerRepository();
     }
 

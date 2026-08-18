@@ -19,4 +19,3 @@ class PluginHandler
         (new Uninstaller())->run();
     }
 }
-

@@ -17,10 +17,9 @@ final class StartAllImportRequest
      * @param BulkJobStoreInterface $bulkJobStore
      */
     public function __construct(
-        int                   $userId,
+        int $userId,
         BulkJobStoreInterface $bulkJobStore
-    )
-    {
+    ) {
         $this->userId = $userId;
         $this->bulkJobStore = $bulkJobStore;
     }

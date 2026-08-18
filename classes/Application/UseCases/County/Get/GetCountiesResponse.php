@@ -25,8 +25,7 @@ final class GetCountiesResponse implements ResponseInterface
         ?string $noticeMessage,
         string $noticeType,
         array $counties = []
-    )
-    {
+    ) {
         $this->noticeMessage = $noticeMessage;
         $this->noticeType = $noticeType;
         $this->counties = $counties;

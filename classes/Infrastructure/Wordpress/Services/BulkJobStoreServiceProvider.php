@@ -22,8 +22,7 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
 
     public function __construct(
         ?CacheHandlerInterface $cacheHandler = null
-    )
-    {
+    ) {
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }
 

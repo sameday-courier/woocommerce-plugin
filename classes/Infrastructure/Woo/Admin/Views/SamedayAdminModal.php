@@ -45,7 +45,10 @@ final class SamedayAdminModal
             $confirmButton = '';
             if (null !== $confirmLabel && '' !== $confirmLabel) {
                 $confirmButton = sprintf(
-                    '<button type="%1$s"%2$s class="sameday_button sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm">%3$s</button>',
+                    '<button type="%1$s"%2$s
+                            class="sameday_button sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm">
+                        %3$s
+                    </button>',
                     esc_attr($confirmType),
                     '' !== $confirmFormId ? ' form="' . esc_attr($confirmFormId) . '"' : '',
                     esc_html((string) $confirmLabel)
@@ -53,7 +56,9 @@ final class SamedayAdminModal
             }
 
             $footerHtml = sprintf(
-                '<button type="button" class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--cancel" data-sameday-modal-close>
+                '<button type="button"
+                        class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--cancel"
+                        data-sameday-modal-close>
                     %1$s
                 </button>
                 %2$s',
@@ -65,7 +70,10 @@ final class SamedayAdminModal
         return sprintf(
             '<div id="%1$s" class="%2$s" hidden data-sameday-modal>
                 <div class="sameday-bulk-awb-modal__backdrop" data-sameday-modal-close></div>
-                <div class="sameday-bulk-awb-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="%1$s-title">
+                <div class="sameday-bulk-awb-modal__dialog"
+                     role="dialog"
+                     aria-modal="true"
+                     aria-labelledby="%1$s-title">
                     <div class="sameday-bulk-awb-modal__header">
                         <div class="sameday-bulk-awb-modal__heading">
                             <div class="sameday-bulk-awb-modal__icon" aria-hidden="true">
@@ -76,7 +84,10 @@ final class SamedayAdminModal
                                 %4$s
                             </div>
                         </div>
-                        <button type="button" class="sameday-bulk-awb-modal__close" data-sameday-modal-close aria-label="%5$s">
+                        <button type="button"
+                                class="sameday-bulk-awb-modal__close"
+                                data-sameday-modal-close
+                                aria-label="%5$s">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>

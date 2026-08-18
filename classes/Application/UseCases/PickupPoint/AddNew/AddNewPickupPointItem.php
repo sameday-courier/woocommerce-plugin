@@ -63,8 +63,7 @@ final class AddNewPickupPointItem implements ItemInterface
         string $pickupPointContactPersonName,
         string $pickupPointContactPersonPhone,
         bool $isDefault
-    )
-    {
+    ) {
         $this->pickupPointCountryId = $pickupPointCountryId;
         $this->pickupPointCountyId = $pickupPointCountyId;
         $this->pickupPointCityId = $pickupPointCityId;

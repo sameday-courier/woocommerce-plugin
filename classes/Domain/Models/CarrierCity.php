@@ -23,7 +23,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param int $id
-     * 
+     *
      * @return self
      */
     public function setId(int $id): self
@@ -43,7 +43,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param int|null $cityId
-     * 
+     *
      * @return self
      */
     public function setCityId(?int $cityId): self
@@ -63,7 +63,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param string|null $cityName
-     * 
+     *
      * @return self
      */
     public function setCityName(?string $cityName): self
@@ -83,7 +83,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param string|null $countyCode
-     * 
+     *
      * @return self
      */
     public function setCountyCode(?string $countyCode): self
@@ -103,7 +103,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param string|null $postalCode
-     * 
+     *
      * @return self
      */
     public function setPostalCode(?string $postalCode): self
@@ -123,7 +123,7 @@ final class CarrierCity implements ModelInterface
 
     /**
      * @param string|null $countryCode
-     * 
+     *
      * @return self
      */
     public function setCountryCode(?string $countryCode): self

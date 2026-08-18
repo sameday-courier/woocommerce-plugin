@@ -51,8 +51,7 @@ class AwbGenerateRecipientResolver
         CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
-    )
-    {
+    ) {
         $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
@@ -74,8 +73,7 @@ class AwbGenerateRecipientResolver
         BillingDto $billing,
         CarrierService $service,
         ?LockerDto $locker
-    ): AwbGenerateRecipientResponse
-    {
+    ): AwbGenerateRecipientResponse {
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
         $country = $shipping->getCountry() ?? $billing->getCountry();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Domain\Models;
 
 final class CarrierLocker implements ModelInterface
@@ -26,7 +28,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param int $id
-     * 
+     *
      * @return self
      */
     public function setId(int $id): self
@@ -46,7 +48,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param int|null $lockerId
-     * 
+     *
      * @return self
      */
     public function setLockerId(?int $lockerId): self
@@ -66,7 +68,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $name
-     * 
+     *
      * @return self
      */
     public function setName(?string $name): self
@@ -86,7 +88,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $county
-     * 
+     *
      * @return self
      */
     public function setCounty(?string $county): self
@@ -106,7 +108,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $city
-     * 
+     *
      * @return self
      */
     public function setCity(?string $city): self
@@ -126,7 +128,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $address
-     * 
+     *
      * @return self
      */
     public function setAddress(?string $address): self
@@ -146,7 +148,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $lat
-     * 
+     *
      * @return self
      */
     public function setLat(?string $lat): self
@@ -166,7 +168,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $lng
-     * 
+     *
      * @return self
      */
     public function setLng(?string $lng): self
@@ -186,7 +188,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $postalCode
-     * 
+     *
      * @return self
      */
     public function setPostalCode(?string $postalCode): self
@@ -206,7 +208,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param string|null $boxes
-     * 
+     *
      * @return self
      */
     public function setBoxes(?string $boxes): self
@@ -226,7 +228,7 @@ final class CarrierLocker implements ModelInterface
 
     /**
      * @param bool|null $isTesting
-     * 
+     *
      * @return self
      */
     public function setIsTesting(?bool $isTesting): self

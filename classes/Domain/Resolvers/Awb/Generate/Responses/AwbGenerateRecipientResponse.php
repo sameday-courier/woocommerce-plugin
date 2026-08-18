@@ -33,8 +33,7 @@ class AwbGenerateRecipientResponse
         RecipientDto $recipient,
         OohDto $oohDto,
         string $currency
-    )
-    {
+    ) {
         $this->recipient = $recipient;
         $this->oohDto = $oohDto;
         $this->currency = $currency;

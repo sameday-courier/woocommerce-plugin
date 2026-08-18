@@ -26,8 +26,7 @@ final class PostalCode
         string $countyCode,
         string $countryCode,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
-    ): PostalCodeDto
-    {
+    ): PostalCodeDto {
         if (null === $code || '' === $code || '' === $countyCode || '' === $countryCode) {
             return new PostalCodeDto(null);
         }

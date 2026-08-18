@@ -21,13 +21,12 @@ final class StartAllImportResponse implements ResponseInterface
 
     public function __construct(
         ?string $noticeMessage,
-        string  $noticeType,
+        string $noticeType,
         ?string $jobId = null,
-        int     $total = 0,
-        int     $processed = 0,
-        bool    $done = false
-    )
-    {
+        int $total = 0,
+        int $processed = 0,
+        bool $done = false
+    ) {
         $this->noticeMessage = $noticeMessage;
         $this->noticeType = $noticeType;
         $this->jobId = $jobId;

@@ -53,8 +53,7 @@ abstract class AbstractController implements ControllerInterface
     protected function sendJsonErrorResponse(
         $payload,
         int $statusCode = 400
-    ): void
-    {
+    ): void {
         wp_send_json_error($payload, $statusCode);
     }
 
@@ -69,8 +68,7 @@ abstract class AbstractController implements ControllerInterface
         $payload,
         int $statusCode = 200,
         bool $flag = false
-    ): void
-    {
+    ): void {
         wp_send_json_success($payload, $statusCode, $flag);
     }
 

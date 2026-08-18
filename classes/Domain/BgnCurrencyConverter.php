@@ -50,14 +50,16 @@ class BgnCurrencyConverter
         string $storeCurrency,
         string $estimatedPrice,
         string $estimatedCurrency
-    ): string
-    {
+    ): string {
         return sprintf(
-            '%s: <span class="woocommerce-Price-amount amount"><bdi>%s&nbsp;<span class="woocommerce-Price-currencySymbol">%s</span> <span style="font-size: smaller"> %s </span></bdi></span>',
+            '%s: <span class="woocommerce-Price-amount amount">'
+            . '<bdi>%s&nbsp;<span class="woocommerce-Price-currencySymbol">%s</span>'
+            . ' <span style="font-size: smaller"> %s </span></bdi></span>',
             $carrierName,
             number_format((float) $price, 2, '.', ''),
             get_woocommerce_currency_symbol($storeCurrency),
-            sprintf("(≈ %s %s)",
+            sprintf(
+                "(≈ %s %s)",
                 $estimatedPrice,
                 get_woocommerce_currency_symbol($estimatedCurrency)
             )

@@ -1,0 +1,56 @@
+name: PHPCS
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install PHPCS tooling
+        working-directory: ${{ runner.temp }}/phpcs
+        run: |
+          cat > composer.json << 'EOF'
+          {
+            "require": {
+              "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+              "phpcompatibility/php-compatibility": "^9.3",
+              "slevomat/coding-standard": "^8.15",
+              "squizlabs/php_codesniffer": "^3.13"
+            },
+            "config": {
+              "allow-plugins": {
+                "dealerdirect/phpcodesniffer-composer-installer": true
+              }
+            }
+          }
+          EOF
+          composer install --no-interaction --no-progress
+
+      - name: Run PHPCS
+        run: |
+          "${{ runner.temp }}/phpcs/vendor/bin/phpcs" \
+            --standard=phpcs.xml.dist \
+            --basepath=. \
+            --report=full \
+            --report-xml=phpcs-report.xml
+
+      - name: Upload PHPCS report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpcs-report
+          path: phpcs-report.xml
+          if-no-files-found: warn

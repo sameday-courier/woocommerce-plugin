@@ -23,7 +23,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param int $orderId
-     * 
+     *
      * @return self
      */
     public function setOrderId(int $orderId): self
@@ -43,7 +43,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param string|null $awbParcel
-     * 
+     *
      * @return self
      */
     public function setAwbParcel(?string $awbParcel): self
@@ -63,7 +63,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param string|null $summary
-     * 
+     *
      * @return self
      */
     public function setSummary(?string $summary): self
@@ -83,7 +83,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param string|null $history
-     * 
+     *
      * @return self
      */
     public function setHistory(?string $history): self
@@ -103,7 +103,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param string|null $expeditionStatus
-     * 
+     *
      * @return self
      */
     public function setExpeditionStatus(?string $expeditionStatus): self
@@ -123,7 +123,7 @@ final class CarrierPackage implements ModelInterface
 
     /**
      * @param string|null $sync
-     * 
+     *
      * @return self
      */
     public function setSync(?string $sync): self

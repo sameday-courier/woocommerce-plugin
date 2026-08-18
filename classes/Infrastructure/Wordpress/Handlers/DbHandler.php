@@ -133,7 +133,7 @@ final class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $tableName
-     * 
+     *
      * @return void
      */
     public function truncateTable(string $tableName): void
@@ -181,10 +181,10 @@ final class DbHandler implements DbHandlerInterface
             switch (gettype($value)) {
                 case 'string' || 'NULL':
                     $format[] = '%s';
-                break;
+                    break;
                 case 'integer':
                     $format[] = '%d';
-                break;
+                    break;
             }
         }
 

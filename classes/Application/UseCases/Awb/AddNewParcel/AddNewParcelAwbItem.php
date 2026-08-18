@@ -60,8 +60,7 @@ final class AddNewParcelAwbItem implements ItemInterface
         $parcelHeight,
         string $parcelObservation = "",
         bool $parcelIsLast = false
-    )
-    {
+    ) {
         $this->orderId = $orderId;
         $this->parcelWeight = $parcelWeight;
         $this->parcelWidth = $parcelWidth;

@@ -38,7 +38,7 @@ final class AddExtraFeesAction extends AbstractAction
     public function handle(...$args): void
     {
         global $woocommerce;
-        if (!defined( 'DOING_AJAX') && is_admin()) {
+        if (!defined('DOING_AJAX') && is_admin()) {
             return;
         }
 
@@ -69,4 +69,3 @@ final class AddExtraFeesAction extends AbstractAction
         return $chosenDeliveryMethod === $isCod;
     }
 }
-

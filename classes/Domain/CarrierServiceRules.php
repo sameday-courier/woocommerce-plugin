@@ -20,8 +20,7 @@ final class CarrierServiceRules
      */
     public function __construct(
         CarrierServiceProviderInterface $carrierServiceProvider
-    )
-    {
+    ) {
         $this->carrierServiceProvider = $carrierServiceProvider;
     }
 

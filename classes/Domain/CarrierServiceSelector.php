@@ -21,10 +21,9 @@ final class CarrierServiceSelector
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     public function __construct(
-        CarrierServiceProviderInterface  $carrierServiceProvider,
+        CarrierServiceProviderInterface $carrierServiceProvider,
         CarrierSettingsProviderInterface $carrierSettingsProvider
-    )
-    {
+    ) {
         $this->carrierServiceProvider = $carrierServiceProvider;
         $this->carrierSettingsProvider = $carrierSettingsProvider;
     }

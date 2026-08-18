@@ -53,7 +53,11 @@ class PickupPointForm
                     <div class="sameday-pickup-point-form__group">
                         <label for="pickupPointDefault">%9$s</label>
                         <div class="sameday-pickup-point-form__input">
-                            <input type="checkbox" class="sameday-modal-checkbox" name="pickupPointDefault" id="pickupPointDefault" value="1">
+                            <input type="checkbox"
+                                   class="sameday-modal-checkbox"
+                                   name="pickupPointDefault"
+                                   id="pickupPointDefault"
+                                   value="1">
                         </div>
                     </div>
                     <div class="sameday-pickup-point-form__group">
@@ -71,13 +75,19 @@ class PickupPointForm
                     <div class="sameday-pickup-point-form__group">
                         <label for="pickupPointContactPersonName">%12$s</label>
                         <div class="sameday-pickup-point-form__input">
-                            <input type="text" name="pickupPointContactPersonName" id="pickupPointContactPersonName" required>
+                            <input type="text"
+                                   name="pickupPointContactPersonName"
+                                   id="pickupPointContactPersonName"
+                                   required>
                         </div>
                     </div>
                     <div class="sameday-pickup-point-form__group">
                         <label for="pickupPointContactPersonPhone">%13$s</label>
                         <div class="sameday-pickup-point-form__input">
-                            <input type="number" name="pickupPointContactPersonPhone" id="pickupPointContactPersonPhone" required>
+                            <input type="number"
+                                   name="pickupPointContactPersonPhone"
+                                   id="pickupPointContactPersonPhone"
+                                   required>
                         </div>
                     </div>
                     <div class="sameday-pickup-point-form__group">

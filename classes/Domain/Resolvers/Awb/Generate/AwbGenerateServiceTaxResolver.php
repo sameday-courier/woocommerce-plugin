@@ -21,8 +21,7 @@ class AwbGenerateServiceTaxResolver
      */
     public function __construct(
         CarrierServiceProviderInterface $carrierServiceProvider
-    )
-    {
+    ) {
         $this->carrierServiceProvider = $carrierServiceProvider;
     }
 
@@ -36,17 +35,17 @@ class AwbGenerateServiceTaxResolver
      */
     public function resolve(
         CarrierService $carrierService,
-        bool           $hasOpenPackage,
-        bool           $hasLockerFirstMile,
-        int            $packageType
-    ): AwbGenerateServiceTaxResponse
-    {
+        bool $hasOpenPackage,
+        bool $hasLockerFirstMile,
+        int $packageType
+    ): AwbGenerateServiceTaxResponse {
         $optionalServices = $this->carrierServiceProvider->getServiceIdOptionalTaxes($carrierService->getSamedayId());
 
         $serviceTaxIds = [];
         if ($hasOpenPackage) {
             foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
+                if (
+                    $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === $packageType
                 ) {
                     $serviceTaxIds[] = CarrierConstants::OPEN_PACKAGE_OPTION_CODE;
@@ -58,7 +57,8 @@ class AwbGenerateServiceTaxResolver
 
         if ($hasLockerFirstMile) {
             foreach ($optionalServices as $optionalService) {
-                if ($optionalService->getCode() === CarrierConstants::PERSONAL_DELIVERY_OPTION_CODE
+                if (
+                    $optionalService->getCode() === CarrierConstants::PERSONAL_DELIVERY_OPTION_CODE
                     && $optionalService->getPackageType()->getType() === $packageType
                 ) {
                     $serviceTaxIds[] = CarrierConstants::PERSONAL_DELIVERY_OPTION_CODE;

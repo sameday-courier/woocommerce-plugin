@@ -25,8 +25,7 @@ final class GetCitiesResponse implements ResponseInterface
         ?string $noticeMessage,
         string $noticeType,
         array $cities = []
-    )
-    {
+    ) {
         $this->noticeMessage = $noticeMessage;
         $this->noticeType = $noticeType;
         $this->cities = $cities;

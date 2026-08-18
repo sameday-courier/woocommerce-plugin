@@ -73,7 +73,8 @@ final class RefreshService
         $lnService = $this->serviceCatalogStore->getByCode(CarrierConstants::LOCKER_NEXT_DAY_CODE);
         $pudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::PUDO_CODE);
 
-        if (null !== $lnService && null !== $pudoService
+        if (
+            null !== $lnService && null !== $pudoService
             && !$this->serviceCatalogStore->updateFields(
                 $pudoService->getId(),
                 [

@@ -34,15 +34,25 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      * Inline comments describe when each context loads.
      */
     private const WP_CONTEXT = [
-        'admin_common' => 'admin_common', // Sameday admin pages (sameday_services, sameday_lockers, sameday_pickup_points), Sameday WC settings section, or order admin (post.php / admin.php).
-        'admin_full' => 'admin_full', // Sameday settings section (section=samedaycourier) or order admin pages (post.php / admin.php).
-        'pickup_points' => 'pickup_points', // Pickup points admin page only (page=sameday_pickup_points).
-        'checkout' => 'checkout', // Any WooCommerce checkout page (is_checkout()).
-        'checkout_strict' => 'checkout_strict', // Checkout only, excluding order-pay and order-received.
-        'checkout_nomenclator' => 'checkout_nomenclator', // Checkout page when Sameday nomenclator is enabled.
-        'admin_settings' => 'admin_settings', // Sameday WooCommerce shipping settings section only.
-        'order_edit' => 'order_edit', // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
-        'orders_list' => 'orders_list', // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
+        'admin_common' => 'admin_common',
+        // Sameday admin pages (sameday_services, sameday_lockers, sameday_pickup_points),
+        // Sameday WC settings section, or order admin (post.php / admin.php).
+        'admin_full' => 'admin_full',
+        // Sameday settings section (section=samedaycourier) or order admin pages (post.php / admin.php).
+        'pickup_points' => 'pickup_points',
+        // Pickup points admin page only (page=sameday_pickup_points).
+        'checkout' => 'checkout',
+        // Any WooCommerce checkout page (is_checkout()).
+        'checkout_strict' => 'checkout_strict',
+        // Checkout only, excluding order-pay and order-received.
+        'checkout_nomenclator' => 'checkout_nomenclator',
+        // Checkout page when Sameday nomenclator is enabled.
+        'admin_settings' => 'admin_settings',
+        // Sameday WooCommerce shipping settings section only.
+        'order_edit' => 'order_edit',
+        // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
+        'orders_list' => 'orders_list',
+        // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
     ];
 
     /**
@@ -239,10 +249,9 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function addScript(
         string $fileName,
         string $context,
-        array  $deps = ['jquery'],
-        bool   $inFooter = true
-    ): array
-    {
+        array $deps = ['jquery'],
+        bool $inFooter = true
+    ): array {
         if (!isset(self::WP_CONTEXT[$context])) {
             throw new InvalidArgumentException(
                 sprintf(
@@ -272,10 +281,9 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private static function addExternalScript(
         string $url,
         string $context,
-        array  $deps = ['jquery'],
-        bool   $inFooter = false
-    ): array
-    {
+        array $deps = ['jquery'],
+        bool $inFooter = false
+    ): array {
         if (!isset(self::WP_CONTEXT[$context])) {
             throw new InvalidArgumentException(
                 sprintf(

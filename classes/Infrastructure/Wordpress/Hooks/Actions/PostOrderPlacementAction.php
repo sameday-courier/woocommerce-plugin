@@ -50,7 +50,8 @@ final class PostOrderPlacementAction extends AbstractAction
                     $orderId,
                     (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER)
                 );
-            } catch (Exception $exception) {}
+            } catch (Exception $exception) {
+            }
         }
 
         (new WooOpenPackageOrderDataHandler())->saveFromSession($orderId);
@@ -65,4 +66,3 @@ final class PostOrderPlacementAction extends AbstractAction
             ->isOohDeliveryOptionByCode((new WooShippingMethodProvider())->getChosenServiceCode());
     }
 }
-

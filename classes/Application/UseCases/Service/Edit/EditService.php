@@ -60,15 +60,17 @@ final class EditService
 
         $status = (int) $statusRaw;
 
-        if (!$this->serviceCatalogStore->updateFields(
-            $serviceId,
-            [
+        if (
+            !$this->serviceCatalogStore->updateFields(
+                $serviceId,
+                [
                 'name' => $name,
                 'price' => (float) $price,
                 'price_free' => $priceFree,
                 'status' => $status,
-            ]
-        )) {
+                ]
+            )
+        ) {
             return new EditServiceResponse(
                 $serviceId,
                 'Unable to update service',
@@ -79,7 +81,8 @@ final class EditService
         if ($currentService->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $pudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::PUDO_CODE);
 
-            if (null !== $pudoService
+            if (
+                null !== $pudoService
                 && !$this->serviceCatalogStore->updateFields(
                     $pudoService->getId(),
                     [

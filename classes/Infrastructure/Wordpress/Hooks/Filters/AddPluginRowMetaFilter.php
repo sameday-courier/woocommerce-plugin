@@ -50,8 +50,12 @@ final class AddPluginRowMetaFilter extends AbstractFilter
         if (strpos((string) $pluginFileName, self::PLUGIN_FILE)) {
             $pathToSettings = admin_url() . 'admin.php?page=wc-settings&tab=shipping&section=samedaycourier';
             $pathToEawb = 'https://eawb.sameday.ro/';
-            $links[] = '<a href="' . esc_html__($pathToSettings, 'woocommerce') . '" target="_blank"> ' . esc_html__('Settings', 'woocommerce') . ' </a>';
-            $links[] = '<a href="' . esc_html__($pathToEawb, 'woocommerce') . '" target="_blank"> ' . esc_html__('eAWB', 'woocommerce') . ' </a>';
+            $settingsLabel = esc_html__('Settings', 'woocommerce');
+            $eawbLabel = esc_html__('eAWB', 'woocommerce');
+            $links[] = '<a href="' . esc_html__($pathToSettings, 'woocommerce')
+                . '" target="_blank"> ' . $settingsLabel . ' </a>';
+            $links[] = '<a href="' . esc_html__($pathToEawb, 'woocommerce')
+                . '" target="_blank"> ' . $eawbLabel . ' </a>';
         }
 
         return $links;

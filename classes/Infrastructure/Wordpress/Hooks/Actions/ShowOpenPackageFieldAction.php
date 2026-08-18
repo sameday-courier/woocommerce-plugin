@@ -36,15 +36,17 @@ final class ShowOpenPackageFieldAction extends AbstractAction
             return;
         }
 
+        $shippingMethodProvider = new WooShippingMethodProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
         $service = $samedayServiceRepository->getServiceSamedayByCode(
-            (new WooShippingMethodProvider())->getChosenServiceCode()
+            $shippingMethodProvider->getChosenServiceCode()
         );
 
         /** @var OptionalTaxObject[] $optionalTaxes */
         $optionalTaxes = [];
-        if (null !== $service && null !== $service->getServiceOptionalTaxes() && '' !== $service->getServiceOptionalTaxes()) {
-            $optionalTaxes = unserialize($service->getServiceOptionalTaxes(), ['']);
+        $optionalTaxesRaw = null !== $service ? $service->getServiceOptionalTaxes() : null;
+        if (null !== $optionalTaxesRaw && '' !== $optionalTaxesRaw) {
+            $optionalTaxes = unserialize($optionalTaxesRaw, ['']);
             if (!$optionalTaxes) {
                 $optionalTaxes = [];
             }

@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameda
 use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayPackageMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
+
 class SamedayPackageRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_package';
@@ -31,8 +32,7 @@ class SamedayPackageRepository extends AbstractRepository
         $summary,
         array $history,
         $expedition
-    ): void
-    {
+    ): void {
         $this->dbHandler->insertRow(
             $this->getTableName(),
             [

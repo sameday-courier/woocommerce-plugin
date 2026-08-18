@@ -23,12 +23,11 @@ final class SdkInitiator
      * @return SamedayClient
      * @throws SamedaySDKException
      */
-	public static function init(
+    public static function init(
         ?string $username = null,
         ?string $password = null,
         ?string $apiUrl = null
-    ): SamedayClient
-	{
+    ): SamedayClient {
         $settings = (new CarrierSettingsServiceProvider())->get();
         if (null === $username) {
             $username = $settings->getUser();
@@ -47,16 +46,16 @@ final class SdkInitiator
         $wooHandler = new WooHandler();
         $platformVersion = $wooHandler->getPlatformVersion();
 
-		return new SamedayClient(
-			$username,
-			$password,
-			$apiUrl,
-			'WOOCOMMERCE ' . $platformVersion,
-			$platformVersion,
-			'curl',
-			new PersistenceHandler()
-		);
-	}
+        return new SamedayClient(
+            $username,
+            $password,
+            $apiUrl,
+            'WOOCOMMERCE ' . $platformVersion,
+            $platformVersion,
+            'curl',
+            new PersistenceHandler()
+        );
+    }
 
     /**
      * @return array<string, array<int, string>>

@@ -17,8 +17,7 @@ final class AddNewPickupPointResponse
     public function __construct(
         ?string $noticeMessage,
         string $noticeType
-    )
-    {
+    ) {
         $this->noticeMessage = $noticeMessage;
         $this->noticeType = $noticeType;
     }

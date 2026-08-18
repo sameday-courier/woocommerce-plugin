@@ -55,7 +55,8 @@ final class AdminPageValidatorHandler
             return 'shop_order' === get_post_type((int)$_GET['post']);
         }
 
-        if ('admin.php' === $pagenow
+        if (
+            'admin.php' === $pagenow
             && isset($_GET['page'], $_GET['action'])
             && 'wc-orders' === $_GET['page']
             && 'edit' === $_GET['action']

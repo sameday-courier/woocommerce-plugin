@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\PickupPoint;
 
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\PickupPointForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
@@ -18,10 +14,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WP_List_Table;
-
-if (!class_exists( 'WP_List_Table' ) ) {
-	require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-}
 
 class PickupPoints extends WP_List_Table
 {
@@ -36,120 +28,125 @@ class PickupPoints extends WP_List_Table
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
     /** Class constructor */
-	public function __construct()
-	{
-		parent::__construct(
+    public function __construct()
+    {
+        parent::__construct(
             [
                 'singular' => TranslatorHandler::translate('Pickup-point'),
                 'plural' => TranslatorHandler::translate('Pickup-points'),
                 'ajax' => false
-		    ]
+            ]
         );
 
         $this->dbHandler = new DbHandler();
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository($this->dbHandler);
-	}
+    }
 
-	private const GRID_PER_PAGE_VALUE = 10;
+    private const GRID_PER_PAGE_VALUE = 10;
 
-	private const ACCEPTED_ORDER_BY_COLUMNS = [
-		'sameday_id',
-		'sameday_alias',
-	];
+    private const ACCEPTED_ORDER_BY_COLUMNS = [
+        'sameday_id',
+        'sameday_alias',
+    ];
 
-	private const ACCEPTED_SEARCH_COLUMNS = [
-		'sameday_id',
-		'sameday_alias',
-		'city',
-		'county',
-		'address',
-		'contactPersons',
-		'default_pickup_point',
-	];
+    private const ACCEPTED_SEARCH_COLUMNS = [
+        'sameday_id',
+        'sameday_alias',
+        'city',
+        'county',
+        'address',
+        'contactPersons',
+        'default_pickup_point',
+    ];
 
-	private const SEARCH_PARAM_TO_COLUMN = [
-		'search_sameday_id' => 'sameday_id',
-		'search_sameday_alias' => 'sameday_alias',
-		'search_city' => 'city',
-		'search_county' => 'county',
-		'search_address' => 'address',
-		'search_contactPersons' => 'contactPersons',
-	];
+    private const SEARCH_PARAM_TO_COLUMN = [
+        'search_sameday_id' => 'sameday_id',
+        'search_sameday_alias' => 'sameday_alias',
+        'search_city' => 'city',
+        'search_county' => 'county',
+        'search_address' => 'address',
+        'search_contactPersons' => 'contactPersons',
+    ];
 
-	/** Text displayed when no pickup-points data is available */
-	public function no_items(): void
-	{
-		echo TranslatorHandler::translate('No pickup-points available.');
-	}
-
-	/**
-	 * Render a column when no column specific method exist.
-	 *
-	 * @param array $item
-	 * @param string $column_name
-	 *
-	 * @return mixed
-	 */
-	public function column_default($item, $column_name)
+    /** Text displayed when no pickup-points data is available */
+    public function no_items(): void
     {
-		switch ($column_name) {
-			case 'contactPersons':
-				return $this->parseContactPersons(unserialize($item[$column_name], ['']));
-			case 'default_pickup_point':
-				return $item[$column_name] ? "<strong>Yes</strong>" : "No";
+        echo TranslatorHandler::translate('No pickup-points available.');
+    }
+
+    /**
+     * Render a column when no column specific method exist.
+     *
+     * @param array $item
+     * @param string $column_name
+     *
+     * @return mixed
+     */
+    public function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'contactPersons':
+                return $this->parseContactPersons(unserialize($item[$column_name], ['']));
+            case 'default_pickup_point':
+                return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
-                return '<a href="#" class="sameday_admin_button delete-pickup-point" role="button" data-sameday-modal-open="' . esc_attr(PickupPointForm::DELETE_MODAL_ID) . '" data-id="' . esc_attr((string) (int) $item['sameday_id']) . '">Delete</a>';
-			default:
-				return $item[$column_name];
-		}
-	}
+                $modalId = esc_attr(PickupPointForm::DELETE_MODAL_ID);
+                $samedayId = esc_attr((string) (int) $item['sameday_id']);
 
-	/**
-	 * @param $contactPersons
-	 *
-	 * @return string
-	 */
-	private function  parseContactPersons($contactPersons): string
-	{
-		$persons = array();
-		foreach ($contactPersons as $contact_person) {
-			$persons[] = "<strong>{$contact_person->getName()}</strong> <br/> {$contact_person->getPhone()}";
-		}
+                return '<a href="#" class="sameday_admin_button delete-pickup-point" role="button"'
+                    . ' data-sameday-modal-open="' . $modalId . '"'
+                    . ' data-id="' . $samedayId . '">Delete</a>';
+            default:
+                return $item[$column_name];
+        }
+    }
 
-		return implode(',', $persons);
-	}
+    /**
+     * @param $contactPersons
+     *
+     * @return string
+     */
+    private function parseContactPersons($contactPersons): string
+    {
+        $persons = array();
+        foreach ($contactPersons as $contact_person) {
+            $persons[] = "<strong>{$contact_person->getName()}</strong> <br/> {$contact_person->getPhone()}";
+        }
 
-	/**
-	 *  Associative array of columns
-	 *
-	 * @return array
-	 */
-	public function get_columns(): array
-	{
-		return [
-			'sameday_id' => TranslatorHandler::translate('Sameday ID'),
-			'sameday_alias' => TranslatorHandler::translate('Name'),
-			'city' => TranslatorHandler::translate('City'),
-			'county' => TranslatorHandler::translate('County'),
-			'address' => TranslatorHandler::translate('Address'),
-			'contactPersons' => TranslatorHandler::translate('Contact Persons'),
-			'default_pickup_point' => TranslatorHandler::translate('Is default '),
+        return implode(',', $persons);
+    }
+
+    /**
+     *  Associative array of columns
+     *
+     * @return array
+     */
+    public function get_columns(): array
+    {
+        return [
+            'sameday_id' => TranslatorHandler::translate('Sameday ID'),
+            'sameday_alias' => TranslatorHandler::translate('Name'),
+            'city' => TranslatorHandler::translate('City'),
+            'county' => TranslatorHandler::translate('County'),
+            'address' => TranslatorHandler::translate('Address'),
+            'contactPersons' => TranslatorHandler::translate('Contact Persons'),
+            'default_pickup_point' => TranslatorHandler::translate('Is default '),
             'delete' => TranslatorHandler::translate('Actions'),
-		];
-	}
+        ];
+    }
 
-	/**
-	 * Columns to make sortable.
-	 *
-	 * @return array
-	 */
-	public function get_sortable_columns(): array
-	{
-		return array(
-			'sameday_id' => array('sameday_id', true),
+    /**
+     * Columns to make sortable.
+     *
+     * @return array
+     */
+    public function get_sortable_columns(): array
+    {
+        return array(
+            'sameday_id' => array('sameday_id', true),
             'sameday_alias' => array('sameday_alias', true)
-		);
-	}
+        );
+    }
 
     public function prepare_items(): void
     {
@@ -232,7 +229,9 @@ class PickupPoints extends WP_List_Table
             'search_county' => sanitize_text_field(wp_unslash($_GET['search_county'] ?? '')),
             'search_address' => sanitize_text_field(wp_unslash($_GET['search_address'] ?? '')),
             'search_contactPersons' => sanitize_text_field(wp_unslash($_GET['search_contactPersons'] ?? '')),
-            'search_default_pickup_point' => sanitize_text_field(wp_unslash($_GET['search_default_pickup_point'] ?? '')),
+            'search_default_pickup_point' => sanitize_text_field(
+                wp_unslash($_GET['search_default_pickup_point'] ?? '')
+            ),
         ];
     }
 
@@ -313,10 +312,17 @@ class PickupPoints extends WP_List_Table
                 />
             <?php endforeach; ?>
 
-            <?php submit_button(TranslatorHandler::translate('Filter'), '', 'filter_action', false, ['id' => 'pickup-point-query-submit']); ?>
+            <?php submit_button(
+                TranslatorHandler::translate('Filter'),
+                '',
+                'filter_action',
+                false,
+                ['id' => 'pickup-point-query-submit']
+            ); ?>
 
             <?php if ($this->has_active_filters()) : ?>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>" class="button">
+                <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>"
+                   class="button">
                     <?php esc_html_e('Reset', CarrierConstants::TEXT_DOMAIN); ?>
                 </a>
             <?php endif; ?>

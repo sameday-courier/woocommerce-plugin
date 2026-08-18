@@ -17,8 +17,7 @@ class CarrierCurrencyRules
         float $repayment,
         string $destCurrency,
         string $storeCurrency
-    ): bool
-    {
+    ): bool {
         if ($repayment === .0) {
             return false;
         }

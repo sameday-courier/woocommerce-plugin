@@ -7,7 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 /**
  * Progressive bulk job step controller.
