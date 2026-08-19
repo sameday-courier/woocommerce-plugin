@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Domain\Ports;
 
 use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\CourierLoginRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\DeletePickupPointResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\CourierLoginResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\GetCitiesResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
@@ -129,4 +133,19 @@ interface CourierServiceProviderInterface
      * @throws CourierServiceException
      */
     public function deletePickupPoint(DeletePickupPointRequestDto $requestDto): DeletePickupPointResponseDto;
+
+    /**
+     * @param EstimateCostRequestDto $requestDto
+     *
+     * @return EstimateCostResponseDto
+     * @throws CourierServiceException
+     */
+    public function estimateCost(EstimateCostRequestDto $requestDto): EstimateCostResponseDto;
+
+    /**
+     * @param CourierLoginRequestDto $requestDto
+     *
+     * @return CourierLoginResponseDto
+     */
+    public function login(CourierLoginRequestDto $requestDto): CourierLoginResponseDto;
 }

@@ -6,15 +6,15 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method;
 
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\ParcelDimensionsObject;
-use Sameday\Objects\PostAwb\Request\AwbRecipientEntityObject;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
-use Sameday\Requests\SamedayPostAwbEstimationRequest;
-use Sameday\Responses\SamedayPostAwbEstimationResponse;
-use Sameday\Sameday;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
+use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\CourierLoginRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
+use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -25,6 +25,7 @@ use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerReq
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
@@ -97,6 +98,11 @@ final class SamedayCourier extends WC_Shipping_Method
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
+     * @var CourierServiceProviderInterface
+     */
+    private CourierServiceProviderInterface $courierServiceProvider;
+
+    /**
      * SamedayCourier_Shipping_Method constructor.
      *
      * @param int $instance_id
@@ -128,6 +134,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $this->sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
         $this->weightConverter = new WooWeightHandler();
         $this->stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler($this->wooCommerceHandler));
+        $this->courierServiceProvider = new CourierServiceProvider();
 
         $this->init();
     }
@@ -138,7 +145,7 @@ final class SamedayCourier extends WC_Shipping_Method
      * @return void
      * @throws SamedaySDKException
      */
-    public function calculate_shipping($package = array())
+    public function calculate_shipping($package = array()): void
     {
         $settings = $this->carrierSettingsProvider->get();
         if (!$settings->isEnabled()) {
@@ -156,6 +163,7 @@ final class SamedayCourier extends WC_Shipping_Method
         $useEstimatedCost = $settings->getEstimatedCost();
         $estimatedCostExtraFee = $settings->getEstimatedCostExtraFee();
         $useLockerMap = $settings->isLockersMapEnabled();
+
         $cartValue = $this->wooCommerceHandler->getWC()->cart->get_subtotal();
 
         if (true === $settings->isDiscountFreeShippingEnabled()) {
@@ -189,7 +197,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 && $useEstimatedCost !== 'no'
             ) {
                 $estimatedCost = $this->getEstimatedCost($package['destination'], $service->getSamedayId());
-                if ($estimatedCost instanceof SamedayPostAwbEstimationResponse) {
+                if ($estimatedCost instanceof EstimateCostResponseDto) {
                     $estimatedPrice = $estimatedCost->getCost();
                     $estimatedCurrency = $estimatedCost->getCurrency();
                     if (
@@ -290,7 +298,7 @@ final class SamedayCourier extends WC_Shipping_Method
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
                 new RefreshLockerRequest(
-                    new CourierServiceProvider(),
+                    $this->courierServiceProvider,
                     new LockerStoreServiceProvider(),
                     $this->carrierSettingsProvider
                 )
@@ -302,9 +310,9 @@ final class SamedayCourier extends WC_Shipping_Method
      * @param mixed $address
      * @param mixed $serviceId
      *
-     * @return SamedayPostAwbEstimationResponse|null
+     * @return EstimateCostResponseDto|null
      */
-    private function getEstimatedCost($address, $serviceId): ?SamedayPostAwbEstimationResponse
+    private function getEstimatedCost($address, $serviceId): ?EstimateCostResponseDto
     {
         $pickupPointId = $this->samedayPickupPointRepository->getDefaultPickupPointId();
         $weight = $this->weightConverter->convert(
@@ -338,42 +346,31 @@ final class SamedayCourier extends WC_Shipping_Method
             $repaymentAmount = 0;
         }
 
-        $estimateCostRequest = new SamedayPostAwbEstimationRequest(
+        $recipientAddress = ltrim((string) ($address['address'] ?? ''));
+
+        $recipient = (new RecipientDto())
+            ->setCity(ucwords(strtolower($city)) !== 'Bucuresti' ? $city : 'Sector 1')
+            ->setCounty($state)
+            ->setAddress('' !== $recipientAddress ? $recipientAddress : '123');
+
+        $estimateCostRequest = new EstimateCostRequestDto(
             $pickupPointId,
             null,
-            new PackageType(
-                PackageType::PARCEL
-            ),
-            [new ParcelDimensionsObject($weight)],
-            $serviceId,
-            new AwbPaymentType(
-                AwbPaymentType::CLIENT
-            ),
-            new AwbRecipientEntityObject(
-                ucwords(strtolower($city)) !== 'Bucuresti' ? $city : 'Sector 1',
-                $state,
-                ltrim($address['address']) !== '' ? ltrim($address['address']) : '123',
-                null,
-                null,
-                null,
-                null
-            ),
-            0,
-            $repaymentAmount,
+            PackageType::PARCEL,
+            [['weight' => $weight]],
+            (int) $serviceId,
+            AwbPaymentType::CLIENT,
+            $recipient,
+            0.0,
+            (float) $repaymentAmount,
             null,
             $serviceTaxIds,
             $currency
         );
 
         try {
-            $sameday = new Sameday(SdkInitiator::init());
-        } catch (Exception $exception) {
-            return null;
-        }
-
-        try {
-            return $sameday->postAwbEstimation($estimateCostRequest);
-        } catch (Exception $exception) {
+            return $this->courierServiceProvider->estimateCost($estimateCostRequest);
+        } catch (CourierServiceException $exception) {
             return null;
         }
     }
@@ -588,7 +585,7 @@ final class SamedayCourier extends WC_Shipping_Method
     /**
      * @return void
      */
-    public function process_admin_options()
+    public function process_admin_options(): void
     {
         $post_data = $this->get_post_data();
 
@@ -599,33 +596,32 @@ final class SamedayCourier extends WC_Shipping_Method
                 break;
             }
 
-            foreach ($envModesByHosts as $apiUrl) {
-                try {
-                    $sameday = SdkInitiator::init(
+            foreach ($envModesByHosts as $testingModeKey => $apiUrl) {
+                $loginResponse = $this->courierServiceProvider->login(
+                    new CourierLoginRequestDto(
                         $post_data['woocommerce_samedaycourier_user'],
                         $post_data['woocommerce_samedaycourier_password'],
                         $apiUrl
+                    )
+                );
+
+                if ($loginResponse->isSuccessful()) {
+                    $isTesting = (int) (CarrierConstants::API_DEMO === $testingModeKey);
+                    $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
+                    $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
+                    $isLogged = true;
+
+                    // If already exist a token from previews auth, cancel it
+                    OptionsHandler::setOption(
+                        'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN,
+                        [SamedayClient::KEY_TOKEN => null]
                     );
-                    if ($sameday->login()) {
-                        $isTesting = (int)(CarrierConstants::API_DEMO === array_keys($envModesByHosts, $apiUrl)[0]);
-                        $post_data['woocommerce_samedaycourier_is_testing'] = $isTesting;
-                        $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
-                        $isLogged = true;
+                    OptionsHandler::setOption(
+                        'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN_EXPIRES,
+                        [SamedayClient::KEY_TOKEN_EXPIRES => null]
+                    );
 
-                        // If already exist a token from previews auth, cancel it
-                        OptionsHandler::setOption(
-                            'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN,
-                            [SamedayClient::KEY_TOKEN => null]
-                        );
-                        OptionsHandler::setOption(
-                            'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN_EXPIRES,
-                            [SamedayClient::KEY_TOKEN_EXPIRES => null]
-                        );
-
-                        break;
-                    }
-                } catch (Exception $exception) {
-                    continue;
+                    break;
                 }
             }
         }

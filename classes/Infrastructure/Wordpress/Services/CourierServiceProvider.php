@@ -31,6 +31,7 @@ use Sameday\Requests\SamedayGetCountiesRequest;
 use Sameday\Requests\SamedayGetLockersRequest;
 use Sameday\Requests\SamedayGetPickupPointsRequest;
 use Sameday\Requests\SamedayGetServicesRequest;
+use Sameday\Requests\SamedayPostAwbEstimationRequest;
 use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
@@ -42,7 +43,11 @@ use SamedayCourier\Shipping\Domain\DTOs\CourierPickupPointDto;
 use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\DeletePickupPointRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\CourierLoginRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\DeletePickupPointResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\CourierLoginResponseDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\GetCitiesResponseDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
@@ -80,11 +85,14 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
     private ParcelDimensionsFactory $parcelDimensionsFactory;
 
+    private SdkInitiator $sdkInitiator;
+
     /**
      * @param ?Sameday $sameday
      * @param ?AwbErrorParser $awbErrorParser
      * @param ?ParcelStatusHistoryService $parcelStatusHistoryService
      * @param ?ParcelDimensionsFactory $parcelDimensionsFactory
+     * @param ?SdkInitiator $sdkInitiator
      *
      * @throws SamedaySDKException
      */
@@ -92,9 +100,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         ?Sameday $sameday = null,
         ?AwbErrorParser $awbErrorParser = null,
         ?ParcelStatusHistoryService $parcelStatusHistoryService = null,
-        ?ParcelDimensionsFactory $parcelDimensionsFactory = null
+        ?ParcelDimensionsFactory $parcelDimensionsFactory = null,
+        ?SdkInitiator $sdkInitiator = null
     ) {
-        $this->sameday = $sameday ?? new Sameday(SdkInitiator::init());
+        $this->sdkInitiator = $sdkInitiator ?? new SdkInitiator();
+        $this->sameday = $sameday ?? new Sameday($this->sdkInitiator->init());
         $this->awbErrorParser = $awbErrorParser ?? new AwbErrorParser();
         $this->parcelStatusHistoryService = $parcelStatusHistoryService ?? new ParcelStatusHistoryService();
         $this->parcelDimensionsFactory = $parcelDimensionsFactory ?? new ParcelDimensionsFactory();
@@ -535,6 +545,66 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             return new DeletePickupPointResponseDto();
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
+        }
+    }
+
+    /**
+     * @param EstimateCostRequestDto $requestDto
+     *
+     * @return EstimateCostResponseDto
+     * @throws CourierServiceException
+     */
+    public function estimateCost(EstimateCostRequestDto $requestDto): EstimateCostResponseDto
+    {
+        try {
+            $thirdPartyPickup = $requestDto->getThirdPartyPickup();
+            if (!$thirdPartyPickup instanceof ThirdPartyPickupEntityObject) {
+                $thirdPartyPickup = null;
+            }
+
+            $estimation = $this->sameday->postAwbEstimation(
+                new SamedayPostAwbEstimationRequest(
+                    $requestDto->getPickupPointId(),
+                    $requestDto->getContactPersonId(),
+                    new PackageType($requestDto->getPackageType()),
+                    $this->parcelDimensionsFactory->fromList($requestDto->getParcelsDimensions()),
+                    $requestDto->getServiceId(),
+                    new AwbPaymentType($requestDto->getAwbPayment()),
+                    $this->toAwbRecipientEntity($requestDto->getAwbRecipient()),
+                    $requestDto->getInsuredValue(),
+                    $requestDto->getCashOnDeliveryAmount(),
+                    $thirdPartyPickup,
+                    $requestDto->getServiceTaxIds(),
+                    $requestDto->getCurrency()
+                )
+            );
+
+            return new EstimateCostResponseDto(
+                $estimation->getCost(),
+                $estimation->getCurrency()
+            );
+        } catch (Exception $exception) {
+            throw $this->toCourierServiceException($exception);
+        }
+    }
+
+    /**
+     * @param CourierLoginRequestDto $requestDto
+     *
+     * @return CourierLoginResponseDto
+     */
+    public function login(CourierLoginRequestDto $requestDto): CourierLoginResponseDto
+    {
+        try {
+            $client = $this->sdkInitiator->init(
+                $requestDto->getUser(),
+                $requestDto->getPass(),
+                $requestDto->getApiUrl()
+            );
+
+            return new CourierLoginResponseDto($client->login());
+        } catch (Exception $exception) {
+            return new CourierLoginResponseDto(false);
         }
     }
 

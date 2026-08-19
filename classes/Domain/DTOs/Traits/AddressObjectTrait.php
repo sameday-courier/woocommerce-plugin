@@ -99,7 +99,13 @@ trait AddressObjectTrait
      */
     public function getName(): ?string
     {
-        return sprintf('%s %s', ltrim($this->firstName), ltrim($this->lastName));
+        $name = trim(sprintf(
+            '%s %s',
+            ltrim($this->firstName ?? ''),
+            ltrim($this->lastName ?? '')
+        ));
+
+        return '' !== $name ? $name : null;
     }
 
     /**
