@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Common\Services;
 use RuntimeException;
 
 /**
- * Renders PHP HTML views from classes/files/html.
+ * Renders PHP HTML views from classes/files/templates.
  *
  * Params become local variables in the template (WooCommerce-style extract + include).
  * Templates may call HtmlHandler::buildHtml() to include partials.
@@ -53,7 +53,7 @@ final class HtmlHandler
     private static function resolveTemplatePath(string $htmlFileName): string
     {
         $fileName = str_replace(['.php', '.html'], '', $htmlFileName) . '.' . self::FILE_EXT;
-        $filePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'classes/files/html/' . $fileName;
+        $filePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'classes/files/templates/' . $fileName;
 
         if (!is_readable($filePath)) {
             throw new RuntimeException('HTML template not found: ' . $filePath);
