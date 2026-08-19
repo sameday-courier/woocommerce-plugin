@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use Exception;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\FrontPageValidatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 final class ShowLockerFieldAction extends AbstractAction
 {
@@ -80,111 +80,47 @@ final class ShowLockerFieldAction extends AbstractAction
     {
         $settings = (new CarrierSettingsServiceProvider())->get();
         if ($settings->isLockersMapEnabled()) {
-            return $this->buildLockersMapHtml($shipTo);
+            return HtmlHandler::buildHtml('locker-map-field', [
+                'username' => (string) ($settings->getUser() ?? ''),
+                'hostCountry' => (string) $settings->getHostCountry(),
+                'shipTo' => $shipTo,
+            ]);
         }
 
-        return $this->buildLockersDropdownHtml();
+        return HtmlHandler::buildHtml('locker-dropdown-field', [
+            'lockersByCity' => $this->buildLockersByCity(),
+        ]);
     }
 
     /**
-     * @param string|null $shipTo
-     *
-     * @return string
+     * @return array<string, array<int, array{id: int|string, label: string, selected: bool}>>
      */
-    private function buildLockersMapHtml(?string $shipTo): string
-    {
-        $settings = (new CarrierSettingsServiceProvider())->get();
-        $html = sprintf(
-            '<tr class="shipping-pickup-store">
-                <td><strong>%s</strong></td>
-                <th>
-                    <button type="button" class="button alt sameday_select_locker"
-                        id="select_locker"
-                        data-username="%s"
-                        data-country="%s"
-                    >
-                        %s
-                    </button>
-                </th>
-            </tr>',
-            TranslatorHandler::translate('Sameday Locker'),
-            esc_attr($settings->getUser() ?? ''),
-            esc_attr($settings->getHostCountry()),
-            TranslatorHandler::translate('Show Locations Map')
-        );
-
-        if (null === $shipTo) {
-            return $html;
-        }
-
-        return $html . sprintf(
-            '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
-                <td><strong>%s</strong></td>
-                <th><span id="showLockerDetails">%s</span></th>
-            </tr>',
-            TranslatorHandler::translate('Ship to'),
-            wp_kses_post($shipTo)
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function buildLockersDropdownHtml(): string
-    {
-        return sprintf(
-            '<tr>
-                <th><label for="shipping-pickup-store-select"></label></th>
-                <td>
-                    <select name="locker_id" id="shipping-pickup-store-select">
-                        <option value="" class="sameday-locker-placeholder">
-                            %s
-                        </option>
-                        %s
-                    </select>
-                </td>
-            </tr>',
-            TranslatorHandler::translate('Select easyBox'),
-            $this->buildLockerOptions()
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function buildLockerOptions(): string
+    private function buildLockersByCity(): array
     {
         $samedayLockerRepository = new SamedayLockerRepository();
         $cities = $samedayLockerRepository->getCitiesWithLockers();
-        $lockers = [];
+        $selectedLockerId = (int) (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER);
+        $lockersByCity = [];
+
         foreach ($cities as $city) {
-            if (null !== $city->getCity()) {
-                $lockers[$city->getCity() . ' (' . $city->getCounty() . ')']
-                    = $samedayLockerRepository->getLockersByCity((string) $city->getCity());
-            }
-        }
-
-        $lockerOptions = '';
-        foreach ($lockers as $city => $cityLockers) {
-            $optionGroup = '<optgroup label="' . esc_attr($city) . '" class="sameday-locker-optgroup"></optgroup>';
-            $options = '';
-            foreach ($cityLockers as $locker) {
-                $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
-                $isSelected = '';
-                if ((int)(new WooSessionHandler())->get(CarrierSessionKeys::LOCKER) === (int)$locker->getLockerId()) {
-                    $isSelected = "selected='selected'";
-                }
-                $options .= sprintf(
-                    '<option value="%s" class="sameday-locker-option" %s> %s </option>',
-                    esc_attr((string)$locker->getLockerId()),
-                    $isSelected,
-                    $lockerDetails
-                );
+            if (null === $city->getCity()) {
+                continue;
             }
 
-            $lockerOptions .= $optionGroup . $options;
+            $cityLabel = $city->getCity() . ' (' . $city->getCounty() . ')';
+            $cityLockers = [];
+
+            foreach ($samedayLockerRepository->getLockersByCity((string) $city->getCity()) as $locker) {
+                $cityLockers[] = [
+                    'id' => $locker->getLockerId(),
+                    'label' => $locker->getName() . ' - ' . $locker->getAddress(),
+                    'selected' => $selectedLockerId === (int) $locker->getLockerId(),
+                ];
+            }
+
+            $lockersByCity[$cityLabel] = $cityLockers;
         }
 
-        return $lockerOptions;
+        return $lockersByCity;
     }
 }

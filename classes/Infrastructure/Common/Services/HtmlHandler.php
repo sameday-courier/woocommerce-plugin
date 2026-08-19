@@ -22,12 +22,6 @@ final class HtmlHandler
      *
      * @return string
      */
-    /**
-     * @param string $htmlFileName
-     * @param array $params
-     *
-     * @return string
-     */
     public static function buildHtml(string $htmlFileName, array $params = []): string
     {
         $templatePath = self::resolveTemplatePath($htmlFileName);
@@ -51,11 +45,6 @@ final class HtmlHandler
         return $render($templatePath, $params);
     }
 
-    /**
-     * @param string $htmlFileName
-     *
-     * @return string
-     */
     /**
      * @param string $htmlFileName
      *

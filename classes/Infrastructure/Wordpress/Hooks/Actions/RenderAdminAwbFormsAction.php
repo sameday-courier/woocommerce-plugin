@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
+
 final class RenderAdminAwbFormsAction extends AbstractAction
 {
     private const ACTION = 'admin_head';
@@ -31,28 +33,12 @@ final class RenderAdminAwbFormsAction extends AbstractAction
      */
     private function buildHtmlContent(): string
     {
-        return sprintf(
-            '<form id="addAwbForm" method="POST" action="%1$s">
-                <input type="hidden" name="action" value="add-awb">
-                <input type="hidden" name="_wpnonce" value="%2$s">
-            </form>
-            <form id="showAsPdf" method="POST" action="%1$s">
-                <input type="hidden" name="action" value="show-as-pdf">
-                <input type="hidden" name="_wpnonce" value="%3$s">
-            </form>
-            <form id="addNewParcelForm" method="POST" action="%1$s">
-                <input type="hidden" name="action" value="add-new-parcel">
-                <input type="hidden" name="_wpnonce" value="%4$s">
-            </form>
-            <form id="removeAwb" method="POST" action="%1$s">
-                <input type="hidden" name="action" value="remove-awb">
-                <input type="hidden" name="_wpnonce" value="%5$s">
-            </form>',
-            admin_url('admin-post.php'),
-            wp_create_nonce('add-awb'),
-            wp_create_nonce('show-as-pdf'),
-            wp_create_nonce('add-new-parcel'),
-            wp_create_nonce('remove-awb')
-        );
+        return HtmlHandler::buildHtml('admin-awb-forms', [
+            'actionUrl' => admin_url('admin-post.php'),
+            'addAwbNonce' => wp_create_nonce('add-awb'),
+            'showAsPdfNonce' => wp_create_nonce('show-as-pdf'),
+            'addNewParcelNonce' => wp_create_nonce('add-new-parcel'),
+            'removeAwbNonce' => wp_create_nonce('remove-awb'),
+        ]);
     }
 }

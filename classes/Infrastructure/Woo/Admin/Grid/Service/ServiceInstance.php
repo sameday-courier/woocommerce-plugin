@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
@@ -150,108 +151,35 @@ class ServiceInstance
             exit;
         }
 
-        $greyedOut = "";
+        $nameDisabled = false;
         $serviceName = $service->getSamedayName() ?? '';
         if ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-            $greyedOut = "disabled";
+            $nameDisabled = true;
             $carrierSettingsProvider = new CarrierSettingsServiceProvider();
             $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
-        $statuses = '';
+        $currentStatus = (int) ($service->getStatus() ?? 0);
+        $statuses = [];
         foreach ($this->getStatuses() as $status) {
-            $checked = ((int) ($service->getStatus() ?? 0)) === ((int) $status['value']) ? 'selected' : '';
-            $statuses .= '<option value="' . $status['value'] . '" ' . $checked . ' >'
-                . $status['text'] . '</option>';
+            $statuses[] = [
+                'value' => (int) $status['value'],
+                'text' => (string) $status['text'],
+                'selected' => $currentStatus === (int) $status['value'],
+            ];
         }
 
-        $serviceNameLabel = TranslatorHandler::translate('Service Name');
-        $priceLabel = TranslatorHandler::translate('Price');
-        $freeDeliveryLabel = TranslatorHandler::translate('Free delivery price');
-        $statusLabel = TranslatorHandler::translate('Status');
-        $editServiceLabel = TranslatorHandler::translate('Edit Service');
-        $priceValue = esc_attr((string) ($service->getPrice() ?? ''));
-        $priceFreeValue = esc_attr((string) ($service->getPriceFree() ?? ''));
-        $serviceIdValue = esc_attr((string) $id);
-        $escapedServiceName = esc_html($serviceName);
-
-        return
-        '<strong style="font-size: large; color: #0A246A"> Edit Service - '
-            . $escapedServiceName . '</strong>
-            <form method="POST" onsubmit="" action="' . admin_url('admin-post.php') . '">
-                <input type="hidden" name="action" value="edit-service">
-                <table class="form-table editServiceForm">
-                    <tbody>
-                        <input type="hidden"
-                               name="samedaycourier-service-id"
-                               value="' . $serviceIdValue . '">
-                        <input type="hidden" name="_wpnonce" value="' . wp_create_nonce('edit-service') . '">
-                        <tr valign="top">
-                            <th scope="row" class="titledesc">
-                                <label for="samedaycourier-service-name">  '
-            . $serviceNameLabel . '<span style="color: #ff2222"> * </span>  </label>
-                            </th>
-                            <td class="forminp forminp-text">
-                                <input type="text"
-                                       name="samedaycourier-service-name"
-                                       style="width: 297px; height: 36px;" '
-            . $greyedOut . '
-                                       id="samedaycourier-service-name"
-                                       value="' . $escapedServiceName . '">
-                             </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="samedaycourier-price">  '
-            . $priceLabel . '<span style="color: #ff2222"> * </span> </label>
-                            </th>
-                            <td class="forminp forminp-text">
-                                <input type="number"
-                                       name="samedaycourier-price"
-                                       step="any"
-                                       style="width: 297px; height: 36px;"
-                                       id="samedaycourier-price"
-                                       value="' . $priceValue . '">
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="samedaycourier-free-delivery-price">  '
-            . $freeDeliveryLabel . ' </label>
-                            </th>
-                            <td class="forminp forminp-text">
-                                <input type="number"
-                                       name="samedaycourier-free-delivery-price"
-                                       step="any"
-                                       style="width: 297px; height: 36px;"
-                                       id="samedaycourier-free-delivery-price"
-                                       value="' . $priceFreeValue . '">
-                            </td>
-                        </tr>
-                       <tr valign="top">
-                            <th scope="row">
-                                <label for="samedaycourier-status">  '
-            . $statusLabel . '<span style="color: #ff2222"> * </span> </label>
-                            </th>
-                            <td class="forminp forminp-text">
-                                <select name="samedaycourier-status"
-                                        style="width: 297px; height: 36px;"
-                                        id="samedaycourier-status">
-                                    ' . $statuses . '
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <button class="sameday_admin_button" type="submit" value="Submit" >  '
-            . $editServiceLabel . '</button>
-                            </th>
-                        </tr>
-                     </tbody>
-                </table>
-            </form>
-        ';
+        return HtmlHandler::buildHtml('service-edit-form', [
+            'actionUrl' => admin_url('admin-post.php'),
+            'serviceId' => $id,
+            'nonce' => wp_create_nonce('edit-service'),
+            'serviceName' => $serviceName,
+            'nameDisabled' => $nameDisabled,
+            'price' => $service->getPrice() ?? '',
+            'priceFree' => $service->getPriceFree() ?? '',
+            'statuses' => $statuses,
+        ]);
     }
 
     /**

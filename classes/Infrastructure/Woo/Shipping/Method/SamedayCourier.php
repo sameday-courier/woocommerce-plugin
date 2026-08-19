@@ -22,6 +22,7 @@ use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
@@ -665,45 +666,13 @@ final class SamedayCourier extends WC_Shipping_Method
         ]);
         $adminPostUrl = UrlsHandler::buildEscaped('admin-post.php');
 
-        echo '
-            <form id="sameday-import-cities-form" action="' . $adminPostUrl . '" method="post" hidden>
-                <input type="hidden" name="action" value="import_cities">
-                <input type="hidden" name="_wpnonce" value="' . NonceHandler::createNonce('import_cities') . '">
-            </form>
-            <div class="sameday-settings-actions">
-                <button type="button" id="sameday-all-import-button" class="sameday_admin_button">'
-            . TranslatorHandler::translate('Import all') .
-            '</button>
-                <a href="' . $serviceUrl . '" class="sameday_admin_button">'
-            . TranslatorHandler::translate('Services') .
-            '</a>
-                <a href="' . $pickupPointUrl . '" class="sameday_admin_button">'
-            . TranslatorHandler::translate('Pickup-point') .
-            '</a>
-                <a href="' . $lockerUrl . '" class="sameday_admin_button">'
-            . TranslatorHandler::translate('Lockers') .
-            '</a>
-                <button type="submit" form="sameday-import-cities-form" class="sameday_admin_button">'
-            . TranslatorHandler::translate('Import Cities') .
-            '</button>
-            </div>
-            <div id="sameday-all-import-overlay"
-                 class="sameday-all-import-overlay"
-                 hidden
-                 role="alertdialog"
-                 aria-modal="true"
-                 aria-labelledby="sameday-all-import-title">
-                <div class="sameday-all-import-overlay__card">
-                    <div class="sameday-all-import-overlay__spinner" aria-hidden="true"></div>
-                    <p id="sameday-all-import-title" class="sameday-all-import-overlay__title">'
-            . TranslatorHandler::translate('Importing data') .
-            '</p>
-                    <p class="sameday-all-import-overlay__status" data-sameday-all-import-status aria-live="polite"></p>
-                    <div class="sameday-all-import-overlay__progress" aria-hidden="true">
-                        <div class="sameday-all-import-overlay__progress-bar" data-sameday-all-import-progress></div>
-                    </div>
-                </div>
-            </div>';
+        echo HtmlHandler::buildHtml('settings-actions', [
+            'adminPostUrl' => $adminPostUrl,
+            'importCitiesNonce' => NonceHandler::createNonce('import_cities'),
+            'serviceUrl' => $serviceUrl,
+            'pickupPointUrl' => $pickupPointUrl,
+            'lockerUrl' => $lockerUrl,
+        ]);
     }
 
     /**
