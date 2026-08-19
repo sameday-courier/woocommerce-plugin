@@ -97,6 +97,12 @@ class ControllersRegisterService implements RegistryHandlerInterface
      *
      * @return void
      */
+    /**
+     * @param string $actionName
+     * @param ControllerInterface $controller
+     *
+     * @return void
+     */
     private static function addAction(string $actionName, ControllerInterface $controller): void
     {
         $hookName = $actionName . $controller->getAction();

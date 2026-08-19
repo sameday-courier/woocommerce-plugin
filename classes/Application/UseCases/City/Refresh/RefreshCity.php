@@ -17,6 +17,9 @@ final class RefreshCity
 
     private CountriesHandlerInterface $countriesHandler;
 
+    /**
+     * @param RefreshCityRequest $refreshCitiesRequest
+     */
     public function __construct(RefreshCityRequest $refreshCitiesRequest)
     {
         $this->cityCatalogStore = $refreshCitiesRequest->getCityCatalogStore();
@@ -24,6 +27,9 @@ final class RefreshCity
         $this->countriesHandler = $refreshCitiesRequest->getCountriesHandler();
     }
 
+    /**
+     * @return RefreshCityResponse
+     */
     public function execute(): RefreshCityResponse
     {
         $this->cityCatalogStore->ensureTableExists();

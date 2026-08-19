@@ -15,6 +15,9 @@ final class GenerateBulkAwbModal
     /**
      * @return string
      */
+    /**
+     * @return string
+     */
     public static function render(): string
     {
         $title = TranslatorHandler::translate('AWB Bulk Generation');

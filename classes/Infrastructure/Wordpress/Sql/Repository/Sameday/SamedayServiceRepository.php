@@ -38,6 +38,9 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
         $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);

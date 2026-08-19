@@ -18,6 +18,22 @@ final class GridQueryBuilder
      *
      * @return array{sql: string, params: array<int, mixed>}
      */
+    /**
+     * @param string $tableName
+     * @param bool $isTesting
+     * @param array $allowedOrderByColumns
+     * @param ?string $orderBy
+     * @param ?string $order
+     * @param ?int $perPage
+     * @param ?int $pageNumber
+     * @param ?string $whereInColumn
+     * @param ?array $whereInValues
+     * @param array $allowedSearchColumns
+     * @param array $likeFilters
+     * @param array $exactFilters
+     *
+     * @return array
+     */
     public static function build(
         string $tableName,
         bool $isTesting,
@@ -72,6 +88,17 @@ final class GridQueryBuilder
      *
      * @return array{sql: string, params: array<int, mixed>}
      */
+    /**
+     * @param string $tableName
+     * @param bool $isTesting
+     * @param ?string $whereInColumn
+     * @param ?array $whereInValues
+     * @param array $allowedSearchColumns
+     * @param array $likeFilters
+     * @param array $exactFilters
+     *
+     * @return array
+     */
     public static function buildCount(
         string $tableName,
         bool $isTesting,
@@ -103,6 +130,16 @@ final class GridQueryBuilder
      * @param array<string, int|string|bool> $exactFilters
      *
      * @return array{conditions: string, params: array<int, mixed>}
+     */
+    /**
+     * @param bool $isTesting
+     * @param ?string $whereInColumn
+     * @param ?array $whereInValues
+     * @param array $allowedSearchColumns
+     * @param array $likeFilters
+     * @param array $exactFilters
+     *
+     * @return array
      */
     private static function buildWhereClause(
         bool $isTesting,

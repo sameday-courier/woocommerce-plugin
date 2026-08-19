@@ -14,12 +14,18 @@ final class EditService
 
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
+    /**
+     * @param EditServiceRequest $editServiceRequest
+     */
     public function __construct(EditServiceRequest $editServiceRequest)
     {
         $this->editServiceItem = $editServiceRequest->getEditServiceItem();
         $this->serviceCatalogStore = $editServiceRequest->getServiceCatalogStore();
     }
 
+    /**
+     * @return EditServiceResponse
+     */
     public function execute(): EditServiceResponse
     {
         $serviceId = $this->editServiceItem->getId();

@@ -18,6 +18,12 @@ final class RemoveAwbRequest
 
     private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
+    /**
+     * @param RemoveAwbItem $removeAwbItem
+     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
+     */
     public function __construct(
         RemoveAwbItem $removeAwbItem,
         OrderAwbStoreServiceProviderInterface $orderAwbStore,
@@ -30,21 +36,33 @@ final class RemoveAwbRequest
         $this->postRemoveAwbServiceProvider = $postRemoveAwbServiceProvider;
     }
 
+    /**
+     * @return RemoveAwbItem
+     */
     public function getRemoveAwbItem(): RemoveAwbItem
     {
         return $this->removeAwbItem;
     }
 
+    /**
+     * @return OrderAwbStoreServiceProviderInterface
+     */
     public function getOrderAwbStore(): OrderAwbStoreServiceProviderInterface
     {
         return $this->orderAwbStore;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;
     }
 
+    /**
+     * @return PostRemoveAwbServiceProviderInterface
+     */
     public function getPostRemoveAwbServiceProvider(): PostRemoveAwbServiceProviderInterface
     {
         return $this->postRemoveAwbServiceProvider;

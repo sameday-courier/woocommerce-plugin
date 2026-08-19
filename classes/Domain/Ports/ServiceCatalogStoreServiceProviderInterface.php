@@ -52,7 +52,7 @@ interface ServiceCatalogStoreServiceProviderInterface extends CarrierServiceProv
 
     /**
      * @param int $id
-     * @param array<string, mixed> $fields
+     * @param array $fields
      *
      * @return bool
      */

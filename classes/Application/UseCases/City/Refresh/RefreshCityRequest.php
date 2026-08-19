@@ -16,6 +16,11 @@ final class RefreshCityRequest
 
     private CountriesHandlerInterface $countriesHandler;
 
+    /**
+     * @param CityCatalogStoreServiceProviderInterface $cityCatalogStore
+     * @param CitySourceProviderInterface $citySourceProvider
+     * @param CountriesHandlerInterface $countriesHandler
+     */
     public function __construct(
         CityCatalogStoreServiceProviderInterface $cityCatalogStore,
         CitySourceProviderInterface $citySourceProvider,
@@ -26,16 +31,25 @@ final class RefreshCityRequest
         $this->countriesHandler = $countriesHandler;
     }
 
+    /**
+     * @return CityCatalogStoreServiceProviderInterface
+     */
     public function getCityCatalogStore(): CityCatalogStoreServiceProviderInterface
     {
         return $this->cityCatalogStore;
     }
 
+    /**
+     * @return CitySourceProviderInterface
+     */
     public function getCitySourceProvider(): CitySourceProviderInterface
     {
         return $this->citySourceProvider;
     }
 
+    /**
+     * @return CountriesHandlerInterface
+     */
     public function getCountriesHandler(): CountriesHandlerInterface
     {
         return $this->countriesHandler;

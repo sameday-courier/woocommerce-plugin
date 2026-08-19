@@ -15,6 +15,9 @@ final class GetCities
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param GetCitiesRequest $getCitiesRequest
+     */
     public function __construct(GetCitiesRequest $getCitiesRequest)
     {
         $this->getCitiesItem = $getCitiesRequest->getGetCitiesItem();

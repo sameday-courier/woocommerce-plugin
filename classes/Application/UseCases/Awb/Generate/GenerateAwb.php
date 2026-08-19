@@ -46,6 +46,9 @@ final class GenerateAwb
 
     private CityPostalCodeProviderInterface $cityPostalCodeProvider;
 
+    /**
+     * @param GenerateAwbRequest $generateAwbRequest
+     */
     public function __construct(GenerateAwbRequest $generateAwbRequest)
     {
         $this->awbItem = $generateAwbRequest->getGenerateAwbItem();
@@ -59,6 +62,9 @@ final class GenerateAwb
         $this->cityPostalCodeProvider = $generateAwbRequest->getCityPostalCodeProvider();
     }
 
+    /**
+     * @return GenerateAwbResponse
+     */
     public function execute(): GenerateAwbResponse
     {
         $packageDimensions = $this->normalizePackageDimensions($this->awbItem->getPackageDimensions());
@@ -164,9 +170,9 @@ final class GenerateAwb
     }
 
     /**
-     * @param array<int|string, mixed> $packageDimensions
+     * @param array $packageDimensions
      *
-     * @return array<int, array<string, mixed>>
+     * @return array<int,
      */
     private function normalizePackageDimensions(array $packageDimensions): array
     {

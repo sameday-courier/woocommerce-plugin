@@ -12,7 +12,9 @@ final class BillingDtoFactory
     use AddressInputMapperTrait;
 
     /**
-     * @param array<string, mixed> $raw
+     * @param array $raw
+     *
+     * @return BillingDto
      */
     public function fromInput(array $raw): BillingDto
     {

@@ -27,7 +27,7 @@ final class RefreshPickupPointController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */

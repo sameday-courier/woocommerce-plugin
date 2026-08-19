@@ -21,6 +21,11 @@ final class SamedayIcon
      *
      * @return string
      */
+    /**
+     * @param string $relativePath
+     *
+     * @return string
+     */
     public static function getDataUri(string $relativePath = self::DEFAULT_RELATIVE_PATH): string
     {
         if (isset(self::$dataUriCache[$relativePath])) {
@@ -46,6 +51,12 @@ final class SamedayIcon
         return self::$dataUriCache[$relativePath];
     }
 
+    /**
+     * @param string $className
+     * @param int $size
+     *
+     * @return string
+     */
     /**
      * @param string $className
      * @param int $size

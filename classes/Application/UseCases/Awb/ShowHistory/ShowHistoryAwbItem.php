@@ -10,11 +10,19 @@ final class ShowHistoryAwbItem implements ItemInterface
 {
     private int $orderId;
 
+    /**
+     * @param int $orderId
+     */
     public function __construct(int $orderId)
     {
         $this->orderId = $orderId;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     /**
      * @param array $inputParams
      *
@@ -27,6 +35,9 @@ final class ShowHistoryAwbItem implements ItemInterface
         );
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;

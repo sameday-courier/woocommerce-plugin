@@ -13,6 +13,9 @@ class PickupPointForm
     public const ADD_MODAL_ID = 'sameday-pickup-point-modal';
     public const DELETE_MODAL_ID = 'sameday-delete-pickup-point-modal';
 
+    /**
+     * @return void
+     */
     public static function renderModals(): void
     {
         $hostCountry = (new CarrierSettingsServiceProvider())->get()->getHostCountry();

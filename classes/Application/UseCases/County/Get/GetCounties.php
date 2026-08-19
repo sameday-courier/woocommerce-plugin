@@ -13,6 +13,9 @@ final class GetCounties
 {
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param GetCountiesRequest $getCountiesRequest
+     */
     public function __construct(GetCountiesRequest $getCountiesRequest)
     {
         $this->courierServiceProvider = $getCountiesRequest->getCourierServiceProvider();

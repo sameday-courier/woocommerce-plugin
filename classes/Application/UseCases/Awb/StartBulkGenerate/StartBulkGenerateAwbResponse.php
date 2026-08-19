@@ -19,6 +19,14 @@ final class StartBulkGenerateAwbResponse implements ResponseInterface
 
     private bool $done;
 
+    /**
+     * @param ?string $noticeMessage
+     * @param string $noticeType
+     * @param ?string $jobId
+     * @param int $total
+     * @param int $processed
+     * @param bool $done
+     */
     public function __construct(
         ?string $noticeMessage,
         string $noticeType,
@@ -35,21 +43,33 @@ final class StartBulkGenerateAwbResponse implements ResponseInterface
         $this->done = $done;
     }
 
+    /**
+     * @return ?string
+     */
     public function getJobId(): ?string
     {
         return $this->jobId;
     }
 
+    /**
+     * @return int
+     */
     public function getTotal(): int
     {
         return $this->total;
     }
 
+    /**
+     * @return int
+     */
     public function getProcessed(): int
     {
         return $this->processed;
     }
 
+    /**
+     * @return bool
+     */
     public function isDone(): bool
     {
         return $this->done;

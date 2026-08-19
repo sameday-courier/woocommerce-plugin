@@ -12,6 +12,10 @@ final class StartBulkRemoveAwbRequest
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @param StartBulkRemoveAwbItem $startBulkRemoveAwbItem
+     * @param BulkJobStoreInterface $bulkJobStore
+     */
     public function __construct(
         StartBulkRemoveAwbItem $startBulkRemoveAwbItem,
         BulkJobStoreInterface $bulkJobStore
@@ -20,11 +24,17 @@ final class StartBulkRemoveAwbRequest
         $this->bulkJobStore = $bulkJobStore;
     }
 
+    /**
+     * @return StartBulkRemoveAwbItem
+     */
     public function getStartBulkRemoveAwbItem(): StartBulkRemoveAwbItem
     {
         return $this->startBulkRemoveAwbItem;
     }
 
+    /**
+     * @return BulkJobStoreInterface
+     */
     public function getBulkJobStore(): BulkJobStoreInterface
     {
         return $this->bulkJobStore;

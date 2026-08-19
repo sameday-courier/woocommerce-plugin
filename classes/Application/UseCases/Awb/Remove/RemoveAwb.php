@@ -22,6 +22,9 @@ final class RemoveAwb
 
     private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
+    /**
+     * @param RemoveAwbRequest $removeAwbRequest
+     */
     public function __construct(RemoveAwbRequest $removeAwbRequest)
     {
         $this->removeAwbItem = $removeAwbRequest->getRemoveAwbItem();
@@ -30,6 +33,9 @@ final class RemoveAwb
         $this->postRemoveAwbServiceProvider = $removeAwbRequest->getPostRemoveAwbServiceProvider();
     }
 
+    /**
+     * @return RemoveAwbResponse
+     */
     public function execute(): RemoveAwbResponse
     {
         $orderId = $this->removeAwbItem->getOrderId();

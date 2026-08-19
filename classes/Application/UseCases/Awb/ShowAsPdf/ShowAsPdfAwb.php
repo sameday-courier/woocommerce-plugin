@@ -21,6 +21,9 @@ final class ShowAsPdfAwb
 
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
+    /**
+     * @param ShowAsPdfAwbRequest $showAsPdfAwbRequest
+     */
     public function __construct(ShowAsPdfAwbRequest $showAsPdfAwbRequest)
     {
         $this->showAsPdfAwbItem = $showAsPdfAwbRequest->getShowAsPdfAwbItem();
@@ -29,6 +32,9 @@ final class ShowAsPdfAwb
         $this->carrierSettingsProvider = $showAsPdfAwbRequest->getCarrierSettingsProvider();
     }
 
+    /**
+     * @return ShowAsPdfAwbResponse
+     */
     public function execute(): ShowAsPdfAwbResponse
     {
         $orderId = $this->showAsPdfAwbItem->getOrderId();

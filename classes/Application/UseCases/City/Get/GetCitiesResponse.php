@@ -19,7 +19,7 @@ final class GetCitiesResponse implements ResponseInterface
     /**
      * @param string|null $noticeMessage
      * @param string $noticeType
-     * @param array<int, array{id: int, name: string}> $cities
+     * @param array $cities
      */
     public function __construct(
         ?string $noticeMessage,
@@ -32,7 +32,7 @@ final class GetCitiesResponse implements ResponseInterface
     }
 
     /**
-     * @return array<int, array{id: int, name: string}>
+     * @return array<int,
      */
     public function getCities(): array
     {

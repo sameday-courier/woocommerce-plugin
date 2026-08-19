@@ -43,7 +43,9 @@ final class AllImportController extends AbstractRecursiveBulkController
     }
 
     /**
-     * @return array{status: string, message: string, label: string}
+     * @param int $itemId
+     *
+     * @return array{status:
      */
     protected function processItem(int $itemId): array
     {
@@ -74,7 +76,9 @@ final class AllImportController extends AbstractRecursiveBulkController
     }
 
     /**
-     * @return array{label: string, execute: callable(): ResponseInterface}|null
+     * @param int $itemId
+     *
+     * @return array{label:
      */
     private function getStep(int $itemId): ?array
     {

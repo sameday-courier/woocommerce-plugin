@@ -12,6 +12,9 @@ class SamedayPackageRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_package';
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);

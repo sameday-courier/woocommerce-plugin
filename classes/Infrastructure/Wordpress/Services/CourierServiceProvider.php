@@ -81,6 +81,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     private ParcelDimensionsFactory $parcelDimensionsFactory;
 
     /**
+     * @param ?Sameday $sameday
+     * @param ?AwbErrorParser $awbErrorParser
+     * @param ?ParcelStatusHistoryService $parcelStatusHistoryService
+     * @param ?ParcelDimensionsFactory $parcelDimensionsFactory
+     *
      * @throws SamedaySDKException
      */
     public function __construct(
@@ -96,6 +101,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param PostAwbRequestDto $awbRequestDto
+     *
+     * @return PostAwbResponseDto
      * @throws CourierServiceException
      */
     public function postAwb(PostAwbRequestDto $awbRequestDto): PostAwbResponseDto
@@ -157,6 +165,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         }
     }
 
+    /**
+     * @param RecipientDto $recipient
+     *
+     * @return AwbRecipientEntityObject
+     */
     private function toAwbRecipientEntity(RecipientDto $recipient): AwbRecipientEntityObject
     {
         $companyName = $recipient->getCompany();
@@ -177,6 +190,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param RemoveAwbRequestDto $removeAwbRequestDto
+     *
+     * @return RemoveAwbResponseDto
      * @throws CourierServiceException
      */
     public function removeAwb(RemoveAwbRequestDto $removeAwbRequestDto): RemoveAwbResponseDto
@@ -193,6 +209,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param ShowAsPdfRequestDto $showAsPdfRequestDto
+     *
+     * @return ShowAsPdfResponseDto
      * @throws CourierServiceException
      */
     public function showAsPdf(ShowAsPdfRequestDto $showAsPdfRequestDto): ShowAsPdfResponseDto
@@ -212,6 +231,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param PostParcelRequestDto $postParcelRequestDto
+     *
+     * @return PostParcelResponseDto
      * @throws CourierServiceException
      */
     public function postParcel(PostParcelRequestDto $postParcelRequestDto): PostParcelResponseDto
@@ -240,6 +262,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetParcelStatusHistoryRequestDto $requestDto
+     *
+     * @return GetParcelStatusHistoryResponseDto
      * @throws CourierServiceException
      */
     public function getParcelStatusHistory(
@@ -262,6 +287,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetCitiesRequestDto $requestDto
+     *
+     * @return GetCitiesResponseDto
      * @throws CourierServiceException
      */
     public function getCities(GetCitiesRequestDto $requestDto): GetCitiesResponseDto
@@ -277,6 +305,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new GetCitiesResponseDto(
                 array_map(
+                    /**
+                     * @param CityObject $city
+                     *
+                     * @return array
+                     */
                     static function (CityObject $city): array {
                         return [
                             'id' => $city->getId(),
@@ -293,6 +326,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetCountiesRequestDto $requestDto
+     *
+     * @return GetCountiesResponseDto
      * @throws CourierServiceException
      */
     public function getCounties(GetCountiesRequestDto $requestDto): GetCountiesResponseDto
@@ -304,6 +340,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new GetCountiesResponseDto(
                 array_map(
+                    /**
+                     * @param CountyObject $county
+                     *
+                     * @return array
+                     */
                     static function (CountyObject $county): array {
                         return [
                             'id' => $county->getId(),
@@ -319,6 +360,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetServicesRequestDto $requestDto
+     *
+     * @return GetServicesResponseDto
      * @throws CourierServiceException
      */
     public function getServices(GetServicesRequestDto $requestDto): GetServicesResponseDto
@@ -330,6 +374,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new GetServicesResponseDto(
                 array_map(
+                    /**
+                     * @param ServiceObject $service
+                     *
+                     * @return CourierServiceDto
+                     */
                     static function (ServiceObject $service): CourierServiceDto {
                         $optionalTaxes = $service->getOptionalTaxes();
 
@@ -350,6 +399,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetLockersRequestDto $requestDto
+     *
+     * @return GetLockersResponseDto
      * @throws CourierServiceException
      */
     public function getLockers(GetLockersRequestDto $requestDto): GetLockersResponseDto
@@ -361,6 +413,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new GetLockersResponseDto(
                 array_map(
+                    /**
+                     * @param LockerObject $locker
+                     *
+                     * @return CourierLockerDto
+                     */
                     static function (LockerObject $locker): CourierLockerDto {
                         return new CourierLockerDto(
                             $locker->getId(),
@@ -384,6 +441,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param GetPickupPointsRequestDto $requestDto
+     *
+     * @return GetPickupPointsResponseDto
      * @throws CourierServiceException
      */
     public function getPickupPoints(GetPickupPointsRequestDto $requestDto): GetPickupPointsResponseDto
@@ -395,6 +455,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new GetPickupPointsResponseDto(
                 array_map(
+                    /**
+                     * @param PickupPointObject $pickupPoint
+                     *
+                     * @return CourierPickupPointDto
+                     */
                     static function (PickupPointObject $pickupPoint): CourierPickupPointDto {
                         return new CourierPickupPointDto(
                             $pickupPoint->getId(),
@@ -416,6 +481,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param PostPickupPointRequestDto $requestDto
+     *
+     * @return PostPickupPointResponseDto
      * @throws CourierServiceException
      */
     public function postPickupPoint(PostPickupPointRequestDto $requestDto): PostPickupPointResponseDto
@@ -452,6 +520,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
+     * @param DeletePickupPointRequestDto $requestDto
+     *
+     * @return DeletePickupPointResponseDto
      * @throws CourierServiceException
      */
     public function deletePickupPoint(DeletePickupPointRequestDto $requestDto): DeletePickupPointResponseDto
@@ -467,6 +538,11 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         }
     }
 
+    /**
+     * @param Exception $exception
+     *
+     * @return CourierServiceException
+     */
     private function toCourierServiceException(Exception $exception): CourierServiceException
     {
         if ($exception instanceof CourierServiceException) {
@@ -481,7 +557,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     }
 
     /**
-     * @return array<int, mixed>
+     * @param Exception $exception
+     *
+     * @return array<int,
      */
     private function extractErrors(Exception $exception): array
     {

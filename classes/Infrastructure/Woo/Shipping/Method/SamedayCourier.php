@@ -100,7 +100,7 @@ final class SamedayCourier extends WC_Shipping_Method
      *
      * @param int $instance_id
      */
-    public function __construct($instance_id = 0)
+    public function __construct(int $instance_id = 0)
     {
         parent::__construct($instance_id);
 
@@ -133,11 +133,11 @@ final class SamedayCourier extends WC_Shipping_Method
 
     /**
      * @param array $package
-     * @return void
      *
+     * @return void
      * @throws SamedaySDKException
      */
-    public function calculate_shipping($package = array()): void
+    public function calculate_shipping(array $package = array()): void
     {
         $settings = $this->carrierSettingsProvider->get();
         if (!$settings->isEnabled()) {
@@ -248,6 +248,11 @@ final class SamedayCourier extends WC_Shipping_Method
             ) {
                 $this->syncLockers();
                 $rate['lockers'] = array_map(
+                    /**
+                     * @param CarrierLocker $locker
+                     *
+                     * @return array
+                     */
                     static function (CarrierLocker $locker): array {
                         return [
                             'id' => $locker->getId(),
@@ -293,8 +298,8 @@ final class SamedayCourier extends WC_Shipping_Method
     }
 
     /**
-     * @param $address
-     * @param $serviceId
+     * @param mixed $address
+     * @param mixed $serviceId
      *
      * @return SamedayPostAwbEstimationResponse|null
      */
@@ -372,6 +377,9 @@ final class SamedayCourier extends WC_Shipping_Method
         }
     }
 
+    /**
+     * @return void
+     */
     private function init(): void
     {
         $labelFormatOptions = array_map(
@@ -634,6 +642,9 @@ final class SamedayCourier extends WC_Shipping_Method
         }
     }
 
+    /**
+     * @return void
+     */
     public function renderSettingsActions(): void
     {
         if (!$this->isCurrentSettingsPage()) {
@@ -695,6 +706,9 @@ final class SamedayCourier extends WC_Shipping_Method
             </div>';
     }
 
+    /**
+     * @return bool
+     */
     private function isCurrentSettingsPage(): bool
     {
         global $current_section;

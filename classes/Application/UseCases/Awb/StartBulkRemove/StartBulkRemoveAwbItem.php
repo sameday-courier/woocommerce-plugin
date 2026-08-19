@@ -30,6 +30,11 @@ final class StartBulkRemoveAwbItem implements ItemInterface
      *
      * @return self
      */
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     public static function fromArray(array $inputParams): self
     {
         $orderIds = $inputParams['samedaycourier-order-ids'] ?? [];
@@ -45,6 +50,11 @@ final class StartBulkRemoveAwbItem implements ItemInterface
                     },
                     $orderIds
                 ),
+                /**
+                 * @param int $orderId
+                 *
+                 * @return bool
+                 */
                 static function (int $orderId): bool {
                     return $orderId > 0;
                 }
@@ -65,6 +75,9 @@ final class StartBulkRemoveAwbItem implements ItemInterface
         return $this->orderIds;
     }
 
+    /**
+     * @return int
+     */
     public function getUserId(): int
     {
         return $this->userId;

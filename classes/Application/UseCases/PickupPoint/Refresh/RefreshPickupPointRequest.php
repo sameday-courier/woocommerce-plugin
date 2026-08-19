@@ -13,6 +13,10 @@ final class RefreshPickupPointRequest
 
     private PickupPointStoreServiceProviderInterface $pickupPointStore;
 
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PickupPointStoreServiceProviderInterface $pickupPointStore
+     */
     public function __construct(
         CourierServiceProviderInterface $courierServiceProvider,
         PickupPointStoreServiceProviderInterface $pickupPointStore
@@ -21,11 +25,17 @@ final class RefreshPickupPointRequest
         $this->pickupPointStore = $pickupPointStore;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;
     }
 
+    /**
+     * @return PickupPointStoreServiceProviderInterface
+     */
     public function getPickupPointStore(): PickupPointStoreServiceProviderInterface
     {
         return $this->pickupPointStore;

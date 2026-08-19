@@ -75,6 +75,11 @@ final class AddNewParcelAwbItem implements ItemInterface
      *
      * @return self
      */
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     public static function fromArray(array $inputParams): self
     {
         return new self(

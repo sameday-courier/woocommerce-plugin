@@ -32,6 +32,13 @@ final class NoticerHandler implements RegistryHandlerInterface
      *
      * @return void
      */
+    /**
+     * @param ?string $noticeMessage
+     * @param string $noticeType
+     * @param bool $dismissible
+     *
+     * @return void
+     */
     public static function addFlashNotice(
         ?string $noticeMessage = '',
         string $noticeType = ResponseNoticeType::ERROR,
@@ -55,6 +62,9 @@ final class NoticerHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
+    /**
+     * @return void
+     */
     public static function showFlashNotices(): void
     {
         $notice = self::getNotice();
@@ -74,6 +84,9 @@ final class NoticerHandler implements RegistryHandlerInterface
     /**
      * @return array{message?: string, type?: string, dismissible?: bool}
      */
+    /**
+     * @return array
+     */
     private static function getNotice(): array
     {
         $notice = OptionsHandler::getOption(self::NOTICE_KEY, []);
@@ -86,6 +99,11 @@ final class NoticerHandler implements RegistryHandlerInterface
      *
      * @return string
      */
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
     private static function sanitizeType(string $type): string
     {
         return in_array($type, self::ALLOWED_TYPES, true)
@@ -93,6 +111,13 @@ final class NoticerHandler implements RegistryHandlerInterface
             : ResponseNoticeType::ERROR;
     }
 
+    /**
+     * @param string $type
+     * @param string $message
+     * @param bool $dismissible
+     *
+     * @return void
+     */
     /**
      * @param string $type
      * @param string $message

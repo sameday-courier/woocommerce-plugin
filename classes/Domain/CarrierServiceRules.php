@@ -44,6 +44,7 @@ final class CarrierServiceRules
 
     /**
      * @param CarrierService $carrierService
+     *
      * @return bool
      */
     public function isOohDeliveryOption(CarrierService $carrierService): bool

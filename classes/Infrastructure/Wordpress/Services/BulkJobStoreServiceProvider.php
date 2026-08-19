@@ -20,12 +20,20 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
      */
     private CacheHandlerInterface $cacheHandler;
 
+    /**
+     * @param ?CacheHandlerInterface $cacheHandler
+     */
     public function __construct(
         ?CacheHandlerInterface $cacheHandler = null
     ) {
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }
 
+    /**
+     * @param BulkJobDto $job
+     *
+     * @return void
+     */
     public function create(BulkJobDto $job): void
     {
         $this->cacheHandler->refreshCachedData(
@@ -70,11 +78,23 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
         );
     }
 
+    /**
+     * @param string $jobId
+     * @param int $userId
+     *
+     * @return void
+     */
     public function delete(string $jobId, int $userId): void
     {
         $this->cacheHandler->invalidateCachedData($this->buildKey($jobId, $userId));
     }
 
+    /**
+     * @param string $jobId
+     * @param int $userId
+     *
+     * @return string
+     */
     private function buildKey(string $jobId, int $userId): string
     {
         return self::KEY_PREFIX . $userId . '_' . $jobId;

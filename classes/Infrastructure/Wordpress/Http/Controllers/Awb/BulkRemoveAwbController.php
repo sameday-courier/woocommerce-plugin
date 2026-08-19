@@ -29,7 +29,9 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
     }
 
     /**
-     * @return array{status: string, message: string, ...}
+     * @param int $itemId
+     *
+     * @return array{status:
      */
     protected function processItem(int $itemId): array
     {

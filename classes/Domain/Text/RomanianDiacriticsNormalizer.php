@@ -16,6 +16,11 @@ final class RomanianDiacriticsNormalizer
      */
     private const TO = ['A', 'a', 'A', 'a', 'I', 'i', 'S', 's', 'T', 't'];
 
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
     public static function normalize(string $value): string
     {
         return str_replace(self::FROM, self::TO, $value);

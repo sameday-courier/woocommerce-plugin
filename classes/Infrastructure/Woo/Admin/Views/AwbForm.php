@@ -45,6 +45,11 @@ class AwbForm
      */
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
+    /**
+     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param SamedayLockerRepository $samedayLockerRepository
+     * @param SamedayPickupPointRepository $samedayPickupPointRepository
+     */
     public function __construct(
         SamedayServiceRepository $samedayServiceRepository,
         SamedayLockerRepository $samedayLockerRepository,
@@ -58,6 +63,7 @@ class AwbForm
 
     /**
      * @param WC_Order $order
+     *
      * @return string
      */
     public function samedaycourierAddAwbForm(WC_Order $order): string

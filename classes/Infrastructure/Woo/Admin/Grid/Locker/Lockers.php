@@ -26,7 +26,10 @@ class Lockers extends WP_List_Table
      */
     private SamedayLockerRepository $samedayLockerRepository;
 
-    /** Class constructor */
+    /**
+     * Class constructor
+     *
+     */
     public function __construct()
     {
 
@@ -69,6 +72,9 @@ class Lockers extends WP_List_Table
         return $this->dbHandler->getRows($query['sql'], $query['params']);
     }
 
+    /**
+     * @return int
+     */
     private function getLockersCount(): int
     {
         $query = GridQueryBuilder::buildCount(
@@ -79,7 +85,11 @@ class Lockers extends WP_List_Table
         return (int) $this->dbHandler->getVar($query['sql'], $query['params']);
     }
 
-    /** Text displayed when no lockers data is available */
+    /**
+     * Text displayed when no lockers data is available
+     *
+     * @return void
+     */
     public function no_items(): void
     {
         _e('No lockers available!', CarrierConstants::TEXT_DOMAIN);
@@ -93,14 +103,14 @@ class Lockers extends WP_List_Table
      *
      * @return mixed
      */
-    public function column_default($item, $column_name)
+    public function column_default(array $item, string $column_name)
     {
         return $item[$column_name];
     }
 
 
     /**
-     *  Associative array of columns
+     * Associative array of columns
      *
      * @return array
      */
@@ -135,6 +145,8 @@ class Lockers extends WP_List_Table
 
     /**
      * Handles data query and filter, sorting, and pagination.
+     *
+     * @return void
      */
     public function prepare_items(): void
     {

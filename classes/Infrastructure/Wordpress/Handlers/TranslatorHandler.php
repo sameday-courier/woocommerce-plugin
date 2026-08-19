@@ -13,6 +13,11 @@ final class TranslatorHandler
      *
      * @return string
      */
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
     public static function translate(string $text): string
     {
         return esc_html(__($text, CarrierConstants::TEXT_DOMAIN));

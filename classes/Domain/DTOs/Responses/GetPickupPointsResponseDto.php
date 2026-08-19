@@ -17,6 +17,7 @@ final class GetPickupPointsResponseDto
 
     /**
      * @param CourierPickupPointDto[] $pickupPoints
+     * @param int $pages
      */
     public function __construct(array $pickupPoints, int $pages)
     {
@@ -32,6 +33,9 @@ final class GetPickupPointsResponseDto
         return $this->pickupPoints;
     }
 
+    /**
+     * @return int
+     */
     public function getPages(): int
     {
         return $this->pages;

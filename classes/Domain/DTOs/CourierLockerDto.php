@@ -24,6 +24,17 @@ final class CourierLockerDto
 
     private ?string $serializedBoxes;
 
+    /**
+     * @param int $id
+     * @param string $name
+     * @param string $city
+     * @param string $county
+     * @param string $address
+     * @param string $lat
+     * @param string $lng
+     * @param string $postalCode
+     * @param ?string $serializedBoxes
+     */
     public function __construct(
         int $id,
         string $name,
@@ -46,46 +57,73 @@ final class CourierLockerDto
         $this->serializedBoxes = $serializedBoxes;
     }
 
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getCity(): string
     {
         return $this->city;
     }
 
+    /**
+     * @return string
+     */
     public function getCounty(): string
     {
         return $this->county;
     }
 
+    /**
+     * @return string
+     */
     public function getAddress(): string
     {
         return $this->address;
     }
 
+    /**
+     * @return string
+     */
     public function getLat(): string
     {
         return $this->lat;
     }
 
+    /**
+     * @return string
+     */
     public function getLng(): string
     {
         return $this->lng;
     }
 
+    /**
+     * @return string
+     */
     public function getPostalCode(): string
     {
         return $this->postalCode;
     }
 
+    /**
+     * @return ?string
+     */
     public function getSerializedBoxes(): ?string
     {
         return $this->serializedBoxes;

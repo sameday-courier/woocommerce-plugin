@@ -80,6 +80,11 @@ abstract class AbstractRecursiveBulkController extends AbstractController
     /**
      * @return array{status: string, message: string, ...}
      */
+    /**
+     * @param int $itemId
+     *
+     * @return array
+     */
     abstract protected function processItem(int $itemId): array;
 
     /**

@@ -17,6 +17,11 @@ final class CarrierLockerRules
      *
      * @return string|null
      */
+    /**
+     * @param ?int $lockerId
+     *
+     * @return ?string
+     */
     public static function resolveOohType(?int $lockerId): ?string
     {
         if (null === $lockerId) {

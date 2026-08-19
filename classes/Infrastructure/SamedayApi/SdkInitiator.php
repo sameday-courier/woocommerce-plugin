@@ -23,6 +23,13 @@ final class SdkInitiator
      * @return SamedayClient
      * @throws SamedaySDKException
      */
+    /**
+     * @param ?string $username
+     * @param ?string $password
+     * @param ?string $apiUrl
+     *
+     * @return SamedayClient
+     */
     public static function init(
         ?string $username = null,
         ?string $password = null,
@@ -60,6 +67,9 @@ final class SdkInitiator
     /**
      * @return array<string, array<int, string>>
      */
+    /**
+     * @return array
+     */
     public static function getEnvModes(): array
     {
         return [
@@ -78,6 +88,9 @@ final class SdkInitiator
         ];
     }
 
+    /**
+     * @return string
+     */
     /**
      * @return string
      */

@@ -29,6 +29,11 @@ class SchemaDefinition
     public function getSamedayTables(): array
     {
         return array_map(
+            /**
+             * @param RepositoryInterface $repo
+             *
+             * @return mixed
+             */
             static function (RepositoryInterface $repo) {
                 return $repo->getTableName();
             },

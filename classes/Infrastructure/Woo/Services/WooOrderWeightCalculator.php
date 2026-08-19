@@ -16,6 +16,9 @@ final class WooOrderWeightCalculator implements OrderWeightCalculatorInterface
 
     private WeightConverterInterface $weightConverter;
 
+    /**
+     * @param ?WeightConverterInterface $weightConverter
+     */
     public function __construct(
         ?WeightConverterInterface $weightConverter = null
     ) {
@@ -25,7 +28,7 @@ final class WooOrderWeightCalculator implements OrderWeightCalculatorInterface
     /**
      * @param int $orderId
      *
-     * @return array<int, array{weight: float}>
+     * @return array<int,
      */
     public function toPackageDimensions(int $orderId): array
     {

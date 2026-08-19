@@ -31,7 +31,7 @@ final class AddExtraFeesAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

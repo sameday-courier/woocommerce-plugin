@@ -14,6 +14,7 @@ interface PostAwbGenerationServiceProviderInterface
      * @param PostAwbGenerationRequestDto $postAwbGenerationRequestDto
      * @param CarrierServiceRules $rules
      * @param CourierServiceProviderInterface $courier
+     *
      * @return PostAwbGenerationResponseDto
      */
     public function apply(

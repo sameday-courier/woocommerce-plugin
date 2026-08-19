@@ -24,7 +24,7 @@ final class ValidateCheckoutLockerAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

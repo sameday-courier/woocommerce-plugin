@@ -46,7 +46,9 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
     }
 
     /**
-     * @param array<int|string, mixed> $shippingLines
+     * @param array $shippingLines
+     *
+     * @return ?string
      */
     private function resolveSamedayServiceCode(array $shippingLines): ?string
     {

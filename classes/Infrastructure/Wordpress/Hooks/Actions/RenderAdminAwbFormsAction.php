@@ -17,7 +17,7 @@ final class RenderAdminAwbFormsAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

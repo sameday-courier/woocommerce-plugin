@@ -147,6 +147,11 @@ final class GenerateAwbItem implements ItemInterface
      *
      * @return self
      */
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     public static function fromArray(array $inputParams): self
     {
         $clientReference = $inputParams['samedaycourier-client-reference'] ?? null;
@@ -197,7 +202,7 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int,
      */
     public function getShippingLines(): array
     {
@@ -205,7 +210,7 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,
      */
     public function getShipping(): array
     {
@@ -213,7 +218,7 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,
      */
     public function getBilling(): array
     {
@@ -279,6 +284,11 @@ final class GenerateAwbItem implements ItemInterface
     /**
      * @param mixed $value
      */
+    /**
+     * @param mixed $value
+     *
+     * @return float
+     */
     private static function toFloat($value): float
     {
         if (is_numeric($value)) {
@@ -305,7 +315,7 @@ final class GenerateAwbItem implements ItemInterface
     }
 
     /**
-     * @return array<int|string, mixed>
+     * @return array<int|string,
      */
     public function getPackageDimensions(): array
     {

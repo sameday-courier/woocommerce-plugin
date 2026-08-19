@@ -8,11 +8,17 @@ final class GetParcelStatusHistoryRequestDto
 {
     private string $parcel;
 
+    /**
+     * @param string $parcel
+     */
     public function __construct(string $parcel)
     {
         $this->parcel = $parcel;
     }
 
+    /**
+     * @return string
+     */
     public function getParcel(): string
     {
         return $this->parcel;

@@ -20,6 +20,11 @@ final class RecipientDto
      */
     public string $name;
 
+    /**
+     * @param ?string $firstName
+     *
+     * @return self
+     */
     public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
@@ -27,6 +32,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param ?string $lastName
+     *
+     * @return self
+     */
     public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
@@ -36,6 +46,7 @@ final class RecipientDto
 
     /**
      * @param string|null $company
+     *
      * @return $this
      */
     public function setCompany(?string $company): self
@@ -47,6 +58,7 @@ final class RecipientDto
 
     /**
      * @param string|null $address1
+     *
      * @return $this
      */
     public function setAddress1(?string $address1): self
@@ -58,6 +70,7 @@ final class RecipientDto
 
     /**
      * @param string|null $address2
+     *
      * @return $this
      */
     public function setAddress2(?string $address2): self
@@ -67,6 +80,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param ?string $city
+     *
+     * @return self
+     */
     public function setCity(?string $city): self
     {
         $this->city = $city;
@@ -74,6 +92,11 @@ final class RecipientDto
         return $this;
     }
 
+    /**
+     * @param ?string $state
+     *
+     * @return self
+     */
     public function setState(?string $state): self
     {
         $this->county = $state;

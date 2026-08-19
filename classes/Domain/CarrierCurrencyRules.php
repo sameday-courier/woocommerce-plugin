@@ -13,6 +13,13 @@ class CarrierCurrencyRules
      *
      * @return bool
      */
+    /**
+     * @param float $repayment
+     * @param string $destCurrency
+     * @param string $storeCurrency
+     *
+     * @return bool
+     */
     public static function hasCurrencyIssue(
         float $repayment,
         string $destCurrency,

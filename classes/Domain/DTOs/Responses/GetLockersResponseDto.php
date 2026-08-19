@@ -17,6 +17,7 @@ final class GetLockersResponseDto
 
     /**
      * @param CourierLockerDto[] $lockers
+     * @param int $pages
      */
     public function __construct(array $lockers, int $pages)
     {
@@ -32,6 +33,9 @@ final class GetLockersResponseDto
         return $this->lockers;
     }
 
+    /**
+     * @return int
+     */
     public function getPages(): int
     {
         return $this->pages;

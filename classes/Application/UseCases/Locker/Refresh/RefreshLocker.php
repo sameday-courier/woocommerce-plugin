@@ -20,6 +20,9 @@ final class RefreshLocker
 
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
+    /**
+     * @param RefreshLockerRequest $refreshLockerRequest
+     */
     public function __construct(RefreshLockerRequest $refreshLockerRequest)
     {
         $this->courierServiceProvider = $refreshLockerRequest->getCourierServiceProvider();
@@ -27,6 +30,9 @@ final class RefreshLocker
         $this->carrierSettingsProvider = $refreshLockerRequest->getCarrierSettingsProvider();
     }
 
+    /**
+     * @return RefreshLockerResponse
+     */
     public function execute(): RefreshLockerResponse
     {
         $remoteLockers = [];
@@ -58,6 +64,11 @@ final class RefreshLocker
         } while ($page <= $lockers->getPages());
 
         $localLockers = array_map(
+            /**
+             * @param CarrierLocker $locker
+             *
+             * @return array
+             */
             static function (CarrierLocker $locker): array {
                 return [
                     'id' => $locker->getId(),

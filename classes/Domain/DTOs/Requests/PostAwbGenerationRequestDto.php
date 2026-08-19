@@ -27,8 +27,12 @@ final class PostAwbGenerationRequestDto
     private array $parcels;
 
     /**
-     * @param array<int, mixed> $shippingLines
-     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     * @param int $orderId
+     * @param array $shippingLines
+     * @param CarrierService $service
+     * @param string $awbNumber
+     * @param float $awbCost
+     * @param array $parcels
      */
     public function __construct(
         int $orderId,
@@ -46,36 +50,48 @@ final class PostAwbGenerationRequestDto
         $this->parcels = $parcels;
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int,
      */
     public function getShippingLines(): array
     {
         return $this->shippingLines;
     }
 
+    /**
+     * @return CarrierService
+     */
     public function getService(): CarrierService
     {
         return $this->service;
     }
 
+    /**
+     * @return string
+     */
     public function getAwbNumber(): string
     {
         return $this->awbNumber;
     }
 
+    /**
+     * @return float
+     */
     public function getAwbCost(): float
     {
         return $this->awbCost;
     }
 
     /**
-     * @return array<int, array{position: int, awbNumber: string}>
+     * @return array<int,
      */
     public function getParcels(): array
     {

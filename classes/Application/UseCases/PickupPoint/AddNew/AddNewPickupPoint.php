@@ -15,12 +15,18 @@ final class AddNewPickupPoint
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param AddNewPickupPointRequest $addNewPickupPointRequest
+     */
     public function __construct(AddNewPickupPointRequest $addNewPickupPointRequest)
     {
         $this->addNewPickupPointItem = $addNewPickupPointRequest->getAddNewPickupPointItem();
         $this->courierServiceProvider = $addNewPickupPointRequest->getCourierServiceProvider();
     }
 
+    /**
+     * @return AddNewPickupPointResponse
+     */
     public function execute(): AddNewPickupPointResponse
     {
         try {

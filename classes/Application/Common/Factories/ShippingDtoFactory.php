@@ -12,7 +12,9 @@ final class ShippingDtoFactory
     use AddressInputMapperTrait;
 
     /**
-     * @param array<string, mixed> $raw
+     * @param array $raw
+     *
+     * @return ShippingDto
      */
     public function fromInput(array $raw): ShippingDto
     {

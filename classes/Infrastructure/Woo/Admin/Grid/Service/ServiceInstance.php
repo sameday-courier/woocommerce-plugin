@@ -23,6 +23,8 @@ class ServiceInstance
      */
     private SamedayServiceRepository $samedayServiceRepository;
 
+    /**
+     */
     public function __construct()
     {
         add_filter('set-screen-option', [__CLASS__, 'set_screen'], 10, 3);
@@ -31,11 +33,21 @@ class ServiceInstance
         $this->samedayServiceRepository = new SamedayServiceRepository();
     }
 
+    /**
+     * @param mixed $status
+     * @param mixed $option
+     * @param mixed $value
+     *
+     * @return mixed
+     */
     public static function set_screen($status, $option, $value)
     {
         return $value;
     }
 
+    /**
+     * @return mixed
+     */
     public function plugin_menu()
     {
         $parentSlug = 'edit.php?post_type=page';
@@ -60,6 +72,8 @@ class ServiceInstance
 
     /**
      * Plugin settings page
+     *
+     * @return mixed
      */
     public function plugin_settings_page()
     {
@@ -104,6 +118,9 @@ class ServiceInstance
         <?php }
     }
 
+    /**
+     * @return array
+     */
     private function getStatuses(): array
     {
         return array(
@@ -119,7 +136,7 @@ class ServiceInstance
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      *
      * @return string
      */
@@ -239,6 +256,8 @@ class ServiceInstance
 
     /**
      * Screen options
+     *
+     * @return mixed
      */
     public function screen_option()
     {
@@ -257,6 +276,9 @@ class ServiceInstance
 
     /**
      * Singleton instance
+     */
+    /**
+     * @return self
      */
     public static function get_instance(): self
     {

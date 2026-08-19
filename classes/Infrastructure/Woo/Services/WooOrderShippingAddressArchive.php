@@ -16,7 +16,6 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param int $orderId
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function ensureHomeDeliverySnapshot(int $orderId): void
@@ -38,7 +37,6 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param int $orderId
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function updateHomeDeliverySnapshot(int $orderId): void
@@ -55,7 +53,6 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param WC_Order $order
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function updateHomeDeliverySnapshotFromOrder(WC_Order $order): void
@@ -71,7 +68,7 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
     /**
      * @param WC_Order $order
      *
-     * @return array<string, string>
+     * @return array<string,
      */
     private function buildSnapshotFromOrder(WC_Order $order): array
     {

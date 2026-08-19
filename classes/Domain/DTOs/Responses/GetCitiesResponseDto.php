@@ -14,7 +14,8 @@ final class GetCitiesResponseDto
     private int $pages;
 
     /**
-     * @param array<int, array{id: int, name: string}> $cities
+     * @param array $cities
+     * @param int $pages
      */
     public function __construct(array $cities, int $pages)
     {
@@ -23,13 +24,16 @@ final class GetCitiesResponseDto
     }
 
     /**
-     * @return array<int, array{id: int, name: string}>
+     * @return array<int,
      */
     public function getCities(): array
     {
         return $this->cities;
     }
 
+    /**
+     * @return int
+     */
     public function getPages(): int
     {
         return $this->pages;

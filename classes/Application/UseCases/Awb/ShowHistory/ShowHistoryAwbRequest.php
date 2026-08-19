@@ -18,6 +18,12 @@ final class ShowHistoryAwbRequest
 
     private PackageHistoryStoreServiceProviderInterface $packageHistoryStore;
 
+    /**
+     * @param ShowHistoryAwbItem $showHistoryAwbItem
+     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PackageHistoryStoreServiceProviderInterface $packageHistoryStore
+     */
     public function __construct(
         ShowHistoryAwbItem $showHistoryAwbItem,
         OrderAwbStoreServiceProviderInterface $orderAwbStore,
@@ -30,21 +36,33 @@ final class ShowHistoryAwbRequest
         $this->packageHistoryStore = $packageHistoryStore;
     }
 
+    /**
+     * @return ShowHistoryAwbItem
+     */
     public function getShowHistoryAwbItem(): ShowHistoryAwbItem
     {
         return $this->showHistoryAwbItem;
     }
 
+    /**
+     * @return OrderAwbStoreServiceProviderInterface
+     */
     public function getOrderAwbStore(): OrderAwbStoreServiceProviderInterface
     {
         return $this->orderAwbStore;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;
     }
 
+    /**
+     * @return PackageHistoryStoreServiceProviderInterface
+     */
     public function getPackageHistoryStore(): PackageHistoryStoreServiceProviderInterface
     {
         return $this->packageHistoryStore;

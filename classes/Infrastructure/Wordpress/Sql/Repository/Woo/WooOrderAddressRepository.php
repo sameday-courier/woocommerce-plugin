@@ -22,7 +22,7 @@ class WooOrderAddressRepository extends AbstractRepository
 
     /**
      * @param int $orderId
-     * @param array<string, string> $address
+     * @param array $address
      *
      * @return bool
      */

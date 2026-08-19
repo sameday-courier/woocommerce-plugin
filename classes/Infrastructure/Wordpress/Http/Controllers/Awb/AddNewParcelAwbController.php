@@ -31,7 +31,6 @@ final class AddNewParcelAwbController extends AbstractController
      * @param array $inputParams
      *
      * @return void
-     *
      */
     protected function processAction(array $inputParams): void
     {

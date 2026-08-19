@@ -13,6 +13,9 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
 {
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @param ?SamedayAwbRepository $samedayAwbRepository
+     */
     public function __construct(?SamedayAwbRepository $samedayAwbRepository = null)
     {
         $this->samedayAwbRepository = $samedayAwbRepository ?? new SamedayAwbRepository();
@@ -20,9 +23,6 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
 
     /**
      * Returns the AWB generated for the given order, or null when none exists.
-     *
-     * The presence of a persisted AWB is the authoritative signal that a Sameday
-     * AWB was generated for the order, independent of the shipping line method_id.
      *
      * @param int $orderId
      *
@@ -128,7 +128,9 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
     }
 
     /**
-     * @return array<int, mixed>
+     * @param string $parcels
+     *
+     * @return array<int,
      */
     private function unserializeParcels(string $parcels): array
     {

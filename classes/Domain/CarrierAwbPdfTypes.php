@@ -19,6 +19,9 @@ final class CarrierAwbPdfTypes
     /**
      * @return array<string, string>
      */
+    /**
+     * @return array
+     */
     public static function getLabelKeys(): array
     {
         return self::LABEL_KEYS;

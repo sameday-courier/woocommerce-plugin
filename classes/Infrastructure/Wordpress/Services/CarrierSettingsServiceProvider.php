@@ -76,7 +76,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,
      */
     private function getSamedayOptions(): array
     {
@@ -89,7 +89,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return bool
      */
@@ -99,7 +99,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return string
      */
@@ -111,7 +111,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return string
      */
@@ -125,7 +125,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return string
      */
@@ -137,7 +137,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return int|null
      */
@@ -153,7 +153,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return int
      */
@@ -167,7 +167,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return bool
      */
@@ -179,7 +179,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      *
      * @return string
      */
@@ -193,7 +193,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      * @param string $key
      *
      * @return string|null
@@ -206,7 +206,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param array $options
      * @param string $key
      *
      * @return bool

@@ -23,7 +23,7 @@ final class RefreshShippingMethodsAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

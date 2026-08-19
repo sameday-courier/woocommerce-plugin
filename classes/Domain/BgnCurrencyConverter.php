@@ -12,6 +12,10 @@ class BgnCurrencyConverter
     private string $currency;
     private float $amount;
 
+    /**
+     * @param string $currency
+     * @param float $amount
+     */
     public function __construct(string $currency, float $amount)
     {
         $this->currency = $currency;
@@ -20,7 +24,6 @@ class BgnCurrencyConverter
 
     /**
      * @return string
-     *
      * @throws Exception
      */
     public function convert(): string

@@ -17,11 +17,19 @@ final class DeletePickupPointController extends AbstractController
 {
     private const ACTION = 'delete_pickup_point';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {

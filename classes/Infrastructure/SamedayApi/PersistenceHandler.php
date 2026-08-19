@@ -15,11 +15,22 @@ class PersistenceHandler implements SamedayPersistentDataInterface
         SamedayClient::KEY_TOKEN_EXPIRES => 'expires_at'
     ];
 
+    /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
     public function get($key)
     {
         return OptionsHandler::getOption("woocommerce_samedaycourier_settings_{$key}", [])[self::KEYS[$key]];
     }
 
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     *
+     * @return void
+     */
     public function set($key, $value): void
     {
         OptionsHandler::setOption(

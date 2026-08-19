@@ -72,6 +72,11 @@ trait AddressObjectTrait
      *
      * @return self
      */
+    /**
+     * @param array $data
+     *
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -113,6 +118,9 @@ trait AddressObjectTrait
         return $this->lastName;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCompany(): ?string
     {
         return $this->company;
@@ -129,46 +137,73 @@ trait AddressObjectTrait
         return sprintf('%s %s', ltrim($address1), ltrim($address2));
     }
 
+    /**
+     * @return ?string
+     */
     public function getAddress1(): ?string
     {
         return $this->address1;
     }
 
+    /**
+     * @return ?string
+     */
     public function getAddress2(): ?string
     {
         return $this->address2;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCounty(): ?string
     {
         return $this->county;
     }
 
+    /**
+     * @return ?string
+     */
     public function getState(): ?string
     {
         return $this->county;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPostcode(): ?string
     {
         return $this->postcode;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
+    /**
+     * @return ?string
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPhone(): ?string
     {
         return $this->phone;

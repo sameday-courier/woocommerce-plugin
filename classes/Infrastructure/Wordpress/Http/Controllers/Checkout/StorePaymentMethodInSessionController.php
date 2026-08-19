@@ -12,13 +12,16 @@ final class StorePaymentMethodInSessionController extends AbstractNoPrivControll
 {
     private const ACTION = 'store_sameday_payment_method_in_session';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */

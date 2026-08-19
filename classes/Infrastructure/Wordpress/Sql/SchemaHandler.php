@@ -50,6 +50,8 @@ class SchemaHandler
      */
     private DbHandlerInterface $dbHandler;
 
+    /**
+     */
     public function __construct()
     {
         $this->dbHandler = new DbHandler();
@@ -155,6 +157,9 @@ class SchemaHandler
         ) " . $this->dbHandler->getCharsetCollate() . ";";
     }
 
+    /**
+     * @return string
+     */
     public function buildCitiesTableQuery(): string
     {
         return "CREATE TABLE IF NOT EXISTS " . $this->samedayCityRepository->getTableName() . " (

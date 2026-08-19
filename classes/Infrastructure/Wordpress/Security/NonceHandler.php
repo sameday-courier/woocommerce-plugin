@@ -11,11 +11,22 @@ class NonceHandler
      *
      * @return string
      */
+    /**
+     * @param string $actionKey
+     *
+     * @return string
+     */
     public static function createNonce(string $actionKey): string
     {
         return esc_attr(wp_create_nonce($actionKey));
     }
 
+    /**
+     * @param string $nonceString
+     * @param string $action
+     *
+     * @return bool
+     */
     /**
      * @param string $nonceString
      * @param string $action

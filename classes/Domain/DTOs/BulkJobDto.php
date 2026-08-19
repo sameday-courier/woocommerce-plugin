@@ -20,6 +20,8 @@ final class BulkJobDto
     private array $items;
 
     /**
+     * @param string $jobId
+     * @param int $userId
      * @param BulkJobItemDto[] $items
      */
     public function __construct(string $jobId, int $userId, array $items)
@@ -29,11 +31,17 @@ final class BulkJobDto
         $this->items = $items;
     }
 
+    /**
+     * @return string
+     */
     public function getJobId(): string
     {
         return $this->jobId;
     }
 
+    /**
+     * @return int
+     */
     public function getUserId(): int
     {
         return $this->userId;
@@ -47,11 +55,17 @@ final class BulkJobDto
         return $this->items;
     }
 
+    /**
+     * @return int
+     */
     public function getTotal(): int
     {
         return count($this->items);
     }
 
+    /**
+     * @return int
+     */
     public function getProcessedCount(): int
     {
         $processed = 0;
@@ -64,6 +78,9 @@ final class BulkJobDto
         return $processed;
     }
 
+    /**
+     * @return int
+     */
     public function getSuccessCount(): int
     {
         $count = 0;
@@ -77,6 +94,9 @@ final class BulkJobDto
         return $count;
     }
 
+    /**
+     * @return int
+     */
     public function getErrorCount(): int
     {
         $count = 0;
@@ -90,11 +110,17 @@ final class BulkJobDto
         return $count;
     }
 
+    /**
+     * @return bool
+     */
     public function isDone(): bool
     {
         return $this->getProcessedCount() === $this->getTotal();
     }
 
+    /**
+     * @return ?BulkJobItemDto
+     */
     public function getNextUnprocessed(): ?BulkJobItemDto
     {
         foreach ($this->items as $item) {
@@ -107,7 +133,10 @@ final class BulkJobDto
     }
 
     /**
-     * @param array{status: string, message: string, ...} $payload
+     * @param int $itemId
+     * @param array $payload
+     *
+     * @return self
      */
     public function withItemPayload(int $itemId, array $payload): self
     {
@@ -125,11 +154,9 @@ final class BulkJobDto
     }
 
     /**
+     * jobId: string,
+     *
      * @return array{
-     *     jobId: string,
-     *     userId: int,
-     *     items: array<int, array{itemId: int, payload: array{status: string, message: string, ...}|null}>
-     * }
      */
     public function toArray(): array
     {
@@ -137,6 +164,11 @@ final class BulkJobDto
             'jobId' => $this->jobId,
             'userId' => $this->userId,
             'items' => array_map(
+                /**
+                 * @param BulkJobItemDto $item
+                 *
+                 * @return array
+                 */
                 static function (BulkJobItemDto $item): array {
                     return $item->toArray();
                 },
@@ -146,7 +178,7 @@ final class BulkJobDto
     }
 
     /**
-     * @return array<int, array{itemId: int, status: string|null, message: string|null, ...}>
+     * @return array<int,
      */
     public function toReportItems(): array
     {
@@ -168,6 +200,11 @@ final class BulkJobDto
 
     /**
      * @param array<string, mixed> $data
+     */
+    /**
+     * @param array $data
+     *
+     * @return self
      */
     public static function fromArray(array $data): self
     {
@@ -199,6 +236,13 @@ final class BulkJobDto
 
     /**
      * @param int[] $itemIds
+     */
+    /**
+     * @param string $jobId
+     * @param int $userId
+     * @param array $itemIds
+     *
+     * @return self
      */
     public static function create(string $jobId, int $userId, array $itemIds): self
     {

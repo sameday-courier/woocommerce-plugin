@@ -17,12 +17,18 @@ final class RefreshPickupPoint
 
     private PickupPointStoreServiceProviderInterface $pickupPointStore;
 
+    /**
+     * @param RefreshPickupPointRequest $refreshPickupPointRequest
+     */
     public function __construct(RefreshPickupPointRequest $refreshPickupPointRequest)
     {
         $this->courierServiceProvider = $refreshPickupPointRequest->getCourierServiceProvider();
         $this->pickupPointStore = $refreshPickupPointRequest->getPickupPointStore();
     }
 
+    /**
+     * @return RefreshPickupPointResponse
+     */
     public function execute(): RefreshPickupPointResponse
     {
         $remotePickupPoints = [];
@@ -56,6 +62,11 @@ final class RefreshPickupPoint
         } while ($page <= $pickUpPoints->getPages());
 
         $localPickupPoints = array_map(
+            /**
+             * @param CarrierPickupPoint $pickupPoint
+             *
+             * @return array
+             */
             static function (CarrierPickupPoint $pickupPoint): array {
                 return [
                     'id' => $pickupPoint->getId(),

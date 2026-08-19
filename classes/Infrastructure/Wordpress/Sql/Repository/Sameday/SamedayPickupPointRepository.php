@@ -33,6 +33,9 @@ class SamedayPickupPointRepository extends AbstractRepository
         $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);

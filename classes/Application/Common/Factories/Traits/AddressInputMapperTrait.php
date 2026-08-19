@@ -7,9 +7,9 @@ namespace SamedayCourier\Shipping\Application\Common\Factories\Traits;
 trait AddressInputMapperTrait
 {
     /**
-     * @param array<string, mixed> $raw
+     * @param array $raw
      *
-     * @return array<int, string|null>
+     * @return array<int,
      */
     protected function mapAddressInput(array $raw): array
     {

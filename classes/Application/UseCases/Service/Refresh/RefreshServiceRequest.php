@@ -13,6 +13,10 @@ final class RefreshServiceRequest
 
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
     public function __construct(
         CourierServiceProviderInterface $courierServiceProvider,
         ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
@@ -21,11 +25,17 @@ final class RefreshServiceRequest
         $this->serviceCatalogStore = $serviceCatalogStore;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;
     }
 
+    /**
+     * @return ServiceCatalogStoreServiceProviderInterface
+     */
     public function getServiceCatalogStore(): ServiceCatalogStoreServiceProviderInterface
     {
         return $this->serviceCatalogStore;

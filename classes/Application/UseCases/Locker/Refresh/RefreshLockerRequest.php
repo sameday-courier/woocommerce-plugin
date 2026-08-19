@@ -16,6 +16,11 @@ final class RefreshLockerRequest
 
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param LockerStoreServiceProviderInterface $lockerStore
+     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
+     */
     public function __construct(
         CourierServiceProviderInterface $courierServiceProvider,
         LockerStoreServiceProviderInterface $lockerStore,
@@ -26,16 +31,25 @@ final class RefreshLockerRequest
         $this->carrierSettingsProvider = $carrierSettingsProvider;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;
     }
 
+    /**
+     * @return LockerStoreServiceProviderInterface
+     */
     public function getLockerStore(): LockerStoreServiceProviderInterface
     {
         return $this->lockerStore;
     }
 
+    /**
+     * @return CarrierSettingsProviderInterface
+     */
     public function getCarrierSettingsProvider(): CarrierSettingsProviderInterface
     {
         return $this->carrierSettingsProvider;

@@ -12,13 +12,16 @@ final class StoreOpenPackageInSessionController extends AbstractNoPrivController
 {
     private const ACTION = 'store_sameday_open_package_in_session';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */

@@ -12,6 +12,10 @@ final class StartBulkGenerateAwbRequest
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @param StartBulkGenerateAwbItem $startBulkGenerateAwbItem
+     * @param BulkJobStoreInterface $bulkJobStore
+     */
     public function __construct(
         StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
         BulkJobStoreInterface $bulkJobStore
@@ -20,11 +24,17 @@ final class StartBulkGenerateAwbRequest
         $this->bulkJobStore = $bulkJobStore;
     }
 
+    /**
+     * @return StartBulkGenerateAwbItem
+     */
     public function getStartBulkGenerateAwbItem(): StartBulkGenerateAwbItem
     {
         return $this->startBulkGenerateAwbItem;
     }
 
+    /**
+     * @return BulkJobStoreInterface
+     */
     public function getBulkJobStore(): BulkJobStoreInterface
     {
         return $this->bulkJobStore;

@@ -15,6 +15,11 @@ class NewParcelForm extends AwbForm
      *
      * @return string
      */
+    /**
+     * @param mixed $orderId
+     *
+     * @return string
+     */
     public static function addNewParcelForm($orderId): string
     {
         $orderIdValue = esc_attr((string) $orderId);

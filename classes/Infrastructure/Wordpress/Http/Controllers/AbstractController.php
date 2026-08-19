@@ -48,6 +48,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @param mixed $payload
      * @param int $statusCode
+     *
      * @return void
      */
     protected function sendJsonErrorResponse(
@@ -73,7 +74,7 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param string $mainPath such as admin.php, post.php, edit.php
+     * @param string $mainPath
      * @param array $queryArgs
      *
      * @return void
@@ -85,6 +86,11 @@ abstract class AbstractController implements ControllerInterface
         exit;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     /**
      * @param array $inputParams
      *

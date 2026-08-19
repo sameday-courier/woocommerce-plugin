@@ -14,17 +14,29 @@ class PickupPointInstance
 
     public $pickuppoints_obj;
 
+    /**
+     */
     public function __construct()
     {
         add_filter('set-screen-option', [ __CLASS__, 'set_screen' ], 10, 3);
         add_action('admin_menu', [ $this, 'plugin_menu' ]);
     }
 
+    /**
+     * @param mixed $status
+     * @param mixed $option
+     * @param mixed $value
+     *
+     * @return mixed
+     */
     public static function set_screen($status, $option, $value)
     {
         return $value;
     }
 
+    /**
+     * @return mixed
+     */
     public function plugin_menu()
     {
         $parentSlug = 'edit.php?post_type=page';
@@ -49,6 +61,8 @@ class PickupPointInstance
 
     /**
      * Plugin settings page
+     *
+     * @return mixed
      */
     public function plugin_settings_page()
     {
@@ -97,6 +111,8 @@ class PickupPointInstance
 
     /**
      * Screen options
+     *
+     * @return mixed
      */
     public function screen_option()
     {
@@ -113,6 +129,9 @@ class PickupPointInstance
     }
 
     /** Singleton instance */
+    /**
+     * @return mixed
+     */
     public static function get_instance()
     {
         if (! isset(self::$instance)) {

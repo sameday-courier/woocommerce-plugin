@@ -12,6 +12,10 @@ final class DeletePickupPointRequest
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param DeletePickupPointItem $deletePickupPointItem
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     */
     public function __construct(
         DeletePickupPointItem $deletePickupPointItem,
         CourierServiceProviderInterface $courierServiceProvider
@@ -20,11 +24,17 @@ final class DeletePickupPointRequest
         $this->courierServiceProvider = $courierServiceProvider;
     }
 
+    /**
+     * @return DeletePickupPointItem
+     */
     public function getDeletePickupPointItem(): DeletePickupPointItem
     {
         return $this->deletePickupPointItem;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;

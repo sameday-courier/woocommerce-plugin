@@ -6,6 +6,11 @@ namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
 final class GenerateAwbValidator
 {
+    /**
+     * @param GenerateAwbValidatorRequest $request
+     *
+     * @return GenerateAwbValidatorResponse
+     */
     public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse
     {
         $billing = $request->getBilling();

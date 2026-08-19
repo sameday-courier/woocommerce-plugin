@@ -26,6 +26,11 @@ final class SamedayAdminModal
      *     footerHtml?: string|null,
      * } $args
      */
+    /**
+     * @param array $args
+     *
+     * @return string
+     */
     public static function render(array $args): string
     {
         $id = (string) ($args['id'] ?? '');

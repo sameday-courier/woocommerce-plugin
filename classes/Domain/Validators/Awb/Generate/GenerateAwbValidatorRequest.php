@@ -27,6 +27,15 @@ class GenerateAwbValidatorRequest
 
     private bool $hasParcels;
 
+    /**
+     * @param int $orderId
+     * @param ?CarrierService $carrierService
+     * @param ?CarrierPickupPoint $pickupPoint
+     * @param BillingDto $billing
+     * @param array $shippingLines
+     * @param bool $hasExistingAwb
+     * @param bool $hasParcels
+     */
     public function __construct(
         int $orderId,
         ?CarrierService $carrierService,
@@ -45,39 +54,57 @@ class GenerateAwbValidatorRequest
         $this->hasParcels = $hasParcels;
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;
     }
 
+    /**
+     * @return ?CarrierService
+     */
     public function getCarrierService(): ?CarrierService
     {
         return $this->carrierService;
     }
 
+    /**
+     * @return ?CarrierPickupPoint
+     */
     public function getPickupPoint(): ?CarrierPickupPoint
     {
         return $this->pickupPoint;
     }
 
+    /**
+     * @return BillingDto
+     */
     public function getBilling(): BillingDto
     {
         return $this->billing;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int,
      */
     public function getShippingLines(): array
     {
         return $this->shippingLines;
     }
 
+    /**
+     * @return bool
+     */
     public function hasExistingAwb(): bool
     {
         return $this->hasExistingAwb;
     }
 
+    /**
+     * @return bool
+     */
     public function hasParcels(): bool
     {
         return $this->hasParcels;

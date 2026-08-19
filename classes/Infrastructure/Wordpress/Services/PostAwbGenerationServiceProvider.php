@@ -33,6 +33,11 @@ final class PostAwbGenerationServiceProvider implements PostAwbGenerationService
 
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @param ?DbHandler $dbHandler
+     * @param ?OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater
+     * @param ?SamedayAwbRepository $samedayAwbRepository
+     */
     public function __construct(
         ?DbHandler $dbHandler = null,
         ?OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater = null,

@@ -26,7 +26,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

@@ -15,12 +15,18 @@ final class StartAllImport
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @param StartAllImportRequest $request
+     */
     public function __construct(StartAllImportRequest $request)
     {
         $this->userId = $request->getUserId();
         $this->bulkJobStore = $request->getBulkJobStore();
     }
 
+    /**
+     * @return StartAllImportResponse
+     */
     public function execute(): StartAllImportResponse
     {
         $itemIds = AllImportSteps::ids();
@@ -58,6 +64,9 @@ final class StartAllImport
         );
     }
 
+    /**
+     * @return string
+     */
     private function generateJobId(): string
     {
         $data = random_bytes(16);

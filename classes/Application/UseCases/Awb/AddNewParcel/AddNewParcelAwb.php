@@ -18,6 +18,9 @@ final class AddNewParcelAwb
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param AddNewParcelAwbRequest $addNewParcelAwbRequest
+     */
     public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
     {
         $this->awbItem = $addNewParcelAwbRequest->getAwbItem();
@@ -25,6 +28,9 @@ final class AddNewParcelAwb
         $this->courierServiceProvider = $addNewParcelAwbRequest->getCourierServiceProvider();
     }
 
+    /**
+     * @return AddNewParcelAwbResponse
+     */
     public function execute(): AddNewParcelAwbResponse
     {
         $orderId = $this->awbItem->getOrderId();

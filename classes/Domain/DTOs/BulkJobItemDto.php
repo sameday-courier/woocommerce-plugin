@@ -14,7 +14,8 @@ final class BulkJobItemDto
     private ?array $payload;
 
     /**
-     * @param array{status: string, message: string, ...}|null $payload
+     * @param int $itemId
+     * @param ?array $payload
      */
     public function __construct(int $itemId, ?array $payload = null)
     {
@@ -22,26 +23,34 @@ final class BulkJobItemDto
         $this->payload = $payload;
     }
 
+    /**
+     * @return int
+     */
     public function getItemId(): int
     {
         return $this->itemId;
     }
 
     /**
-     * @return array{status: string, message: string, ...}|null
+     * @return array{status:
      */
     public function getPayload(): ?array
     {
         return $this->payload;
     }
 
+    /**
+     * @return bool
+     */
     public function isProcessed(): bool
     {
         return null !== $this->payload;
     }
 
     /**
-     * @param array{status: string, message: string, ...} $payload
+     * @param array $payload
+     *
+     * @return self
      */
     public function withPayload(array $payload): self
     {
@@ -49,7 +58,7 @@ final class BulkJobItemDto
     }
 
     /**
-     * @return array{itemId: int, payload: array{status: string, message: string, ...}|null}
+     * @return array{itemId:
      */
     public function toArray(): array
     {
@@ -61,6 +70,11 @@ final class BulkJobItemDto
 
     /**
      * @param array<string, mixed> $data
+     */
+    /**
+     * @param array $data
+     *
+     * @return self
      */
     public static function fromArray(array $data): self
     {

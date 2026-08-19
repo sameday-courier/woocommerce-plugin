@@ -12,6 +12,10 @@ final class EditServiceRequest
 
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
+    /**
+     * @param EditServiceItem $editServiceItem
+     * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
     public function __construct(
         EditServiceItem $editServiceItem,
         ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
@@ -20,11 +24,17 @@ final class EditServiceRequest
         $this->serviceCatalogStore = $serviceCatalogStore;
     }
 
+    /**
+     * @return EditServiceItem
+     */
     public function getEditServiceItem(): EditServiceItem
     {
         return $this->editServiceItem;
     }
 
+    /**
+     * @return ServiceCatalogStoreServiceProviderInterface
+     */
     public function getServiceCatalogStore(): ServiceCatalogStoreServiceProviderInterface
     {
         return $this->serviceCatalogStore;

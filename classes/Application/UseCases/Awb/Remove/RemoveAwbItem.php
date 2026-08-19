@@ -26,6 +26,11 @@ final class RemoveAwbItem implements ItemInterface
      *
      * @return self
      */
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     public static function fromArray(array $inputParams): self
     {
         $orderId = (int) ($inputParams['order-id'] ?? null);

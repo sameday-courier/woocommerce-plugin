@@ -14,13 +14,16 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
 {
     private const ACTION = 'store_sameday_locker_in_session';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */

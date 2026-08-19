@@ -12,6 +12,10 @@ final class GetCitiesRequest
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param GetCitiesItem $getCitiesItem
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     */
     public function __construct(
         GetCitiesItem $getCitiesItem,
         CourierServiceProviderInterface $courierServiceProvider
@@ -20,11 +24,17 @@ final class GetCitiesRequest
         $this->courierServiceProvider = $courierServiceProvider;
     }
 
+    /**
+     * @return GetCitiesItem
+     */
     public function getGetCitiesItem(): GetCitiesItem
     {
         return $this->getCitiesItem;
     }
 
+    /**
+     * @return CourierServiceProviderInterface
+     */
     public function getCourierServiceProvider(): CourierServiceProviderInterface
     {
         return $this->courierServiceProvider;

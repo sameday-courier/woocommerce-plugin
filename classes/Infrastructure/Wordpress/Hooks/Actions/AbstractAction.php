@@ -17,7 +17,7 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
-     * @return array|null such as ['param1', 'param2', 'param3', ...]
+     * @return array|null
      */
     public function getParams(): ?array
     {

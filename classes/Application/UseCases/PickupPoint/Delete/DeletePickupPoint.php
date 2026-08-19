@@ -15,12 +15,18 @@ final class DeletePickupPoint
 
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @param DeletePickupPointRequest $deletePickupPointRequest
+     */
     public function __construct(DeletePickupPointRequest $deletePickupPointRequest)
     {
         $this->deletePickupPointItem = $deletePickupPointRequest->getDeletePickupPointItem();
         $this->courierServiceProvider = $deletePickupPointRequest->getCourierServiceProvider();
     }
 
+    /**
+     * @return DeletePickupPointResponse
+     */
     public function execute(): DeletePickupPointResponse
     {
         try {

@@ -13,6 +13,9 @@ class SamedayAwbRepository extends AbstractRepository
 {
     private const TABLE_NAME = 'sameday_awb';
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);
@@ -43,8 +46,7 @@ class SamedayAwbRepository extends AbstractRepository
      * @param array $awb
      *
      * @return void
-     *
-     * @throws RuntimeException When the AWB row could not be persisted.
+     * @throws RuntimeException
      */
     public function saveAwb(array $awb): void
     {
@@ -74,7 +76,7 @@ class SamedayAwbRepository extends AbstractRepository
 
     /**
      * @param int $orderId
-     * @param string $parcels Serialized parcels data
+     * @param string $parcels
      *
      * @return bool
      */

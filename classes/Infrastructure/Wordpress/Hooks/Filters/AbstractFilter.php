@@ -17,7 +17,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @return array|null such as ['param1', 'param2', 'param3', ...]
+     * @return array|null
      */
     public function getParams(): ?array
     {

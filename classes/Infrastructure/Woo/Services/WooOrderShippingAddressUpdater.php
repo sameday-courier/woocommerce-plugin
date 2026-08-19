@@ -79,7 +79,6 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      * @param int $orderId
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function activateOutOfHome(int $orderId): void
@@ -125,7 +124,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     /**
      * @param int $orderId
      *
-     * @return array<string, string>|null
+     * @return array<string,
      */
     private function resolveLockerFields(int $orderId): ?array
     {
@@ -159,7 +158,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
 
     /**
      * @param int $orderId
-     * @param array<string, string> $lockerFields
+     * @param array $lockerFields
      *
      * @return void
      */

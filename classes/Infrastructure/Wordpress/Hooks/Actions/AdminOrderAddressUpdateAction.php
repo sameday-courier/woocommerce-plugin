@@ -39,7 +39,7 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
@@ -68,7 +68,7 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
     }
 
     /**
-     * @param array<string, mixed> $changes
+     * @param array $changes
      *
      * @return bool
      */

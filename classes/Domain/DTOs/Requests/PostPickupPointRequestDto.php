@@ -29,7 +29,11 @@ final class PostPickupPointRequestDto
      * @param mixed $countryId
      * @param mixed $countyId
      * @param mixed $cityId
-     * @param array<int, array{name: string, phone: string, default?: bool}> $contactPersons
+     * @param string $address
+     * @param string $postalCode
+     * @param string $alias
+     * @param array $contactPersons
+     * @param bool $defaultPickupPoint
      */
     public function __construct(
         $countryId,
@@ -84,29 +88,41 @@ final class PostPickupPointRequestDto
         return $this->cityId;
     }
 
+    /**
+     * @return string
+     */
     public function getAddress(): string
     {
         return $this->address;
     }
 
+    /**
+     * @return string
+     */
     public function getPostalCode(): string
     {
         return $this->postalCode;
     }
 
+    /**
+     * @return string
+     */
     public function getAlias(): string
     {
         return $this->alias;
     }
 
     /**
-     * @return array<int, array{name: string, phone: string, default: bool}>
+     * @return array<int,
      */
     public function getContactPersons(): array
     {
         return $this->contactPersons;
     }
 
+    /**
+     * @return bool
+     */
     public function isDefaultPickupPoint(): bool
     {
         return $this->defaultPickupPoint;

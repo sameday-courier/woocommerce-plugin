@@ -14,6 +14,11 @@ class AwbHistoryTable
      *
      * @return string
      */
+    /**
+     * @param mixed $packages
+     *
+     * @return string
+     */
     public static function addAwbHistoryTable($packages): string
     {
         $return = '';

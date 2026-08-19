@@ -18,12 +18,18 @@ final class RefreshService
 
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
+    /**
+     * @param RefreshServiceRequest $refreshServiceRequest
+     */
     public function __construct(RefreshServiceRequest $refreshServiceRequest)
     {
         $this->courierServiceProvider = $refreshServiceRequest->getCourierServiceProvider();
         $this->serviceCatalogStore = $refreshServiceRequest->getServiceCatalogStore();
     }
 
+    /**
+     * @return RefreshServiceResponse
+     */
     public function execute(): RefreshServiceResponse
     {
         $remoteServices = [];
@@ -55,6 +61,11 @@ final class RefreshService
         } while ($page <= $services->getPages());
 
         $localServices = array_map(
+            /**
+             * @param CarrierService $service
+             *
+             * @return array
+             */
             static function (CarrierService $service): array {
                 return [
                     'id' => $service->getId(),

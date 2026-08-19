@@ -28,7 +28,7 @@ final class ShowLockerFieldAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

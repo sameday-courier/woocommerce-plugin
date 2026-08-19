@@ -13,6 +13,11 @@ final class InputSanitizer
      *
      * @return array
      */
+    /**
+     * @param array $inputs
+     *
+     * @return array
+     */
     public static function sanitizeInputs(array $inputs): array
     {
         $data = [];
@@ -40,6 +45,11 @@ final class InputSanitizer
      *
      * @throws JsonException
      */
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
     public static function sanitizeData(array $data): string
     {
         if (!empty($data)) {
@@ -51,6 +61,11 @@ final class InputSanitizer
         return json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
+    /**
+     * @param string $input
+     *
+     * @return string
+     */
     /**
      * @param string $input
      *

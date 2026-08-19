@@ -22,6 +22,11 @@ final class CitySourceServiceProvider implements CitySourceProviderInterface
         }
 
         return array_map(
+            /**
+             * @param stdClass $city
+             *
+             * @return CitySourceDto
+             */
             static function (stdClass $city): CitySourceDto {
                 return new CitySourceDto(
                     (int) $city->city_id,

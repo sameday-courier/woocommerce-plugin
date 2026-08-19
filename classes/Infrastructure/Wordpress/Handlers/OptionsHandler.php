@@ -12,6 +12,12 @@ final class OptionsHandler
      *
      * @return mixed
      */
+    /**
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
     public static function getOption(string $key, $default = false)
     {
         return get_option($key, $default);
@@ -23,11 +29,22 @@ final class OptionsHandler
      *
      * @return void
      */
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return void
+     */
     public static function setOption(string $key, $value): void
     {
         update_option($key, $value);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return void
+     */
     /**
      * @param string $key
      *

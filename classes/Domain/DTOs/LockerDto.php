@@ -23,6 +23,15 @@ final class LockerDto
 
     private ?string $postalCode;
 
+    /**
+     * @param ?int $lockerId
+     * @param ?string $oohType
+     * @param ?string $name
+     * @param ?string $county
+     * @param ?string $city
+     * @param ?string $address
+     * @param ?string $postalCode
+     */
     public function __construct(
         ?int $lockerId = null,
         ?string $oohType = null,
@@ -44,6 +53,11 @@ final class LockerDto
     /**
      * @param array<string, mixed> $data
      */
+    /**
+     * @param array $data
+     *
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -61,6 +75,11 @@ final class LockerDto
         );
     }
 
+    /**
+     * @param CarrierLocker $locker
+     *
+     * @return self
+     */
     public static function fromSamedayLocker(CarrierLocker $locker): self
     {
         $lockerId = $locker->getLockerId();
@@ -76,43 +95,64 @@ final class LockerDto
         );
     }
 
+    /**
+     * @return ?int
+     */
     public function getLockerId(): ?int
     {
         return $this->lockerId;
     }
 
+    /**
+     * @return ?string
+     */
     public function getOohType(): ?string
     {
         return $this->oohType;
     }
 
+    /**
+     * @return ?string
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCounty(): ?string
     {
         return $this->county;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
+    /**
+     * @return ?string
+     */
     public function getAddress(): ?string
     {
         return $this->address;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
     /**
-     * @return array<string, int|string|null>
+     * @return array<string,
      */
     public function toArray(): array
     {

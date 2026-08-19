@@ -20,6 +20,9 @@ final class LockerDtoFactory
 
     private SamedayLockerRepository $samedayLockerRepository;
 
+    /**
+     * @param ?SamedayLockerRepository $samedayLockerRepository
+     */
     public function __construct(
         ?SamedayLockerRepository $samedayLockerRepository = null
     ) {
@@ -27,7 +30,9 @@ final class LockerDtoFactory
     }
 
     /**
-     * @param mixed $raw JSON string, array (map), or locker id (dropdown)
+     * @param mixed $raw
+     *
+     * @return ?LockerDto
      */
     public function fromInput($raw): ?LockerDto
     {
@@ -74,7 +79,9 @@ final class LockerDtoFactory
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
+     *
+     * @return ?LockerDto
      */
     private function fromPayload(array $data): ?LockerDto
     {
@@ -90,7 +97,9 @@ final class LockerDtoFactory
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
+     *
+     * @return bool
      */
     private function hasRequiredPayloadFields(array $data): bool
     {
@@ -103,6 +112,11 @@ final class LockerDtoFactory
         return true;
     }
 
+    /**
+     * @param LockerDto $locker
+     *
+     * @return bool
+     */
     private function isComplete(LockerDto $locker): bool
     {
         return null !== $locker->getLockerId()

@@ -57,6 +57,9 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
+    /**
+     * @return void
+     */
     public static function enqueueAdmin(): void
     {
         if (!is_admin()) {
@@ -79,6 +82,9 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
+    /**
+     * @return void
+     */
     public static function enqueueFrontend(): void
     {
         foreach (self::getStyles() as $handle => $style) {
@@ -94,6 +100,9 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         }
     }
 
+    /**
+     * @return array
+     */
     /**
      * @return array
      */
@@ -151,6 +160,12 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return array
      */
+    /**
+     * @param string $fileName
+     * @param string $context
+     *
+     * @return array
+     */
     private static function addStyleSheet(string $fileName, string $context): array
     {
         if (!isset(self::WP_CONTEXT[$context])) {
@@ -174,6 +189,11 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
+    /**
+     * @param string $context
+     *
+     * @return string
+     */
     private static function getContextGroup(string $context): string
     {
         switch ($context) {
@@ -185,6 +205,11 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         }
     }
 
+    /**
+     * @param string $context
+     *
+     * @return bool
+     */
     /**
      * @param string $context
      *
@@ -222,6 +247,12 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return void
      */
+    /**
+     * @param string $handle
+     * @param string $relativePath
+     *
+     * @return void
+     */
     private static function enqueue(string $handle, string $relativePath): void
     {
         wp_enqueue_style(
@@ -237,11 +268,21 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
+    /**
+     * @param string $relativePath
+     *
+     * @return string
+     */
     private static function getStyleUrl(string $relativePath): string
     {
         return plugins_url($relativePath, (new WooHandler())->getPluginMainFile());
     }
 
+    /**
+     * @param string $relativePath
+     *
+     * @return string
+     */
     /**
      * @param string $relativePath
      *

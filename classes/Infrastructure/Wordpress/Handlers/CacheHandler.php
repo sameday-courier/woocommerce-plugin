@@ -23,7 +23,8 @@ final class CacheHandler implements CacheHandlerInterface
     /**
      * @param string $key
      * @param array $data
-     * @param int $timeToLiveInSeconds lifetime in second. 0 = lifetime
+     * @param int $timeToLiveInSeconds
+     *
      * @return void
      */
     public function refreshCachedData(string $key, array $data, int $timeToLiveInSeconds = 0): void

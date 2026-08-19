@@ -34,7 +34,7 @@ final class PostOrderPlacementAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

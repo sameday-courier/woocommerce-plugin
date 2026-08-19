@@ -27,7 +27,10 @@ class PickupPoints extends WP_List_Table
      */
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
-    /** Class constructor */
+    /**
+     * Class constructor
+     *
+     */
     public function __construct()
     {
         parent::__construct(
@@ -68,7 +71,11 @@ class PickupPoints extends WP_List_Table
         'search_contactPersons' => 'contactPersons',
     ];
 
-    /** Text displayed when no pickup-points data is available */
+    /**
+     * Text displayed when no pickup-points data is available
+     *
+     * @return void
+     */
     public function no_items(): void
     {
         echo TranslatorHandler::translate('No pickup-points available.');
@@ -82,7 +89,7 @@ class PickupPoints extends WP_List_Table
      *
      * @return mixed
      */
-    public function column_default($item, $column_name)
+    public function column_default(array $item, string $column_name)
     {
         switch ($column_name) {
             case 'contactPersons':
@@ -102,7 +109,7 @@ class PickupPoints extends WP_List_Table
     }
 
     /**
-     * @param $contactPersons
+     * @param mixed $contactPersons
      *
      * @return string
      */
@@ -117,7 +124,7 @@ class PickupPoints extends WP_List_Table
     }
 
     /**
-     *  Associative array of columns
+     * Associative array of columns
      *
      * @return array
      */
@@ -148,6 +155,9 @@ class PickupPoints extends WP_List_Table
         );
     }
 
+    /**
+     * @return void
+     */
     public function prepare_items(): void
     {
         $this->_column_headers = $this->get_column_info();
@@ -194,9 +204,9 @@ class PickupPoints extends WP_List_Table
     }
 
     /**
-     * @param array<string, string> $searchParams
+     * @param array $searchParams
      *
-     * @return array{0: array<string, string>, 1: array<string, int>}
+     * @return array{0:
      */
     private function buildSearchFilters(array $searchParams): array
     {
@@ -220,6 +230,9 @@ class PickupPoints extends WP_List_Table
         return [$likeFilters, $exactFilters];
     }
 
+    /**
+     * @return array
+     */
     public function get_search_params(): array
     {
         return [
@@ -235,6 +248,9 @@ class PickupPoints extends WP_List_Table
         ];
     }
 
+    /**
+     * @return void
+     */
     public function render_request_preservation_fields(): void
     {
         $searchParams = $this->get_search_params();
@@ -258,6 +274,9 @@ class PickupPoints extends WP_List_Table
         }
     }
 
+    /**
+     * @return array
+     */
     protected function get_views(): array
     {
         $searchParams = $this->get_search_params();
@@ -282,6 +301,11 @@ class PickupPoints extends WP_List_Table
         ]);
     }
 
+    /**
+     * @param mixed $which
+     *
+     * @return void
+     */
     protected function extra_tablenav($which): void
     {
         if ('top' !== $which) {
@@ -330,13 +354,18 @@ class PickupPoints extends WP_List_Table
         <?php
     }
 
+    /**
+     * @return bool
+     */
     private function has_active_filters(): bool
     {
         return (bool) array_filter($this->get_search_params());
     }
 
     /**
-     * @param array<string, string> $overrides
+     * @param array $overrides
+     *
+     * @return string
      */
     private function get_filter_url(array $overrides = []): string
     {

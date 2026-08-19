@@ -17,11 +17,19 @@ class AddNewPickupPointController extends AbstractController
 {
     private const ACTION = 'send_pickup_point';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {

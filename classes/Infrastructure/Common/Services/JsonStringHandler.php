@@ -11,6 +11,11 @@ final class JsonStringHandler
      *
      * @return string
      */
+    /**
+     * @param string $jsonString
+     *
+     * @return string
+     */
     public static function fixJson(string $jsonString): string
     {
         $pattern = '/(":\s*")([^"]*(?:"[^"]*)*?)("(?=\s*[,}\]]))/';

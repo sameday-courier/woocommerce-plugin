@@ -53,6 +53,17 @@ final class AddNewPickupPointItem implements ItemInterface
      */
     private bool $isDefault;
 
+    /**
+     * @param string $pickupPointCountryId
+     * @param string $pickupPointCountyId
+     * @param string $pickupPointCityId
+     * @param string $pickupPointAddress
+     * @param string $pickupPointPostalCode
+     * @param string $pickupPointAlias
+     * @param string $pickupPointContactPersonName
+     * @param string $pickupPointContactPersonPhone
+     * @param bool $isDefault
+     */
     public function __construct(
         string $pickupPointCountryId,
         string $pickupPointCountyId,
@@ -75,6 +86,11 @@ final class AddNewPickupPointItem implements ItemInterface
         $this->isDefault = $isDefault;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return self
+     */
     /**
      * @param array $inputParams
      *

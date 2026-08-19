@@ -21,6 +21,9 @@ final class ShowHistoryAwb
 
     private PackageHistoryStoreServiceProviderInterface $packageHistoryStore;
 
+    /**
+     * @param ShowHistoryAwbRequest $showHistoryAwbRequest
+     */
     public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
     {
         $this->showHistoryAwbItem = $showHistoryAwbRequest->getShowHistoryAwbItem();
@@ -29,6 +32,9 @@ final class ShowHistoryAwb
         $this->packageHistoryStore = $showHistoryAwbRequest->getPackageHistoryStore();
     }
 
+    /**
+     * @return ShowHistoryAwbResponse
+     */
     public function execute(): ShowHistoryAwbResponse
     {
         $orderId = $this->showHistoryAwbItem->getOrderId();

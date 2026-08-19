@@ -18,6 +18,9 @@ final class CarrierAwbPaymentTypes
     /**
      * @return array<int, string>
      */
+    /**
+     * @return array
+     */
     public static function getLabelKeys(): array
     {
         return self::LABEL_KEYS;

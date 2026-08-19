@@ -8,11 +8,17 @@ final class GetPickupPointsRequestDto
 {
     private int $page;
 
+    /**
+     * @param int $page
+     */
     public function __construct(int $page = 1)
     {
         $this->page = $page;
     }
 
+    /**
+     * @return int
+     */
     public function getPage(): int
     {
         return $this->page;

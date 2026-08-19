@@ -28,6 +28,7 @@ class Services extends WP_List_Table
 
     /**
      * Class constructor
+     *
      */
     public function __construct()
     {
@@ -86,6 +87,9 @@ class Services extends WP_List_Table
         return $services;
     }
 
+    /**
+     * @return int
+     */
     private function getServicesCount(): int
     {
         $query = GridQueryBuilder::buildCount(
@@ -111,6 +115,8 @@ class Services extends WP_List_Table
 
     /**
      * Text displayed when no service data is available
+     *
+     * @return void
      */
     public function no_items(): void
     {
@@ -125,7 +131,7 @@ class Services extends WP_List_Table
      *
      * @return mixed
      */
-    public function column_default($item, $column_name)
+    public function column_default(array $item, string $column_name)
     {
         if ("status" === $column_name) {
             return $this->getListOfStatuses()[$item[$column_name]];
@@ -148,6 +154,11 @@ class Services extends WP_List_Table
         return $item[$column_name];
     }
 
+    /**
+     * @param mixed $item
+     *
+     * @return string
+     */
     public function column_edit($item): string
     {
         $actions = array(
@@ -165,7 +176,7 @@ class Services extends WP_List_Table
     }
 
     /**
-     *  Associative array of columns
+     * Associative array of columns
      *
      * @return array
      */
@@ -196,6 +207,8 @@ class Services extends WP_List_Table
 
     /**
      * Handles data query and filter, sorting, and pagination.
+     *
+     * @return void
      */
     public function prepare_items(): void
     {

@@ -6,6 +6,8 @@ namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
 final class PostPickupPointResponseDto
 {
+    /**
+     */
     public function __construct()
     {
     }

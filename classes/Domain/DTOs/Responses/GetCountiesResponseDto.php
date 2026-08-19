@@ -12,7 +12,7 @@ final class GetCountiesResponseDto
     private array $counties;
 
     /**
-     * @param array<int, array{id: int, name: string}> $counties
+     * @param array $counties
      */
     public function __construct(array $counties)
     {
@@ -20,7 +20,7 @@ final class GetCountiesResponseDto
     }
 
     /**
-     * @return array<int, array{id: int, name: string}>
+     * @return array<int,
      */
     public function getCounties(): array
     {

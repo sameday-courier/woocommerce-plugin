@@ -32,6 +32,15 @@ final class GenerateAwbItemFactory
 
     private LockerDtoFactory $lockerDtoFactory;
 
+    /**
+     * @param GenerateAwbOrderProviderInterface $orderProvider
+     * @param OrderWeightCalculatorInterface $orderWeightCalculator
+     * @param OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler
+     * @param SamedayPickupPointRepository $samedayPickupPointRepository
+     * @param SamedayServiceRepository $samedayServiceRepository
+     * @param CarrierServiceRules $carrierServiceRules
+     * @param ?LockerDtoFactory $lockerDtoFactory
+     */
     public function __construct(
         GenerateAwbOrderProviderInterface $orderProvider,
         OrderWeightCalculatorInterface $orderWeightCalculator,
@@ -53,6 +62,9 @@ final class GenerateAwbItemFactory
     /**
      * Builds a GenerateAwbItem from order defaults (bulk flow).
      *
+     * @param int $orderId
+     *
+     * @return GenerateAwbItem
      * @throws InvalidArgumentException
      */
     public function fromOrderId(int $orderId): GenerateAwbItem
@@ -114,7 +126,10 @@ final class GenerateAwbItemFactory
     }
 
     /**
+     * @param ?string $serviceCode
      * @param mixed $locker
+     *
+     * @return ?int
      */
     private function resolveServiceId(?string $serviceCode, $locker): ?int
     {

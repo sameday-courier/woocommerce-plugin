@@ -15,12 +15,18 @@ final class StartBulkRemoveAwb
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @param StartBulkRemoveAwbRequest $request
+     */
     public function __construct(StartBulkRemoveAwbRequest $request)
     {
         $this->startBulkRemoveAwbItem = $request->getStartBulkRemoveAwbItem();
         $this->bulkJobStore = $request->getBulkJobStore();
     }
 
+    /**
+     * @return StartBulkRemoveAwbResponse
+     */
     public function execute(): StartBulkRemoveAwbResponse
     {
         $orderIds = $this->startBulkRemoveAwbItem->getOrderIds();
@@ -58,6 +64,9 @@ final class StartBulkRemoveAwb
         );
     }
 
+    /**
+     * @return string
+     */
     private function generateJobId(): string
     {
         $data = random_bytes(16);
