@@ -16,9 +16,12 @@ class AwbHistoryTable
      */
     public static function addAwbHistoryTable($packages): string
     {
-        return HtmlHandler::buildHtml('awb-history-table', [
-            'packages' => self::normalizePackages($packages),
-        ]);
+        return HtmlHandler::buildHtml(
+            'awb-history-table',
+            [
+                'packages' => self::normalizePackages($packages),
+            ]
+        );
     }
 
     /**
