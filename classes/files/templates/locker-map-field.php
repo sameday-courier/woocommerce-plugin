@@ -29,6 +29,6 @@ $t = static function (string $text): string {
 <?php if (null !== $shipTo) : ?>
     <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
         <td><strong><?php echo $t('Ship to'); ?></strong></td>
-        <th><span id="showLockerDetails"><?php echo wp_kses_post($shipTo); ?></span></th>
+        <th><span id="showLockerDetails"><?php echo $shipTo; ?></span></th>
     </tr>
 <?php endif; ?>

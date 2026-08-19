@@ -101,7 +101,7 @@ final class SamedayCourier extends WC_Shipping_Method
      *
      * @param int $instance_id
      */
-    public function __construct(int $instance_id = 0)
+    public function __construct($instance_id = 0)
     {
         parent::__construct($instance_id);
 
@@ -588,7 +588,7 @@ final class SamedayCourier extends WC_Shipping_Method
     /**
      * @return void
      */
-    public function process_admin_options(): void
+    public function process_admin_options()
     {
         $post_data = $this->get_post_data();
 

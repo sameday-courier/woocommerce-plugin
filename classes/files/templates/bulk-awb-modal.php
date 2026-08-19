@@ -34,28 +34,28 @@ declare(strict_types=1);
  * @var string $reportSubtitle
  */
 ?>
-<a id="<?php echo esc_attr($buttonId); ?>"
+<a id="<?php echo $buttonId; ?>"
    href="#"
    class="page-title-action sameday_button"
    style="display:none;"
    role="button"
-   data-sameday-bulk-awb-open="<?php echo esc_attr($modalId); ?>"><?php echo $buttonIconHtml; ?><?php echo $buttonLabel; ?></a>
-<div id="<?php echo esc_attr($modalId); ?>"
+   data-sameday-bulk-awb-open="<?php echo $modalId; ?>"><?php echo $buttonIconHtml; ?><?php echo $buttonLabel; ?></a>
+<div id="<?php echo $modalId; ?>"
      class="sameday-bulk-awb-modal"
      hidden
      data-sameday-bulk-awb-modal
-     data-sameday-bulk-awb-mode="<?php echo esc_attr($mode); ?>"
-     data-progress-title="<?php echo esc_attr($progressTitle); ?>"
-     data-starting-title="<?php echo esc_attr($startingTitle); ?>"
-     data-report-title="<?php echo esc_attr($reportTitle); ?>"
-     data-report-subtitle="<?php echo esc_attr($reportSubtitle); ?>"
-     data-confirm-title="<?php echo esc_attr($title); ?>"
-     data-confirm-subtitle="<?php echo esc_attr($subtitle); ?>">
+     data-sameday-bulk-awb-mode="<?php echo $mode; ?>"
+     data-progress-title="<?php echo $progressTitle; ?>"
+     data-starting-title="<?php echo $startingTitle; ?>"
+     data-report-title="<?php echo $reportTitle; ?>"
+     data-report-subtitle="<?php echo $reportSubtitle; ?>"
+     data-confirm-title="<?php echo $title; ?>"
+     data-confirm-subtitle="<?php echo $subtitle; ?>">
     <div class="sameday-bulk-awb-modal__backdrop" data-sameday-bulk-awb-close></div>
     <div class="sameday-bulk-awb-modal__dialog"
          role="dialog"
          aria-modal="true"
-         aria-labelledby="<?php echo esc_attr($modalId); ?>-title">
+         aria-labelledby="<?php echo $modalId; ?>-title">
         <div class="sameday-bulk-awb-modal__header">
             <div class="sameday-bulk-awb-modal__heading">
                 <div class="sameday-bulk-awb-modal__icon"
@@ -64,14 +64,14 @@ declare(strict_types=1);
                     <?php echo $headerIconHtml; ?>
                 </div>
                 <div class="sameday-bulk-awb-modal__titles">
-                    <h2 id="<?php echo esc_attr($modalId); ?>-title" data-sameday-bulk-awb-title><?php echo $title; ?></h2>
+                    <h2 id="<?php echo $modalId; ?>-title" data-sameday-bulk-awb-title><?php echo $title; ?></h2>
                     <p data-sameday-bulk-awb-subtitle><?php echo $subtitle; ?></p>
                 </div>
             </div>
             <button type="button"
                     class="sameday-bulk-awb-modal__close"
                     data-sameday-bulk-awb-close
-                    aria-label="<?php echo esc_attr($cancel); ?>">
+                    aria-label="<?php echo $cancel; ?>">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>

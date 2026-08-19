@@ -29,7 +29,7 @@ $t = static function (string $text): string {
             <input type="hidden"
                    name="samedaycourier-service-id"
                    value="<?php echo esc_attr((string) $serviceId); ?>">
-            <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+            <input type="hidden" name="_wpnonce" value="<?php echo $nonce; ?>">
             <tr valign="top">
                 <th scope="row" class="titledesc">
                     <label for="samedaycourier-service-name">
@@ -88,7 +88,7 @@ $t = static function (string $text): string {
                         <?php foreach ($statuses as $status) : ?>
                             <option value="<?php echo esc_attr((string) $status['value']); ?>"
                                 <?php echo $status['selected'] ? 'selected' : ''; ?>>
-                                <?php echo esc_html($status['text']); ?>
+                                <?php echo (string) $status['text']; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

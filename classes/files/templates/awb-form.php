@@ -39,7 +39,7 @@ $t = static function (string $text): string {
  * @var bool $openPackage
  */
 ?>
-<div id="<?php echo esc_attr($modalId); ?>"
+<div id="<?php echo $modalId; ?>"
      class="sameday-bulk-awb-modal sameday-generate-awb-modal"
      hidden
      data-sameday-generate-awb-modal>
@@ -47,14 +47,14 @@ $t = static function (string $text): string {
     <div class="sameday-bulk-awb-modal__dialog"
          role="dialog"
          aria-modal="true"
-         aria-labelledby="<?php echo esc_attr($modalId); ?>-title">
+         aria-labelledby="<?php echo $modalId; ?>-title">
         <div class="sameday-bulk-awb-modal__header">
             <div class="sameday-bulk-awb-modal__heading">
                 <div class="sameday-bulk-awb-modal__icon" aria-hidden="true">
                     <?php echo $iconHtml; ?>
                 </div>
                 <div class="sameday-bulk-awb-modal__titles">
-                    <h2 id="<?php echo esc_attr($modalId); ?>-title"><?php echo $t('Generate awb'); ?></h2>
+                    <h2 id="<?php echo $modalId; ?>-title"><?php echo $t('Generate awb'); ?></h2>
                     <p><?php echo $t('Configure shipment details before generating the AWB.'); ?></p>
                 </div>
             </div>
@@ -133,7 +133,7 @@ $t = static function (string $text): string {
                                        min="0"
                                        step="0.1"
                                        id="sameday-package-weight"
-                                       value="<?php echo esc_attr($calculatedWeightLabel); ?>">
+                                       value="<?php echo $calculatedWeightLabel; ?>">
                             </td>
                             <td>
                                 <button type="button" class="sameday_admin_button" id="addParcelButton">+</button>
@@ -221,7 +221,7 @@ $t = static function (string $text): string {
                                         id="samedaycourier-package-type">
                                     <?php foreach ($packageTypes as $packageType) : ?>
                                         <option value="<?php echo esc_attr((string) $packageType['value']); ?>">
-                                            <?php echo esc_html((string) $packageType['name']); ?>
+                                            <?php echo (string) $packageType['name']; ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -240,7 +240,7 @@ $t = static function (string $text): string {
                                         id="samedaycourier-package-awb-payment">
                                     <?php foreach ($awbPaymentTypes as $awbPaymentType) : ?>
                                         <option value="<?php echo esc_attr((string) $awbPaymentType['value']); ?>">
-                                            <?php echo esc_html((string) $awbPaymentType['name']); ?>
+                                            <?php echo (string) $awbPaymentType['name']; ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -258,8 +258,8 @@ $t = static function (string $text): string {
                                         name="samedaycourier-service"
                                         id="samedaycourier-service">
                                     <?php foreach ($services as $service) : ?>
-                                        <option data-fistMile="<?php echo esc_attr($service['firstMile']); ?>"
-                                                data-lastMile="<?php echo esc_attr($service['lastMile']); ?>"
+                                        <option data-fistMile="<?php echo $service['firstMile']; ?>"
+                                                data-lastMile="<?php echo $service['lastMile']; ?>"
                                                 value="<?php echo esc_attr((string) $service['id']); ?>"
                                             <?php selected($service['selected'], true); ?>>
                                             <?php echo esc_html((string) $service['name']); ?>
@@ -272,7 +272,7 @@ $t = static function (string $text): string {
                                        id="samedaycourier-service-optional-tax-id">
                             </td>
                         </tr>
-                        <tr id="LockerFirstMile" class="<?php echo esc_attr($allowFirstMile); ?>">
+                        <tr id="LockerFirstMile" class="<?php echo $allowFirstMile; ?>">
                             <th scope="row" class="titledesc">
                                 <label for="samedaycourier-locker_first_mile">
                                     <?php echo $t('Personal delivery at locker'); ?>
@@ -308,7 +308,7 @@ $t = static function (string $text): string {
                             </td>
                         </tr>
                         <tr id="LockerLastMile"
-                            class="<?php echo esc_attr($allowLastMile); ?>"
+                            class="<?php echo $allowLastMile; ?>"
                             style="vertical-align: middle;">
                             <th scope="row" class="titledesc">
                                 <label for="samedaycourier-locker-details">

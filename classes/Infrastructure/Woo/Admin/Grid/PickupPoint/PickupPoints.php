@@ -9,6 +9,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\GridQueryBuilder;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
@@ -17,6 +18,10 @@ use WP_List_Table;
 
 class PickupPoints extends WP_List_Table
 {
+    public const PAGE_SLUG = 'sameday_pickup_points';
+
+    public const PARENT_POST_TYPE = 'page';
+
     /**
      * @var DbHandlerInterface $dbHandler
      */
@@ -76,7 +81,7 @@ class PickupPoints extends WP_List_Table
      *
      * @return void
      */
-    public function no_items(): void
+    public function no_items()
     {
         echo TranslatorHandler::translate('No pickup-points available.');
     }
@@ -84,12 +89,12 @@ class PickupPoints extends WP_List_Table
     /**
      * Render a column when no column specific method exist.
      *
-     * @param array $item
-     * @param string $column_name
+     * @param mixed $item
+     * @param mixed $column_name
      *
      * @return mixed
      */
-    public function column_default(array $item, string $column_name)
+    public function column_default($item, $column_name)
     {
         switch ($column_name) {
             case 'contactPersons':
@@ -128,7 +133,7 @@ class PickupPoints extends WP_List_Table
      *
      * @return array
      */
-    public function get_columns(): array
+    public function get_columns()
     {
         return [
             'sameday_id' => TranslatorHandler::translate('Sameday ID'),
@@ -147,7 +152,7 @@ class PickupPoints extends WP_List_Table
      *
      * @return array
      */
-    public function get_sortable_columns(): array
+    public function get_sortable_columns()
     {
         return array(
             'sameday_id' => array('sameday_id', true),
@@ -158,7 +163,7 @@ class PickupPoints extends WP_List_Table
     /**
      * @return void
      */
-    public function prepare_items(): void
+    public function prepare_items()
     {
         $this->_column_headers = $this->get_column_info();
 
@@ -277,7 +282,7 @@ class PickupPoints extends WP_List_Table
     /**
      * @return array
      */
-    protected function get_views(): array
+    protected function get_views()
     {
         $searchParams = $this->get_search_params();
         $currentDefault = $searchParams['search_default_pickup_point'];
@@ -306,7 +311,7 @@ class PickupPoints extends WP_List_Table
      *
      * @return void
      */
-    protected function extra_tablenav($which): void
+    protected function extra_tablenav($which)
     {
         if ('top' !== $which) {
             return;
@@ -324,15 +329,15 @@ class PickupPoints extends WP_List_Table
         ?>
         <div class="alignleft actions">
             <?php foreach ($textFilters as $name => $label) : ?>
-                <label class="screen-reader-text" for="<?php echo esc_attr($name); ?>">
-                    <?php echo esc_html($label); ?>
+                <label class="screen-reader-text" for="<?php echo $name; ?>">
+                    <?php echo $label; ?>
                 </label>
                 <input
                     type="search"
-                    id="<?php echo esc_attr($name); ?>"
-                    name="<?php echo esc_attr($name); ?>"
+                    id="<?php echo $name; ?>"
+                    name="<?php echo $name; ?>"
                     value="<?php echo esc_attr($searchParams[$name]); ?>"
-                    placeholder="<?php echo esc_attr($label); ?>"
+                    placeholder="<?php echo $label; ?>"
                 />
             <?php endforeach; ?>
 
@@ -345,7 +350,7 @@ class PickupPoints extends WP_List_Table
             ); ?>
 
             <?php if ($this->has_active_filters()) : ?>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=' . RequestSanitizer::getPageSlug())); ?>"
+                <a href="<?php echo esc_url($this->get_admin_page_url()); ?>"
                    class="button">
                     <?php esc_html_e('Reset', CarrierConstants::TEXT_DOMAIN); ?>
                 </a>
@@ -369,7 +374,7 @@ class PickupPoints extends WP_List_Table
      */
     private function get_filter_url(array $overrides = []): string
     {
-        $args = ['page' => RequestSanitizer::getPageSlug()];
+        $args = [];
 
         foreach ($this->get_search_params() as $key => $value) {
             if ('' !== $value) {
@@ -397,7 +402,26 @@ class PickupPoints extends WP_List_Table
             $args['order'] = $order;
         }
 
-        return add_query_arg($args, admin_url('admin.php'));
+        return $this->get_admin_page_url($args);
+    }
+
+    /**
+     * @param array $queryArgs
+     *
+     * @return string
+     */
+    private function get_admin_page_url(array $queryArgs = []): string
+    {
+        return UrlsHandler::build(
+            'edit.php',
+            array_merge(
+                [
+                    'post_type' => self::PARENT_POST_TYPE,
+                    'page' => self::PAGE_SLUG,
+                ],
+                $queryArgs
+            )
+        );
     }
 }
 

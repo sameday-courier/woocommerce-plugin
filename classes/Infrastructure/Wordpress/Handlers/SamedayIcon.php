@@ -72,8 +72,8 @@ final class SamedayIcon
 
         return sprintf(
             '<img class="%1$s" src="%2$s" alt="" width="%3$d" height="%3$d" decoding="async" />',
-            esc_attr($className),
-            esc_attr($dataUri),
+            $className,
+            $dataUri,
             max(1, $size)
         );
     }

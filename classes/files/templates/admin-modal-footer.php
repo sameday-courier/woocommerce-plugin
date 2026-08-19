@@ -12,12 +12,12 @@ declare(strict_types=1);
 <button type="button"
         class="sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--cancel"
         data-sameday-modal-close>
-    <?php echo esc_html($cancelLabel); ?>
+    <?php echo $cancelLabel; ?>
 </button>
 <?php if (null !== $confirmLabel && '' !== $confirmLabel) : ?>
-    <button type="<?php echo esc_attr($confirmType); ?>"
-            <?php echo '' !== $confirmFormId ? 'form="' . esc_attr($confirmFormId) . '"' : ''; ?>
+    <button type="<?php echo $confirmType; ?>"
+            <?php echo '' !== $confirmFormId ? 'form="' . $confirmFormId . '"' : ''; ?>
             class="sameday_button sameday-bulk-awb-modal__btn sameday-bulk-awb-modal__btn--confirm">
-        <?php echo esc_html((string) $confirmLabel); ?>
+        <?php echo (string) $confirmLabel; ?>
     </button>
 <?php endif; ?>

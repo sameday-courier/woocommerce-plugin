@@ -70,7 +70,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                    role="button"
                    data-sameday-generate-awb-open="%s"> %s </a>
             </p>',
-            esc_attr(AwbForm::MODAL_ID),
+            AwbForm::MODAL_ID,
             TranslatorHandler::translate('Generate awb')
         );
 
@@ -90,9 +90,9 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                         formtarget="_blank"
                         class="sameday_admin_button button-samll">%s </button>
             </p>',
-            esc_attr(NewParcelForm::MODAL_ID),
+            NewParcelForm::MODAL_ID,
             TranslatorHandler::translate('Add new parcel'),
-            esc_attr(self::HISTORY_MODAL_ID),
+            self::HISTORY_MODAL_ID,
             TranslatorHandler::translate('Awb history'),
             esc_attr((string) $order->get_id()),
             TranslatorHandler::translate('Show as pdf')

@@ -17,16 +17,19 @@ $t = static function (string $text): string {
 ?>
 <form id="sameday-pickup-point-form" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="send_pickup_point">
-    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo $nonce; ?>">
     <div class="sameday-pickup-point-form">
         <div class="sameday-pickup-point-form__group">
-            <label for="pickupPointCountry"><?php echo $t('Country'); ?></label>
+            <label for="pickupPointCountryDisplay"><?php echo $t('Country'); ?></label>
             <div class="sameday-pickup-point-form__input">
-                <select name="pickupPointCountry" id="pickupPointCountry">
-                    <option value="<?php echo esc_attr($countryValue); ?>">
-                        <?php echo esc_html($countryLabel); ?>
-                    </option>
-                </select>
+                <input type="hidden" name="pickupPointCountry" value="<?php echo esc_attr($countryValue); ?>">
+                <input type="text"
+                       id="pickupPointCountryDisplay"
+                       class="sameday-pickup-point-form__field--readonly"
+                       value="<?php echo esc_attr($countryLabel); ?>"
+                       readonly
+                       tabindex="-1"
+                       aria-readonly="true">
             </div>
         </div>
         <div class="sameday-pickup-point-form__group">
@@ -38,7 +41,9 @@ $t = static function (string $text): string {
         <div class="sameday-pickup-point-form__group">
             <label for="pickupPointCity"><?php echo $t('City'); ?></label>
             <div class="sameday-pickup-point-form__input">
-                <select name="pickupPointCity" id="pickupPointCity" required disabled></select>
+                <select name="pickupPointCity" id="pickupPointCity" required disabled>
+                    <option value=""><?php echo $t('First select a County'); ?></option>
+                </select>
             </div>
         </div>
         <div class="sameday-pickup-point-form__group">

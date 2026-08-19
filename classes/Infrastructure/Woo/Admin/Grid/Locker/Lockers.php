@@ -90,7 +90,7 @@ class Lockers extends WP_List_Table
      *
      * @return void
      */
-    public function no_items(): void
+    public function no_items()
     {
         _e('No lockers available!', CarrierConstants::TEXT_DOMAIN);
     }
@@ -98,12 +98,12 @@ class Lockers extends WP_List_Table
     /**
      * Render a column when no column specific method exist.
      *
-     * @param array $item
-     * @param string $column_name
+     * @param mixed $item
+     * @param mixed $column_name
      *
      * @return mixed
      */
-    public function column_default(array $item, string $column_name)
+    public function column_default($item, $column_name)
     {
         return $item[$column_name];
     }
@@ -114,7 +114,7 @@ class Lockers extends WP_List_Table
      *
      * @return array
      */
-    public function get_columns(): array
+    public function get_columns()
     {
         return [
             'locker_id' => TranslatorHandler::translate('Locker ID'),
@@ -133,7 +133,7 @@ class Lockers extends WP_List_Table
      *
      * @return array
      */
-    public function get_sortable_columns(): array
+    public function get_sortable_columns()
     {
         return array(
             'locker_id' => array(
@@ -148,7 +148,7 @@ class Lockers extends WP_List_Table
      *
      * @return void
      */
-    public function prepare_items(): void
+    public function prepare_items()
     {
 
         $this->_column_headers = $this->get_column_info();

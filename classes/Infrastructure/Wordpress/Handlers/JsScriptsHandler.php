@@ -169,10 +169,19 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ),
                 'sameday-admin-modal'
             ),
+            'sameday-select2-pickup' => self::withHandle(
+                self::addScript(
+                    'select2',
+                    self::WP_CONTEXT['pickup_points'],
+                    ['jquery'],
+                    false
+                ),
+                'sameday-select2'
+            ),
             'sameday-admin-script' => self::addScript(
                 'adminPickupPoints',
                 self::WP_CONTEXT['pickup_points'],
-                ['jquery', 'sameday-admin-modal']
+                ['jquery', 'sameday-admin-modal', 'sameday-select2']
             ),
             'sameday-locker-plugin-checkout' => self::addExternalScript(
                 self::LOCKER_PLUGIN_SDK_URL,
@@ -486,6 +495,12 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                         'get_cities' => wp_create_nonce('get_cities'),
                         'send_pickup_point' => wp_create_nonce('send_pickup_point'),
                         'delete_pickup_point' => wp_create_nonce('delete_pickup_point'),
+                    ],
+                    'labels' => [
+                        'chooseCounty' => TranslatorHandler::translate('Choose County'),
+                        'selectCountyFirst' => TranslatorHandler::translate('First select a County'),
+                        'pickCity' => TranslatorHandler::translate('Choose a City'),
+                        'loading' => TranslatorHandler::translate('Loading...'),
                     ],
                 ]);
                 break;

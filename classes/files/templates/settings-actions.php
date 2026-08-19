@@ -18,7 +18,7 @@ $t = static function (string $text): string {
 ?>
 <form id="sameday-import-cities-form" action="<?php echo esc_url($adminPostUrl); ?>" method="post" hidden>
     <input type="hidden" name="action" value="import_cities">
-    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($importCitiesNonce); ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo $importCitiesNonce; ?>">
 </form>
 <div class="sameday-settings-actions">
     <button type="button" id="sameday-all-import-button" class="sameday_admin_button">

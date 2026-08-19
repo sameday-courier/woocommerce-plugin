@@ -141,6 +141,10 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'sameday_bulk_awb_modal',
                 self::WP_CONTEXT['pickup_points']
             ),
+            'sameday-select2-pickup-style' => self::addStyleSheet(
+                'select2',
+                self::WP_CONTEXT['pickup_points']
+            ),
             'sameday-locker-checkout-style' => self::addStyleSheet(
                 'sameday_locker_checkout',
                 self::WP_CONTEXT['checkout_strict']

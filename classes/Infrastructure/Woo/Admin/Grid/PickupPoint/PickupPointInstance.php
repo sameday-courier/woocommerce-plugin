@@ -40,7 +40,7 @@ class PickupPointInstance
     public function plugin_menu()
     {
         $parentSlug = 'edit.php?post_type=page';
-        $pageSlug = 'sameday_pickup_points';
+        $pageSlug = PickupPoints::PAGE_SLUG;
 
         $hook = add_submenu_page(
             $parentSlug,
@@ -87,12 +87,13 @@ class PickupPointInstance
                                 <a href="#"
                                    class="sameday_admin_button button-samll"
                                    role="button"
-                                   data-sameday-modal-open="<?php echo esc_attr(PickupPointForm::ADD_MODAL_ID); ?>">
+                                   data-sameday-modal-open="<?php echo PickupPointForm::ADD_MODAL_ID; ?>">
                                     <?php echo TranslatorHandler::translate('Add Pickup Point') ?>
                                 </a>
                             </div>
                             <form method="get">
-                                <input type="hidden" name="page" value="sameday_pickup_points" />
+                                <input type="hidden" name="post_type" value="<?php echo PickupPoints::PARENT_POST_TYPE; ?>" />
+                                <input type="hidden" name="page" value="<?php echo PickupPoints::PAGE_SLUG; ?>" />
                                 <?php
                                     $this->pickuppoints_obj->prepare_items();
                                     $this->pickuppoints_obj->render_request_preservation_fields();
