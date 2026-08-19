@@ -150,7 +150,7 @@
 
 .sameday-bulk-awb-modal__disclaimer {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     margin: 0;
     padding: 16px 18px;
@@ -165,13 +165,15 @@
 
 .sameday-bulk-awb-modal__disclaimer .sameday-modal-checkbox {
     flex: 0 0 auto;
+    align-self: center;
+    margin: 0;
 }
 
 .sameday-modal-checkbox {
     width: 20px !important;
     height: 20px !important;
     min-width: 20px;
-    margin: 1px 0 0;
+    margin: 0;
     padding: 0 !important;
     border: 1px solid #d1d5db !important;
     border-radius: 6px !important;
@@ -634,6 +636,34 @@
 .sameday-generate-awb-modal .sameday-bulk-awb-modal__body input[readonly] {
     background: #f9fafb;
     color: #6b7280;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 4px;
+    align-items: start;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) .sameday-modal-checkbox {
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 1px;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) > span {
+    grid-column: 2;
+    margin-top: 0;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox:only-child) {
+    display: block;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox:only-child) .sameday-modal-checkbox {
+    margin-top: 0;
+    vertical-align: middle;
 }
 
 .sameday-generate-awb-modal .rowPackageDimension td.forminp {

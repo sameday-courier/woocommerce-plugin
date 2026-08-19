@@ -105,11 +105,7 @@
 
     function setHeaderIcon($modal, variant) {
         var $icon = $modal.find('[data-sameday-bulk-awb-header-icon]');
-        var isSuccess = variant === 'success';
-
-        $icon.toggleClass('is-success', isSuccess);
-        $icon.find('.sameday-bulk-awb-modal__icon-svg--package').prop('hidden', isSuccess);
-        $icon.find('.sameday-bulk-awb-modal__icon-svg--success').prop('hidden', !isSuccess);
+        $icon.toggleClass('is-success', variant === 'success');
     }
 
     function setStep($modal, step) {

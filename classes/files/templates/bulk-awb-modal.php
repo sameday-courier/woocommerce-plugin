@@ -33,7 +33,6 @@ declare(strict_types=1);
  * @var string $reportTitle
  * @var string $reportSubtitle
  */
-$isGenerate = 'generate' === $mode;
 ?>
 <a id="<?php echo esc_attr($buttonId); ?>"
    href="#"
@@ -63,50 +62,6 @@ $isGenerate = 'generate' === $mode;
                      data-sameday-bulk-awb-header-icon
                      aria-hidden="true">
                     <?php echo $headerIconHtml; ?>
-                    <?php if ($isGenerate) : ?>
-                        <svg class="sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--success"
-                             viewBox="0 0 24 24"
-                             width="22"
-                             height="22"
-                             fill="none"
-                             xmlns="http://www.w3.org/2000/svg"
-                             hidden>
-                            <path d="M1.5 16.5V8.2c0-.9.7-1.7 1.7-1.7h9.6c.9 0 1.7.8 1.7 1.7V16.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.7"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                            <path d="M14.5 10.5h3.2c.3 0 .6.1.8.4l2.2 2.8c.2.2.3.5.3.8V16.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.7"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                            <path d="M1.5 16.5h21"
-                                  stroke="currentColor"
-                                  stroke-width="1.7"
-                                  stroke-linecap="round"/>
-                            <circle cx="6" cy="16.5" r="1.8"
-                                    stroke="currentColor"
-                                    stroke-width="1.7"/>
-                            <circle cx="17.5" cy="16.5" r="1.8"
-                                    stroke="currentColor"
-                                    stroke-width="1.7"/>
-                        </svg>
-                    <?php else : ?>
-                        <svg class="sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--success"
-                             viewBox="0 0 24 24"
-                             width="22"
-                             height="22"
-                             fill="none"
-                             xmlns="http://www.w3.org/2000/svg"
-                             hidden>
-                            <path d="M20 6 9 17l-5-5"
-                                  stroke="currentColor"
-                                  stroke-width="2.2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                        </svg>
-                    <?php endif; ?>
                 </div>
                 <div class="sameday-bulk-awb-modal__titles">
                     <h2 id="<?php echo esc_attr($modalId); ?>-title" data-sameday-bulk-awb-title><?php echo $title; ?></h2>

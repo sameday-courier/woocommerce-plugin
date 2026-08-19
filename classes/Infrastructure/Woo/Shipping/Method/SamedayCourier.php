@@ -133,12 +133,12 @@ final class SamedayCourier extends WC_Shipping_Method
     }
 
     /**
-     * @param array $package
+     * @param mixed $package
      *
      * @return void
      * @throws SamedaySDKException
      */
-    public function calculate_shipping(array $package = array()): void
+    public function calculate_shipping($package = array())
     {
         $settings = $this->carrierSettingsProvider->get();
         if (!$settings->isEnabled()) {
