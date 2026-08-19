@@ -36,7 +36,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    padding: 28px 32px 12px;
+    margin-bottom: 20px;
+    padding: 24px 32px 24px;
+    border-bottom: 0.5px solid #e5e7eb;
+    background: #fafafa;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
     flex: 0 0 auto;
 }
 
@@ -219,7 +223,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 18px 32px 24px;
+    margin-top: 20px;
+    padding: 24px 32px 24px;
+    border-top: 0.5px solid #e5e7eb;
+    background: #fafafa;
+    box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.04);
     flex: 0 0 auto;
 }
 
@@ -664,6 +672,50 @@
 .sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox:only-child) .sameday-modal-checkbox {
     margin-top: 0;
     vertical-align: middle;
+}
+
+.sameday-generate-awb-modal #LockerFirstMile th,
+.sameday-generate-awb-modal #LockerFirstMile td {
+    vertical-align: top;
+}
+
+.sameday-generate-awb-modal #LockerFirstMile th {
+    padding-top: 4px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__control {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__control .sameday-modal-checkbox {
+    margin: 0;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__description {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__meta .sameday-custom-tooltip {
+    margin-top: 0;
 }
 
 .sameday-generate-awb-modal .rowPackageDimension td.forminp {

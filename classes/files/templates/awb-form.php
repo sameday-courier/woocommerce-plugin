@@ -272,39 +272,43 @@ $t = static function (string $text): string {
                                        id="samedaycourier-service-optional-tax-id">
                             </td>
                         </tr>
-                        <tr id="LockerFirstMile" class="<?php echo $allowFirstMile; ?>">
+                        <tr id="LockerFirstMile"
+                            class="<?php echo $allowFirstMile; ?>"
+                            valign="middle">
                             <th scope="row" class="titledesc">
                                 <label for="samedaycourier-locker_first_mile">
                                     <?php echo $t('Personal delivery at locker'); ?>
                                 </label>
                             </th>
-                            <td class="forminp forminp-text" colspan="4">
-                                <input type="checkbox"
-                                       form="addAwbForm"
-                                       name="samedaycourier-locker_first_mile"
-                                       id="samedaycourier-locker_first_mile"
-                                       class="sameday-modal-checkbox">
-                                <span style="display:block;width:100%">
+                            <td class="forminp forminp-text sameday-locker-first-mile-field" colspan="4">
+                                <div class="sameday-locker-first-mile-field__control">
+                                    <input type="checkbox"
+                                           form="addAwbForm"
+                                           name="samedaycourier-locker_first_mile"
+                                           id="samedaycourier-locker_first_mile"
+                                           class="sameday-modal-checkbox">
+                                </div>
+                                <p class="sameday-locker-first-mile-field__description">
                                     <?php echo $t('Check this field if you want to apply for Personal delivery of the package at an easyBox terminal.'); ?>
-                                </span>
-                                <span style="display:block;width:100%">
+                                </p>
+                                <div class="sameday-locker-first-mile-field__meta">
                                     <a href="https://sameday.ro/easybox#lockers-intro" target="_blank">
                                         <?php echo $t('Show map'); ?>
                                     </a>
-                                </span>
-                                <span class="sameday-custom-tooltip">
-                                    <?php echo $t('Show locker dimensions'); ?>
-                                    <span class="sameday-tooltiptext">
-                                        <table class="table table-hover">
-                                            <tbody>
-                                                <tr><th></th><th>L</th><th>l</th><th>h</th></tr>
-                                                <tr><td>Small (cm)</td><td>47</td><td>44.5</td><td>10</td></tr>
-                                                <tr><td>Medium (cm)</td><td>47</td><td>44.5</td><td>19</td></tr>
-                                                <tr><td>Large (cm)</td><td>47</td><td>44.5</td><td>39</td></tr>
-                                            </tbody>
-                                        </table>
+                                    <span class="sameday-custom-tooltip">
+                                        <?php echo $t('Show locker dimensions'); ?>
+                                        <span class="sameday-tooltiptext">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr><th></th><th>L</th><th>l</th><th>h</th></tr>
+                                                    <tr><td>Small (cm)</td><td>47</td><td>44.5</td><td>10</td></tr>
+                                                    <tr><td>Medium (cm)</td><td>47</td><td>44.5</td><td>19</td></tr>
+                                                    <tr><td>Large (cm)</td><td>47</td><td>44.5</td><td>39</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </span>
                                     </span>
-                                </span>
+                                </div>
                             </td>
                         </tr>
                         <tr id="LockerLastMile"
