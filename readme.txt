@@ -46,7 +46,7 @@ For further information, contact us at software[at]sameday.ro !
 
 If every thing works, activate plugin and now the new feature are ready to use.
 
-= Setup your Plugin =
+= Set up your Plugin =
 
 1. Go to WooCommerce/Settings and choose SamedayCourier tab.
 2. Complete the form and press Save changes. If everything works well you receive a success message.
