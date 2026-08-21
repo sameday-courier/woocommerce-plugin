@@ -92,8 +92,14 @@ class PickupPointInstance
                                 </a>
                             </div>
                             <form method="get">
-                                <input type="hidden" name="post_type" value="<?php echo PickupPoints::PARENT_POST_TYPE; ?>" />
-                                <input type="hidden" name="page" value="<?php echo PickupPoints::PAGE_SLUG; ?>" />
+                                <input type="hidden"
+                                       name="post_type"
+                                       value="<?php echo PickupPoints::PARENT_POST_TYPE; ?>"
+                                />
+                                <input type="hidden"
+                                       name="page"
+                                       value="<?php echo PickupPoints::PAGE_SLUG; ?>"
+                                />
                                 <?php
                                     $this->pickuppoints_obj->prepare_items();
                                     $this->pickuppoints_obj->render_request_preservation_fields();

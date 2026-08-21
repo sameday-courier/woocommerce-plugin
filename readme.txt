@@ -17,7 +17,7 @@ Sameday Courier shipping method plugin
 
 This plug-in is intended to implement a new shipping method using the Sameday Courier service. As a store owner, after installing the plugin, you are able to import the list of Sameday Courier
 service and delivery points assigned to your account. If your customer chooses the order to be delivered with Sameday Courier, you will be able to see this in the list of commands in your store's
-administration panel. You will also be able to create an AWB. You can then add a new parcel in the created AWB and show the AWB as a pdf format. If you want, you can show the AWB history or delete the AWB.
+administration panel. You will also be able to create an AWB. You can then add a new parcel in the created AWB and show the AWB as a PDF format. If you want, you can show the AWB history or delete the AWB.
 
 For further information, contact us at software[at]sameday.ro !
 
@@ -56,7 +56,7 @@ If every thing works, activate plugin and now the new feature are ready to use.
 
 After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.
 
-In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as pdf format. Also, you can show the history of the awb, add a new parcel or simply remove the awb.
+In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as PDF format. Also, you can show the history of the awb, add a new parcel or simply remove the awb.
 
 == Frequently Asked Questions ==
 
@@ -106,7 +106,7 @@ In order to set up the plugin, you need to provide the following information (pl
 * `Title` = The title that it will be displayed on your website
 * `Username` = Username provided by Sameday as result of enrolling to our services
 * `Password` = Password provided by Sameday as result of enrolling to our services
-* `Default label format` = The format of paper (e.g. A4) for creating the awbs
+* `Default label format` = The format of paper (e.g. A4) for creating the AWBs
 * `Is testing` = If checked, the plugin will be set in development mode. This feature is intended to test services. Should not be checked on production environment
 
     NOTE: Each environment (e.g. test/production) has a different set of credentials. Be sure to use the set of credentials corresponding to selected environment
@@ -212,7 +212,7 @@ This is used for switching between Sameday services before complete AWB order.
 = 1.10.15 =
 
 * Add new feature. Plugin import Nomenclature of Sameday Cities and Countries only for your countries you want to ship
-(check your Woocommerce Shipping location(s) setting).
+(check your WooCommerce Shipping location(s) setting).
 * Bub fixed. Resolve issue caused by uncaught TypeError: SamedayCourierQueryDb::getCachedCities()
 
 = 1.10.14 =
@@ -241,7 +241,7 @@ This is used for switching between Sameday services before complete AWB order.
 
 = 1.10.8 =
 
-* Bug fix. Adjust styling to avoid inesthetic conflict with Discount module for Woocommerce
+* Bug fix. Adjust styling to avoid inesthetic conflict with Discount module for WooCommerce
 
 = 1.10.7 =
 
