@@ -3,7 +3,7 @@ Contributors: (samedaycourier)
 Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
-Tested up to: 7.0.4
+Tested up to: 7.1.0
 Stable tag: 2.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -35,8 +35,9 @@ For further information, contact us at software[at]sameday.ro !
 
 = Requirements =
 
-* WordPress v6.0 or later
+* WordPress v6.6 or later
 * WooCommerce v6.1 or later
+* PHP at least 7.4.*
 
 = Plugin installation procedure =
 
