@@ -1,12 +1,14 @@
 <?php
 
-declare(strict_types=1);
+//declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use Exception;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
@@ -18,6 +20,53 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 final class ShowLockerFieldAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_review_order_after_shipping';
+
+    /**
+     * @var WooShippingMethodProvider $wooShippingMethodProvider
+     */
+    private WooShippingMethodProvider $wooShippingMethodProvider;
+
+    /**
+     * @var SessionHandlerInterface $sessionHandler
+     */
+    private SessionHandlerInterface $sessionHandler;
+
+    /**
+     * @var CarrierServiceRules $carrierServiceRules
+     */
+    private CarrierServiceRules $carrierServiceRules;
+
+    /**
+     * @var CarrierSettingsServiceProvider $carrierSettingsServiceProvider
+     */
+    private CarrierSettingsServiceProvider $carrierSettingsServiceProvider;
+
+    /**
+     * @var LockerDtoFactory $lockerDtoFactory
+     */
+    private LockerDtoFactory $lockerDtoFactory;
+
+    /**
+     * @param WooShippingMethodProvider|null $wooShippingMethodProvider
+     * @param CarrierServiceRules|null $carrierServiceRules
+     * @param SessionHandlerInterface|null $sessionHandler
+     * @param CarrierSettingsServiceProvider|null $carrierSettingsServiceProvider
+     * @param LockerDtoFactory|null $lockerDtoFactory
+     */
+    public function __construct(
+        ?WooShippingMethodProvider $wooShippingMethodProvider = null,
+        ?CarrierServiceRules $carrierServiceRules = null,
+        ?SessionHandlerInterface $sessionHandler = null,
+        ?CarrierSettingsServiceProvider $carrierSettingsServiceProvider = null,
+        ?LockerDtoFactory $lockerDtoFactory = null
+    )
+    {
+        $this->wooShippingMethodProvider = $wooShippingMethodProvider ?? new WooShippingMethodProvider();
+        $this->carrierServiceRules = $carrierServiceRules ?? new CarrierServiceRules(new SamedayServiceRepository());
+        $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
+        $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider ?? new CarrierSettingsServiceProvider();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+    }
 
     /**
      * @return string
@@ -34,14 +83,12 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
+        $serviceCode = $this->wooShippingMethodProvider->getChosenServiceCode();
         if (!FrontPageValidatorHandler::isCheckoutPage()) {
             return;
         }
 
-        $carrierServiceRules = new CarrierServiceRules(new SamedayServiceRepository());
-
-        if (false === $carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
+        if (false === $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
             return;
         }
 
@@ -49,72 +96,85 @@ final class ShowLockerFieldAction extends AbstractAction
     }
 
     /**
+     * @return LockerDto|null
+     */
+    private function resolveShipTo(): ?LockerDto
+    {
+        return $this->lockerDtoFactory->fromInput(
+            $this->sessionHandler->get(CarrierSessionKeys::LOCKER)
+        );
+    }
+
+    /**
+     * @param LockerDto|null $locker
+     *
      * @return string|null
      */
-    private function resolveShipTo(): ?string
+    private function buildShipToLabel(?LockerDto $locker): ?string
     {
-        $lockerSession = (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER);
-        if (null === $lockerSession) {
-            return null;
-        }
-
-        try {
-            $lockerSession = json_decode($lockerSession, false, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $exception) {
+        if (null === $locker) {
             return null;
         }
 
         return sprintf(
             '%s <br/> %s',
-            esc_html($lockerSession->name ?? ''),
-            esc_html($lockerSession->address ?? '')
+            esc_html($locker->getName() ?? ''),
+            esc_html($locker->getAddress() ?? '')
         );
     }
 
     /**
-     * @param string|null $shipTo
+     * @param LockerDto|null $locker
      *
      * @return string
      */
-    private function buildHtmlContent(?string $shipTo): string
+    private function buildHtmlContent(?LockerDto $locker): string
     {
-        $settings = (new CarrierSettingsServiceProvider())->get();
+        if (null === $locker) {
+            return '';
+        }
+
+        $shipTo = $this->buildShipToLabel($locker);
+        $settings = $this->carrierSettingsServiceProvider->get();
         if ($settings->isLockersMapEnabled()) {
             return HtmlHandler::buildHtml('locker-map-field', [
-                'username' => (string) ($settings->getUser() ?? ''),
-                'hostCountry' => (string) $settings->getHostCountry(),
+                'username' => $settings->getUser() ?? '',
+                'hostCountry' => $settings->getHostCountry(),
                 'shipTo' => $shipTo,
             ]);
         }
 
         return HtmlHandler::buildHtml('locker-dropdown-field', [
-            'lockersByCity' => $this->buildLockersByCity(),
+            'lockersByCity' => $this->buildLockersByCity($locker->getLockerId()),
+            'shipTo' => $shipTo,
         ]);
     }
 
     /**
+     * @param int|null $selectedLockerId
+     *
      * @return array<string, array<int, array{id: int|string, label: string, selected: bool}>>
      */
-    private function buildLockersByCity(): array
+    private function buildLockersByCity(?int $selectedLockerId = null): array
     {
         $samedayLockerRepository = new SamedayLockerRepository();
         $cities = $samedayLockerRepository->getCitiesWithLockers();
-        $selectedLockerId = (int) (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER);
         $lockersByCity = [];
 
         foreach ($cities as $city) {
-            if (null === $city->getCity()) {
+            $cityName = $city->getCity();
+            if (null === $cityName) {
                 continue;
             }
 
-            $cityLabel = $city->getCity() . ' (' . $city->getCounty() . ')';
+            $cityLabel = $cityName . ' (' . $city->getCounty() . ')';
             $cityLockers = [];
 
-            foreach ($samedayLockerRepository->getLockersByCity((string) $city->getCity()) as $locker) {
+            foreach ($samedayLockerRepository->getLockersByCity($cityName) as $locker) {
                 $cityLockers[] = [
                     'id' => $locker->getLockerId(),
                     'label' => $locker->getName() . ' - ' . $locker->getAddress(),
-                    'selected' => $selectedLockerId === (int) $locker->getLockerId(),
+                    'selected' => null !== $selectedLockerId && $selectedLockerId === $locker->getLockerId(),
                 ];
             }
 

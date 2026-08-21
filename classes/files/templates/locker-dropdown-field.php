@@ -10,6 +10,7 @@ $t = static function (string $text): string {
 
 /**
  * @var array<string, array<int, array{id: int|string, label: string, selected: bool}>> $lockersByCity
+ * @var string $shipTo
  */
 ?>
 <tr>
@@ -32,3 +33,9 @@ $t = static function (string $text): string {
         </select>
     </td>
 </tr>
+<?php if (null !== $shipTo) : ?>
+    <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
+        <td><strong><?php echo $t('Ship to'); ?></strong></td>
+        <th><span id="showLockerDetails"><?php echo $shipTo; ?></span></th>
+    </tr>
+<?php endif; ?>
