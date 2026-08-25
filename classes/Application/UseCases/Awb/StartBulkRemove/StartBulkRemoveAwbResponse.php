@@ -6,12 +6,13 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
 
 final class StartBulkRemoveAwbResponse implements ResponseInterface
 {
     use NoticerTrait;
 
-    private ?string $jobId;
+    private ?BulkJobId $jobId;
 
     private int $total;
 
@@ -22,7 +23,7 @@ final class StartBulkRemoveAwbResponse implements ResponseInterface
     /**
      * @param ?string $noticeMessage
      * @param string $noticeType
-     * @param ?string $jobId
+     * @param ?BulkJobId $jobId
      * @param int $total
      * @param int $processed
      * @param bool $done
@@ -30,7 +31,7 @@ final class StartBulkRemoveAwbResponse implements ResponseInterface
     public function __construct(
         ?string $noticeMessage,
         string $noticeType,
-        ?string $jobId = null,
+        ?BulkJobId $jobId = null,
         int $total = 0,
         int $processed = 0,
         bool $done = false
@@ -44,9 +45,9 @@ final class StartBulkRemoveAwbResponse implements ResponseInterface
     }
 
     /**
-     * @return ?string
+     * @return ?BulkJobId
      */
-    public function getJobId(): ?string
+    public function getJobId(): ?BulkJobId
     {
         return $this->jobId;
     }

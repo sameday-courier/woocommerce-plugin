@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulk
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate\StartBulkGenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobIdGeneratorServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 
 final class StartBulkGenerateAwbController extends AbstractController
@@ -39,7 +40,8 @@ final class StartBulkGenerateAwbController extends AbstractController
                         ['samedaycourier-user-id' => $this->getCurrentUserId()]
                     )
                 ),
-                new BulkJobStoreServiceProvider()
+                new BulkJobStoreServiceProvider(),
+                new BulkJobIdGeneratorServiceProvider()
             )
         ))->execute();
 
@@ -53,8 +55,10 @@ final class StartBulkGenerateAwbController extends AbstractController
             );
         }
 
+        $jobId = $result->getJobId();
+
         $this->sendJsonSuccessResponse([
-            'jobId' => $result->getJobId(),
+            'jobId' => null !== $jobId ? $jobId->toString() : null,
             'total' => $result->getTotal(),
             'processed' => $result->getProcessed(),
             'done' => $result->isDone(),

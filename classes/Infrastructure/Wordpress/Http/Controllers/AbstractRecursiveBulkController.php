@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
+use InvalidArgumentException;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
+use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 
 /**
@@ -21,12 +23,16 @@ abstract class AbstractRecursiveBulkController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $jobId = isset($inputParams['jobId']) ? (string) $inputParams['jobId'] : '';
-
-        if ('' === $jobId) {
+        try {
+            $jobId = BulkJobId::fromString(
+                isset($inputParams['jobId']) ? (string) $inputParams['jobId'] : ''
+            );
+        } catch (InvalidArgumentException $exception) {
             $this->sendJsonErrorResponse(
                 'Invalid bulk job.',
             );
+
+            return;
         }
 
         $userId = $this->getCurrentUserId();
@@ -61,7 +67,7 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         $this->sendJsonSuccessResponse(
             [
                 'done' => false,
-                'jobId' => $job->getJobId(),
+                'jobId' => $job->getJobId()->toString(),
                 'total' => $job->getTotal(),
                 'processed' => $job->getProcessedCount(),
                 'currentItemId' => $itemId,
@@ -77,9 +83,6 @@ abstract class AbstractRecursiveBulkController extends AbstractController
         );
     }
 
-    /**
-     * @return array{status: string, message: string, ...}
-     */
     /**
      * @param int $itemId
      *
@@ -97,7 +100,7 @@ abstract class AbstractRecursiveBulkController extends AbstractController
     {
         $payload = [
             'done' => true,
-            'jobId' => $job->getJobId(),
+            'jobId' => $job->getJobId()->toString(),
             'total' => $job->getTotal(),
             'processed' => $job->getProcessedCount(),
             'successCount' => $job->getSuccessCount(),

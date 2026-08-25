@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs;
 
+use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
+
 final class BulkJobDto
 {
     private const STATUS_SUCCESS = 'success';
 
     private const STATUS_ERROR = 'error';
 
-    private string $jobId;
+    private BulkJobId $jobId;
 
     private int $userId;
 
@@ -20,11 +22,11 @@ final class BulkJobDto
     private array $items;
 
     /**
-     * @param string $jobId
+     * @param BulkJobId $jobId
      * @param int $userId
      * @param BulkJobItemDto[] $items
      */
-    public function __construct(string $jobId, int $userId, array $items)
+    public function __construct(BulkJobId $jobId, int $userId, array $items)
     {
         $this->jobId = $jobId;
         $this->userId = $userId;
@@ -32,9 +34,9 @@ final class BulkJobDto
     }
 
     /**
-     * @return string
+     * @return BulkJobId
      */
-    public function getJobId(): string
+    public function getJobId(): BulkJobId
     {
         return $this->jobId;
     }
@@ -154,14 +156,12 @@ final class BulkJobDto
     }
 
     /**
-     * jobId: string,
-     *
-     * @return array{
+     * @return array
      */
     public function toArray(): array
     {
         return [
-            'jobId' => $this->jobId,
+            'jobId' => $this->jobId->toString(),
             'userId' => $this->userId,
             'items' => array_map(
                 /**
@@ -178,7 +178,7 @@ final class BulkJobDto
     }
 
     /**
-     * @return array<int,
+     * @return array
      */
     public function toReportItems(): array
     {
@@ -198,9 +198,6 @@ final class BulkJobDto
         return $report;
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     /**
      * @param array $data
      *
@@ -228,23 +225,20 @@ final class BulkJobDto
         }
 
         return new self(
-            (string) ($data['jobId'] ?? ''),
+            BulkJobId::fromString((string) ($data['jobId'] ?? '')),
             (int) ($data['userId'] ?? 0),
             $items
         );
     }
 
     /**
-     * @param int[] $itemIds
-     */
-    /**
-     * @param string $jobId
+     * @param BulkJobId $jobId
      * @param int $userId
-     * @param array $itemIds
+     * @param int[] $itemIds
      *
      * @return self
      */
-    public static function create(string $jobId, int $userId, array $itemIds): self
+    public static function create(BulkJobId $jobId, int $userId, array $itemIds): self
     {
         $items = [];
         foreach ($itemIds as $itemId) {

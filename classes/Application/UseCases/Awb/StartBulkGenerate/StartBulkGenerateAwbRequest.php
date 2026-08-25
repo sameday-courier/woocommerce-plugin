@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
+use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartBulkGenerateAwbRequest
@@ -12,16 +13,21 @@ final class StartBulkGenerateAwbRequest
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
+
     /**
      * @param StartBulkGenerateAwbItem $startBulkGenerateAwbItem
      * @param BulkJobStoreInterface $bulkJobStore
+     * @param BulkJobIdGeneratorInterface $bulkJobIdGenerator
      */
     public function __construct(
         StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
-        BulkJobStoreInterface $bulkJobStore
+        BulkJobStoreInterface $bulkJobStore,
+        BulkJobIdGeneratorInterface $bulkJobIdGenerator
     ) {
         $this->startBulkGenerateAwbItem = $startBulkGenerateAwbItem;
         $this->bulkJobStore = $bulkJobStore;
+        $this->bulkJobIdGenerator = $bulkJobIdGenerator;
     }
 
     /**
@@ -38,5 +44,13 @@ final class StartBulkGenerateAwbRequest
     public function getBulkJobStore(): BulkJobStoreInterface
     {
         return $this->bulkJobStore;
+    }
+
+    /**
+     * @return BulkJobIdGeneratorInterface
+     */
+    public function getBulkJobIdGenerator(): BulkJobIdGeneratorInterface
+    {
+        return $this->bulkJobIdGenerator;
     }
 }

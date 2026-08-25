@@ -8,6 +8,7 @@ use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNotice
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImport;
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImportRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobIdGeneratorServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
@@ -33,7 +34,8 @@ final class StartAllImportController extends AbstractController
         $result = (new StartAllImport(
             new StartAllImportRequest(
                 $this->getCurrentUserId(),
-                new BulkJobStoreServiceProvider()
+                new BulkJobStoreServiceProvider(),
+                new BulkJobIdGeneratorServiceProvider()
             )
         ))->execute();
 
@@ -47,8 +49,10 @@ final class StartAllImportController extends AbstractController
             );
         }
 
+        $jobId = $result->getJobId();
+
         $this->sendJsonSuccessResponse([
-            'jobId' => $result->getJobId(),
+            'jobId' => null !== $jobId ? $jobId->toString() : null,
             'total' => $result->getTotal(),
             'processed' => $result->getProcessed(),
             'done' => $result->isDone(),

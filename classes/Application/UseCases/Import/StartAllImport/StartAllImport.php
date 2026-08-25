@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
+use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartAllImport
@@ -15,6 +16,8 @@ final class StartAllImport
 
     private BulkJobStoreInterface $bulkJobStore;
 
+    private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
+
     /**
      * @param StartAllImportRequest $request
      */
@@ -22,6 +25,7 @@ final class StartAllImport
     {
         $this->userId = $request->getUserId();
         $this->bulkJobStore = $request->getBulkJobStore();
+        $this->bulkJobIdGenerator = $request->getBulkJobIdGenerator();
     }
 
     /**
@@ -37,17 +41,8 @@ final class StartAllImport
             );
         }
 
-        try {
-            $jobId = $this->generateJobId();
-        } catch (\Throwable $exception) {
-            return new StartAllImportResponse(
-                'Unable to start bulk job.',
-                ResponseNoticeType::ERROR,
-            );
-        }
-
         $job = BulkJobDto::create(
-            $jobId,
+            $this->bulkJobIdGenerator->generate(),
             $this->userId,
             $itemIds
         );
@@ -61,21 +56,6 @@ final class StartAllImport
             $job->getTotal(),
             0,
             false
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function generateJobId(): string
-    {
-        $data = random_bytes(16);
-        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-
-        return vsprintf(
-            '%s%s-%s-%s-%s-%s%s%s',
-            str_split(bin2hex($data), 4)
         );
     }
 }
