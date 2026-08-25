@@ -56,6 +56,7 @@ final class BulkAwbModalView
             'startingTitle' => $config['startingTitle'],
             'reportTitle' => $config['reportTitle'],
             'reportSubtitle' => $config['reportSubtitle'],
+            'currencyConfirm' => $config['currencyConfirm'] ?? null,
         ]);
     }
 }

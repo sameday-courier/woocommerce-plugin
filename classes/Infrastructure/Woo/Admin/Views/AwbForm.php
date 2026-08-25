@@ -7,15 +7,14 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
@@ -82,19 +81,13 @@ class AwbForm
         $serviceCode = $this->resolveServiceCode($order);
         $totalWeight = $this->resolveTotalWeight($order);
         $paymentGateway = wc_get_payment_gateway_by_order($order);
-        $repayment = (float) $order->get_total();
-
-        if ($paymentGateway->id !== CarrierConstants::CASH_ON_DELIVERY) {
-            $repayment = 0.0;
-        }
-
+        $repayment = AwbCurrencyWarningProvider::resolveRepayment($order);
         $lockerData = $this->resolveLockerData($order);
         $settings = (new CarrierSettingsServiceProvider())->get();
         $shipping = $order->get_data()['shipping'] ?? [];
         $destCity = $shipping['city'] ?? '';
         $destCountry = $shipping['country'] ?? '';
-        $destCurrency = CarrierConstants::CURRENCY_MAPPER[$destCountry];
-        $currency = $order->get_currency() ?? get_woocommerce_currency();
+        $currency = AwbCurrencyWarningProvider::resolveOrderCurrency($order);
         $servicesContext = $this->buildServicesContext($serviceCode);
 
         return [
@@ -107,7 +100,7 @@ class AwbForm
             'repayment' => $repayment,
             'currency' => $currency,
             'paymentGatewayTitle' => $paymentGateway->title,
-            'currencyWarning' => $this->resolveCurrencyWarning($repayment, $destCurrency, $currency),
+            'currencyWarning' => AwbCurrencyWarningProvider::forOrder($order),
             'totalWeight' => $totalWeight,
             'calculatedWeightLabel' => 'Calculated Weight: ' . $totalWeight . ' '
                 . OptionsHandler::getOption('woocommerce_weight_unit', 'kg'),
@@ -218,29 +211,6 @@ class AwbForm
                 'lockerDetails' => '',
             ];
         }
-    }
-
-    /**
-     * @param float $repayment
-     * @param string $destCurrency
-     * @param string $currency
-     *
-     * @return string|null
-     */
-    private function resolveCurrencyWarning(float $repayment, string $destCurrency, string $currency): ?string
-    {
-        if (!CarrierCurrencyRules::hasCurrencyIssue($repayment, $destCurrency, $currency)) {
-            return null;
-        }
-
-        return TranslatorHandler::translate(
-            sprintf(
-                'Be aware that the intended currency is %s but the Repayment value is expressed in %s.
-             Please consider a conversion !!',
-                $destCurrency,
-                $currency
-            )
-        );
     }
 
     /**

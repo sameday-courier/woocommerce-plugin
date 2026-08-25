@@ -32,6 +32,7 @@ declare(strict_types=1);
  * @var string $startingTitle
  * @var string $reportTitle
  * @var string $reportSubtitle
+ * @var string|null $currencyConfirm
  */
 ?>
 <a id="<?php echo $buttonId; ?>"
@@ -83,6 +84,16 @@ declare(strict_types=1);
                 <p class="sameday-bulk-awb-modal__empty"
                    data-sameday-bulk-awb-empty
                    hidden><?php echo $emptySelection; ?></p>
+                <?php if (null !== $currencyConfirm) : ?>
+                    <label class="sameday-bulk-awb-modal__disclaimer sameday-bulk-awb-modal__disclaimer--currency"
+                           data-sameday-bulk-awb-currency-confirm
+                           hidden>
+                        <input type="checkbox"
+                               class="sameday-modal-checkbox"
+                               data-sameday-bulk-awb-currency-agree>
+                        <span><?php echo $currencyConfirm; ?></span>
+                    </label>
+                <?php endif; ?>
                 <label class="sameday-bulk-awb-modal__disclaimer">
                     <input type="checkbox"
                            class="sameday-modal-checkbox"

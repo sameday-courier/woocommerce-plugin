@@ -143,7 +143,21 @@
 }
 
 .sameday-bulk-awb-modal__orders li {
-    margin: 0 0 2px;
+    margin: 0 0 6px;
+}
+
+.sameday-bulk-awb-modal__order-id--warning {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+.sameday-bulk-awb-modal__order-warning {
+    display: inline;
+    margin-left: 6px;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 .sameday-bulk-awb-modal__empty {
@@ -165,6 +179,18 @@
     font-size: 14px;
     line-height: 1.45;
     cursor: pointer;
+}
+
+.sameday-bulk-awb-modal__disclaimer[hidden] {
+    display: none;
+}
+
+.sameday-bulk-awb-modal__disclaimer--currency {
+    margin: 0 0 12px;
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-weight: 600;
 }
 
 .sameday-bulk-awb-modal__disclaimer .sameday-modal-checkbox {

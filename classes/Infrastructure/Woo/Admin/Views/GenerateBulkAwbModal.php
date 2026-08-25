@@ -27,6 +27,9 @@ final class GenerateBulkAwbModal
                 'You are about to generate Sameday AWB for %s order(s).'
             ),
             'disclaimer' => TranslatorHandler::translate('Confirm this if you want to start bulk awb processing!'),
+            'currencyConfirm' => TranslatorHandler::translate(
+                'I confirm that I proceed with manual conversion for those orders.'
+            ),
             'progressTitle' => TranslatorHandler::translate('Generating AWBs'),
             'startingTitle' => TranslatorHandler::translate('Preparing bulk generation'),
             'startingHint' => TranslatorHandler::translate('Please wait while we prepare your orders…'),
