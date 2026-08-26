@@ -12,32 +12,44 @@ final class StartAllImportResponse implements ResponseInterface
 {
     use NoticerTrait;
 
+    /**
+     * @var BulkJobId|null $jobId
+     */
     private ?BulkJobId $jobId;
 
+    /**
+     * @var int $total
+     */
     private int $total;
 
+    /**
+     * @var int $processed
+     */
     private int $processed;
 
+    /**
+     * @var bool $done
+     */
     private bool $done;
 
     /**
-     * @param ?string $noticeMessage
-     * @param string $noticeType
-     * @param ?BulkJobId $jobId
+     * @param string $noticeMessage
+     * @param bool $hasError
+     * @param BulkJobId|null $jobId
      * @param int $total
      * @param int $processed
      * @param bool $done
      */
     public function __construct(
-        ?string $noticeMessage,
-        string $noticeType,
+        string $noticeMessage,
+        bool $hasError,
         ?BulkJobId $jobId = null,
         int $total = 0,
         int $processed = 0,
         bool $done = false
     ) {
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
         $this->jobId = $jobId;
         $this->total = $total;
         $this->processed = $processed;

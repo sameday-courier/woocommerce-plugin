@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 

@@ -1,6 +1,6 @@
 <?php
 
-//declare(strict_types=1);
+declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
@@ -59,8 +59,7 @@ final class ShowLockerFieldAction extends AbstractAction
         ?SessionHandlerInterface $sessionHandler = null,
         ?CarrierSettingsServiceProvider $carrierSettingsServiceProvider = null,
         ?LockerDtoFactory $lockerDtoFactory = null
-    )
-    {
+    ) {
         $this->wooShippingMethodProvider = $wooShippingMethodProvider ?? new WooShippingMethodProvider();
         $this->carrierServiceRules = $carrierServiceRules ?? new CarrierServiceRules(new SamedayServiceRepository());
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();

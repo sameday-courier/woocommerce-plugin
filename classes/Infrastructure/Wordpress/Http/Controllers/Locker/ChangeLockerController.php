@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLocker;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerItem;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooLockerOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\ChangeLockerFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\ChangeLockerMapper;
 
 final class ChangeLockerController extends AbstractController
 {
@@ -34,18 +32,19 @@ final class ChangeLockerController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $changeLockerItem = ChangeLockerItem::fromArray($inputParams);
+        $params = new ChangeLockerMapper($inputParams);
+        $changeLocker = ChangeLockerFactory::create();
 
-        $result = (new ChangeLocker(
+        $result = $changeLocker->execute(
             new ChangeLockerRequest(
-                $changeLockerItem,
-                new WooLockerOrderDataHandler(),
+                $params->orderId(),
+                $params->locker()
             )
-        ))->execute();
+        );
 
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
+        if ($result->hasError()) {
             $this->sendJsonErrorResponse(
-                TranslatorHandler::translate($result->getNoticeMessage() ?? 'Failed to change locker.')
+                TranslatorHandler::translate($result->getNoticeMessage())
             );
         }
 

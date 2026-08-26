@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel\AddNewParcelAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\AddNewParcelAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\AddNewParcelAwbMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class AddNewParcelAwbController extends AbstractController
 {
@@ -34,18 +32,23 @@ final class AddNewParcelAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $addNewParcelAwbItem = AddNewParcelAwbItem::fromArray($inputParams);
-        $orderId = $addNewParcelAwbItem->getOrderId();
+        $params = new AddNewParcelAwbMapper($inputParams);
+        $orderId = $params->orderId();
+
+        $addNewParcelAwb = AddNewParcelAwbFactory::create();
 
         try {
-            $addNewParcelAwb = new AddNewParcelAwb(
+            $result = $addNewParcelAwb->execute(
                 new AddNewParcelAwbRequest(
-                    $addNewParcelAwbItem,
-                    new OrderAwbStoreServiceProvider(),
-                    new CourierServiceProvider()
+                    $params->orderId(),
+                    $params->parcelWeight(),
+                    $params->parcelWidth(),
+                    $params->parcelLength(),
+                    $params->parcelHeight(),
+                    $params->parcelObservation(),
+                    $params->parcelIsLast()
                 )
             );
-            $result = $addNewParcelAwb->execute();
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($exception->getMessage()),
@@ -61,10 +64,14 @@ final class AddNewParcelAwbController extends AbstractController
             );
         }
 
-        if ($result->hasNotices()) {
+        $noticeType = $result->hasError()
+            ? ResponseNoticeType::ERROR
+            : ResponseNoticeType::SUCCESS;
+
+        if ('' !== $result->getNoticeMessage()) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate($result->getNoticeMessage()),
-                $result->getNoticeType(),
+                $noticeType,
             );
         }
 
@@ -73,7 +80,7 @@ final class AddNewParcelAwbController extends AbstractController
             [
                 'post' => $result->getOrderId(),
                 'action' => 'edit',
-                'add-new-parcel' => $result->getNoticeType(),
+                'add-new-parcel' => $noticeType,
             ]
         );
     }

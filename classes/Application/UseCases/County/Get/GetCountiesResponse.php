@@ -12,27 +12,27 @@ final class GetCountiesResponse implements ResponseInterface
     use NoticerTrait;
 
     /**
-     * @var array<int, array{id: int, name: string}> $counties
+     * @var array $counties
      */
     private array $counties;
 
     /**
-     * @param string|null $noticeMessage
-     * @param string $noticeType
+     * @param string $noticeMessage
+     * @param bool $hasError
      * @param array $counties
      */
     public function __construct(
-        ?string $noticeMessage,
-        string $noticeType,
+        string $noticeMessage,
+        bool $hasError,
         array $counties = []
     ) {
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
         $this->counties = $counties;
     }
 
     /**
-     * @return array<int,
+     * @return array
      */
     public function getCounties(): array
     {

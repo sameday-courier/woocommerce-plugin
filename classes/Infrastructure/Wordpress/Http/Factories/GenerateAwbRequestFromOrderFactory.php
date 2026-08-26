@@ -2,34 +2,57 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Common\Factories;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories;
 
 use InvalidArgumentException;
 use Sameday\Objects\Types\AwbPaymentType;
 use Sameday\Objects\Types\PackageType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbItem;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderWeightCalculatorInterface;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\GenerateAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
-final class GenerateAwbItemFactory
+final class GenerateAwbRequestFromOrderFactory
 {
+    /**
+     * @var GenerateAwbOrderProviderInterface $orderProvider
+     */
     private GenerateAwbOrderProviderInterface $orderProvider;
 
+    /**
+     * @var OrderWeightCalculatorInterface $orderWeightCalculator
+     */
     private OrderWeightCalculatorInterface $orderWeightCalculator;
 
+    /**
+     * @var OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler
+     */
     private OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler;
 
+    /**
+     * @var SamedayPickupPointRepository $samedayPickupPointRepository
+     */
     private SamedayPickupPointRepository $samedayPickupPointRepository;
 
+    /**
+     * @var SamedayServiceRepository $samedayServiceRepository
+     */
     private SamedayServiceRepository $samedayServiceRepository;
 
+    /**
+     * @var CarrierServiceRules $carrierServiceRules
+     */
     private CarrierServiceRules $carrierServiceRules;
 
+    /**
+     * @var LockerDtoFactory $lockerDtoFactory
+     */
     private LockerDtoFactory $lockerDtoFactory;
 
     /**
@@ -39,7 +62,7 @@ final class GenerateAwbItemFactory
      * @param SamedayPickupPointRepository $samedayPickupPointRepository
      * @param SamedayServiceRepository $samedayServiceRepository
      * @param CarrierServiceRules $carrierServiceRules
-     * @param ?LockerDtoFactory $lockerDtoFactory
+     * @param LockerDtoFactory|null $lockerDtoFactory
      */
     public function __construct(
         GenerateAwbOrderProviderInterface $orderProvider,
@@ -60,14 +83,15 @@ final class GenerateAwbItemFactory
     }
 
     /**
-     * Builds a GenerateAwbItem from order defaults (bulk flow).
+     * Builds a GenerateAwbRequest from order defaults (bulk flow).
      *
      * @param int $orderId
      *
-     * @return GenerateAwbItem
+     * @return GenerateAwbRequest
+     *
      * @throws InvalidArgumentException
      */
-    public function fromOrderId(int $orderId): GenerateAwbItem
+    public function fromOrderId(int $orderId): GenerateAwbRequest
     {
         $order = $this->orderProvider->getById($orderId);
         if (null === $order) {
@@ -103,33 +127,52 @@ final class GenerateAwbItemFactory
         }
 
         $inputParams = [
-            'samedaycourier-order-id' => $orderId,
-            'samedaycourier-service' => $serviceId,
-            'samedaycourier-package-pickup-point' => $pickupPointId,
-            'shipping_lines' => $order->getShippingLines(),
-            'shipping' => $order->getShipping(),
-            'billing' => $order->getBilling(),
-            'locker' => $order->getLocker(),
-            'samedaycourier-package-type' => PackageType::PARCEL,
-            'samedaycourier-package-awb-payment' => AwbPaymentType::CLIENT,
-            'samedaycourier-package-insurance-value' => 0,
-            'samedaycourier-package-repayment' => $repayment,
-            'samedaycourier-client-reference' => $order->getOrderNumber(),
-            'samedaycourier-package-dimensions' => $this->orderWeightCalculator->toPackageDimensions($orderId),
+            GenerateAwbMapper::ORDER_ID_KEY => $orderId,
+            GenerateAwbMapper::SERVICE_ID_KEY => $serviceId,
+            GenerateAwbMapper::PICKUP_POINT_ID_KEY => $pickupPointId,
+            GenerateAwbMapper::SHIPPING_LINES_KEY => $order->getShippingLines(),
+            GenerateAwbMapper::SHIPPING_KEY => $order->getShipping(),
+            GenerateAwbMapper::BILLING_KEY => $order->getBilling(),
+            GenerateAwbMapper::LOCKER_KEY => $order->getLocker(),
+            GenerateAwbMapper::PACKAGE_TYPE_KEY => PackageType::PARCEL,
+            GenerateAwbMapper::AWB_PAYMENT_KEY => AwbPaymentType::CLIENT,
+            GenerateAwbMapper::INSURANCE_VALUE_KEY => 0,
+            GenerateAwbMapper::REPAYMENT_KEY => $repayment,
+            GenerateAwbMapper::CLIENT_REFERENCE_KEY => $order->getOrderNumber(),
+            GenerateAwbMapper::PACKAGE_DIMENSIONS_KEY => $this->orderWeightCalculator->toPackageDimensions($orderId),
         ];
 
         if ($this->openPackageOrderDataHandler->isEnabled($orderId)) {
-            $inputParams['samedaycourier-open-package-status'] = 'on';
+            $inputParams[GenerateAwbMapper::OPEN_PACKAGE_KEY] = 'on';
         }
 
-        return GenerateAwbItem::fromArray($inputParams);
+        $mapper = new GenerateAwbMapper($inputParams);
+
+        return new GenerateAwbRequest(
+            $mapper->orderId(),
+            $mapper->serviceId(),
+            $mapper->pickupPointId(),
+            $mapper->shippingLines(),
+            $mapper->shipping(),
+            $mapper->billing(),
+            $mapper->locker(),
+            $mapper->hasOpenPackage(),
+            $mapper->hasLockerFirstMile(),
+            $mapper->packageType(),
+            $mapper->awbPayment(),
+            $mapper->insuranceValue(),
+            $mapper->repayment(),
+            $mapper->clientReference(),
+            $mapper->observation(),
+            $mapper->packageDimensions()
+        );
     }
 
     /**
-     * @param ?string $serviceCode
+     * @param string|null $serviceCode
      * @param mixed $locker
      *
-     * @return ?int
+     * @return int|null
      */
     private function resolveServiceId(?string $serviceCode, $locker): ?int
     {

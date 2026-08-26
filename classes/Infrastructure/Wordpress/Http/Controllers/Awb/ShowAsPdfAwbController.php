@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf\ShowAsPdfAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\ShowAsPdfAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\ShowAsPdfAwbMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class ShowAsPdfAwbController extends AbstractController
 {
@@ -33,18 +32,14 @@ final class ShowAsPdfAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $showAsPdfAwbItem = ShowAsPdfAwbItem::fromArray($inputParams);
+        $params = new ShowAsPdfAwbMapper($inputParams);
+        $orderId = $params->orderId();
+        $showAsPdfAwb = ShowAsPdfAwbFactory::create();
 
         try {
-            $showAsPdf = new ShowAsPdfAwb(
-                new ShowAsPdfAwbRequest(
-                    $showAsPdfAwbItem,
-                    new OrderAwbStoreServiceProvider(),
-                    new CourierServiceProvider(),
-                    new CarrierSettingsServiceProvider()
-                )
+            $result = $showAsPdfAwb->execute(
+                new ShowAsPdfAwbRequest($orderId)
             );
-            $result = $showAsPdf->execute();
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
                 $exception->getMessage(),
@@ -53,7 +48,7 @@ final class ShowAsPdfAwbController extends AbstractController
             $this->redirectTo(
                 'post.php',
                 [
-                    'post' => $showAsPdfAwbItem->getOrderId(),
+                    'post' => $orderId,
                     'action' => 'edit',
                 ]
             );
@@ -76,10 +71,14 @@ final class ShowAsPdfAwbController extends AbstractController
             exit;
         }
 
-        if ($result->hasNotices()) {
+        $noticeType = $result->hasError()
+            ? ResponseNoticeType::ERROR
+            : ResponseNoticeType::SUCCESS;
+
+        if ('' !== $result->getNoticeMessage()) {
             NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
+                TranslatorHandler::translate($result->getNoticeMessage()),
+                $noticeType,
             );
         }
 
@@ -88,7 +87,7 @@ final class ShowAsPdfAwbController extends AbstractController
             [
                 'post' => $result->getOrderId(),
                 'action' => 'edit',
-                'show-awb' => $result->getNoticeType(),
+                'show-awb' => $noticeType,
             ]
         );
     }

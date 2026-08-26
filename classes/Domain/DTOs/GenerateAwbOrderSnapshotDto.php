@@ -25,7 +25,7 @@ final class GenerateAwbOrderSnapshotDto
     private array $billing;
 
     /**
-     * Opaque shipping-line collection for GenerateAwbItem (platform objects).
+     * Opaque shipping-line collection for GenerateAwbRequest (platform objects).
      *
      * @var array<int|string, mixed>
      */

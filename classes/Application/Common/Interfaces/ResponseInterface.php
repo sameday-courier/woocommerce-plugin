@@ -9,15 +9,10 @@ interface ResponseInterface
     /**
      * @return string
      */
-    public function getNoticeType(): string;
-
-    /**
-     * @return string|null
-     */
-    public function getNoticeMessage(): ?string;
+    public function getNoticeMessage(): string;
 
     /**
      * @return bool
      */
-    public function hasNotices(): bool;
+    public function hasError(): bool;
 }

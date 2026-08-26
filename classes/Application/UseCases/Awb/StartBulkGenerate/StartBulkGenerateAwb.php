@@ -4,53 +4,61 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartBulkGenerateAwb
 {
-    private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
-
+    /**
+     * @var BulkJobStoreInterface $bulkJobStore
+     */
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @var BulkJobIdGeneratorInterface $bulkJobIdGenerator
+     */
     private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
 
     /**
-     * @param StartBulkGenerateAwbRequest $request
+     * @param BulkJobStoreInterface $bulkJobStore
+     * @param BulkJobIdGeneratorInterface $bulkJobIdGenerator
      */
-    public function __construct(StartBulkGenerateAwbRequest $request)
-    {
-        $this->startBulkGenerateAwbItem = $request->getStartBulkGenerateAwbItem();
-        $this->bulkJobStore = $request->getBulkJobStore();
-        $this->bulkJobIdGenerator = $request->getBulkJobIdGenerator();
+    public function __construct(
+        BulkJobStoreInterface $bulkJobStore,
+        BulkJobIdGeneratorInterface $bulkJobIdGenerator
+    ) {
+        $this->bulkJobStore = $bulkJobStore;
+        $this->bulkJobIdGenerator = $bulkJobIdGenerator;
     }
 
     /**
+     * @param StartBulkGenerateAwbRequest $request
      * @return StartBulkGenerateAwbResponse
      */
-    public function execute(): StartBulkGenerateAwbResponse
+    public function execute(StartBulkGenerateAwbRequest $request): StartBulkGenerateAwbResponse
     {
-        $orderIds = $this->startBulkGenerateAwbItem->getOrderIds();
+        $orderIds = $request->getOrderIds();
+        $userId = $request->getUserId();
+
         if ([] === $orderIds) {
             return new StartBulkGenerateAwbResponse(
                 'There is no data to process.',
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
         $job = BulkJobDto::create(
             $this->bulkJobIdGenerator->generate(),
-            $this->startBulkGenerateAwbItem->getUserId(),
+            $userId,
             $orderIds
         );
 
         $this->bulkJobStore->create($job);
 
         return new StartBulkGenerateAwbResponse(
-            null,
-            ResponseNoticeType::SUCCESS,
+            '',
+            false,
             $job->getJobId(),
             $job->getTotal(),
             0,

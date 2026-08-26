@@ -4,33 +4,47 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\Ports\CityCatalogStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CitySourceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 
 final class RefreshCity
 {
+    /**
+     * @var CityCatalogStoreServiceProviderInterface $cityCatalogStore
+     */
     private CityCatalogStoreServiceProviderInterface $cityCatalogStore;
 
+    /**
+     * @var CitySourceProviderInterface $citySourceProvider
+     */
     private CitySourceProviderInterface $citySourceProvider;
 
+    /**
+     * @var CountriesHandlerInterface $countriesHandler
+     */
     private CountriesHandlerInterface $countriesHandler;
 
     /**
-     * @param RefreshCityRequest $refreshCitiesRequest
+     * @param CityCatalogStoreServiceProviderInterface $cityCatalogStore
+     * @param CitySourceProviderInterface $citySourceProvider
+     * @param CountriesHandlerInterface $countriesHandler
      */
-    public function __construct(RefreshCityRequest $refreshCitiesRequest)
-    {
-        $this->cityCatalogStore = $refreshCitiesRequest->getCityCatalogStore();
-        $this->citySourceProvider = $refreshCitiesRequest->getCitySourceProvider();
-        $this->countriesHandler = $refreshCitiesRequest->getCountriesHandler();
+    public function __construct(
+        CityCatalogStoreServiceProviderInterface $cityCatalogStore,
+        CitySourceProviderInterface $citySourceProvider,
+        CountriesHandlerInterface $countriesHandler
+    ) {
+        $this->cityCatalogStore = $cityCatalogStore;
+        $this->citySourceProvider = $citySourceProvider;
+        $this->countriesHandler = $countriesHandler;
     }
 
     /**
+     * @param RefreshCityRequest $request
      * @return RefreshCityResponse
      */
-    public function execute(): RefreshCityResponse
+    public function execute(RefreshCityRequest $request): RefreshCityResponse
     {
         $this->cityCatalogStore->ensureTableExists();
 
@@ -38,7 +52,7 @@ final class RefreshCity
         if (null === $cities) {
             return new RefreshCityResponse(
                 'Unable to get cities',
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
@@ -55,7 +69,7 @@ final class RefreshCity
 
         return new RefreshCityResponse(
             'All cities have been refreshed',
-            ResponseNoticeType::SUCCESS
+            false
         );
     }
 }

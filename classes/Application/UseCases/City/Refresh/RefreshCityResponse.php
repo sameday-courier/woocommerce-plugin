@@ -12,12 +12,12 @@ final class RefreshCityResponse implements ResponseInterface
     use NoticerTrait;
 
     /**
-     * @param string|null $noticeMessage
-     * @param string $noticeType
+     * @param string $noticeMessage
+     * @param bool $hasError
      */
-    public function __construct(?string $noticeMessage, string $noticeType)
+    public function __construct(string $noticeMessage, bool $hasError)
     {
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
     }
 }

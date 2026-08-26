@@ -4,39 +4,41 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
-use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
-
 final class ChangeLockerRequest
 {
-    private ChangeLockerItem $changeLockerItem;
-
-    private LockerOrderDataHandlerInterface $lockerOrderDataHandler;
+    /**
+     * @var int $orderId
+     */
+    private int $orderId;
 
     /**
-     * @param ChangeLockerItem $changeLockerItem
-     * @param LockerOrderDataHandlerInterface $lockerOrderDataHandler
+     * @var mixed $locker
      */
-    public function __construct(
-        ChangeLockerItem $changeLockerItem,
-        LockerOrderDataHandlerInterface $lockerOrderDataHandler
-    ) {
-        $this->changeLockerItem = $changeLockerItem;
-        $this->lockerOrderDataHandler = $lockerOrderDataHandler;
+    private $locker;
+
+    /**
+     * @param int $orderId
+     * @param mixed $locker
+     */
+    public function __construct(int $orderId, $locker)
+    {
+        $this->orderId = $orderId;
+        $this->locker = $locker;
     }
 
     /**
-     * @return ChangeLockerItem
+     * @return int
      */
-    public function getChangeLockerItem(): ChangeLockerItem
+    public function getOrderId(): int
     {
-        return $this->changeLockerItem;
+        return $this->orderId;
     }
 
     /**
-     * @return LockerOrderDataHandlerInterface
+     * @return mixed
      */
-    public function getLockerOrderDataHandler(): LockerOrderDataHandlerInterface
+    public function getLocker()
     {
-        return $this->lockerOrderDataHandler;
+        return $this->locker;
     }
 }

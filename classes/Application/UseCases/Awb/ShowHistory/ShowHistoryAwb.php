@@ -13,31 +13,44 @@ use SamedayCourier\Shipping\Domain\Ports\PackageHistoryStoreServiceProviderInter
 
 final class ShowHistoryAwb
 {
-    private ShowHistoryAwbItem $showHistoryAwbItem;
-
+    /**
+     * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
+     */
     private OrderAwbStoreServiceProviderInterface $orderAwbStore;
 
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @var PackageHistoryStoreServiceProviderInterface $packageHistoryStore
+     */
     private PackageHistoryStoreServiceProviderInterface $packageHistoryStore;
 
     /**
-     * @param ShowHistoryAwbRequest $showHistoryAwbRequest
+     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PackageHistoryStoreServiceProviderInterface $packageHistoryStore
      */
-    public function __construct(ShowHistoryAwbRequest $showHistoryAwbRequest)
-    {
-        $this->showHistoryAwbItem = $showHistoryAwbRequest->getShowHistoryAwbItem();
-        $this->orderAwbStore = $showHistoryAwbRequest->getOrderAwbStore();
-        $this->courierServiceProvider = $showHistoryAwbRequest->getCourierServiceProvider();
-        $this->packageHistoryStore = $showHistoryAwbRequest->getPackageHistoryStore();
+    public function __construct(
+        OrderAwbStoreServiceProviderInterface $orderAwbStore,
+        CourierServiceProviderInterface $courierServiceProvider,
+        PackageHistoryStoreServiceProviderInterface $packageHistoryStore
+    ) {
+        $this->orderAwbStore = $orderAwbStore;
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->packageHistoryStore = $packageHistoryStore;
     }
 
     /**
+     * @param ShowHistoryAwbRequest $request
+     *
      * @return ShowHistoryAwbResponse
      */
-    public function execute(): ShowHistoryAwbResponse
+    public function execute(ShowHistoryAwbRequest $request): ShowHistoryAwbResponse
     {
-        $orderId = $this->showHistoryAwbItem->getOrderId();
+        $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);
 
         if (null === $awb) {

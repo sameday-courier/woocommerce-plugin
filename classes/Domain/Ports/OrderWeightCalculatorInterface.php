@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 interface OrderWeightCalculatorInterface
 {
     /**
-     * Canonical package-dimensions payload for GenerateAwbItem (weight-only for bulk).
+     * Canonical package-dimensions payload for GenerateAwbRequest (weight-only for bulk).
      *
      * @param int $orderId
      *

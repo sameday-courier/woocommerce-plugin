@@ -4,53 +4,123 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
-
 final class AddNewParcelAwbRequest
 {
-    private AddNewParcelAwbItem $awbItem;
-
-    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
-
-    private CourierServiceProviderInterface $courierServiceProvider;
+    /**
+     * @var int $orderId
+     */
+    private int $orderId;
 
     /**
-     * @param AddNewParcelAwbItem $awbItem
-     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
-     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @var mixed $parcelWeight
+     */
+    private $parcelWeight;
+
+    /**
+     * @var mixed $parcelWidth
+     */
+    private $parcelWidth;
+
+    /**
+     * @var mixed $parcelLength
+     */
+    private $parcelLength;
+
+    /**
+     * @var mixed $parcelHeight
+     */
+    private $parcelHeight;
+
+    /**
+     * @var string $parcelObservation
+     */
+    private string $parcelObservation;
+
+    /**
+     * @var bool $parcelIsLast
+     */
+    private bool $parcelIsLast;
+
+    /**
+     * @param int $orderId
+     * @param mixed $parcelWeight
+     * @param mixed $parcelWidth
+     * @param mixed $parcelLength
+     * @param mixed $parcelHeight
+     * @param string $parcelObservation
+     * @param bool $parcelIsLast
      */
     public function __construct(
-        AddNewParcelAwbItem $awbItem,
-        OrderAwbStoreServiceProviderInterface $orderAwbStore,
-        CourierServiceProviderInterface $courierServiceProvider
+        int $orderId,
+        $parcelWeight,
+        $parcelWidth,
+        $parcelLength,
+        $parcelHeight,
+        string $parcelObservation = '',
+        bool $parcelIsLast = false
     ) {
-        $this->awbItem = $awbItem;
-        $this->orderAwbStore = $orderAwbStore;
-        $this->courierServiceProvider = $courierServiceProvider;
+        $this->orderId = $orderId;
+        $this->parcelWeight = $parcelWeight;
+        $this->parcelWidth = $parcelWidth;
+        $this->parcelLength = $parcelLength;
+        $this->parcelHeight = $parcelHeight;
+        $this->parcelObservation = $parcelObservation;
+        $this->parcelIsLast = $parcelIsLast;
     }
 
     /**
-     * @return AddNewParcelAwbItem
+     * @return int
      */
-    public function getAwbItem(): AddNewParcelAwbItem
+    public function getOrderId(): int
     {
-        return $this->awbItem;
+        return $this->orderId;
     }
 
     /**
-     * @return OrderAwbStoreServiceProviderInterface
+     * @return mixed
      */
-    public function getOrderAwbStore(): OrderAwbStoreServiceProviderInterface
+    public function getParcelWeight()
     {
-        return $this->orderAwbStore;
+        return $this->parcelWeight;
     }
 
     /**
-     * @return CourierServiceProviderInterface
+     * @return mixed
      */
-    public function getCourierServiceProvider(): CourierServiceProviderInterface
+    public function getParcelWidth()
     {
-        return $this->courierServiceProvider;
+        return $this->parcelWidth;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelLength()
+    {
+        return $this->parcelLength;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParcelHeight()
+    {
+        return $this->parcelHeight;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParcelObservation(): string
+    {
+        return $this->parcelObservation;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isParcelIsLast(): bool
+    {
+        return $this->parcelIsLast;
     }
 }

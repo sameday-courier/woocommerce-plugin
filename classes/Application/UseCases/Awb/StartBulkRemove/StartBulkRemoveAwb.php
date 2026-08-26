@@ -4,53 +4,62 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
 final class StartBulkRemoveAwb
 {
-    private StartBulkRemoveAwbItem $startBulkRemoveAwbItem;
-
+    /**
+     * @var BulkJobStoreInterface $bulkJobStore
+     */
     private BulkJobStoreInterface $bulkJobStore;
 
+    /**
+     * @var BulkJobIdGeneratorInterface $bulkJobIdGenerator
+     */
     private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
 
     /**
-     * @param StartBulkRemoveAwbRequest $request
+     * @param BulkJobStoreInterface $bulkJobStore
+     * @param BulkJobIdGeneratorInterface $bulkJobIdGenerator
      */
-    public function __construct(StartBulkRemoveAwbRequest $request)
-    {
-        $this->startBulkRemoveAwbItem = $request->getStartBulkRemoveAwbItem();
-        $this->bulkJobStore = $request->getBulkJobStore();
-        $this->bulkJobIdGenerator = $request->getBulkJobIdGenerator();
+    public function __construct(
+        BulkJobStoreInterface $bulkJobStore,
+        BulkJobIdGeneratorInterface $bulkJobIdGenerator
+    ) {
+        $this->bulkJobStore = $bulkJobStore;
+        $this->bulkJobIdGenerator = $bulkJobIdGenerator;
     }
 
     /**
+     * @param StartBulkRemoveAwbRequest $request
+     *
      * @return StartBulkRemoveAwbResponse
      */
-    public function execute(): StartBulkRemoveAwbResponse
+    public function execute(StartBulkRemoveAwbRequest $request): StartBulkRemoveAwbResponse
     {
-        $orderIds = $this->startBulkRemoveAwbItem->getOrderIds();
+        $orderIds = $request->getOrderIds();
+        $userId = $request->getUserId();
+
         if ([] === $orderIds) {
             return new StartBulkRemoveAwbResponse(
                 'There is no data to process.',
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
         $job = BulkJobDto::create(
             $this->bulkJobIdGenerator->generate(),
-            $this->startBulkRemoveAwbItem->getUserId(),
+            $userId,
             $orderIds
         );
 
         $this->bulkJobStore->create($job);
 
         return new StartBulkRemoveAwbResponse(
-            null,
-            ResponseNoticeType::SUCCESS,
+            '',
+            false,
             $job->getJobId(),
             $job->getTotal(),
             0,

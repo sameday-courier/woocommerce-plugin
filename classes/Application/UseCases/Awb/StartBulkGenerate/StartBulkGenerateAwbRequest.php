@@ -4,53 +4,38 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
-
 final class StartBulkGenerateAwbRequest
 {
-    private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
+    /**
+     * @var int[] $orderIds
+     */
+    private array $orderIds;
 
-    private BulkJobStoreInterface $bulkJobStore;
-
-    private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
+    private int $userId;
 
     /**
-     * @param StartBulkGenerateAwbItem $startBulkGenerateAwbItem
-     * @param BulkJobStoreInterface $bulkJobStore
-     * @param BulkJobIdGeneratorInterface $bulkJobIdGenerator
+     * @param int[] $orderIds
+     * @param int $userId
      */
-    public function __construct(
-        StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
-        BulkJobStoreInterface $bulkJobStore,
-        BulkJobIdGeneratorInterface $bulkJobIdGenerator
-    ) {
-        $this->startBulkGenerateAwbItem = $startBulkGenerateAwbItem;
-        $this->bulkJobStore = $bulkJobStore;
-        $this->bulkJobIdGenerator = $bulkJobIdGenerator;
+    public function __construct(array $orderIds, int $userId)
+    {
+        $this->orderIds = $orderIds;
+        $this->userId = $userId;
     }
 
     /**
-     * @return StartBulkGenerateAwbItem
+     * @return int[]
      */
-    public function getStartBulkGenerateAwbItem(): StartBulkGenerateAwbItem
+    public function getOrderIds(): array
     {
-        return $this->startBulkGenerateAwbItem;
+        return $this->orderIds;
     }
 
     /**
-     * @return BulkJobStoreInterface
+     * @return int
      */
-    public function getBulkJobStore(): BulkJobStoreInterface
+    public function getUserId(): int
     {
-        return $this->bulkJobStore;
-    }
-
-    /**
-     * @return BulkJobIdGeneratorInterface
-     */
-    public function getBulkJobIdGenerator(): BulkJobIdGeneratorInterface
-    {
-        return $this->bulkJobIdGenerator;
+        return $this->userId;
     }
 }

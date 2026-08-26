@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Import;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImport;
 use SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport\StartAllImportRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobIdGeneratorServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\StartAllImportFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 final class StartAllImportController extends AbstractController
@@ -31,19 +28,19 @@ final class StartAllImportController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $result = (new StartAllImport(
-            new StartAllImportRequest(
-                $this->getCurrentUserId(),
-                new BulkJobStoreServiceProvider(),
-                new BulkJobIdGeneratorServiceProvider()
-            )
-        ))->execute();
+        $startAllImport = StartAllImportFactory::create();
 
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
+        $result = $startAllImport->execute(
+            new StartAllImportRequest(
+                $this->getCurrentUserId()
+            )
+        );
+
+        if ($result->hasError()) {
             $this->sendJsonErrorResponse(
                 [
                     'message' => TranslatorHandler::translate(
-                        $result->getNoticeMessage() ?? 'There is no data to process.'
+                        $result->getNoticeMessage()
                     ),
                 ]
             );

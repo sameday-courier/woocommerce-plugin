@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Common\ResponseNoticeType;
+namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType;
 
 final class ResponseNoticeType
 {

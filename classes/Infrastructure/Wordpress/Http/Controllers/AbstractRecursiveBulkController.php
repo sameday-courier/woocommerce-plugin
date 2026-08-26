@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use InvalidArgumentException;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;

@@ -4,53 +4,38 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
-
 final class StartBulkRemoveAwbRequest
 {
-    private StartBulkRemoveAwbItem $startBulkRemoveAwbItem;
+    /**
+     * @var int[] $orderIds
+     */
+    private array $orderIds;
 
-    private BulkJobStoreInterface $bulkJobStore;
-
-    private BulkJobIdGeneratorInterface $bulkJobIdGenerator;
+    private int $userId;
 
     /**
-     * @param StartBulkRemoveAwbItem $startBulkRemoveAwbItem
-     * @param BulkJobStoreInterface $bulkJobStore
-     * @param BulkJobIdGeneratorInterface $bulkJobIdGenerator
+     * @param int[] $orderIds
+     * @param int $userId
      */
-    public function __construct(
-        StartBulkRemoveAwbItem $startBulkRemoveAwbItem,
-        BulkJobStoreInterface $bulkJobStore,
-        BulkJobIdGeneratorInterface $bulkJobIdGenerator
-    ) {
-        $this->startBulkRemoveAwbItem = $startBulkRemoveAwbItem;
-        $this->bulkJobStore = $bulkJobStore;
-        $this->bulkJobIdGenerator = $bulkJobIdGenerator;
+    public function __construct(array $orderIds, int $userId)
+    {
+        $this->orderIds = $orderIds;
+        $this->userId = $userId;
     }
 
     /**
-     * @return StartBulkRemoveAwbItem
+     * @return int[]
      */
-    public function getStartBulkRemoveAwbItem(): StartBulkRemoveAwbItem
+    public function getOrderIds(): array
     {
-        return $this->startBulkRemoveAwbItem;
+        return $this->orderIds;
     }
 
     /**
-     * @return BulkJobStoreInterface
+     * @return int
      */
-    public function getBulkJobStore(): BulkJobStoreInterface
+    public function getUserId(): int
     {
-        return $this->bulkJobStore;
-    }
-
-    /**
-     * @return BulkJobIdGeneratorInterface
-     */
-    public function getBulkJobIdGenerator(): BulkJobIdGeneratorInterface
-    {
-        return $this->bulkJobIdGenerator;
+        return $this->userId;
     }
 }

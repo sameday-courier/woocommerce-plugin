@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
-use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditService;
-use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceItem;
 use SamedayCourier\Shipping\Application\UseCases\Service\Edit\EditServiceRequest;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\EditServiceFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\EditServiceMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
 
 final class EditServiceController extends AbstractController
 {
@@ -36,32 +36,34 @@ final class EditServiceController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $serviceName = $inputParams['samedaycourier-service-name'] ?? null;
+        $serviceName = $inputParams[EditServiceMapper::NAME_KEY] ?? null;
         if (null === $serviceName) {
             $carrierSettingsProvider = new CarrierSettingsServiceProvider();
             $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
-        $inputParams['samedaycourier-service-name'] = $serviceName;
+        $inputParams[EditServiceMapper::NAME_KEY] = $serviceName;
 
-        $editService = new EditService(
+        $params = new EditServiceMapper($inputParams);
+        $editService = EditServiceFactory::create();
+
+        $result = $editService->execute(
             new EditServiceRequest(
-                EditServiceItem::fromArray($inputParams),
-                new ServiceCatalogStoreServiceProvider()
+                $params->id(),
+                $params->name(),
+                $params->price(),
+                $params->priceFree(),
+                $params->status()
             )
         );
 
-        $result = $editService->execute();
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
+        );
 
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
-            );
-        }
-
-        if ($result->getNoticeType() === ResponseNoticeType::ERROR) {
+        if ($result->hasError()) {
             $this->redirectTo(
                 'edit.php',
                 [

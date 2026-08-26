@@ -7,7 +7,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
@@ -28,61 +27,99 @@ use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorR
 
 final class GenerateAwb
 {
-    private GenerateAwbItem $awbItem;
-
+    /**
+     * @var ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
+    /**
+     * @var PickupPointStoreServiceProviderInterface $pickupPointStore
+     */
     private PickupPointStoreServiceProviderInterface $pickupPointStore;
 
+    /**
+     * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
+     */
     private OrderAwbStoreServiceProviderInterface $orderAwbStore;
 
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @var PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider
+     */
     private PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider;
 
+    /**
+     * @var CarrierShippingHdAddressParserInterface $hdAddressParser
+     */
     private CarrierShippingHdAddressParserInterface $hdAddressParser;
 
+    /**
+     * @var StateCodeResolverInterface $stateCodeResolver
+     */
     private StateCodeResolverInterface $stateCodeResolver;
 
+    /**
+     * @var CityPostalCodeProviderInterface $cityPostalCodeProvider
+     */
     private CityPostalCodeProviderInterface $cityPostalCodeProvider;
 
     /**
-     * @param GenerateAwbRequest $generateAwbRequest
+     * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     * @param PickupPointStoreServiceProviderInterface $pickupPointStore
+     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider
+     * @param CarrierShippingHdAddressParserInterface $hdAddressParser
+     * @param StateCodeResolverInterface $stateCodeResolver
+     * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
      */
-    public function __construct(GenerateAwbRequest $generateAwbRequest)
-    {
-        $this->awbItem = $generateAwbRequest->getGenerateAwbItem();
-        $this->serviceCatalogStore = $generateAwbRequest->getServiceCatalogStore();
-        $this->pickupPointStore = $generateAwbRequest->getPickupPointStore();
-        $this->orderAwbStore = $generateAwbRequest->getOrderAwbStore();
-        $this->courierServiceProvider = $generateAwbRequest->getCourierServiceProvider();
-        $this->postAwbGenerationServiceProvider = $generateAwbRequest->getPostAwbGenerationServiceProvider();
-        $this->hdAddressParser = $generateAwbRequest->getHdAddressParser();
-        $this->stateCodeResolver = $generateAwbRequest->getStateCodeResolver();
-        $this->cityPostalCodeProvider = $generateAwbRequest->getCityPostalCodeProvider();
+    public function __construct(
+        ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore,
+        PickupPointStoreServiceProviderInterface $pickupPointStore,
+        OrderAwbStoreServiceProviderInterface $orderAwbStore,
+        CourierServiceProviderInterface $courierServiceProvider,
+        PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider,
+        CarrierShippingHdAddressParserInterface $hdAddressParser,
+        StateCodeResolverInterface $stateCodeResolver,
+        CityPostalCodeProviderInterface $cityPostalCodeProvider
+    ) {
+        $this->serviceCatalogStore = $serviceCatalogStore;
+        $this->pickupPointStore = $pickupPointStore;
+        $this->orderAwbStore = $orderAwbStore;
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->postAwbGenerationServiceProvider = $postAwbGenerationServiceProvider;
+        $this->hdAddressParser = $hdAddressParser;
+        $this->stateCodeResolver = $stateCodeResolver;
+        $this->cityPostalCodeProvider = $cityPostalCodeProvider;
     }
 
     /**
+     * @param GenerateAwbRequest $request
+     *
      * @return GenerateAwbResponse
      */
-    public function execute(): GenerateAwbResponse
+    public function execute(GenerateAwbRequest $request): GenerateAwbResponse
     {
-        $packageDimensions = $this->normalizePackageDimensions($this->awbItem->getPackageDimensions());
-        $service = $this->serviceCatalogStore->getBySamedayId($this->awbItem->getServiceId());
-        $pickupPoint = $this->pickupPointStore->getBySamedayId($this->awbItem->getPickupPointId());
-        $shipping = (new ShippingDtoFactory())->fromInput($this->awbItem->getShipping());
-        $billing = (new BillingDtoFactory())->fromInput($this->awbItem->getBilling());
-        $locker = (new LockerDtoFactory())->fromInput($this->awbItem->getLocker());
+        $packageDimensions = $this->normalizePackageDimensions($request->getPackageDimensions());
+        $service = $this->serviceCatalogStore->getBySamedayId($request->getServiceId());
+        $pickupPoint = $this->pickupPointStore->getBySamedayId($request->getPickupPointId());
+        $shipping = (new ShippingDtoFactory())->fromInput($request->getShipping());
+        $billing = (new BillingDtoFactory())->fromInput($request->getBilling());
+        $locker = (new LockerDtoFactory())->fromInput($request->getLocker());
 
         $carrierServiceRules = new CarrierServiceRules($this->serviceCatalogStore);
         $awbValidator = (new GenerateAwbValidator())->validate(
             new GenerateAwbValidatorRequest(
-                $this->awbItem->getOrderId(),
+                $request->getOrderId(),
                 $service,
                 $pickupPoint,
                 $billing,
-                $this->awbItem->getShippingLines(),
-                null !== $this->orderAwbStore->getByOrderId($this->awbItem->getOrderId()),
+                $request->getShippingLines(),
+                null !== $this->orderAwbStore->getByOrderId($request->getOrderId()),
                 [] !== $packageDimensions,
             )
         );
@@ -90,15 +127,15 @@ final class GenerateAwb
         if ($awbValidator->hasErrors()) {
             return new GenerateAwbResponse(
                 $awbValidator->toString(),
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
         $serviceTax = (new AwbGenerateServiceTaxResolver($this->serviceCatalogStore))->resolve(
             $service,
-            $this->awbItem->hasOpenPackage(),
-            $this->awbItem->hasLockerFirstMile(),
-            $this->awbItem->getPackageType()
+            $request->hasOpenPackage(),
+            $request->hasLockerFirstMile(),
+            $request->getPackageType()
         );
 
         $awbRecipient = (new AwbGenerateRecipientResolver(
@@ -107,7 +144,7 @@ final class GenerateAwb
             $this->stateCodeResolver,
             $this->cityPostalCodeProvider,
         ))->resolve(
-            $this->awbItem->getOrderId(),
+            $request->getOrderId(),
             $shipping,
             $billing,
             $service,
@@ -119,19 +156,19 @@ final class GenerateAwb
                 new PostAwbRequestDto(
                     $pickupPoint->getSamedayId(),
                     null,
-                    $this->awbItem->getPackageType(),
+                    $request->getPackageType(),
                     $packageDimensions,
                     $service->getSamedayId(),
-                    $this->awbItem->getAwbPayment(),
+                    $request->getAwbPayment(),
                     $awbRecipient->getRecipient(),
-                    $this->awbItem->getInsuranceValue(),
-                    $this->awbItem->getRepayment(),
+                    $request->getInsuranceValue(),
+                    $request->getRepayment(),
                     CarrierConstants::COD_COLLECTOR_CLIENT,
                     null,
                     $serviceTax->getServiceTaxIds(),
                     null,
-                    $this->awbItem->getClientReference(),
-                    $this->awbItem->getObservation(),
+                    $request->getClientReference(),
+                    $request->getObservation(),
                     '',
                     '',
                     null,
@@ -144,14 +181,14 @@ final class GenerateAwb
         } catch (CourierServiceException $exception) {
             return new GenerateAwbResponse(
                 $exception->getMessage(),
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
         $postAwbGenerationResponse = $this->postAwbGenerationServiceProvider->apply(
             new PostAwbGenerationRequestDto(
-                $this->awbItem->getOrderId(),
-                $this->awbItem->getShippingLines(),
+                $request->getOrderId(),
+                $request->getShippingLines(),
                 $service,
                 $awb->getAwbNumber(),
                 (float) $awb->getCost(),
@@ -163,16 +200,14 @@ final class GenerateAwb
 
         return new GenerateAwbResponse(
             $postAwbGenerationResponse->getMessage(),
-            $postAwbGenerationResponse->isSuccess()
-                ? ResponseNoticeType::SUCCESS
-                : ResponseNoticeType::ERROR,
+            !$postAwbGenerationResponse->isSuccess()
         );
     }
 
     /**
      * @param array $packageDimensions
      *
-     * @return array<int,
+     * @return array
      */
     private function normalizePackageDimensions(array $packageDimensions): array
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetPickupPointsRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
@@ -13,23 +12,33 @@ use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterfac
 
 final class RefreshPickupPoint
 {
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @var PickupPointStoreServiceProviderInterface $pickupPointStore
+     */
     private PickupPointStoreServiceProviderInterface $pickupPointStore;
 
     /**
-     * @param RefreshPickupPointRequest $refreshPickupPointRequest
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param PickupPointStoreServiceProviderInterface $pickupPointStore
      */
-    public function __construct(RefreshPickupPointRequest $refreshPickupPointRequest)
-    {
-        $this->courierServiceProvider = $refreshPickupPointRequest->getCourierServiceProvider();
-        $this->pickupPointStore = $refreshPickupPointRequest->getPickupPointStore();
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider,
+        PickupPointStoreServiceProviderInterface $pickupPointStore
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->pickupPointStore = $pickupPointStore;
     }
 
     /**
+     * @param RefreshPickupPointRequest $request
      * @return RefreshPickupPointResponse
      */
-    public function execute(): RefreshPickupPointResponse
+    public function execute(RefreshPickupPointRequest $request): RefreshPickupPointResponse
     {
         $remotePickupPoints = [];
         $page = 1;
@@ -42,7 +51,7 @@ final class RefreshPickupPoint
             } catch (CourierServiceException $exception) {
                 return new RefreshPickupPointResponse(
                     $exception->getMessage(),
-                    ResponseNoticeType::ERROR
+                    true
                 );
             }
 
@@ -53,7 +62,7 @@ final class RefreshPickupPoint
                 } elseif (!$this->pickupPointStore->updateFromRemote($pickupPointDto, $pickupPoint->getId())) {
                     return new RefreshPickupPointResponse(
                         'Unable to update pickup point',
-                        ResponseNoticeType::ERROR
+                        true
                     );
                 }
 
@@ -84,7 +93,7 @@ final class RefreshPickupPoint
 
         return new RefreshPickupPointResponse(
             'Pickup points successfully refreshed.',
-            ResponseNoticeType::SUCCESS
+            false
         );
     }
 }
