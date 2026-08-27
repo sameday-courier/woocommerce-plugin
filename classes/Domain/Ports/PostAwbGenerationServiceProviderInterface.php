@@ -6,20 +6,17 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbGenerationResponseDto;
-use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 
 interface PostAwbGenerationServiceProviderInterface
 {
     /**
      * @param PostAwbGenerationRequestDto $postAwbGenerationRequestDto
-     * @param CarrierServiceRules $rules
      * @param CourierServiceProviderInterface $courier
      *
      * @return PostAwbGenerationResponseDto
      */
     public function apply(
         PostAwbGenerationRequestDto $postAwbGenerationRequestDto,
-        CarrierServiceRules $rules,
         CourierServiceProviderInterface $courier
     ): PostAwbGenerationResponseDto;
 }

@@ -196,7 +196,6 @@ final class GenerateAwb
                 $awb->getCost(),
                 $awb->getParcels()
             ),
-            $carrierServiceRules,
             $this->courierServiceProvider
         );
 
