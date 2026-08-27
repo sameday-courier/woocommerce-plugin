@@ -193,7 +193,7 @@ final class GenerateAwb
                 $request->getShippingLines(),
                 $service,
                 $awb->getAwbNumber(),
-                (float) $awb->getCost(),
+                $awb->getCost(),
                 $awb->getParcels()
             ),
             $carrierServiceRules,
