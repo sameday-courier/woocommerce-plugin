@@ -72,9 +72,8 @@ final class AwbCurrencyWarningProvider
     private static function resolveDestinationCurrency(WC_Order $order): ?string
     {
         $shipping = $order->get_data()['shipping'] ?? [];
-        $destinationCountry = $shipping['country'] ?? '';
 
-        return CarrierConstants::CURRENCY_MAPPER[$destinationCountry] ?? null;
+        return CarrierCurrencyRules::resolveForCountry($shipping['country'] ?? null);
     }
 
     /**

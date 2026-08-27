@@ -14,7 +14,7 @@ use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
 
@@ -59,6 +59,17 @@ class AwbGenerateRecipientResolver
     }
 
     /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
+    public static function resolveDestinationCountry(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getCountry() ?? $billing->getCountry();
+    }
+
+    /**
      * @param int $orderId
      * @param ShippingDto $shipping
      * @param BillingDto $billing
@@ -76,7 +87,7 @@ class AwbGenerateRecipientResolver
     ): AwbGenerateRecipientResponse {
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
-        $country = $shipping->getCountry() ?? $billing->getCountry();
+        $country = self::resolveDestinationCountry($shipping, $billing);
         $county = $this->stateCodeResolver->resolveNameFromCode($country, $state) ?? '';
         $firstName = $shipping->getFirstName() ?? $billing->getFirstName();
         $lastName = $shipping->getLastName() ?? $billing->getLastName();
@@ -161,7 +172,7 @@ class AwbGenerateRecipientResolver
             $oohLastMile
         );
 
-        $currency = CarrierConstants::CURRENCY_MAPPER[$country];
+        $currency = CarrierCurrencyRules::resolveForCountryRequired($country ?? '');
 
         return new AwbGenerateRecipientResponse(
             $awbRecipient,

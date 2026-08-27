@@ -118,6 +118,7 @@ final class GenerateAwb
                 $service,
                 $pickupPoint,
                 $billing,
+                AwbGenerateRecipientResolver::resolveDestinationCountry($shipping, $billing),
                 $request->getShippingLines(),
                 null !== $this->orderAwbStore->getByOrderId($request->getOrderId()),
                 [] !== $packageDimensions,

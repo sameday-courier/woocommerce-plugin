@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
+
 final class GenerateAwbValidator
 {
     /**
@@ -51,6 +53,23 @@ final class GenerateAwbValidator
             $response->setErrors(
                 'email',
                 'Must complete email.'
+            );
+        }
+
+        $destinationCountry = $request->getDestinationCountry();
+        if (null === $destinationCountry || '' === $destinationCountry) {
+            $response->setErrors(
+                'destination_country',
+                'Must complete the destination country.'
+            );
+        } elseif (null === CarrierCurrencyRules::resolveForCountry($destinationCountry)) {
+            $response->setErrors(
+                'destination_country',
+                sprintf(
+                    'SamedayCourier does not deliver to %s. Available destinations: %s.',
+                    $destinationCountry,
+                    implode(', ', CarrierCurrencyRules::supportedCountries())
+                )
             );
         }
 

@@ -18,6 +18,8 @@ class GenerateAwbValidatorRequest
 
     private BillingDto $billing;
 
+    private ?string $destinationCountry;
+
     /**
      * @var array<int, mixed> $shippingLines
      */
@@ -32,6 +34,7 @@ class GenerateAwbValidatorRequest
      * @param ?CarrierService $carrierService
      * @param ?CarrierPickupPoint $pickupPoint
      * @param BillingDto $billing
+     * @param ?string $destinationCountry
      * @param array $shippingLines
      * @param bool $hasExistingAwb
      * @param bool $hasParcels
@@ -41,6 +44,7 @@ class GenerateAwbValidatorRequest
         ?CarrierService $carrierService,
         ?CarrierPickupPoint $pickupPoint,
         BillingDto $billing,
+        ?string $destinationCountry,
         array $shippingLines,
         bool $hasExistingAwb,
         bool $hasParcels
@@ -49,6 +53,7 @@ class GenerateAwbValidatorRequest
         $this->carrierService = $carrierService;
         $this->pickupPoint = $pickupPoint;
         $this->billing = $billing;
+        $this->destinationCountry = $destinationCountry;
         $this->shippingLines = $shippingLines;
         $this->hasExistingAwb = $hasExistingAwb;
         $this->hasParcels = $hasParcels;
@@ -84,6 +89,14 @@ class GenerateAwbValidatorRequest
     public function getBilling(): BillingDto
     {
         return $this->billing;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getDestinationCountry(): ?string
+    {
+        return $this->destinationCountry;
     }
 
     /**

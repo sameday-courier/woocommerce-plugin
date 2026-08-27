@@ -18,6 +18,7 @@ use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
@@ -323,7 +324,7 @@ final class SamedayCourier extends WC_Shipping_Method
             $address['state']
         );
         $city = RomanianDiacriticsNormalizer::normalize($address['city']);
-        $currency = CarrierConstants::CURRENCY_MAPPER[$address['country']];
+        $currency = CarrierCurrencyRules::resolveForCountry($address['country'] ?? null);
 
         $optionalServices = $this->samedayServiceRepository->getServiceIdOptionalTaxes((int)$serviceId);
         $serviceTaxIds = array();
