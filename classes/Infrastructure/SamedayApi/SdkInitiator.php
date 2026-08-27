@@ -31,7 +31,7 @@ final class SdkInitiator
      * @param string|null $password
      * @param string|null $apiUrl
      *
-     * @return SamedayClient
+     * @return null|SamedayClient
      *
      * @throws SamedaySDKException
      */
@@ -39,7 +39,7 @@ final class SdkInitiator
         ?string $username = null,
         ?string $password = null,
         ?string $apiUrl = null
-    ): SamedayClient {
+    ): ?SamedayClient {
         $settings = $this->carrierSettingsProvider->get();
 
         if (null === $username) {
@@ -55,7 +55,7 @@ final class SdkInitiator
         }
 
         if (null === $username || null === $password || null === $apiUrl || '' === $apiUrl) {
-            throw new SamedaySDKException("Please provide a valid credentials.");
+            return null;
         }
 
         return $this->createSamedaySdkClient($username, $password, $apiUrl);

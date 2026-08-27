@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "sameday-courier/php-sdk",
-            "version": "v2.4.1",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sameday-courier/php-sdk.git",
-                "reference": "0bd6a827239a37c654b53cfc8c9c9e7192907bb8"
+                "reference": "8dea6b8b36aadfe70c7b12735bb3da899b28e5ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sameday-courier/php-sdk/zipball/0bd6a827239a37c654b53cfc8c9c9e7192907bb8",
-                "reference": "0bd6a827239a37c654b53cfc8c9c9e7192907bb8",
+                "url": "https://api.github.com/repos/sameday-courier/php-sdk/zipball/8dea6b8b36aadfe70c7b12735bb3da899b28e5ce",
+                "reference": "8dea6b8b36aadfe70c7b12735bb3da899b28e5ce",
                 "shasum": ""
             },
             "require": {
@@ -58,9 +58,9 @@
             ],
             "support": {
                 "issues": "https://github.com/sameday-courier/php-sdk/issues",
-                "source": "https://github.com/sameday-courier/php-sdk/tree/v2.4.1"
+                "source": "https://github.com/sameday-courier/php-sdk/tree/v2.4.2"
             },
-            "time": "2024-11-01T17:03:40+00:00"
+            "time": "2026-08-26T10:56:48+00:00"
         }
     ],
     "packages-dev": [],

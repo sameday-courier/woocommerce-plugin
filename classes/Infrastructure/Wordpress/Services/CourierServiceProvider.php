@@ -77,7 +77,7 @@ use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
 class CourierServiceProvider implements CourierServiceProviderInterface
 {
-    private Sameday $sameday;
+    private ?Sameday $sameday;
 
     private AwbErrorParser $awbErrorParser;
 
@@ -93,8 +93,6 @@ class CourierServiceProvider implements CourierServiceProviderInterface
      * @param ?ParcelStatusHistoryService $parcelStatusHistoryService
      * @param ?ParcelDimensionsFactory $parcelDimensionsFactory
      * @param ?SdkInitiator $sdkInitiator
-     *
-     * @throws SamedaySDKException
      */
     public function __construct(
         ?Sameday $sameday = null,
@@ -104,10 +102,32 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         ?SdkInitiator $sdkInitiator = null
     ) {
         $this->sdkInitiator = $sdkInitiator ?? new SdkInitiator();
-        $this->sameday = $sameday ?? new Sameday($this->sdkInitiator->init());
+        $this->sameday = $sameday;
         $this->awbErrorParser = $awbErrorParser ?? new AwbErrorParser();
         $this->parcelStatusHistoryService = $parcelStatusHistoryService ?? new ParcelStatusHistoryService();
         $this->parcelDimensionsFactory = $parcelDimensionsFactory ?? new ParcelDimensionsFactory();
+    }
+
+    /**
+     * @return Sameday
+     */
+    private function getSameday(): Sameday
+    {
+        if (null !== $this->sameday) {
+            return $this->sameday;
+        }
+
+        try {
+            $client = $this->sdkInitiator->init();
+        } catch (SamedaySDKException $exception) {
+            throw new CourierServiceException($exception->getMessage());
+        }
+
+        if (null === $client) {
+            throw new CourierServiceException('Please provide valid credentials.');
+        }
+
+        return $this->sameday = new Sameday($client);
     }
 
     /**
@@ -130,7 +150,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 $thirdPartyPickup = null;
             }
 
-            $postAwb = $this->sameday->postAwb(
+            $postAwb = $this->getSameday()->postAwb(
                 new SamedayPostAwbRequest(
                     $awbRequestDto->getPickupPointId(),
                     $awbRequestDto->getContactPersonId(),
@@ -159,7 +179,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
             return new PostAwbResponseDto(
                 $postAwb->getAwbNumber(),
-                (float) $postAwb->getCost(),
+                $postAwb->getCost(),
                 array_map(
                     static function ($parcel): array {
                         return [
@@ -208,7 +228,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function removeAwb(RemoveAwbRequestDto $removeAwbRequestDto): RemoveAwbResponseDto
     {
         try {
-            $this->sameday->deleteAwb(
+            $this->getSameday()->deleteAwb(
                 new SamedayDeleteAwbRequest($removeAwbRequestDto->getAwb())
             );
 
@@ -227,7 +247,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function showAsPdf(ShowAsPdfRequestDto $showAsPdfRequestDto): ShowAsPdfResponseDto
     {
         try {
-            $pdfResponse = $this->sameday->getAwbPdf(
+            $pdfResponse = $this->getSameday()->getAwbPdf(
                 new SamedayGetAwbPdfRequest(
                     $showAsPdfRequestDto->getAwbNumber(),
                     new AwbPdfType($showAsPdfRequestDto->getAwbPdfType())
@@ -249,7 +269,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function postParcel(PostParcelRequestDto $postParcelRequestDto): PostParcelResponseDto
     {
         try {
-            $parcel = $this->sameday->postParcel(
+            $parcel = $this->getSameday()->postParcel(
                 new SamedayPostParcelRequest(
                     $postParcelRequestDto->getAwbNumber(),
                     $this->parcelDimensionsFactory->fromAttributes(
@@ -282,7 +302,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     ): GetParcelStatusHistoryResponseDto {
         try {
             $response = $this->parcelStatusHistoryService->get(
-                $this->sameday,
+                $this->getSameday(),
                 $requestDto->getParcel()
             );
 
@@ -311,7 +331,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 $requestDto->getPostalCode()
             );
             $request->setPage($requestDto->getPage());
-            $response = $this->sameday->getCities($request);
+            $response = $this->getSameday()->getCities($request);
 
             return new GetCitiesResponseDto(
                 array_map(
@@ -344,7 +364,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function getCounties(GetCountiesRequestDto $requestDto): GetCountiesResponseDto
     {
         try {
-            $response = $this->sameday->getCounties(
+            $response = $this->getSameday()->getCounties(
                 new SamedayGetCountiesRequest($requestDto->getName())
             );
 
@@ -380,7 +400,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         try {
             $request = new SamedayGetServicesRequest();
             $request->setPage($requestDto->getPage());
-            $response = $this->sameday->getServices($request);
+            $response = $this->getSameday()->getServices($request);
 
             return new GetServicesResponseDto(
                 array_map(
@@ -419,7 +439,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         try {
             $request = new SamedayGetLockersRequest($requestDto->getLockerIds());
             $request->setPage($requestDto->getPage());
-            $response = $this->sameday->getLockers($request);
+            $response = $this->getSameday()->getLockers($request);
 
             return new GetLockersResponseDto(
                 array_map(
@@ -461,7 +481,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
         try {
             $request = new SamedayGetPickupPointsRequest();
             $request->setPage($requestDto->getPage());
-            $response = $this->sameday->getPickupPoints($request);
+            $response = $this->getSameday()->getPickupPoints($request);
 
             return new GetPickupPointsResponseDto(
                 array_map(
@@ -510,7 +530,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 $requestDto->getContactPersons()
             );
 
-            $this->sameday->postPickupPoint(
+            $this->getSameday()->postPickupPoint(
                 new SamedayPostPickupPointRequest(
                     $requestDto->getCountryId(),
                     $requestDto->getCountyId(),
@@ -538,7 +558,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     public function deletePickupPoint(DeletePickupPointRequestDto $requestDto): DeletePickupPointResponseDto
     {
         try {
-            $this->sameday->deletePickupPoint(
+            $this->getSameday()->deletePickupPoint(
                 new SamedayDeletePickupPointRequest($requestDto->getPickupPointId())
             );
 
@@ -562,7 +582,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 $thirdPartyPickup = null;
             }
 
-            $estimation = $this->sameday->postAwbEstimation(
+            $estimation = $this->getSameday()->postAwbEstimation(
                 new SamedayPostAwbEstimationRequest(
                     $requestDto->getPickupPointId(),
                     $requestDto->getContactPersonId(),
@@ -601,6 +621,10 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 $requestDto->getPass(),
                 $requestDto->getApiUrl()
             );
+
+            if (null === $client) {
+                return new CourierLoginResponseDto(false);
+            }
 
             return new CourierLoginResponseDto($client->login());
         } catch (Exception $exception) {

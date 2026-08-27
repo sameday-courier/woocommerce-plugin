@@ -37,6 +37,13 @@ use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 interface CourierServiceProviderInterface
 {
     /**
+     * @param CourierLoginRequestDto $requestDto
+     *
+     * @return CourierLoginResponseDto
+     */
+    public function login(CourierLoginRequestDto $requestDto): CourierLoginResponseDto;
+
+    /**
      * @param PostAwbRequestDto $awbRequestDto
      *
      * @return PostAwbResponseDto
@@ -141,11 +148,4 @@ interface CourierServiceProviderInterface
      * @throws CourierServiceException
      */
     public function estimateCost(EstimateCostRequestDto $requestDto): EstimateCostResponseDto;
-
-    /**
-     * @param CourierLoginRequestDto $requestDto
-     *
-     * @return CourierLoginResponseDto
-     */
-    public function login(CourierLoginRequestDto $requestDto): CourierLoginResponseDto;
 }
