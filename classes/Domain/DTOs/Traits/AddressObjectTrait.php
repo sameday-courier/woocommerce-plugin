@@ -68,33 +68,6 @@ trait AddressObjectTrait
     }
 
     /**
-     * @param array<string, mixed> $data
-     *
-     * @return self
-     */
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            isset($data['first_name']) ? (string) $data['first_name'] : null,
-            isset($data['last_name']) ? (string) $data['last_name'] : null,
-            isset($data['company']) ? (string) $data['company'] : null,
-            isset($data['address_1']) ? (string) $data['address_1'] : null,
-            isset($data['address_2']) ? (string) $data['address_2'] : null,
-            isset($data['city']) ? (string) $data['city'] : null,
-            isset($data['state']) ? (string) $data['state'] : null,
-            isset($data['postcode']) ? (string) $data['postcode'] : null,
-            isset($data['country']) ? (string) $data['country'] : null,
-            isset($data['email']) ? (string) $data['email'] : null,
-            isset($data['phone']) ? (string) $data['phone'] : null,
-        );
-    }
-
-    /**
      * @return string|null
      */
     public function getName(): ?string

@@ -69,6 +69,16 @@ class AwbGenerateRecipientResolver
         return $shipping->getCountry() ?? $billing->getCountry();
     }
 
+    public static function resolvePhone(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getPhone() ?? $billing->getPhone();
+    }
+
+    public static function resolveEmail(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getEmail() ?? $billing->getEmail();
+    }
+
     /**
      * @param int $orderId
      * @param ShippingDto $shipping
@@ -99,8 +109,8 @@ class AwbGenerateRecipientResolver
             (string) ($country ?? ''),
             $this->cityPostalCodeProvider
         )->getCode();
-        $phone = $shipping->getPhone() ?? $billing->getPhone();
-        $email = $shipping->getEmail() ?? $billing->getEmail();
+        $phone = self::resolvePhone($shipping, $billing);
+        $email = self::resolveEmail($shipping, $billing);
         $company = $shipping->getCompany() ?? $billing->getCompany();
         if ('' === ($company ?? '')) {
             $company = null;

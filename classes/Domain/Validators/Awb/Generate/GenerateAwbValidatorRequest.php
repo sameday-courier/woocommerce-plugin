@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
-use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 
@@ -16,9 +15,11 @@ class GenerateAwbValidatorRequest
 
     private ?CarrierPickupPoint $pickupPoint;
 
-    private BillingDto $billing;
-
     private ?string $destinationCountry;
+
+    private ?string $recipientPhone;
+
+    private ?string $recipientEmail;
 
     /**
      * @var array<int, mixed> $shippingLines
@@ -33,8 +34,9 @@ class GenerateAwbValidatorRequest
      * @param int $orderId
      * @param ?CarrierService $carrierService
      * @param ?CarrierPickupPoint $pickupPoint
-     * @param BillingDto $billing
      * @param ?string $destinationCountry
+     * @param ?string $recipientPhone
+     * @param ?string $recipientEmail
      * @param array $shippingLines
      * @param bool $hasExistingAwb
      * @param bool $hasParcels
@@ -43,8 +45,9 @@ class GenerateAwbValidatorRequest
         int $orderId,
         ?CarrierService $carrierService,
         ?CarrierPickupPoint $pickupPoint,
-        BillingDto $billing,
         ?string $destinationCountry,
+        ?string $recipientPhone,
+        ?string $recipientEmail,
         array $shippingLines,
         bool $hasExistingAwb,
         bool $hasParcels
@@ -52,8 +55,9 @@ class GenerateAwbValidatorRequest
         $this->orderId = $orderId;
         $this->carrierService = $carrierService;
         $this->pickupPoint = $pickupPoint;
-        $this->billing = $billing;
         $this->destinationCountry = $destinationCountry;
+        $this->recipientPhone = $recipientPhone;
+        $this->recipientEmail = $recipientEmail;
         $this->shippingLines = $shippingLines;
         $this->hasExistingAwb = $hasExistingAwb;
         $this->hasParcels = $hasParcels;
@@ -84,19 +88,27 @@ class GenerateAwbValidatorRequest
     }
 
     /**
-     * @return BillingDto
-     */
-    public function getBilling(): BillingDto
-    {
-        return $this->billing;
-    }
-
-    /**
      * @return ?string
      */
     public function getDestinationCountry(): ?string
     {
         return $this->destinationCountry;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getRecipientPhone(): ?string
+    {
+        return $this->recipientPhone;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getRecipientEmail(): ?string
+    {
+        return $this->recipientEmail;
     }
 
     /**

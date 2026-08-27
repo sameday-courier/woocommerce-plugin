@@ -15,7 +15,6 @@ final class GenerateAwbValidator
      */
     public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse
     {
-        $billing = $request->getBilling();
         $service = $request->getCarrierService();
         $pickupPoint = $request->getPickupPoint();
 
@@ -42,14 +41,14 @@ final class GenerateAwbValidator
             );
         }
 
-        if (null === $billing->getPhone()) {
+        if (null === $request->getRecipientPhone()) {
             $response->setErrors(
                 'phone',
                 'Must complete phone number.'
             );
         }
 
-        if (null === $billing->getEmail()) {
+        if (null === $request->getRecipientEmail()) {
             $response->setErrors(
                 'email',
                 'Must complete email.'

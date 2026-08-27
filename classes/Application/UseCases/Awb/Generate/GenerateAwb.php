@@ -117,8 +117,9 @@ final class GenerateAwb
                 $request->getOrderId(),
                 $service,
                 $pickupPoint,
-                $billing,
                 AwbGenerateRecipientResolver::resolveDestinationCountry($shipping, $billing),
+                AwbGenerateRecipientResolver::resolvePhone($shipping, $billing),
+                AwbGenerateRecipientResolver::resolveEmail($shipping, $billing),
                 $request->getShippingLines(),
                 null !== $this->orderAwbStore->getByOrderId($request->getOrderId()),
                 [] !== $packageDimensions,
@@ -152,33 +153,33 @@ final class GenerateAwb
             $locker,
         );
 
+        $awbRequestDto = new PostAwbRequestDto(
+            $pickupPoint->getSamedayId(),
+            null,
+            $request->getPackageType(),
+            $packageDimensions,
+            $service->getSamedayId(),
+            $request->getAwbPayment(),
+            $awbRecipient->getRecipient(),
+            $request->getInsuranceValue(),
+            $request->getRepayment(),
+            CarrierConstants::COD_COLLECTOR_CLIENT,
+            null,
+            $serviceTax->getServiceTaxIds(),
+            null,
+            $request->getClientReference(),
+            $request->getObservation(),
+            '',
+            '',
+            null,
+            $awbRecipient->getOoh()->getLockerId(),
+            null,
+            $awbRecipient->getOoh()->getOohLastMile(),
+            $awbRecipient->getCurrency()
+        );
+
         try {
-            $awb = $this->courierServiceProvider->postAwb(
-                new PostAwbRequestDto(
-                    $pickupPoint->getSamedayId(),
-                    null,
-                    $request->getPackageType(),
-                    $packageDimensions,
-                    $service->getSamedayId(),
-                    $request->getAwbPayment(),
-                    $awbRecipient->getRecipient(),
-                    $request->getInsuranceValue(),
-                    $request->getRepayment(),
-                    CarrierConstants::COD_COLLECTOR_CLIENT,
-                    null,
-                    $serviceTax->getServiceTaxIds(),
-                    null,
-                    $request->getClientReference(),
-                    $request->getObservation(),
-                    '',
-                    '',
-                    null,
-                    $awbRecipient->getOoh()->getLockerId(),
-                    null,
-                    $awbRecipient->getOoh()->getOohLastMile(),
-                    $awbRecipient->getCurrency()
-                )
-            );
+            $awb = $this->courierServiceProvider->postAwb($awbRequestDto);
         } catch (CourierServiceException $exception) {
             return new GenerateAwbResponse(
                 $exception->getMessage(),
