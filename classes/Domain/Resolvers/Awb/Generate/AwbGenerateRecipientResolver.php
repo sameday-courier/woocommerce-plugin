@@ -69,11 +69,23 @@ class AwbGenerateRecipientResolver
         return $shipping->getCountry() ?? $billing->getCountry();
     }
 
+    /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
     public static function resolvePhone(ShippingDto $shipping, BillingDto $billing): ?string
     {
         return $shipping->getPhone() ?? $billing->getPhone();
     }
 
+    /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
     public static function resolveEmail(ShippingDto $shipping, BillingDto $billing): ?string
     {
         return $shipping->getEmail() ?? $billing->getEmail();
@@ -105,8 +117,8 @@ class AwbGenerateRecipientResolver
         $address_2 = $shipping->getAddress2() ?? $billing->getAddress2();
         $postalCode = PostalCode::tryCreate(
             $shipping->getPostcode() ?? $billing->getPostcode(),
-            (string) ($state ?? ''),
-            (string) ($country ?? ''),
+            ($state ?? ''),
+            ($country ?? ''),
             $this->cityPostalCodeProvider
         )->getCode();
         $phone = self::resolvePhone($shipping, $billing);

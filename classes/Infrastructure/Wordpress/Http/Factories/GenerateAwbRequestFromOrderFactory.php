@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories;
 
 use InvalidArgumentException;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
+use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
@@ -134,8 +134,8 @@ final class GenerateAwbRequestFromOrderFactory
             GenerateAwbMapper::SHIPPING_KEY => $order->getShipping(),
             GenerateAwbMapper::BILLING_KEY => $order->getBilling(),
             GenerateAwbMapper::LOCKER_KEY => $order->getLocker(),
-            GenerateAwbMapper::PACKAGE_TYPE_KEY => PackageType::PARCEL,
-            GenerateAwbMapper::AWB_PAYMENT_KEY => AwbPaymentType::CLIENT,
+            GenerateAwbMapper::PACKAGE_TYPE_KEY => CarrierPackageTypes::PARCEL,
+            GenerateAwbMapper::AWB_PAYMENT_KEY => CarrierAwbPaymentTypes::CLIENT,
             GenerateAwbMapper::INSURANCE_VALUE_KEY => 0,
             GenerateAwbMapper::REPAYMENT_KEY => $repayment,
             GenerateAwbMapper::CLIENT_REFERENCE_KEY => $order->getOrderNumber(),

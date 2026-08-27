@@ -20,11 +20,17 @@ final class OrderShippingChangesResponseDto
         $this->message = $message;
     }
 
+    /**
+     * @return bool
+     */
     public function isSuccess(): bool
     {
         return $this->success;
     }
 
+    /**
+     * @return string
+     */
     public function getMessage(): string
     {
         return $this->message;

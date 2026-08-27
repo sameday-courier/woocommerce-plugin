@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-use Sameday\Objects\Types\PackageType;
-
 final class CarrierPackageTypes
 {
+    public const PARCEL = 0;
+    public const ENVELOPE = 1;
+    public const LARGE = 2;
+
     /**
      * @var array<int, string>
      */
     private const LABEL_KEYS = [
-        PackageType::PARCEL => 'Parcel',
-        PackageType::ENVELOPE => 'Envelope',
-        PackageType::LARGE => 'Large package',
+        self::PARCEL => 'Parcel',
+        self::ENVELOPE => 'Envelope',
+        self::LARGE => 'Large package',
     ];
 
     /**
      * @return array<int, string>
-     */
-    /**
-     * @return array
      */
     public static function getLabelKeys(): array
     {

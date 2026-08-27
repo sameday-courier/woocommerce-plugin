@@ -10,8 +10,8 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddr
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderShippingChangesServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PickupPointStoreServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostAwbGenerationServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 
@@ -27,7 +27,7 @@ final class GenerateAwbFactory
             new PickupPointStoreServiceProvider(),
             new OrderAwbStoreServiceProvider(),
             new CourierServiceProvider(),
-            new PostAwbGenerationServiceProvider(),
+            new OrderShippingChangesServiceProvider(),
             new WooSamedayShippingHdAddressParser(),
             new WooStateCodeResolver(new WooCountriesHandler()),
             new SamedayCityRepository()

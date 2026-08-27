@@ -9,21 +9,25 @@ use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
-use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbGenerationRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\OrderShippingChangesRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
+use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderShippingChangesServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateRecipientResolver;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\AwbGenerateServiceTaxResolver;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidator;
 use SamedayCourier\Shipping\Domain\Validators\Awb\Generate\GenerateAwbValidatorRequest;
+use Throwable;
 
 final class GenerateAwb
 {
@@ -48,9 +52,9 @@ final class GenerateAwb
     private CourierServiceProviderInterface $courierServiceProvider;
 
     /**
-     * @var PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider
+     * @var OrderShippingChangesServiceProviderInterface $orderShippingChangesServiceProvider
      */
-    private PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider;
+    private OrderShippingChangesServiceProviderInterface $orderShippingChangesServiceProvider;
 
     /**
      * @var CarrierShippingHdAddressParserInterface $hdAddressParser
@@ -72,7 +76,7 @@ final class GenerateAwb
      * @param PickupPointStoreServiceProviderInterface $pickupPointStore
      * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
      * @param CourierServiceProviderInterface $courierServiceProvider
-     * @param PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider
+     * @param OrderShippingChangesServiceProviderInterface $orderShippingChangesServiceProvider
      * @param CarrierShippingHdAddressParserInterface $hdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
      * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
@@ -82,7 +86,7 @@ final class GenerateAwb
         PickupPointStoreServiceProviderInterface $pickupPointStore,
         OrderAwbStoreServiceProviderInterface $orderAwbStore,
         CourierServiceProviderInterface $courierServiceProvider,
-        PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider,
+        OrderShippingChangesServiceProviderInterface $orderShippingChangesServiceProvider,
         CarrierShippingHdAddressParserInterface $hdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
@@ -91,7 +95,7 @@ final class GenerateAwb
         $this->pickupPointStore = $pickupPointStore;
         $this->orderAwbStore = $orderAwbStore;
         $this->courierServiceProvider = $courierServiceProvider;
-        $this->postAwbGenerationServiceProvider = $postAwbGenerationServiceProvider;
+        $this->orderShippingChangesServiceProvider = $orderShippingChangesServiceProvider;
         $this->hdAddressParser = $hdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
         $this->cityPostalCodeProvider = $cityPostalCodeProvider;
@@ -105,7 +109,7 @@ final class GenerateAwb
     public function execute(GenerateAwbRequest $request): GenerateAwbResponse
     {
         $packageDimensions = $this->normalizePackageDimensions($request->getPackageDimensions());
-        $service = $this->serviceCatalogStore->getBySamedayId($request->getServiceId());
+        $carrierService = $this->serviceCatalogStore->getBySamedayId($request->getServiceId());
         $pickupPoint = $this->pickupPointStore->getBySamedayId($request->getPickupPointId());
         $shipping = (new ShippingDtoFactory())->fromInput($request->getShipping());
         $billing = (new BillingDtoFactory())->fromInput($request->getBilling());
@@ -115,7 +119,7 @@ final class GenerateAwb
         $awbValidator = (new GenerateAwbValidator())->validate(
             new GenerateAwbValidatorRequest(
                 $request->getOrderId(),
-                $service,
+                $carrierService,
                 $pickupPoint,
                 AwbGenerateRecipientResolver::resolveDestinationCountry($shipping, $billing),
                 AwbGenerateRecipientResolver::resolvePhone($shipping, $billing),
@@ -134,7 +138,7 @@ final class GenerateAwb
         }
 
         $serviceTax = (new AwbGenerateServiceTaxResolver($this->serviceCatalogStore))->resolve(
-            $service,
+            $carrierService,
             $request->hasOpenPackage(),
             $request->hasLockerFirstMile(),
             $request->getPackageType()
@@ -149,7 +153,7 @@ final class GenerateAwb
             $request->getOrderId(),
             $shipping,
             $billing,
-            $service,
+            $carrierService,
             $locker,
         );
 
@@ -158,7 +162,7 @@ final class GenerateAwb
             null,
             $request->getPackageType(),
             $packageDimensions,
-            $service->getSamedayId(),
+            $carrierService->getSamedayId(),
             $request->getAwbPayment(),
             $awbRecipient->getRecipient(),
             $request->getInsuranceValue(),
@@ -187,21 +191,62 @@ final class GenerateAwb
             );
         }
 
-        $postAwbGenerationResponse = $this->postAwbGenerationServiceProvider->apply(
-            new PostAwbGenerationRequestDto(
+        return $this->runPostGenerationJob($request, $carrierService, $awb);
+    }
+
+    /**
+     * @param GenerateAwbRequest $request
+     * @param CarrierService $carrierService
+     * @param PostAwbResponseDto $awb
+     *
+     * @return GenerateAwbResponse
+     */
+    private function runPostGenerationJob(
+        GenerateAwbRequest $request,
+        CarrierService $carrierService,
+        PostAwbResponseDto $awb
+    ): GenerateAwbResponse {
+        $awbNumber = $awb->getAwbNumber();
+
+        if (
+            !$this->orderAwbStore->save(
                 $request->getOrderId(),
-                $request->getShippingLines(),
-                $service,
-                $awb->getAwbNumber(),
+                $awbNumber,
                 $awb->getCost(),
                 $awb->getParcels()
-            ),
-            $this->courierServiceProvider
+            )
+        ) {
+            try {
+                $this->courierServiceProvider->removeAwb(new RemoveAwbRequestDto($awbNumber));
+
+                $message = 'The AWB was generated but could not be saved. So it has been cancelled, please try again.';
+            } catch (Throwable $rollbackException) {
+                $message = sprintf(
+                    'The AWB %s was generated but could not be saved, and the automatic cancellation failed. 
+                    Please remove it manually.',
+                    $awbNumber
+                );
+            }
+
+            return new GenerateAwbResponse($message, true);
+        }
+
+        $applyOrderChanges = $this->orderShippingChangesServiceProvider->apply(
+            new OrderShippingChangesRequestDto(
+                $request->getOrderId(),
+                $carrierService,
+                $request->getShippingLines()
+            )
         );
 
+        $message = 'Awb generated successfully.';
+        if (!$applyOrderChanges->isSuccess()) {
+            $message .= sprintf("but %s", $applyOrderChanges->getMessage());
+        }
+
         return new GenerateAwbResponse(
-            $postAwbGenerationResponse->getMessage(),
-            !$postAwbGenerationResponse->isSuccess()
+            $message,
+            false
         );
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
-use Sameday\Objects\Types\AwbPdfType;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -121,7 +120,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
 
         return is_string($format) && $format !== ''
             ? $format
-            : CarrierAwbPdfTypes::getLabelKeys()[AwbPdfType::A4];
+            : CarrierAwbPdfTypes::getLabelKeys()[CarrierAwbPdfTypes::A4];
     }
 
     /**

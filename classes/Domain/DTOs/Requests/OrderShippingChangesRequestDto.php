@@ -32,11 +32,17 @@ final class OrderShippingChangesRequestDto
         $this->shippingLines = $shippingLines;
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;
     }
 
+    /**
+     * @return CarrierService
+     */
     public function getService(): CarrierService
     {
         return $this->service;

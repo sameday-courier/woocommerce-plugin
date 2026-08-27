@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain;
 
-use Sameday\Objects\Types\AwbPdfType;
-
 final class CarrierAwbPdfTypes
 {
+    public const A4 = 'A4';
+    public const A6 = 'A6';
+
     /**
      * @var array<string, string>
      */
     private const LABEL_KEYS = [
-        AwbPdfType::A4 => 'A4',
-        AwbPdfType::A6 => 'A6',
+        self::A4 => 'A4',
+        self::A6 => 'A6',
     ];
 
     /**
      * @return array<string, string>
-     */
-    /**
-     * @return array
      */
     public static function getLabelKeys(): array
     {

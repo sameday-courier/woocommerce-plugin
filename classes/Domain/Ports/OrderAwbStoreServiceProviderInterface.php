@@ -16,6 +16,16 @@ interface OrderAwbStoreServiceProviderInterface
     public function getByOrderId(int $orderId): ?CarrierAwb;
 
     /**
+     * @param int $orderId
+     * @param string $awbNumber
+     * @param float $awbCost
+     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     *
+     * @return bool
+     */
+    public function save(int $orderId, string $awbNumber, float $awbCost, array $parcels): bool;
+
+    /**
      * @param CarrierAwb $awb
      *
      * @return int

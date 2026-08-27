@@ -6,8 +6,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Shipping\Method;
 
 use Exception;
 use Sameday\Exceptions\SamedaySDKException;
-use Sameday\Objects\Types\AwbPaymentType;
-use Sameday\Objects\Types\PackageType;
 use Sameday\SamedayClient;
 use SamedayCourier\Shipping\Domain\BgnCurrencyConverter;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
@@ -16,8 +14,10 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
+use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
@@ -332,7 +332,7 @@ final class SamedayCourier extends WC_Shipping_Method
             foreach ($optionalServices as $optionalService) {
                 if (
                     $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === PackageType::PARCEL
+                    && $optionalService->getPackageType()->getType() === CarrierPackageTypes::PARCEL
                 ) {
                     $serviceTaxIds[] = $optionalService->getId();
                     break;
@@ -357,10 +357,10 @@ final class SamedayCourier extends WC_Shipping_Method
         $estimateCostRequest = new EstimateCostRequestDto(
             $pickupPointId,
             null,
-            PackageType::PARCEL,
+            CarrierPackageTypes::PARCEL,
             [['weight' => $weight]],
             (int) $serviceId,
-            AwbPaymentType::CLIENT,
+            CarrierAwbPaymentTypes::CLIENT,
             $recipient,
             0.0,
             (float) $repaymentAmount,

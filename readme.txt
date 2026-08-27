@@ -19,6 +19,9 @@ This plug-in is intended to implement a new shipping method using the Sameday Co
 service and delivery points assigned to your account. If your customer chooses the order to be delivered with Sameday Courier, you will be able to see this in the list of commands in your store's
 administration panel. You will also be able to create an AWB. You can then add a new parcel in the created AWB and show the AWB as a PDF format. If you want, you can show the AWB history or delete the AWB.
 
+! Be aware that 2.* version is not compatibile with themes Blocks based. For the moment this core version is compatibile
+only with short-code based theme.
+
 For further information, contact us at software[at]sameday.ro !
 
 = Features =
@@ -181,7 +184,14 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 2.1.0 =
 
-* Introduce PHPCS for static code analize.
+! Be aware that 2.* version is not compatibile with themes Blocks based. For the moment this core version is compatibile
+only with short-code based theme.
+
+* Fix issues from previous version.
+* Make significant Improvements in code architecture.
+* Introduce PHPCS and improve code style in order to complain with PSR-12 standard.
+* Refactor @SamedayCourier method class.
+* Make some adjustments in components design.
 
 = 2.0.1 =
 
