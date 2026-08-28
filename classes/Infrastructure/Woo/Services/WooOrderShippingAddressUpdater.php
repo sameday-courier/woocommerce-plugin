@@ -148,11 +148,11 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
         }
 
         return [
-            'name' => (string) ($lockerDto->getName() ?? ''),
-            'city' => (string) ($lockerDto->getCity() ?? ''),
-            'county' => (string) ($lockerDto->getCounty() ?? ''),
-            'address' => (string) ($lockerDto->getAddress() ?? ''),
-            'postalCode' => (string) ($lockerDto->getPostalCode() ?? ''),
+            'name' => $lockerDto->getName() ?? '',
+            'city' =>  $lockerDto->getCity() ?? '',
+            'county' => $lockerDto->getCounty() ?? '',
+            'address' =>  $lockerDto->getAddress() ?? '',
+            'postalCode' => $lockerDto->getPostalCode() ?? '',
         ];
     }
 
