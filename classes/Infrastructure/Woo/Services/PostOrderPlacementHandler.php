@@ -67,8 +67,6 @@ final class PostOrderPlacementHandler
      */
     public function handle(int $orderId): void
     {
-        // The locker must be persisted before the shipping changes are applied, because
-        // OrderShippingChangesServiceProvider reads the locker post meta to rewrite the shipping address.
         if ($this->isOutOfHomeDelivery()) {
             try {
                 $this->lockerOrderDataHandler->add(
