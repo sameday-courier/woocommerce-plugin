@@ -31,3 +31,53 @@
 #placeOrderError.sameday-is-visible {
     opacity: 1;
 }
+
+.sameday-blocks-locker {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.sameday-blocks-ship-to {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.sameday-blocks-locker #shipping-pickup-store-select {
+    width: 100%;
+    max-width: 420px;
+    min-height: 36px;
+}
+
+.sameday-blocks-open-package {
+    margin-top: 10px;
+}
+
+.sameday-blocks-open-package__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+/* Checkbox appearance comes from sameday_checkbox.css, shared with the admin modals. */
+.sameday-blocks-open-package__label .sameday-checkbox {
+    flex: 0 0 auto;
+}
+
+.sameday-blocks-open-package__label .sameday-checkbox:disabled + span {
+    opacity: 0.6;
+}
+
+/* Anchored next to the rate label instead of inside it, so it has to repeat the label padding
+   (16px 16px 16px 48px) to stay aligned with the rate title. */
+.wc-block-components-radio-control-accordion-option > .sameday-blocks-locker,
+.wc-block-components-radio-control-accordion-option > .sameday-blocks-open-package {
+    margin-top: 0;
+    padding: 0 16px 16px 48px;
+}

@@ -23,14 +23,14 @@ final class CacheHandler implements CacheHandlerInterface
     /**
      * @param string $key
      * @param array $data
-     * @param int $timeToLiveInSeconds
+     * @param int $timeToLive
      *
      * @return void
      */
-    public function refreshCachedData(string $key, array $data, int $timeToLiveInSeconds = 0): void
+    public function refreshCachedData(string $key, array $data, int $timeToLive = 0): void
     {
         $this->invalidateCachedData($key);
-        set_transient($key, $data, $timeToLiveInSeconds);
+        set_transient($key, $data, $timeToLive);
     }
 
     /**

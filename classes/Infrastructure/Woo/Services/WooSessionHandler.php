@@ -30,7 +30,12 @@ final class WooSessionHandler implements SessionHandlerInterface
      */
     public function get(string $key, $default = null)
     {
-        return $this->wooCommerceHandler->getWC()->session->get($key, $default);
+        $session = $this->resolveSession();
+        if (null === $session) {
+            return $default;
+        }
+
+        return $session->get($key, $default);
     }
 
     /**
@@ -41,6 +46,28 @@ final class WooSessionHandler implements SessionHandlerInterface
      */
     public function set(string $key, $value): void
     {
-        $this->wooCommerceHandler->getWC()->session->set($key, $value);
+        $session = $this->resolveSession();
+        if (null === $session) {
+            return;
+        }
+
+        $session->set($key, $value);
+    }
+
+    /**
+     * WooCommerce only boots the session for frontend requests, so it is absent
+     * on admin, cron and non-Store-API REST requests.
+     *
+     * @return object|null
+     */
+    private function resolveSession(): ?object
+    {
+        $woocommerce = $this->wooCommerceHandler->getWC();
+
+        if (!isset($woocommerce->session) || !is_object($woocommerce->session)) {
+            return null;
+        }
+
+        return $woocommerce->session;
     }
 }

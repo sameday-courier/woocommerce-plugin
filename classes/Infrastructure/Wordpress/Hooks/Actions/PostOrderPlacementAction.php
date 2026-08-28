@@ -17,8 +17,7 @@ final class PostOrderPlacementAction extends AbstractAction
      */
     public function __construct(
         ?PostOrderPlacementHandler $postOrderPlacementHandler = null
-    )
-    {
+    ) {
         $this->postOrderPlacementHandler = $postOrderPlacementHandler ?? new PostOrderPlacementHandler();
     }
 

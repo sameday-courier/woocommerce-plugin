@@ -1,0 +1,61 @@
+/**
+ * Sameday branded checkbox, shared by the admin modals and the frontend checkout.
+ *
+ * `.sameday-modal-checkbox` is the long standing admin hook and stays as is; the admin
+ * stylesheets add layout rules on top of it. `.sameday-checkbox` is the neutral alias used
+ * where the control is not inside a modal.
+ */
+.sameday-checkbox,
+.sameday-modal-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    margin: 0;
+    padding: 0 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    vertical-align: middle;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.sameday-checkbox:checked,
+.sameday-modal-checkbox:checked {
+    background: linear-gradient(90deg, #ed2224, #b21f24) !important;
+    border-color: #b21f24 !important;
+}
+
+.sameday-checkbox:focus,
+.sameday-modal-checkbox:focus {
+    border-color: #ed2224 !important;
+    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12) !important;
+    outline: none;
+}
+
+.sameday-checkbox:checked::before,
+.sameday-modal-checkbox:checked::before {
+    content: "" !important;
+    display: block !important;
+    float: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: no-repeat center / 12px 12px
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E") !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+
+.sameday-checkbox:disabled,
+.sameday-modal-checkbox:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

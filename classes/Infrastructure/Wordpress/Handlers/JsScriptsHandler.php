@@ -7,9 +7,8 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 use InvalidArgumentException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
+use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
@@ -21,11 +20,10 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private const SCRIPT_HANDLE = 'handle';
     private const SCRIPT_DEPS = 'deps';
     private const SCRIPT_IN_FOOTER = 'in_footer';
-
     private const CONTEXT_GROUP_ADMIN = 'admin';
     private const CONTEXT_GROUP_FRONTEND = 'frontend';
-
-    private const LOCKER_PLUGIN_SDK_URL = 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js';
+    private const LOCKER_PLUGIN_SDK_URL = CarrierConstants::LOCKER_PLUGIN_SDK_URL;
+    private const LOCKER_SDK_HANDLE = 'sameday-lockerpluginsdk';
 
     /**
      * Available script load contexts.
@@ -45,6 +43,8 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         // Any WooCommerce checkout page (is_checkout()).
         'checkout_strict' => 'checkout_strict',
         // Checkout only, excluding order-pay and order-received.
+        'checkout_classic' => 'checkout_classic',
+        // Strict checkout rendered by the classic shortcode, not the Checkout block.
         'checkout_nomenclator' => 'checkout_nomenclator',
         // Checkout page when Sameday nomenclator is enabled.
         'admin_settings' => 'admin_settings',
@@ -183,11 +183,14 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 self::WP_CONTEXT['pickup_points'],
                 ['jquery', 'sameday-admin-modal', 'sameday-select2']
             ),
-            'sameday-locker-plugin-checkout' => self::addExternalScript(
-                self::LOCKER_PLUGIN_SDK_URL,
-                self::WP_CONTEXT['checkout_strict'],
-                [],
-                false
+            'sameday-locker-plugin-checkout' => self::withHandle(
+                self::addExternalScript(
+                    self::LOCKER_PLUGIN_SDK_URL,
+                    self::WP_CONTEXT['checkout_strict'],
+                    [],
+                    false
+                ),
+                self::LOCKER_SDK_HANDLE
             ),
             'sameday-helper' => self::addScript(
                 'helper',
@@ -197,27 +200,14 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             ),
             'sameday-lockers-script' => self::addScript(
                 'lockers_sync',
-                self::WP_CONTEXT['checkout_strict'],
+                self::WP_CONTEXT['checkout_classic'],
                 ['jquery', 'sameday-helper'],
                 true
             ),
             'sameday-open-package-script' => self::addScript(
                 'open_package_script',
-                self::WP_CONTEXT['checkout_strict'],
+                self::WP_CONTEXT['checkout_classic'],
                 ['jquery', 'sameday-helper'],
-                true
-            ),
-            'sameday-lockerpluginsdk-checkout' => self::withHandle(
-                self::addExternalScript(
-                    self::LOCKER_PLUGIN_SDK_URL,
-                    self::WP_CONTEXT['checkout']
-                ),
-                'sameday-lockerpluginsdk'
-            ),
-            'sameday-custom-checkout-button' => self::addScript(
-                'custom-checkout-button',
-                self::WP_CONTEXT['checkout'],
-                ['jquery'],
                 true
             ),
             'sameday-county-city-handle' => self::addScript(
@@ -387,6 +377,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         switch ($context) {
             case 'checkout':
             case 'checkout_strict':
+            case 'checkout_classic':
             case 'checkout_nomenclator':
                 return self::CONTEXT_GROUP_FRONTEND;
             default:
@@ -421,6 +412,8 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 return FrontPageValidatorHandler::isCheckoutPage();
             case 'checkout_strict':
                 return FrontPageValidatorHandler::isStrictCheckoutPage();
+            case 'checkout_classic':
+                return FrontPageValidatorHandler::isClassicCheckoutPage();
             case 'checkout_nomenclator':
                 return FrontPageValidatorHandler::isCheckoutNomenclatorPage();
             case 'admin_settings':
@@ -506,6 +499,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 break;
             case 'sameday-helper':
                 wp_localize_script($handle, 'samedayVars', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
                     'nonces' => [
                         'store_sameday_locker_in_session' => NonceHandler::createNonce(
                             'store_sameday_locker_in_session'
@@ -522,14 +516,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             case 'sameday-county-city-handle':
                 wp_localize_script($handle, 'samedayCourierData', [
                     'cities' => self::getCitiesForCheckout(),
-                ]);
-                break;
-            case 'sameday-custom-checkout-button':
-                $settings = (new CarrierSettingsServiceProvider())->get();
-                wp_localize_script($handle, 'samedayData', [
-                    'username' => $settings->getUser(),
-                    'country' => $settings->getHostCountry(),
-                    'buttonText' => TranslatorHandler::translate('Show Locations Map'),
                 ]);
                 break;
             case 'sameday-bulk-awb':
@@ -621,7 +607,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      */
     private static function getScriptUrl(string $relativePath): string
     {
-        return plugins_url($relativePath, (new WooHandler())->getPluginMainFile());
+        return AssetPathHandler::url($relativePath);
     }
 
     /**
@@ -629,19 +615,8 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
-    /**
-     * @param string $relativePath
-     *
-     * @return string
-     */
     private static function getScriptVersion(string $relativePath): string
     {
-        $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . $relativePath;
-
-        if (file_exists($absolutePath)) {
-            return (string) filemtime($absolutePath);
-        }
-
-        return (new WooHandler())->getPluginVersion();
+        return AssetPathHandler::version($relativePath);
     }
 }

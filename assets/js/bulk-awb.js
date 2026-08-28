@@ -100,10 +100,18 @@
         return (config.i18n && config.i18n[key]) ? config.i18n[key] : fallback;
     }
 
+    function supportsCurrencyWarning($modal) {
+        return $modal.find('[data-sameday-bulk-awb-currency-confirm]').length > 0;
+    }
+
     function isCurrencyConfirmed($modal) {
+        if (!supportsCurrencyWarning($modal)) {
+            return true;
+        }
+
         var $confirm = $modal.find('[data-sameday-bulk-awb-currency-confirm]');
 
-        if (!$confirm.length || $confirm.prop('hidden')) {
+        if ($confirm.prop('hidden')) {
             return true;
         }
 
@@ -119,6 +127,10 @@
     }
 
     function toggleCurrencyConfirm($modal, orders) {
+        if (!supportsCurrencyWarning($modal)) {
+            return;
+        }
+
         $modal.find('[data-sameday-bulk-awb-currency-agree]').prop('checked', false);
         $modal
             .find('[data-sameday-bulk-awb-currency-confirm]')
@@ -129,6 +141,7 @@
         var $list = $modal.find('[data-sameday-bulk-awb-order-list]');
         var $empty = $modal.find('[data-sameday-bulk-awb-empty]');
         var orderLabel = i18n('order', 'Order');
+        var showCurrencyWarning = supportsCurrencyWarning($modal);
 
         $list.empty();
         $modal.find('[data-sameday-bulk-awb-order-count]').text(String(orders.length));
@@ -148,7 +161,7 @@
                 .addClass('sameday-bulk-awb-modal__order-id')
                 .text(orderLabel + ' #' + order.id);
 
-            if (order.currencyWarning) {
+            if (showCurrencyWarning && order.currencyWarning) {
                 $orderId.addClass('sameday-bulk-awb-modal__order-id--warning');
                 $item.append($orderId);
                 $item.append(

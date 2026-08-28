@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
 use InvalidArgumentException;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
 final class CssStylesheetsHandler implements RegistryHandlerInterface
@@ -145,6 +144,22 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'select2',
                 self::WP_CONTEXT['pickup_points']
             ),
+            'sameday-checkbox-orders-list-style' => self::addStyleSheet(
+                'sameday_checkbox',
+                self::WP_CONTEXT['orders_list']
+            ),
+            'sameday-checkbox-order-edit-style' => self::addStyleSheet(
+                'sameday_checkbox',
+                self::WP_CONTEXT['order_edit']
+            ),
+            'sameday-checkbox-pickup-points-style' => self::addStyleSheet(
+                'sameday_checkbox',
+                self::WP_CONTEXT['pickup_points']
+            ),
+            'sameday-checkbox-checkout-style' => self::addStyleSheet(
+                'sameday_checkbox',
+                self::WP_CONTEXT['checkout']
+            ),
             'sameday-locker-checkout-style' => self::addStyleSheet(
                 'sameday_locker_checkout',
                 self::WP_CONTEXT['checkout_strict']
@@ -279,7 +294,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      */
     private static function getStyleUrl(string $relativePath): string
     {
-        return plugins_url($relativePath, (new WooHandler())->getPluginMainFile());
+        return AssetPathHandler::url($relativePath);
     }
 
     /**
@@ -287,19 +302,8 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
-    /**
-     * @param string $relativePath
-     *
-     * @return string
-     */
     private static function getStyleVersion(string $relativePath): string
     {
-        $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . $relativePath;
-
-        if (file_exists($absolutePath)) {
-            return (string)filemtime($absolutePath);
-        }
-
-        return (new WooHandler())->getPluginVersion();
+        return AssetPathHandler::version($relativePath);
     }
 }
