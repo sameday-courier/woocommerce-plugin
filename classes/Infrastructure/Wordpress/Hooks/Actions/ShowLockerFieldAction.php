@@ -129,10 +129,6 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildHtmlContent(?LockerDto $locker): string
     {
-        if (null === $locker) {
-            return '';
-        }
-
         $shipTo = $this->buildShipToLabel($locker);
         $settings = $this->carrierSettingsServiceProvider->get();
         if ($settings->isLockersMapEnabled()) {
@@ -143,8 +139,10 @@ final class ShowLockerFieldAction extends AbstractAction
             ]);
         }
 
+        $selectedLockerId = null !== $locker ? $locker->getLockerId() : null;
+
         return HtmlHandler::buildHtml('locker-dropdown-field', [
-            'lockersByCity' => $this->buildLockersByCity($locker->getLockerId()),
+            'lockersByCity' => $this->buildLockersByCity($selectedLockerId),
             'shipTo' => $shipTo,
         ]);
     }
