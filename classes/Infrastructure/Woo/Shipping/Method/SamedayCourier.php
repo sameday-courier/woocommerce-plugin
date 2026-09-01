@@ -288,7 +288,6 @@ final class SamedayCourier extends WC_Shipping_Method
 
     /**
      * @return void
-     * @throws SamedaySDKException
      */
     private function syncLockers(): void
     {
@@ -298,12 +297,10 @@ final class SamedayCourier extends WC_Shipping_Method
 
         if ($time > ($ltSync + 86400)) {
             (new RefreshLocker(
-                new RefreshLockerRequest(
-                    $this->courierServiceProvider,
-                    new LockerStoreServiceProvider(),
-                    $this->carrierSettingsProvider
-                )
-            ))->execute();
+                $this->courierServiceProvider,
+                new LockerStoreServiceProvider(),
+                $this->carrierSettingsProvider
+            ))->execute(new RefreshLockerRequest());
         }
     }
 
