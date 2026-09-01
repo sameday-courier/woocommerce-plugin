@@ -20,8 +20,9 @@ jobs:
           tools: composer:v2
 
       - name: Install PHPCS tooling
-        working-directory: ${{ runner.temp }}/phpcs
         run: |
+          mkdir -p "${{ runner.temp }}/phpcs"
+          cd "${{ runner.temp }}/phpcs"
           cat > composer.json << 'EOF'
           {
             "require": {
