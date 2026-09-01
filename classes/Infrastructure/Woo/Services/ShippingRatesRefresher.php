@@ -11,11 +11,16 @@ use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
  * Sameday shipping costs depend on session state (open package, payment method) that is not
  * part of WooCommerce's package hash, so cached rates survive changes that should reprice them.
  *
- * Storing a non-array under `shipping_for_package_{key}` makes WC_Shipping treat the cache as
- * missing and recalculate.
+ * Storing null under `shipping_for_package_{key}` unsets the cached rates entry so WC_Shipping
+ * recalculates on the next totals pass (e.g. CartExtensionsSchema::calculate_totals).
  */
 final class ShippingRatesRefresher
 {
+    /**
+     * @var bool
+     */
+    private static bool $keepChosenMethodFilterRegistered = false;
+
     /**
      * @var WooHandler $wooCommerceHandler
      */
@@ -54,21 +59,30 @@ final class ShippingRatesRefresher
         }
 
         foreach (array_keys($woocommerce->cart->get_shipping_packages()) as $packageKey) {
+            // Unset the cached rates entry. Storing `false` also works for WC_Shipping's
+            // is_array() check, but leaving a permanent false key pollutes the session blob.
             $this->sessionHandler->set(
                 CarrierSessionKeys::shippingForPackage((int) $packageKey),
-                false
+                null
             );
         }
 
-        $keepChosenMethod = $this->buildKeepChosenMethodFilter();
+        // Do not call calculate_shipping() here. Store API cart/extensions already recalculates
+        // totals after the callback; a nested pass only amplifies session races and API estimates.
+        $this->preserveChosenShippingMethod();
+    }
 
-        add_filter('woocommerce_shipping_chosen_method', $keepChosenMethod, 10, 3);
-
-        try {
-            $woocommerce->cart->calculate_shipping();
-        } finally {
-            remove_filter('woocommerce_shipping_chosen_method', $keepChosenMethod, 10);
-        }
+    /**
+     * Keep the customer's current shipping rate across the next totals recalculation in this request.
+     *
+     * Useful for Store API cart/extensions callbacks that do not reprice shipping but still trigger
+     * WC_Cart::calculate_totals() afterward.
+     *
+     * @return void
+     */
+    public function preserveChosenShippingMethod(): void
+    {
+        $this->registerKeepChosenMethodFilter();
     }
 
     /**
@@ -77,16 +91,34 @@ final class ShippingRatesRefresher
      * checkout, since nothing there populates that session key. Repricing would therefore drop the
      * customer on another shipping option right after they tick an option such as open package.
      *
-     * @return callable
+     * The filter stays for the rest of the request so the CartExtensions totals pass is covered.
+     *
+     * @return void
      */
-    private function buildKeepChosenMethodFilter(): callable
+    private function registerKeepChosenMethodFilter(): void
     {
-        return static function ($default, $rates, $chosenMethod) {
-            if (is_string($chosenMethod) && '' !== $chosenMethod && is_array($rates) && isset($rates[$chosenMethod])) {
-                return $chosenMethod;
-            }
+        if (self::$keepChosenMethodFilterRegistered) {
+            return;
+        }
 
-            return $default;
-        };
+        self::$keepChosenMethodFilterRegistered = true;
+
+        add_filter(
+            'woocommerce_shipping_chosen_method',
+            static function ($default, $rates, $chosenMethod) {
+                if (
+                    is_string($chosenMethod)
+                    && '' !== $chosenMethod
+                    && is_array($rates)
+                    && isset($rates[$chosenMethod])
+                ) {
+                    return $chosenMethod;
+                }
+
+                return $default;
+            },
+            10,
+            3
+        );
     }
 }

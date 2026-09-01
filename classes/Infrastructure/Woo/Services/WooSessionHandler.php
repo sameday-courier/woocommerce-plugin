@@ -56,13 +56,22 @@ final class WooSessionHandler implements SessionHandlerInterface
 
     /**
      * WooCommerce only boots the session for frontend requests, so it is absent
-     * on admin, cron and non-Store-API REST requests.
+     * on admin-ajax until initialized. Initialize it when missing so a simple
+     * session->set() works the same from classic and Blocks checkout.
      *
      * @return object|null
      */
     private function resolveSession(): ?object
     {
         $woocommerce = $this->wooCommerceHandler->getWC();
+
+        if (
+            (!isset($woocommerce->session) || !is_object($woocommerce->session))
+            && is_object($woocommerce)
+            && method_exists($woocommerce, 'initialize_session')
+        ) {
+            $woocommerce->initialize_session();
+        }
 
         if (!isset($woocommerce->session) || !is_object($woocommerce->session)) {
             return null;

@@ -16,6 +16,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -131,7 +132,9 @@ class AwbForm
             $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
-        $lockerDto = (new LockerDtoFactory($this->samedayLockerRepository))->fromInput($postMetaLocker);
+        $lockerDto = (new LockerDtoFactory(
+            new LockerServiceProvider($this->samedayLockerRepository)
+        ))->fromInput($postMetaLocker);
 
         foreach ($order->get_data()['shipping_lines'] as $shippingLine) {
             if ($shippingLine->get_method_id() !== CarrierConstants::PLUGIN_NAME) {
@@ -191,7 +194,9 @@ class AwbForm
             $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
-        $lockerDto = (new LockerDtoFactory($this->samedayLockerRepository))->fromInput($postMetaLocker);
+        $lockerDto = (new LockerDtoFactory(
+            new LockerServiceProvider($this->samedayLockerRepository)
+        ))->fromInput($postMetaLocker);
 
         if (null === $lockerDto) {
             return [

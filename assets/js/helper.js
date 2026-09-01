@@ -22,6 +22,26 @@
         return null;
     };
 
+    var compactLockerPayload = function (locker) {
+        if (locker === null || locker === undefined || locker === '') {
+            return locker;
+        }
+
+        if (typeof locker !== 'object') {
+            return locker;
+        }
+
+        return {
+            lockerId: locker.lockerId || locker.id || '',
+            name: locker.name || '',
+            address: locker.address || '',
+            city: locker.city || '',
+            county: locker.county || '',
+            postalCode: locker.postalCode || '',
+            oohType: locker.oohType || ''
+        };
+    };
+
     /**
      * @param {Object} params
      * @param {boolean} reloadCheckout
@@ -29,6 +49,11 @@
     SamedayCourier.doAjaxCall = function (params, reloadCheckout) {
         params = params || {};
         reloadCheckout = undefined === reloadCheckout ? true : reloadCheckout;
+
+        if (Object.prototype.hasOwnProperty.call(params, 'locker')) {
+            params.locker = compactLockerPayload(params.locker);
+        }
+
         params.action = resolveCheckoutAjaxAction(params);
 
         if (null === params.action) {
@@ -65,24 +90,19 @@
         });
     };
 
-    var BLOCKS_SELECTED_RATE_SELECTORS = [
-        '.wc-block-components-shipping-rates-control input[type="radio"]:checked',
-        '.wc-block-components-radio-control input[type="radio"]:checked',
-        'input[type="radio"][name*="radio-control-"]:checked'
-    ];
+    // Only the shipping rates control — broader radio-control selectors also match payment
+    // methods, and querySelector would return those whenever shipping radios are briefly
+    // unchecked during a Blocks re-render / place-order.
+    var BLOCKS_SELECTED_RATE_SELECTOR =
+        '.wc-block-components-shipping-rates-control input[type="radio"]:checked';
 
     /**
      * @returns {string}
      */
     SamedayCourier.getSelectedShippingRateId = function () {
-        for (var i = 0; i < BLOCKS_SELECTED_RATE_SELECTORS.length; i++) {
-            var selected = document.querySelector(BLOCKS_SELECTED_RATE_SELECTORS[i]);
-            if (selected && selected.value) {
-                return selected.value;
-            }
-        }
+        var selected = document.querySelector(BLOCKS_SELECTED_RATE_SELECTOR);
 
-        return '';
+        return selected && selected.value ? selected.value : '';
     };
 
     /**
@@ -167,6 +187,110 @@
             .find(function (element) {
                 return element.id.includes(fieldName);
             });
+    };
+
+    SamedayCourier.LOCKER_PLUGIN_CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
+
+    /**
+     * Prefer shipping, then billing, then common checkout field id patterns.
+     *
+     * @param {string} fieldName
+     * @returns {HTMLElement|undefined|null}
+     */
+    SamedayCourier.getCheckoutAddressField = function (fieldName) {
+        var shipping = SamedayCourier.getFieldByType(fieldName, SamedayCourier.FIELD_TYPE_OF_SHIPPING);
+        if (shipping) {
+            return shipping;
+        }
+
+        var billing = SamedayCourier.getFieldByType(fieldName, SamedayCourier.FIELD_TYPE_OF_BILLING);
+        if (billing) {
+            return billing;
+        }
+
+        return document.querySelector(
+            '#' + fieldName + ', #shipping-' + fieldName + ', #billing-' + fieldName
+        );
+    };
+
+    /**
+     * @param {string} fieldName
+     * @param {string} [fallback]
+     * @returns {string}
+     */
+    SamedayCourier.getCheckoutAddressValue = function (fieldName, fallback) {
+        var field = SamedayCourier.getCheckoutAddressField(fieldName);
+        if (field && field.value) {
+            return field.value;
+        }
+
+        return fallback || '';
+    };
+
+    /**
+     * @param {Object|null|undefined} locker
+     * @returns {string}
+     */
+    SamedayCourier.formatLockerLabel = function (locker) {
+        if (!locker) {
+            return '';
+        }
+
+        var name = locker.name || '';
+        var address = locker.address || '';
+        if (name && address) {
+            return name + ' - ' + address;
+        }
+
+        return name || address;
+    };
+
+    /**
+     * Open the Sameday LockerPlugin map and invoke onSelect when a locker is chosen.
+     *
+     * @param {Object} options
+     * @param {string} options.apiUsername
+     * @param {string} [options.clientId]
+     * @param {string} [options.city]
+     * @param {string} [options.countryCode]
+     * @param {string} [options.langCode]
+     * @param {Function} onSelect function(locker, pluginInstance)
+     * @returns {void}
+     */
+    SamedayCourier.openLockerPlugin = function (options, onSelect) {
+        if (typeof window.LockerPlugin === 'undefined') {
+            console.error('Sameday LockerPlugin is not loaded.');
+            return;
+        }
+
+        options = options || {};
+        var country = options.countryCode || '';
+        var city = options.city || '';
+        var lockerData = {
+            apiUsername: String(options.apiUsername || '').toLowerCase(),
+            clientId: options.clientId || SamedayCourier.LOCKER_PLUGIN_CLIENT_ID,
+            city: city,
+            countryCode: country,
+            langCode: options.langCode || (country ? String(country).toLowerCase() : ''),
+        };
+
+        window.LockerPlugin.init(lockerData);
+
+        if (
+            window.LockerPlugin.options &&
+            (window.LockerPlugin.options.countryCode !== country || window.LockerPlugin.options.city !== city)
+        ) {
+            window.LockerPlugin.reinitializePlugin(lockerData);
+        }
+
+        var pluginInstance = window.LockerPlugin.getInstance();
+        pluginInstance.open();
+
+        pluginInstance.subscribe(function (locker) {
+            if (typeof onSelect === 'function') {
+                onSelect(locker, pluginInstance);
+            }
+        });
     };
 
     window.SamedayCourier = SamedayCourier;

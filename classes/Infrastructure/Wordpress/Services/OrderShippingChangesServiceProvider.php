@@ -45,7 +45,7 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
         $this->orderShippingAddressUpdater = $orderShippingAddressUpdater ?? new WooOrderShippingAddressUpdater(
             new WooOrderAddressRepository($resolvedDbHandler),
             new WooOrderShippingAddressArchive(),
-            new LockerDtoFactory(new SamedayLockerRepository($resolvedDbHandler)),
+            new LockerDtoFactory(new LockerServiceProvider(new SamedayLockerRepository($resolvedDbHandler))),
             new WooSamedayShippingHdAddressParser(),
             new WooStateCodeResolver(new WooCountriesHandler()),
         );

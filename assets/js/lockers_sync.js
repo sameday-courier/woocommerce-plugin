@@ -4,7 +4,6 @@
 (function (window, jQuery) {
     'use strict';
 
-    var CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
     var SamedayCourier = window.SamedayCourier || {};
 
     var isSet = function (accessor) {
@@ -16,73 +15,36 @@
     };
 
     var openLockers = function () {
-        var selectors = {
-            selectLocker: document.getElementById('select_locker'),
-            selectCity: SamedayCourier.getFieldByType('city', SamedayCourier.FIELD_TYPE_OF_SHIPPING),
-            selectCountry: SamedayCourier.getFieldByType('country', SamedayCourier.FIELD_TYPE_OF_SHIPPING),
-        };
-
-        if (undefined === selectors.selectCity) {
-            selectors.selectCity = SamedayCourier.getFieldByType('city', SamedayCourier.FIELD_TYPE_OF_BILLING);
+        var selectLocker = document.getElementById('select_locker');
+        if (!selectLocker) {
+            return;
         }
 
-        if (undefined === selectors.selectCountry) {
-            selectors.selectCountry = SamedayCourier.getFieldByType('country', SamedayCourier.FIELD_TYPE_OF_BILLING);
-        }
+        var country = SamedayCourier.getCheckoutAddressValue(
+            'country',
+            selectLocker.getAttribute('data-country') || ''
+        );
 
-        var samedayUser = selectors.selectLocker.getAttribute('data-username').toLowerCase();
-        var city;
-        if (undefined !== selectors.selectCity) {
-            city = selectors.selectCity.value;
-        }
+        SamedayCourier.openLockerPlugin(
+            {
+                apiUsername: selectLocker.getAttribute('data-username') || '',
+                clientId: SamedayCourier.LOCKER_PLUGIN_CLIENT_ID,
+                city: SamedayCourier.getCheckoutAddressValue('city'),
+                countryCode: country,
+            },
+            function (locker, pluginInstance) {
+                var shippingAddressSpan = document.querySelector('.wc-block-components-shipping-address');
+                if (shippingAddressSpan) {
+                    shippingAddressSpan.innerHTML = SamedayCourier.formatLockerLabel(locker);
+                }
 
-        var country;
-        var langCode;
-        if (undefined !== selectors.selectCountry) {
-            country = selectors.selectCountry.value;
-            langCode = country.toLowerCase();
-        }
+                SamedayCourier.doAjaxCall({
+                    locker: locker,
+                });
 
-        var LockerPlugin = window.LockerPlugin;
-        var LockerData = {
-            apiUsername: samedayUser,
-            clientId: CLIENT_ID,
-            city: city,
-            countryCode: country,
-            langCode: langCode,
-        };
-
-        LockerPlugin.init(LockerData);
-
-        if (LockerPlugin.options.countryCode !== country || LockerPlugin.options.city !== city) {
-            LockerPlugin.reinitializePlugin(LockerData);
-        }
-
-        var pluginInstance = LockerPlugin.getInstance();
-        pluginInstance.open();
-
-        pluginInstance.subscribe(function (locker) {
-            var shippingAddressSpan = document.querySelector('.wc-block-components-shipping-address') || false;
-            if (shippingAddressSpan) {
-                shippingAddressSpan.innerHTML = locker.name + ' - ' + locker.address;
+                pluginInstance.close();
             }
-
-            var setCookie = function (key, value, days) {
-                var d = new Date();
-                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                var expires = 'expires=' + d.toUTCString();
-
-                document.cookie = key + '=' + value + ';' + expires + ';path=/';
-            };
-
-            setCookie('locker', JSON.stringify(locker), 365);
-
-            SamedayCourier.doAjaxCall({
-                locker: locker,
-            });
-
-            pluginInstance.close();
-        });
+        );
     };
 
     var init = function () {

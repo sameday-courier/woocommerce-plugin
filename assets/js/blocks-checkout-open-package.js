@@ -20,6 +20,7 @@
     var isChecked = false;
     var isPending = false;
     var queuedValue = null;
+    var lastKnownRateId = '';
 
     var readConfig = function () {
         var wcSettings = window.wc && window.wc.wcSettings;
@@ -43,6 +44,14 @@
         return getServiceCodes().indexOf(SamedayCourier.getServiceCodeFromRateId(rateId)) !== -1;
     };
 
+    var isCheckoutBusy = function () {
+        return !!document.querySelector(
+            '.wc-block-components-checkout-place-order-button[disabled], ' +
+            '.wc-block-components-checkout-place-order-button.is-busy, ' +
+            '.wc-block-checkout__main .wc-block-components-spinner'
+        );
+    };
+
     var setPending = function (pending) {
         isPending = pending;
 
@@ -53,6 +62,12 @@
     };
 
     var persist = function (value) {
+        // Never touch the cart while Blocks is placing the order — a concurrent
+        // /cart/extensions write races the checkout session and can wipe the cart.
+        if (isCheckoutBusy()) {
+            return;
+        }
+
         var data = {};
         data[config.cartUpdateField || 'open_package'] = value ? 'yes' : 'no';
 
@@ -97,6 +112,16 @@
             .then(done, done);
     };
 
+    var clearOpenPackageIfNeeded = function (rateId) {
+        if (!isChecked || isSupportedRateId(rateId)) {
+            return;
+        }
+
+        // Switching away from a Sameday service must not leave the option set in session.
+        isChecked = false;
+        persist(false);
+    };
+
     var buildUi = function (rateId) {
         var root = document.createElement('div');
         root.id = UI_ROOT_ID;
@@ -138,25 +163,28 @@
         return root;
     };
 
-    var ensureUi = function () {
+    /**
+     * @param {boolean} allowSessionClear
+     *        When false (MutationObserver), only sync the DOM. Session clears must wait for a real
+     *        shipping-rate change — observer passes see transient empty selections during place-order.
+     */
+    var ensureUi = function (allowSessionClear) {
         var existing = document.getElementById(UI_ROOT_ID);
         var rateId = SamedayCourier.getSelectedShippingRateId();
 
         // Blocks re-renders the rate list in several passes, during which no radio is checked.
-        // Reacting to that would clear the option the customer just ticked.
         if (!rateId) {
             return;
+        }
+
+        if (allowSessionClear && rateId !== lastKnownRateId) {
+            clearOpenPackageIfNeeded(rateId);
+            lastKnownRateId = rateId;
         }
 
         if (!isSupportedRateId(rateId)) {
             if (existing) {
                 existing.remove();
-            }
-
-            // Switching away from a Sameday service must not leave the option set in session.
-            if (isChecked) {
-                isChecked = false;
-                persist(false);
             }
 
             return;
@@ -193,7 +221,7 @@
         }
 
         observer = new MutationObserver(function () {
-            ensureUi();
+            ensureUi(false);
         });
 
         observer.observe(document.body, {
@@ -210,8 +238,9 @@
         }
 
         isChecked = true === config.checked;
+        lastKnownRateId = SamedayCourier.getSelectedShippingRateId();
 
-        ensureUi();
+        ensureUi(false);
         startObserver();
 
         document.addEventListener('change', function (event) {
@@ -220,8 +249,8 @@
                 return;
             }
 
-            if (target.matches('input[type="radio"]')) {
-                ensureUi();
+            if (target.matches('.wc-block-components-shipping-rates-control input[type="radio"]')) {
+                ensureUi(true);
             }
         });
     };

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs;
 
-use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
-use SamedayCourier\Shipping\Domain\CarrierLockerRules;
-
 final class LockerDto
 {
     private ?int $lockerId;
@@ -48,51 +45,6 @@ final class LockerDto
         $this->city = $city;
         $this->address = $address;
         $this->postalCode = $postalCode;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            isset($data['lockerId']) && $data['lockerId'] !== ''
-                ? (int) $data['lockerId']
-                : null,
-            isset($data['oohType']) && $data['oohType'] !== ''
-                ? (string) $data['oohType']
-                : null,
-            isset($data['name']) ? (string) $data['name'] : null,
-            isset($data['county']) ? (string) $data['county'] : null,
-            isset($data['city']) ? (string) $data['city'] : null,
-            isset($data['address']) ? (string) $data['address'] : null,
-            isset($data['postalCode']) ? (string) $data['postalCode'] : null,
-        );
-    }
-
-    /**
-     * @param CarrierLocker $locker
-     *
-     * @return self
-     */
-    public static function fromSamedayLocker(CarrierLocker $locker): self
-    {
-        $lockerId = $locker->getLockerId();
-
-        return new self(
-            $lockerId,
-            CarrierLockerRules::resolveOohType($lockerId),
-            $locker->getName(),
-            $locker->getCounty(),
-            $locker->getCity(),
-            $locker->getAddress(),
-            $locker->getPostalCode(),
-        );
     }
 
     /**
@@ -152,18 +104,18 @@ final class LockerDto
     }
 
     /**
-     * @return array<string,
+     * @return array<string, int|string|null>
      */
     public function toArray(): array
     {
         return [
-            'lockerId' => $this->lockerId,
-            'oohType' => $this->oohType,
-            'name' => $this->name,
-            'county' => $this->county,
-            'city' => $this->city,
-            'address' => $this->address,
-            'postalCode' => $this->postalCode,
+            'lockerId' => $this->getLockerId(),
+            'oohType' => $this->getOohType(),
+            'name' => $this->getName(),
+            'county' => $this->getCounty(),
+            'city' => $this->getCity(),
+            'address' => $this->getAddress(),
+            'postalCode' => $this->getPostalCode(),
         ];
     }
 }
