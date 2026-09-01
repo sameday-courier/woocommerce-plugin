@@ -4,29 +4,155 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-
 final class AddNewPickupPointRequest
 {
-    private AddNewPickupPointItem $addNewPickupPointItem;
+    /**
+     * @var string $pickupPointCountryId
+     */
+    private string $pickupPointCountryId;
 
-    private CourierServiceProviderInterface $courierServiceProvider;
+    /**
+     * @var string $pickupPointCountyId
+     */
+    private string $pickupPointCountyId;
 
+    /**
+     * @var string $pickupPointCityId
+     */
+    private string $pickupPointCityId;
+
+    /**
+     * @var string $pickupPointAddress
+     */
+    private string $pickupPointAddress;
+
+    /**
+     * @var string $pickupPointPostalCode
+     */
+    private string $pickupPointPostalCode;
+
+    /**
+     * @var string $pickupPointAlias
+     */
+    private string $pickupPointAlias;
+
+    /**
+     * @var string $pickupPointContactPersonName
+     */
+    private string $pickupPointContactPersonName;
+
+    /**
+     * @var string $pickupPointContactPersonPhone
+     */
+    private string $pickupPointContactPersonPhone;
+
+    /**
+     * @var bool $isDefault
+     */
+    private bool $isDefault;
+
+    /**
+     * @param string $pickupPointCountryId
+     * @param string $pickupPointCountyId
+     * @param string $pickupPointCityId
+     * @param string $pickupPointAddress
+     * @param string $pickupPointPostalCode
+     * @param string $pickupPointAlias
+     * @param string $pickupPointContactPersonName
+     * @param string $pickupPointContactPersonPhone
+     * @param bool $isDefault
+     */
     public function __construct(
-        AddNewPickupPointItem $addNewPickupPointItem,
-        CourierServiceProviderInterface $courierServiceProvider
+        string $pickupPointCountryId,
+        string $pickupPointCountyId,
+        string $pickupPointCityId,
+        string $pickupPointAddress,
+        string $pickupPointPostalCode,
+        string $pickupPointAlias,
+        string $pickupPointContactPersonName,
+        string $pickupPointContactPersonPhone,
+        bool $isDefault
     ) {
-        $this->addNewPickupPointItem = $addNewPickupPointItem;
-        $this->courierServiceProvider = $courierServiceProvider;
+        $this->pickupPointCountryId = $pickupPointCountryId;
+        $this->pickupPointCountyId = $pickupPointCountyId;
+        $this->pickupPointCityId = $pickupPointCityId;
+        $this->pickupPointAddress = $pickupPointAddress;
+        $this->pickupPointPostalCode = $pickupPointPostalCode;
+        $this->pickupPointAlias = $pickupPointAlias;
+        $this->pickupPointContactPersonName = $pickupPointContactPersonName;
+        $this->pickupPointContactPersonPhone = $pickupPointContactPersonPhone;
+        $this->isDefault = $isDefault;
     }
 
-    public function getAddNewPickupPointItem(): AddNewPickupPointItem
+    /**
+     * @return string
+     */
+    public function getPickupPointCountryId(): string
     {
-        return $this->addNewPickupPointItem;
+        return $this->pickupPointCountryId;
     }
 
-    public function getCourierServiceProvider(): CourierServiceProviderInterface
+    /**
+     * @return string
+     */
+    public function getPickupPointCountyId(): string
     {
-        return $this->courierServiceProvider;
+        return $this->pickupPointCountyId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointCityId(): string
+    {
+        return $this->pickupPointCityId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointAddress(): string
+    {
+        return $this->pickupPointAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointPostalCode(): string
+    {
+        return $this->pickupPointPostalCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointAlias(): string
+    {
+        return $this->pickupPointAlias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointContactPersonName(): string
+    {
+        return $this->pickupPointContactPersonName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPickupPointContactPersonPhone(): string
+    {
+        return $this->pickupPointContactPersonPhone;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefault(): bool
+    {
+        return $this->isDefault;
     }
 }

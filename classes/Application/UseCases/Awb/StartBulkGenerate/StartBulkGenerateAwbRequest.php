@@ -4,29 +4,38 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
-
 final class StartBulkGenerateAwbRequest
 {
-    private StartBulkGenerateAwbItem $startBulkGenerateAwbItem;
+    /**
+     * @var int[] $orderIds
+     */
+    private array $orderIds;
 
-    private BulkJobStoreInterface $bulkJobStore;
+    private int $userId;
 
-    public function __construct(
-        StartBulkGenerateAwbItem $startBulkGenerateAwbItem,
-        BulkJobStoreInterface $bulkJobStore
-    ) {
-        $this->startBulkGenerateAwbItem = $startBulkGenerateAwbItem;
-        $this->bulkJobStore = $bulkJobStore;
+    /**
+     * @param int[] $orderIds
+     * @param int $userId
+     */
+    public function __construct(array $orderIds, int $userId)
+    {
+        $this->orderIds = $orderIds;
+        $this->userId = $userId;
     }
 
-    public function getStartBulkGenerateAwbItem(): StartBulkGenerateAwbItem
+    /**
+     * @return int[]
+     */
+    public function getOrderIds(): array
     {
-        return $this->startBulkGenerateAwbItem;
+        return $this->orderIds;
     }
 
-    public function getBulkJobStore(): BulkJobStoreInterface
+    /**
+     * @return int
+     */
+    public function getUserId(): int
     {
-        return $this->bulkJobStore;
+        return $this->userId;
     }
 }

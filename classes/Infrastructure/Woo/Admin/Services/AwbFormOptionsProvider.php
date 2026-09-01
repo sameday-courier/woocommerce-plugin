@@ -13,6 +13,9 @@ final class AwbFormOptionsProvider
     /**
      * @return array<int, array{name: string, value: int}>
      */
+    /**
+     * @return array
+     */
     public static function getPackageTypeOptions(): array
     {
         $options = [];
@@ -29,6 +32,9 @@ final class AwbFormOptionsProvider
 
     /**
      * @return array<int, array{name: string, value: int}>
+     */
+    /**
+     * @return array
      */
     public static function getAwbPaymentTypeOptions(): array
     {

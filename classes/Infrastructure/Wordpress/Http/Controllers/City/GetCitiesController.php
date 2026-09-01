@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCities;
-use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesItem;
 use SamedayCourier\Shipping\Application\UseCases\City\Get\GetCitiesRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GetCitiesFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\GetCitiesMapper;
 
 final class GetCitiesController extends AbstractController
 {
@@ -25,29 +23,32 @@ final class GetCitiesController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */
     protected function processAction(array $inputParams): void
     {
-        if (!isset($inputParams['countyId'])) {
+        if (!isset($inputParams[GetCitiesMapper::COUNTY_ID_KEY])) {
             $this->sendJsonErrorResponse(
                 TranslatorHandler::translate('County id is required.')
             );
         }
 
-        $getCities = new GetCities(
+        $params = new GetCitiesMapper($inputParams);
+        $getCities = GetCitiesFactory::create();
+
+        $result = $getCities->execute(
             new GetCitiesRequest(
-                GetCitiesItem::fromArray($inputParams),
-                new CourierServiceProvider()
+                $params->countyId()
             )
         );
 
-        $result = $getCities->execute();
-
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            $this->sendJsonErrorResponse($result->getNoticeMessage(), 500);
+        if ($result->hasError()) {
+            $this->sendJsonErrorResponse(
+                TranslatorHandler::translate($result->getNoticeMessage()),
+                500
+            );
         }
 
         wp_send_json($result->getCities());

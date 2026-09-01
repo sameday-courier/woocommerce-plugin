@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetServicesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
@@ -14,17 +13,33 @@ use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInter
 
 final class RefreshService
 {
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @var ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
-    public function __construct(RefreshServiceRequest $refreshServiceRequest)
-    {
-        $this->courierServiceProvider = $refreshServiceRequest->getCourierServiceProvider();
-        $this->serviceCatalogStore = $refreshServiceRequest->getServiceCatalogStore();
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider,
+        ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->serviceCatalogStore = $serviceCatalogStore;
     }
 
-    public function execute(): RefreshServiceResponse
+    /**
+     * @param RefreshServiceRequest $request
+     * @return RefreshServiceResponse
+     */
+    public function execute(RefreshServiceRequest $request): RefreshServiceResponse
     {
         $remoteServices = [];
         $page = 1;
@@ -35,7 +50,7 @@ final class RefreshService
             } catch (CourierServiceException $exception) {
                 return new RefreshServiceResponse(
                     $exception->getMessage(),
-                    ResponseNoticeType::ERROR
+                    true
                 );
             }
 
@@ -46,7 +61,7 @@ final class RefreshService
                 } elseif (!$this->serviceCatalogStore->updateFromRemote($serviceDto, $service->getId())) {
                     return new RefreshServiceResponse(
                         'Unable to update service',
-                        ResponseNoticeType::ERROR
+                        true
                     );
                 }
 
@@ -55,6 +70,11 @@ final class RefreshService
         } while ($page <= $services->getPages());
 
         $localServices = array_map(
+            /**
+             * @param CarrierService $service
+             *
+             * @return array
+             */
             static function (CarrierService $service): array {
                 return [
                     'id' => $service->getId(),
@@ -73,7 +93,8 @@ final class RefreshService
         $lnService = $this->serviceCatalogStore->getByCode(CarrierConstants::LOCKER_NEXT_DAY_CODE);
         $pudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::PUDO_CODE);
 
-        if (null !== $lnService && null !== $pudoService
+        if (
+            null !== $lnService && null !== $pudoService
             && !$this->serviceCatalogStore->updateFields(
                 $pudoService->getId(),
                 [
@@ -83,13 +104,13 @@ final class RefreshService
         ) {
             return new RefreshServiceResponse(
                 'Unable to sync PUDO status',
-                ResponseNoticeType::ERROR
+                true
             );
         }
 
         return new RefreshServiceResponse(
             'Service successfully refreshed.',
-            ResponseNoticeType::SUCCESS
+            false
         );
     }
 }

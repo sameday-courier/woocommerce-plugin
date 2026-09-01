@@ -4,99 +4,267 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
-use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
-use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\PostAwbGenerationServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
-use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
-
 final class GenerateAwbRequest
 {
-    private GenerateAwbItem $generateAwbItem;
+    /**
+     * @var int $orderId
+     */
+    private int $orderId;
 
-    private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
+    /**
+     * @var int $serviceId
+     */
+    private int $serviceId;
 
-    private PickupPointStoreServiceProviderInterface $pickupPointStore;
+    /**
+     * @var int $pickupPointId
+     */
+    private int $pickupPointId;
 
-    private OrderAwbStoreServiceProviderInterface $orderAwbStore;
+    /**
+     * @var array<int, mixed> $shippingLines
+     */
+    private array $shippingLines;
 
-    private CourierServiceProviderInterface $courierServiceProvider;
+    /**
+     * @var array<string, mixed> $shipping
+     */
+    private array $shipping;
 
-    private PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider;
+    /**
+     * @var array<string, mixed> $billing
+     */
+    private array $billing;
 
-    private CarrierShippingHdAddressParserInterface $hdAddressParser;
+    /**
+     * @var mixed $locker
+     */
+    private $locker;
 
-    private StateCodeResolverInterface $stateCodeResolver;
+    /**
+     * @var bool $hasOpenPackage
+     */
+    private bool $hasOpenPackage;
 
-    private CityPostalCodeProviderInterface $cityPostalCodeProvider;
+    /**
+     * @var bool $hasLockerFirstMile
+     */
+    private bool $hasLockerFirstMile;
 
+    /**
+     * @var int $packageType
+     */
+    private int $packageType;
+
+    /**
+     * @var int $awbPayment
+     */
+    private int $awbPayment;
+
+    /**
+     * @var float $insuranceValue
+     */
+    private float $insuranceValue;
+
+    /**
+     * @var float $repayment
+     */
+    private float $repayment;
+
+    /**
+     * @var string|null $clientReference
+     */
+    private ?string $clientReference;
+
+    /**
+     * @var string|null $observation
+     */
+    private ?string $observation;
+
+    /**
+     * @var array<int|string, mixed> $packageDimensions
+     */
+    private array $packageDimensions;
+
+    /**
+     * @param int $orderId
+     * @param int $serviceId
+     * @param int $pickupPointId
+     * @param array $shippingLines
+     * @param array $shipping
+     * @param array $billing
+     * @param mixed $locker
+     * @param bool $hasOpenPackage
+     * @param bool $hasLockerFirstMile
+     * @param int $packageType
+     * @param int $awbPayment
+     * @param float $insuranceValue
+     * @param float $repayment
+     * @param string|null $clientReference
+     * @param string|null $observation
+     * @param array $packageDimensions
+     */
     public function __construct(
-        GenerateAwbItem $generateAwbItem,
-        ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore,
-        PickupPointStoreServiceProviderInterface $pickupPointStore,
-        OrderAwbStoreServiceProviderInterface $orderAwbStore,
-        CourierServiceProviderInterface $courierServiceProvider,
-        PostAwbGenerationServiceProviderInterface $postAwbGenerationServiceProvider,
-        CarrierShippingHdAddressParserInterface $hdAddressParser,
-        StateCodeResolverInterface $stateCodeResolver,
-        CityPostalCodeProviderInterface $cityPostalCodeProvider
+        int $orderId,
+        int $serviceId,
+        int $pickupPointId,
+        array $shippingLines,
+        array $shipping,
+        array $billing,
+        $locker,
+        bool $hasOpenPackage,
+        bool $hasLockerFirstMile,
+        int $packageType,
+        int $awbPayment,
+        float $insuranceValue,
+        float $repayment,
+        ?string $clientReference,
+        ?string $observation,
+        array $packageDimensions
     ) {
-        $this->generateAwbItem = $generateAwbItem;
-        $this->serviceCatalogStore = $serviceCatalogStore;
-        $this->pickupPointStore = $pickupPointStore;
-        $this->orderAwbStore = $orderAwbStore;
-        $this->courierServiceProvider = $courierServiceProvider;
-        $this->postAwbGenerationServiceProvider = $postAwbGenerationServiceProvider;
-        $this->hdAddressParser = $hdAddressParser;
-        $this->stateCodeResolver = $stateCodeResolver;
-        $this->cityPostalCodeProvider = $cityPostalCodeProvider;
+        $this->orderId = $orderId;
+        $this->serviceId = $serviceId;
+        $this->pickupPointId = $pickupPointId;
+        $this->shippingLines = $shippingLines;
+        $this->shipping = $shipping;
+        $this->billing = $billing;
+        $this->locker = $locker;
+        $this->hasOpenPackage = $hasOpenPackage;
+        $this->hasLockerFirstMile = $hasLockerFirstMile;
+        $this->packageType = $packageType;
+        $this->awbPayment = $awbPayment;
+        $this->insuranceValue = $insuranceValue;
+        $this->repayment = $repayment;
+        $this->clientReference = $clientReference;
+        $this->observation = $observation;
+        $this->packageDimensions = $packageDimensions;
     }
 
-    public function getGenerateAwbItem(): GenerateAwbItem
+    /**
+     * @return int
+     */
+    public function getOrderId(): int
     {
-        return $this->generateAwbItem;
+        return $this->orderId;
     }
 
-    public function getServiceCatalogStore(): ServiceCatalogStoreServiceProviderInterface
+    /**
+     * @return int
+     */
+    public function getServiceId(): int
     {
-        return $this->serviceCatalogStore;
+        return $this->serviceId;
     }
 
-    public function getPickupPointStore(): PickupPointStoreServiceProviderInterface
+    /**
+     * @return int
+     */
+    public function getPickupPointId(): int
     {
-        return $this->pickupPointStore;
+        return $this->pickupPointId;
     }
 
-    public function getOrderAwbStore(): OrderAwbStoreServiceProviderInterface
+    /**
+     * @return array<int, mixed>
+     */
+    public function getShippingLines(): array
     {
-        return $this->orderAwbStore;
+        return $this->shippingLines;
     }
 
-    public function getCourierServiceProvider(): CourierServiceProviderInterface
+    /**
+     * @return array<string, mixed>
+     */
+    public function getShipping(): array
     {
-        return $this->courierServiceProvider;
+        return $this->shipping;
     }
 
-    public function getPostAwbGenerationServiceProvider(): PostAwbGenerationServiceProviderInterface
+    /**
+     * @return array<string, mixed>
+     */
+    public function getBilling(): array
     {
-        return $this->postAwbGenerationServiceProvider;
+        return $this->billing;
     }
 
-    public function getHdAddressParser(): CarrierShippingHdAddressParserInterface
+    /**
+     * @return mixed
+     */
+    public function getLocker()
     {
-        return $this->hdAddressParser;
+        return $this->locker;
     }
 
-    public function getStateCodeResolver(): StateCodeResolverInterface
+    /**
+     * @return bool
+     */
+    public function hasOpenPackage(): bool
     {
-        return $this->stateCodeResolver;
+        return $this->hasOpenPackage;
     }
 
-    public function getCityPostalCodeProvider(): CityPostalCodeProviderInterface
+    /**
+     * @return bool
+     */
+    public function hasLockerFirstMile(): bool
     {
-        return $this->cityPostalCodeProvider;
+        return $this->hasLockerFirstMile;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackageType(): int
+    {
+        return $this->packageType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAwbPayment(): int
+    {
+        return $this->awbPayment;
+    }
+
+    /**
+     * @return float
+     */
+    public function getInsuranceValue(): float
+    {
+        return $this->insuranceValue;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRepayment(): float
+    {
+        return $this->repayment;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getClientReference(): ?string
+    {
+        return $this->clientReference;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getObservation(): ?string
+    {
+        return $this->observation;
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    public function getPackageDimensions(): array
+    {
+        return $this->packageDimensions;
     }
 }

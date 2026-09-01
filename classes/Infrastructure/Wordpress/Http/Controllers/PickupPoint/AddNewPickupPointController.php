@@ -4,24 +4,31 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPoint;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointItem;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew\AddNewPickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\AddNewPickupPointFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\AddNewPickupPointMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 class AddNewPickupPointController extends AbstractController
 {
     private const ACTION = 'send_pickup_point';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {
@@ -40,14 +47,14 @@ class AddNewPickupPointController extends AbstractController
         }
 
         $requiredFields = [
-            'pickupPointCountry',
-            'pickupPointCounty',
-            'pickupPointCity',
-            'pickupPointAddress',
-            'pickupPointPostalCode',
-            'pickupPointAlias',
-            'pickupPointContactPersonName',
-            'pickupPointContactPersonPhone',
+            AddNewPickupPointMapper::COUNTRY_KEY,
+            AddNewPickupPointMapper::COUNTY_KEY,
+            AddNewPickupPointMapper::CITY_KEY,
+            AddNewPickupPointMapper::ADDRESS_KEY,
+            AddNewPickupPointMapper::POSTAL_CODE_KEY,
+            AddNewPickupPointMapper::ALIAS_KEY,
+            AddNewPickupPointMapper::CONTACT_PERSON_NAME_KEY,
+            AddNewPickupPointMapper::CONTACT_PERSON_PHONE_KEY,
         ];
 
         $requiredFieldsErrors = [];
@@ -72,21 +79,27 @@ class AddNewPickupPointController extends AbstractController
             );
         }
 
-        $request = new AddNewPickupPointRequest(
-            AddNewPickupPointItem::fromArray($inputParams),
-            new CourierServiceProvider()
+        $params = new AddNewPickupPointMapper($inputParams);
+        $addNewPickupPoint = AddNewPickupPointFactory::create();
+
+        $result = $addNewPickupPoint->execute(
+            new AddNewPickupPointRequest(
+                $params->pickupPointCountryId(),
+                $params->pickupPointCountyId(),
+                $params->pickupPointCityId(),
+                $params->pickupPointAddress(),
+                $params->pickupPointPostalCode(),
+                $params->pickupPointAlias(),
+                $params->pickupPointContactPersonName(),
+                $params->pickupPointContactPersonPhone(),
+                $params->isDefault()
+            )
         );
 
-        $addNewPickupPoint = new AddNewPickupPoint($request);
-
-        $result = $addNewPickupPoint->execute();
-
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
-            );
-        }
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
+        );
 
         $this->redirectTo(
             'edit.php',

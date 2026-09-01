@@ -22,6 +22,12 @@ final class CityCatalogStoreServiceProvider implements CityCatalogStoreServicePr
 
     private CacheHandler $cacheHandler;
 
+    /**
+     * @param ?DbHandler $dbHandler
+     * @param ?SchemaHandler $schemaHandler
+     * @param ?SamedayCityRepository $samedayCityRepository
+     * @param ?CacheHandler $cacheHandler
+     */
     public function __construct(
         ?DbHandler $dbHandler = null,
         ?SchemaHandler $schemaHandler = null,
@@ -34,6 +40,9 @@ final class CityCatalogStoreServiceProvider implements CityCatalogStoreServicePr
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }
 
+    /**
+     * @return void
+     */
     public function ensureTableExists(): void
     {
         if (false === $this->dbHandler->isTableExists($this->samedayCityRepository->getTableName())) {
@@ -41,16 +50,27 @@ final class CityCatalogStoreServiceProvider implements CityCatalogStoreServicePr
         }
     }
 
+    /**
+     * @return void
+     */
     public function truncate(): void
     {
         $this->samedayCityRepository->truncate();
     }
 
+    /**
+     * @param CitySourceDto $city
+     *
+     * @return void
+     */
     public function insert(CitySourceDto $city): void
     {
         $this->samedayCityRepository->addCity($city);
     }
 
+    /**
+     * @return void
+     */
     public function refreshCache(): void
     {
         $this->cacheHandler->refreshCachedData(

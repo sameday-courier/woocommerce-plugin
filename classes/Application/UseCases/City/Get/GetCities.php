@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
 final class GetCities
 {
-    private GetCitiesItem $getCitiesItem;
-
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
-    public function __construct(GetCitiesRequest $getCitiesRequest)
-    {
-        $this->getCitiesItem = $getCitiesRequest->getGetCitiesItem();
-        $this->courierServiceProvider = $getCitiesRequest->getCourierServiceProvider();
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     */
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
     }
 
     /**
+     * @param GetCitiesRequest $request
      * @return GetCitiesResponse
      */
-    public function execute(): GetCitiesResponse
+    public function execute(GetCitiesRequest $request): GetCitiesResponse
     {
         $page = 1;
         $remoteCities = [];
@@ -33,7 +37,7 @@ final class GetCities
             try {
                 $cities = $this->courierServiceProvider->getCities(
                     new GetCitiesRequestDto(
-                        $this->getCitiesItem->getCountyId(),
+                        $request->getCountyId(),
                         null,
                         null,
                         $page++
@@ -42,7 +46,7 @@ final class GetCities
             } catch (CourierServiceException $exception) {
                 return new GetCitiesResponse(
                     $exception->getMessage(),
-                    ResponseNoticeType::ERROR,
+                    true
                 );
             }
 
@@ -52,9 +56,9 @@ final class GetCities
         } while ($page <= $cities->getPages());
 
         return new GetCitiesResponse(
-            null,
-            ResponseNoticeType::SUCCESS,
-            $remoteCities,
+            '',
+            false,
+            $remoteCities
         );
     }
 }

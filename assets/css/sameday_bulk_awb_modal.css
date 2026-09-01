@@ -36,7 +36,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    padding: 28px 32px 12px;
+    margin-bottom: 20px;
+    padding: 24px 32px 24px;
+    border-bottom: 0.5px solid #e5e7eb;
+    background: #fafafa;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
     flex: 0 0 auto;
 }
 
@@ -139,7 +143,21 @@
 }
 
 .sameday-bulk-awb-modal__orders li {
-    margin: 0 0 2px;
+    margin: 0 0 6px;
+}
+
+.sameday-bulk-awb-modal__order-id--warning {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+.sameday-bulk-awb-modal__order-warning {
+    display: inline;
+    margin-left: 6px;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 .sameday-bulk-awb-modal__empty {
@@ -150,7 +168,7 @@
 
 .sameday-bulk-awb-modal__disclaimer {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     margin: 0;
     padding: 16px 18px;
@@ -163,61 +181,36 @@
     cursor: pointer;
 }
 
+.sameday-bulk-awb-modal__disclaimer[hidden] {
+    display: none;
+}
+
+.sameday-bulk-awb-modal__disclaimer--currency {
+    margin: 0 0 12px;
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-weight: 600;
+}
+
 .sameday-bulk-awb-modal__disclaimer .sameday-modal-checkbox {
     flex: 0 0 auto;
+    align-self: center;
+    margin: 0;
 }
 
-.sameday-modal-checkbox {
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 20px;
-    margin: 1px 0 0;
-    padding: 0 !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
-    background: #fff !important;
-    box-shadow: none !important;
-    cursor: pointer;
-    vertical-align: middle;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-.sameday-modal-checkbox:checked {
-    background: linear-gradient(90deg, #ed2224, #b21f24) !important;
-    border-color: #b21f24 !important;
-}
-
-.sameday-modal-checkbox:focus {
-    border-color: #ed2224 !important;
-    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12) !important;
-    outline: none;
-}
-
-.sameday-modal-checkbox:checked::before {
-    content: "" !important;
-    display: block !important;
-    float: none !important;
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: no-repeat center / 12px 12px
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E") !important;
-    box-shadow: none !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-}
+/* .sameday-modal-checkbox appearance lives in sameday_checkbox.css, shared with the checkout. */
 
 .sameday-bulk-awb-modal__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 18px 32px 24px;
+    margin-top: 20px;
+    padding: 24px 32px 24px;
+    border-top: 0.5px solid #e5e7eb;
+    background: #fafafa;
+    box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.04);
     flex: 0 0 auto;
 }
 
@@ -636,6 +629,78 @@
     color: #6b7280;
 }
 
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 4px;
+    align-items: start;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) .sameday-modal-checkbox {
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 1px;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox) > span {
+    grid-column: 2;
+    margin-top: 0;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox:only-child) {
+    display: block;
+}
+
+.sameday-generate-awb-modal .sameday-bulk-awb-modal__body td.forminp:has(> .sameday-modal-checkbox:only-child) .sameday-modal-checkbox {
+    margin-top: 0;
+    vertical-align: middle;
+}
+
+.sameday-generate-awb-modal #LockerFirstMile th,
+.sameday-generate-awb-modal #LockerFirstMile td {
+    vertical-align: top;
+}
+
+.sameday-generate-awb-modal #LockerFirstMile th {
+    padding-top: 4px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__control {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__control .sameday-modal-checkbox {
+    margin: 0;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__description {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.sameday-generate-awb-modal .sameday-locker-first-mile-field__meta .sameday-custom-tooltip {
+    margin-top: 0;
+}
+
 .sameday-generate-awb-modal .rowPackageDimension td.forminp {
     width: 18%;
 }
@@ -834,6 +899,65 @@
     border-radius: 8px;
     background: #fff;
     box-sizing: border-box;
+}
+
+.sameday-pickup-point-form__input input.sameday-pickup-point-form__field--readonly {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: default;
+    box-shadow: none;
+}
+
+.sameday-pickup-point-form__input input.sameday-pickup-point-form__field--readonly:focus {
+    border-color: #d1d5db;
+    box-shadow: none;
+    outline: none;
+}
+
+.sameday-pickup-point-modal .select2-container {
+    width: 100% !important;
+}
+
+.sameday-pickup-point-modal .select2-container .select2-selection--single {
+    height: 32px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+.sameday-pickup-point-modal .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px !important;
+    padding-left: 10px !important;
+    padding-right: 28px !important;
+    font-size: 13px;
+    color: #111827;
+}
+
+.sameday-pickup-point-modal .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 30px !important;
+    right: 6px;
+}
+
+.sameday-pickup-point-modal .select2-container--default.select2-container--disabled .select2-selection--single {
+    background: #f3f4f6 !important;
+    cursor: not-allowed;
+}
+
+.sameday-pickup-point-modal .select2-container--default.select2-container--focus .select2-selection--single,
+.sameday-pickup-point-modal .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #ed2224 !important;
+    box-shadow: 0 0 0 2px rgba(237, 34, 36, 0.12) !important;
+}
+
+.sameday-pickup-point-modal .select2-dropdown {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sameday-pickup-point-modal .select2-container--open {
+    z-index: 100110;
 }
 
 .sameday-pickup-point-form__input input[type='checkbox'] {

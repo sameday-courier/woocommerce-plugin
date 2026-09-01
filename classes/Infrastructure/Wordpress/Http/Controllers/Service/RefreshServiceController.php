@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Service;
 
-use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshService;
 use SamedayCourier\Shipping\Application\UseCases\Service\Refresh\RefreshServiceRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\RefreshServiceFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class RefreshServiceController extends AbstractController
 {
@@ -27,26 +27,20 @@ final class RefreshServiceController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */
     protected function processAction(array $inputParams): void
     {
-        $request = new RefreshServiceRequest(
-            new CourierServiceProvider(),
-            new ServiceCatalogStoreServiceProvider()
+        $refreshService = RefreshServiceFactory::create();
+
+        $result = $refreshService->execute(new RefreshServiceRequest());
+
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
         );
-        $refreshService = new RefreshService($request);
-
-        $result = $refreshService->execute();
-
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
-            );
-        }
 
         $this->redirectTo(
             'edit.php',

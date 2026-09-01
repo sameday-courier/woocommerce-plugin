@@ -20,11 +20,14 @@ final class CarrierServiceSelector
      */
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
+    /**
+     * @param CarrierServiceProviderInterface $carrierServiceProvider
+     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
+     */
     public function __construct(
-        CarrierServiceProviderInterface  $carrierServiceProvider,
+        CarrierServiceProviderInterface $carrierServiceProvider,
         CarrierSettingsProviderInterface $carrierSettingsProvider
-    )
-    {
+    ) {
         $this->carrierServiceProvider = $carrierServiceProvider;
         $this->carrierSettingsProvider = $carrierSettingsProvider;
     }
@@ -44,6 +47,12 @@ final class CarrierServiceSelector
 
         return array_filter(
             $this->carrierServiceProvider->getAvailableServices(),
+            /**
+             * @param CarrierService $service
+             * @param mixed $eligibleShippingServices
+             *
+             * @return mixed
+             */
             static function (CarrierService $service) use ($eligibleShippingServices) {
                 return in_array(
                     $service->getSamedayCode(),

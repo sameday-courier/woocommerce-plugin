@@ -16,16 +16,17 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param int $orderId
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function ensureHomeDeliverySnapshot(int $orderId): void
     {
-        if ('' !== PostMetaHandler::get(
-            $orderId,
-            CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-            true
-        )) {
+        if (
+            '' !== PostMetaHandler::get(
+                $orderId,
+                CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+                true
+            )
+        ) {
             return;
         }
 
@@ -36,7 +37,6 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param int $orderId
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function updateHomeDeliverySnapshot(int $orderId): void
@@ -53,7 +53,6 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      * @param WC_Order $order
      *
      * @return void
-     *
      * @throws JsonException
      */
     public function updateHomeDeliverySnapshotFromOrder(WC_Order $order): void
@@ -69,7 +68,7 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
     /**
      * @param WC_Order $order
      *
-     * @return array<string, string>
+     * @return array<string,
      */
     private function buildSnapshotFromOrder(WC_Order $order): array
     {

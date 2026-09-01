@@ -14,6 +14,12 @@ final class CourierServiceDto
 
     private ?string $serializedOptionalTaxes;
 
+    /**
+     * @param int $id
+     * @param string $name
+     * @param string $code
+     * @param ?string $serializedOptionalTaxes
+     */
     public function __construct(
         int $id,
         string $name,
@@ -26,21 +32,33 @@ final class CourierServiceDto
         $this->serializedOptionalTaxes = $serializedOptionalTaxes;
     }
 
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getCode(): string
     {
         return $this->code;
     }
 
+    /**
+     * @return ?string
+     */
     public function getSerializedOptionalTaxes(): ?string
     {
         return $this->serializedOptionalTaxes;

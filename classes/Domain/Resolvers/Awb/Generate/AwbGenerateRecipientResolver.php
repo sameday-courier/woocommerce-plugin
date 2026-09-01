@@ -14,7 +14,7 @@ use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\DTOs\OohDto;
 use SamedayCourier\Shipping\Domain\DTOs\RecipientDto;
 use SamedayCourier\Shipping\Domain\Resolvers\Awb\Generate\Responses\AwbGenerateRecipientResponse;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\ValueObject\Address\PostalCode;
 
@@ -51,12 +51,44 @@ class AwbGenerateRecipientResolver
         CarrierShippingHdAddressParserInterface $samedayShippingHdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
-    )
-    {
+    ) {
         $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayShippingHdAddressParser = $samedayShippingHdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
         $this->cityPostalCodeProvider = $cityPostalCodeProvider;
+    }
+
+    /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
+    public static function resolveDestinationCountry(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getCountry() ?? $billing->getCountry();
+    }
+
+    /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
+    public static function resolvePhone(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getPhone() ?? $billing->getPhone();
+    }
+
+    /**
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     *
+     * @return string|null
+     */
+    public static function resolveEmail(ShippingDto $shipping, BillingDto $billing): ?string
+    {
+        return $shipping->getEmail() ?? $billing->getEmail();
     }
 
     /**
@@ -74,11 +106,10 @@ class AwbGenerateRecipientResolver
         BillingDto $billing,
         CarrierService $service,
         ?LockerDto $locker
-    ): AwbGenerateRecipientResponse
-    {
+    ): AwbGenerateRecipientResponse {
         $city = $shipping->getCity() ?? $billing->getCity();
         $state = $shipping->getState() ?? $billing->getState();
-        $country = $shipping->getCountry() ?? $billing->getCountry();
+        $country = self::resolveDestinationCountry($shipping, $billing);
         $county = $this->stateCodeResolver->resolveNameFromCode($country, $state) ?? '';
         $firstName = $shipping->getFirstName() ?? $billing->getFirstName();
         $lastName = $shipping->getLastName() ?? $billing->getLastName();
@@ -86,12 +117,12 @@ class AwbGenerateRecipientResolver
         $address_2 = $shipping->getAddress2() ?? $billing->getAddress2();
         $postalCode = PostalCode::tryCreate(
             $shipping->getPostcode() ?? $billing->getPostcode(),
-            (string) ($state ?? ''),
-            (string) ($country ?? ''),
+            ($state ?? ''),
+            ($country ?? ''),
             $this->cityPostalCodeProvider
         )->getCode();
-        $phone = $shipping->getPhone() ?? $billing->getPhone();
-        $email = $shipping->getEmail() ?? $billing->getEmail();
+        $phone = self::resolvePhone($shipping, $billing);
+        $email = self::resolveEmail($shipping, $billing);
         $company = $shipping->getCompany() ?? $billing->getCompany();
         if ('' === ($company ?? '')) {
             $company = null;
@@ -163,7 +194,7 @@ class AwbGenerateRecipientResolver
             $oohLastMile
         );
 
-        $currency = CarrierConstants::CURRENCY_MAPPER[$country];
+        $currency = CarrierCurrencyRules::resolveForCountryRequired($country ?? '');
 
         return new AwbGenerateRecipientResponse(
             $awbRecipient,

@@ -17,18 +17,18 @@ final class AddNewParcelAwbResponse implements ResponseInterface
     private int $orderId;
 
     /**
+     * @param string $noticeMessage
+     * @param bool $hasError
      * @param int $orderId
-     * @param string|null $noticeMessage
-     * @param string $noticeType
      */
     public function __construct(
-        int $orderId,
-        ?string $noticeMessage,
-        string $noticeType
+        string $noticeMessage,
+        bool $hasError,
+        int $orderId
     ) {
-        $this->orderId = $orderId;
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
+        $this->orderId = $orderId;
     }
 
     /**

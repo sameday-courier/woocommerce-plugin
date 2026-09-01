@@ -16,6 +16,11 @@ class FileReadHandler
      *
      * @return stdClass[]|null
      */
+    /**
+     * @param string $fileName
+     *
+     * @return ?array
+     */
     public static function readJsonFile(string $fileName): ?array
     {
         $fileExt = "json";
@@ -39,6 +44,11 @@ class FileReadHandler
      *
      * @return null|string
      */
+    /**
+     * @param string $fileName
+     *
+     * @return ?string
+     */
     private static function readFile(string $fileName): ?string
     {
         try {
@@ -53,6 +63,11 @@ class FileReadHandler
     /**
      * @param string $fileName
      * @return void
+     */
+    /**
+     * @param string $fileName
+     *
+     * @return string
      */
     private static function buildFilePath(string $fileName): string
     {

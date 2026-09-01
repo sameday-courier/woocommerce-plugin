@@ -14,6 +14,9 @@ final class PostRemoveAwbServiceProvider implements PostRemoveAwbServiceProvider
 {
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @param ?SamedayAwbRepository $samedayAwbRepository
+     */
     public function __construct(?SamedayAwbRepository $samedayAwbRepository = null)
     {
         $this->samedayAwbRepository = $samedayAwbRepository ?? new SamedayAwbRepository();

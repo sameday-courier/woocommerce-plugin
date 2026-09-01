@@ -15,6 +15,7 @@ final class GetLockersRequestDto
 
     /**
      * @param int[] $lockerIds
+     * @param int $page
      */
     public function __construct(array $lockerIds = [], int $page = 1)
     {
@@ -30,6 +31,9 @@ final class GetLockersRequestDto
         return $this->lockerIds;
     }
 
+    /**
+     * @return int
+     */
     public function getPage(): int
     {
         return $this->page;

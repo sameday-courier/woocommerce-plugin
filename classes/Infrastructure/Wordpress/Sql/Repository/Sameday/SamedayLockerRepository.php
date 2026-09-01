@@ -33,6 +33,9 @@ class SamedayLockerRepository extends AbstractRepository
         $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);
@@ -108,6 +111,11 @@ class SamedayLockerRepository extends AbstractRepository
         return $this->getMapper(SamedayLockerMapper::class)->map($row);
     }
 
+    /**
+     * @param CourierLockerDto $locker
+     *
+     * @return void
+     */
     public function addLocker(CourierLockerDto $locker): void
     {
         $this->dbHandler->insertRow(

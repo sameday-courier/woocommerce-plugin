@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<ruleset name="SamedayCourier Shipping">
+    <description>
+        PSR-12 code style, PSR-4 class/path mapping under classes/, and PHP 7.4 as the minimum runtime.
+    </description>
+
+    <file>classes</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg name="parallel" value="8"/>
+    <arg value="sp"/>
+
+    <exclude-pattern>*/files/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Target the PHP 7.4 language level used by this plugin. -->
+    <config name="php_version" value="70400"/>
+
+    <!-- PHPCompatibility: code must run on 7.4 and remain valid on later versions. -->
+    <config name="testVersion" value="7.4-"/>
+
+    <rule ref="PSR12">
+        <!-- WP_List_Table and other WP callbacks require snake_case method names. -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+    </rule>
+
+    <rule ref="PHPCompatibility"/>
+
+    <!-- PSR-4: class/interface/trait FQCN must match path under classes/. -->
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="classes" value="SamedayCourier\Shipping"/>
+            </property>
+            <property name="skipDirs" type="array">
+                <element value="files"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <exclude name="Squiz.Commenting.FunctionComment.InvalidReturn"/>
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/>
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectParamVarName"/>
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectParamVarType"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>
+        <exclude name="Squiz.Commenting.FunctionComment.SpacingBetween"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowTagMissing"/>
+    </rule>
+
+    <!-- Matches the existing codebase: declare(strict_types=1); -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="declareOnFirstLine" value="false"/>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+</ruleset>

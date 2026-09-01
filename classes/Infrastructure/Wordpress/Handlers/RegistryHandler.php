@@ -13,7 +13,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandl
 
 final class RegistryHandler
 {
-    private const Registers = [
+    private const REGISTERS = [
         ControllersRegisterService::class,
         ActionsRegisterService::class,
         FiltersRegisterService::class,
@@ -26,9 +26,12 @@ final class RegistryHandler
     /**
      * @return void
      */
+    /**
+     * @return void
+     */
     public static function register(): void
     {
-        foreach (self::Registers as $class) {
+        foreach (self::REGISTERS as $class) {
             /** @var RegistryHandlerInterface $register */
             $register = new $class();
             if ($register instanceof RegistryHandlerInterface) {

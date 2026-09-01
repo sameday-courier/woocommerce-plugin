@@ -6,51 +6,83 @@ namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
 use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
 
 final class StartAllImportResponse implements ResponseInterface
 {
     use NoticerTrait;
 
-    private ?string $jobId;
+    /**
+     * @var BulkJobId|null $jobId
+     */
+    private ?BulkJobId $jobId;
 
+    /**
+     * @var int $total
+     */
     private int $total;
 
+    /**
+     * @var int $processed
+     */
     private int $processed;
 
+    /**
+     * @var bool $done
+     */
     private bool $done;
 
+    /**
+     * @param string $noticeMessage
+     * @param bool $hasError
+     * @param BulkJobId|null $jobId
+     * @param int $total
+     * @param int $processed
+     * @param bool $done
+     */
     public function __construct(
-        ?string $noticeMessage,
-        string  $noticeType,
-        ?string $jobId = null,
-        int     $total = 0,
-        int     $processed = 0,
-        bool    $done = false
-    )
-    {
+        string $noticeMessage,
+        bool $hasError,
+        ?BulkJobId $jobId = null,
+        int $total = 0,
+        int $processed = 0,
+        bool $done = false
+    ) {
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
         $this->jobId = $jobId;
         $this->total = $total;
         $this->processed = $processed;
         $this->done = $done;
     }
 
-    public function getJobId(): ?string
+    /**
+     * @return ?BulkJobId
+     */
+    public function getJobId(): ?BulkJobId
     {
         return $this->jobId;
     }
 
+    /**
+     * @return int
+     */
     public function getTotal(): int
     {
         return $this->total;
     }
 
+    /**
+     * @return int
+     */
     public function getProcessed(): int
     {
         return $this->processed;
     }
 
+    /**
+     * @return bool
+     */
     public function isDone(): bool
     {
         return $this->done;

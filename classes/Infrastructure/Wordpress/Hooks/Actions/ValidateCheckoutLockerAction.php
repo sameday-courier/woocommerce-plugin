@@ -24,20 +24,23 @@ final class ValidateCheckoutLockerAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
     public function handle(...$args): void
     {
-        $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
+        $shippingMethodProvider = new WooShippingMethodProvider();
+        $serviceCode = $shippingMethodProvider->getChosenServiceCode();
         if ('' === $serviceCode) {
             return;
         }
 
         $carrierServiceRules = new CarrierServiceRules(new SamedayServiceRepository());
         $isOohDelivery = $carrierServiceRules->isOohDeliveryOptionByCode($serviceCode);
-        $isOohButUserNotSelectLocker = $isOohDelivery && (null === (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER));
+        $sessionHandler = new WooSessionHandler();
+        $isOohButUserNotSelectLocker = $isOohDelivery
+            && (null === $sessionHandler->get(CarrierSessionKeys::LOCKER));
 
         if ($isOohButUserNotSelectLocker) {
             wc_add_notice(TranslatorHandler::translate('Please choose your EasyBox Locker !'), 'error');

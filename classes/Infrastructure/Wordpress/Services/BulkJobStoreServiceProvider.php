@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
+use InvalidArgumentException;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
+use SamedayCourier\Shipping\Domain\ValueObject\BulkJobId;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\CacheHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\CacheHandlerInterface;
 
@@ -20,13 +22,20 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
      */
     private CacheHandlerInterface $cacheHandler;
 
+    /**
+     * @param ?CacheHandlerInterface $cacheHandler
+     */
     public function __construct(
         ?CacheHandlerInterface $cacheHandler = null
-    )
-    {
+    ) {
         $this->cacheHandler = $cacheHandler ?? new CacheHandler();
     }
 
+    /**
+     * @param BulkJobDto $job
+     *
+     * @return void
+     */
     public function create(BulkJobDto $job): void
     {
         $this->cacheHandler->refreshCachedData(
@@ -37,20 +46,25 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
     }
 
     /**
-     * @param string $jobId
+     * @param BulkJobId $jobId
      * @param int $userId
      *
      * @return BulkJobDto|null
      */
-    public function get(string $jobId, int $userId): ?BulkJobDto
+    public function get(BulkJobId $jobId, int $userId): ?BulkJobDto
     {
         $data = $this->cacheHandler->getCachedData($this->buildKey($jobId, $userId));
         if ([] === $data) {
             return null;
         }
 
-        $job = BulkJobDto::fromArray($data);
-        if ($job->getJobId() !== $jobId || $job->getUserId() !== $userId) {
+        try {
+            $job = BulkJobDto::fromArray($data);
+        } catch (InvalidArgumentException $exception) {
+            return null;
+        }
+
+        if (!$job->getJobId()->equals($jobId) || $job->getUserId() !== $userId) {
             return null;
         }
 
@@ -71,13 +85,25 @@ final class BulkJobStoreServiceProvider implements BulkJobStoreInterface
         );
     }
 
-    public function delete(string $jobId, int $userId): void
+    /**
+     * @param BulkJobId $jobId
+     * @param int $userId
+     *
+     * @return void
+     */
+    public function delete(BulkJobId $jobId, int $userId): void
     {
         $this->cacheHandler->invalidateCachedData($this->buildKey($jobId, $userId));
     }
 
-    private function buildKey(string $jobId, int $userId): string
+    /**
+     * @param BulkJobId $jobId
+     * @param int $userId
+     *
+     * @return string
+     */
+    private function buildKey(BulkJobId $jobId, int $userId): string
     {
-        return self::KEY_PREFIX . $userId . '_' . $jobId;
+        return self::KEY_PREFIX . $userId . '_' . $jobId->toString();
     }
 }

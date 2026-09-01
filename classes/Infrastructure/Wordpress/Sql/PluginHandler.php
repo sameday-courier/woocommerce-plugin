@@ -6,6 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql;
 
 class PluginHandler
 {
+    /**
+     * @return void
+     */
     public static function install(): void
     {
         (new Installer())->run();
@@ -14,9 +17,11 @@ class PluginHandler
     /**
      * @return void
      */
+    /**
+     * @return void
+     */
     public static function uninstall(): void
     {
         (new Uninstaller())->run();
     }
 }
-

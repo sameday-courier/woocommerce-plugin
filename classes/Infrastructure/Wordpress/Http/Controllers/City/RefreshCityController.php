@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\City;
 
-use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCity;
 use SamedayCourier\Shipping\Application\UseCases\City\Refresh\RefreshCityRequest;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CityCatalogStoreServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CitySourceServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\RefreshCityFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class RefreshCityController extends AbstractController
 {
@@ -39,27 +37,20 @@ final class RefreshCityController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */
     protected function processAction(array $inputParams): void
     {
-        $refreshCity = new RefreshCity(
-            new RefreshCityRequest(
-                new CityCatalogStoreServiceProvider(),
-                new CitySourceServiceProvider(),
-                new WooCountriesHandler()
-            )
-        );
+        $refreshCity = RefreshCityFactory::create();
 
-        $result = $refreshCity->execute();
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($result->getNoticeMessage()),
-                $result->getNoticeType(),
-            );
-        }
+        $result = $refreshCity->execute(new RefreshCityRequest());
+
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
+        );
 
         $this->redirectTo(
             'admin.php',

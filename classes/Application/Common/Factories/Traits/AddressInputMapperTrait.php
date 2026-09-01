@@ -6,25 +6,41 @@ namespace SamedayCourier\Shipping\Application\Common\Factories\Traits;
 
 trait AddressInputMapperTrait
 {
+    /** @var list<string> */
+    private static array $addressInputKeys = [
+        'first_name',
+        'last_name',
+        'company',
+        'address_1',
+        'address_2',
+        'city',
+        'state',
+        'postcode',
+        'country',
+        'email',
+        'phone',
+    ];
+
     /**
-     * @param array<string, mixed> $raw
+     * @param array $raw
      *
      * @return array<int, string|null>
      */
     protected function mapAddressInput(array $raw): array
     {
-        return [
-            isset($raw['first_name']) ? (string) $raw['first_name'] : null,
-            isset($raw['last_name']) ? (string) $raw['last_name'] : null,
-            isset($raw['company']) ? (string) $raw['company'] : null,
-            isset($raw['address_1']) ? (string) $raw['address_1'] : null,
-            isset($raw['address_2']) ? (string) $raw['address_2'] : null,
-            isset($raw['city']) ? (string) $raw['city'] : null,
-            isset($raw['state']) ? (string) $raw['state'] : null,
-            isset($raw['postcode']) ? (string) $raw['postcode'] : null,
-            isset($raw['country']) ? (string) $raw['country'] : null,
-            isset($raw['email']) ? (string) $raw['email'] : null,
-            isset($raw['phone']) ? (string) $raw['phone'] : null,
-        ];
+        $mapped = [];
+
+        foreach (self::$addressInputKeys as $key) {
+            if (!isset($raw[$key])) {
+                $mapped[] = null;
+
+                continue;
+            }
+
+            $value = (string) $raw[$key];
+            $mapped[] = '' !== $value ? $value : null;
+        }
+
+        return $mapped;
     }
 }

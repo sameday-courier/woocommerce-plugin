@@ -8,11 +8,17 @@ final class PostParcelResponseDto
 {
     private string $parcelAwbNumber;
 
+    /**
+     * @param string $parcelAwbNumber
+     */
     public function __construct(string $parcelAwbNumber)
     {
         $this->parcelAwbNumber = $parcelAwbNumber;
     }
 
+    /**
+     * @return string
+     */
     public function getParcelAwbNumber(): string
     {
         return $this->parcelAwbNumber;

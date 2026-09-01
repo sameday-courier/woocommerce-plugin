@@ -8,11 +8,15 @@ use Sameday\Objects\PostAwb\ParcelObject;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use Throwable;
 
 final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProviderInterface
 {
     private SamedayAwbRepository $samedayAwbRepository;
 
+    /**
+     * @param ?SamedayAwbRepository $samedayAwbRepository
+     */
     public function __construct(?SamedayAwbRepository $samedayAwbRepository = null)
     {
         $this->samedayAwbRepository = $samedayAwbRepository ?? new SamedayAwbRepository();
@@ -20,9 +24,6 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
 
     /**
      * Returns the AWB generated for the given order, or null when none exists.
-     *
-     * The presence of a persisted AWB is the authoritative signal that a Sameday
-     * AWB was generated for the order, independent of the shipping line method_id.
      *
      * @param int $orderId
      *
@@ -37,6 +38,40 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
         }
 
         return $awb;
+    }
+
+    /**
+     * @param int $orderId
+     * @param string $awbNumber
+     * @param float $awbCost
+     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     *
+     * @return bool
+     */
+    public function save(int $orderId, string $awbNumber, float $awbCost, array $parcels): bool
+    {
+        try {
+            $parcelObjects = array_map(
+                static function (array $parcel): ParcelObject {
+                    return new ParcelObject(
+                        (int) $parcel['position'],
+                        (string) $parcel['awbNumber']
+                    );
+                },
+                $parcels
+            );
+
+            $this->samedayAwbRepository->saveAwb([
+                'order_id' => $orderId,
+                'awb_number' => $awbNumber,
+                'parcels' => serialize($parcelObjects),
+                'awb_cost' => $awbCost,
+            ]);
+        } catch (Throwable $exception) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -128,7 +163,9 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
     }
 
     /**
-     * @return array<int, mixed>
+     * @param string $parcels
+     *
+     * @return array<int,
      */
     private function unserializeParcels(string $parcels): array
     {

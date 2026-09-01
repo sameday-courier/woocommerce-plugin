@@ -4,25 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
-use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
-
 final class StartAllImportRequest
 {
+    /**
+     * @var int $userId
+     */
     private int $userId;
-
-    private BulkJobStoreInterface $bulkJobStore;
 
     /**
      * @param int $userId
-     * @param BulkJobStoreInterface $bulkJobStore
      */
-    public function __construct(
-        int                   $userId,
-        BulkJobStoreInterface $bulkJobStore
-    )
+    public function __construct(int $userId)
     {
         $this->userId = $userId;
-        $this->bulkJobStore = $bulkJobStore;
     }
 
     /**
@@ -31,13 +25,5 @@ final class StartAllImportRequest
     public function getUserId(): int
     {
         return $this->userId;
-    }
-
-    /**
-     * @return BulkJobStoreInterface
-     */
-    public function getBulkJobStore(): BulkJobStoreInterface
-    {
-        return $this->bulkJobStore;
     }
 }

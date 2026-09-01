@@ -4,29 +4,36 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 
 final class EditService
 {
-    private EditServiceItem $editServiceItem;
-
+    /**
+     * @var ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
     private ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore;
 
-    public function __construct(EditServiceRequest $editServiceRequest)
-    {
-        $this->editServiceItem = $editServiceRequest->getEditServiceItem();
-        $this->serviceCatalogStore = $editServiceRequest->getServiceCatalogStore();
+    /**
+     * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+     */
+    public function __construct(
+        ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
+    ) {
+        $this->serviceCatalogStore = $serviceCatalogStore;
     }
 
-    public function execute(): EditServiceResponse
+    /**
+     * @param EditServiceRequest $request
+     * @return EditServiceResponse
+     */
+    public function execute(EditServiceRequest $request): EditServiceResponse
     {
-        $serviceId = $this->editServiceItem->getId();
-        $name = trim($this->editServiceItem->getName());
-        $price = trim($this->editServiceItem->getPrice());
-        $priceFreeRaw = $this->editServiceItem->getPriceFree();
-        $statusRaw = $this->editServiceItem->getStatus();
+        $serviceId = $request->getId();
+        $name = trim($request->getName());
+        $price = trim($request->getPrice());
+        $priceFreeRaw = $request->getPriceFree();
+        $statusRaw = $request->getStatus();
 
         $errors = [];
         if ('' === $name) {
@@ -38,9 +45,9 @@ final class EditService
 
         if ([] !== $errors) {
             return new EditServiceResponse(
-                $serviceId,
                 implode(' ', $errors),
-                ResponseNoticeType::ERROR
+                true,
+                $serviceId
             );
         }
 
@@ -52,34 +59,37 @@ final class EditService
         $currentService = $this->serviceCatalogStore->getById($serviceId);
         if (null === $currentService) {
             return new EditServiceResponse(
-                $serviceId,
                 "Unable to find service $serviceId",
-                ResponseNoticeType::ERROR
+                true,
+                $serviceId
             );
         }
 
         $status = (int) $statusRaw;
 
-        if (!$this->serviceCatalogStore->updateFields(
-            $serviceId,
-            [
-                'name' => $name,
-                'price' => (float) $price,
-                'price_free' => $priceFree,
-                'status' => $status,
-            ]
-        )) {
-            return new EditServiceResponse(
+        if (
+            !$this->serviceCatalogStore->updateFields(
                 $serviceId,
+                [
+                    'name' => $name,
+                    'price' => (float) $price,
+                    'price_free' => $priceFree,
+                    'status' => $status,
+                ]
+            )
+        ) {
+            return new EditServiceResponse(
                 'Unable to update service',
-                ResponseNoticeType::ERROR
+                true,
+                $serviceId
             );
         }
 
         if ($currentService->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $pudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::PUDO_CODE);
 
-            if (null !== $pudoService
+            if (
+                null !== $pudoService
                 && !$this->serviceCatalogStore->updateFields(
                     $pudoService->getId(),
                     [
@@ -88,17 +98,17 @@ final class EditService
                 )
             ) {
                 return new EditServiceResponse(
-                    $serviceId,
                     'Service updated, but unable to sync PUDO status',
-                    ResponseNoticeType::ERROR
+                    true,
+                    $serviceId
                 );
             }
         }
 
         return new EditServiceResponse(
-            $serviceId,
             'Service has been edited',
-            ResponseNoticeType::SUCCESS
+            false,
+            $serviceId
         );
     }
 }

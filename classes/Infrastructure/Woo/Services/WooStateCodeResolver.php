@@ -59,7 +59,9 @@ final class WooStateCodeResolver implements StateCodeResolverInterface
         }
 
         foreach ($states as $code => $name) {
-            if (RomanianDiacriticsNormalizer::normalize($name) === RomanianDiacriticsNormalizer::normalize($stateName)) {
+            $normalizedName = RomanianDiacriticsNormalizer::normalize($name);
+            $normalizedStateName = RomanianDiacriticsNormalizer::normalize($stateName);
+            if ($normalizedName === $normalizedStateName) {
                 return (string) $code;
             }
         }

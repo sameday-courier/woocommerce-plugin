@@ -38,7 +38,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
@@ -65,22 +65,34 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
     {
         $generateAwb = sprintf(
             '<p class="form-field form-field-wide wc-customer-user">
-                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-generate-awb-open="%s"> %s </a>
+                <a href="#"
+                   class="sameday_admin_button button-samll"
+                   role="button"
+                   data-sameday-generate-awb-open="%s"> %s </a>
             </p>',
-            esc_attr(AwbForm::MODAL_ID),
+            AwbForm::MODAL_ID,
             TranslatorHandler::translate('Generate awb')
         );
 
         $showAwb = sprintf(
             '<p class="form-field form-field-wide wc-customer-user">
-                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-modal-open="%s"> %s </a>
-                <a href="#" class="sameday_admin_button button-samll" role="button" data-sameday-modal-open="%s"> %s </a>
+                <a href="#"
+                   class="sameday_admin_button button-samll"
+                   role="button"
+                   data-sameday-modal-open="%s"> %s </a>
+                <a href="#"
+                   class="sameday_admin_button button-samll"
+                   role="button"
+                   data-sameday-modal-open="%s"> %s </a>
                 <input type="hidden" form="showAsPdf" name="order-id" value="%s">
-                <button type="submit" form="showAsPdf" formtarget="_blank" class="sameday_admin_button button-samll">%s </button>
+                <button type="submit"
+                        form="showAsPdf"
+                        formtarget="_blank"
+                        class="sameday_admin_button button-samll">%s </button>
             </p>',
-            esc_attr(NewParcelForm::MODAL_ID),
+            NewParcelForm::MODAL_ID,
             TranslatorHandler::translate('Add new parcel'),
-            esc_attr(self::HISTORY_MODAL_ID),
+            self::HISTORY_MODAL_ID,
             TranslatorHandler::translate('Awb history'),
             esc_attr((string) $order->get_id()),
             TranslatorHandler::translate('Show as pdf')
@@ -126,9 +138,11 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
                 'cancelLabel' => TranslatorHandler::translate('Close'),
             ]);
 
+            $carrierSettingsProvider = new CarrierSettingsServiceProvider();
+            $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
             $redirectToEawbSite = sprintf(
                 '%s/awb?awbOrParcelNumber=%s&tab=allAwbs',
-                CarrierConstants::EAWB_INSTANCES[(new CarrierSettingsServiceProvider())->get()->getHostCountry()],
+                CarrierConstants::EAWB_INSTANCES[$hostCountry],
                 $awb->getAwbNumber()
             );
 

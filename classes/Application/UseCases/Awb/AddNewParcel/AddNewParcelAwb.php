@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostParcelRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
@@ -12,29 +11,43 @@ use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 
 final class AddNewParcelAwb
 {
-    private AddNewParcelAwbItem $awbItem;
-
+    /**
+     * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
+     */
     private OrderAwbStoreServiceProviderInterface $orderAwbStore;
 
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
-    public function __construct(AddNewParcelAwbRequest $addNewParcelAwbRequest)
-    {
-        $this->awbItem = $addNewParcelAwbRequest->getAwbItem();
-        $this->orderAwbStore = $addNewParcelAwbRequest->getOrderAwbStore();
-        $this->courierServiceProvider = $addNewParcelAwbRequest->getCourierServiceProvider();
+    /**
+     * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     */
+    public function __construct(
+        OrderAwbStoreServiceProviderInterface $orderAwbStore,
+        CourierServiceProviderInterface $courierServiceProvider
+    ) {
+        $this->orderAwbStore = $orderAwbStore;
+        $this->courierServiceProvider = $courierServiceProvider;
     }
 
-    public function execute(): AddNewParcelAwbResponse
+    /**
+     * @param AddNewParcelAwbRequest $request
+     *
+     * @return AddNewParcelAwbResponse
+     */
+    public function execute(AddNewParcelAwbRequest $request): AddNewParcelAwbResponse
     {
-        $orderId = $this->awbItem->getOrderId();
+        $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);
 
         if (null === $awb) {
             return new AddNewParcelAwbResponse(
-                $orderId,
                 'AWB not found for this order.',
-                ResponseNoticeType::ERROR
+                true,
+                $orderId
             );
         }
 
@@ -44,36 +57,36 @@ final class AddNewParcelAwb
             $parcel = $this->courierServiceProvider->postParcel(
                 new PostParcelRequestDto(
                     (string) $awb->getAwbNumber(),
-                    $this->awbItem->getParcelWeight(),
-                    $this->awbItem->getParcelWidth(),
-                    $this->awbItem->getParcelLength(),
-                    $this->awbItem->getParcelHeight(),
+                    $request->getParcelWeight(),
+                    $request->getParcelWidth(),
+                    $request->getParcelLength(),
+                    $request->getParcelHeight(),
                     $position,
-                    $this->awbItem->getParcelObservation(),
+                    $request->getParcelObservation(),
                     null,
-                    $this->awbItem->isParcelIsLast()
+                    $request->isParcelIsLast()
                 )
             );
         } catch (CourierServiceException $exception) {
             return new AddNewParcelAwbResponse(
-                $orderId,
                 $exception->getMessage(),
-                ResponseNoticeType::ERROR
+                true,
+                $orderId
             );
         }
 
         if (!$this->orderAwbStore->appendParcel($awb, $position, $parcel->getParcelAwbNumber())) {
             return new AddNewParcelAwbResponse(
-                $orderId,
                 'Unable to update AWB parcels',
-                ResponseNoticeType::ERROR
+                true,
+                $orderId
             );
         }
 
         return new AddNewParcelAwbResponse(
-            $orderId,
             'AWB added new parcel successfully.',
-            ResponseNoticeType::SUCCESS
+            false,
+            $orderId
         );
     }
 }

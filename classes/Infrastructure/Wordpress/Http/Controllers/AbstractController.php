@@ -48,13 +48,13 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @param mixed $payload
      * @param int $statusCode
+     *
      * @return void
      */
     protected function sendJsonErrorResponse(
         $payload,
         int $statusCode = 400
-    ): void
-    {
+    ): void {
         wp_send_json_error($payload, $statusCode);
     }
 
@@ -69,13 +69,12 @@ abstract class AbstractController implements ControllerInterface
         $payload,
         int $statusCode = 200,
         bool $flag = false
-    ): void
-    {
+    ): void {
         wp_send_json_success($payload, $statusCode, $flag);
     }
 
     /**
-     * @param string $mainPath such as admin.php, post.php, edit.php
+     * @param string $mainPath
      * @param array $queryArgs
      *
      * @return void
@@ -87,6 +86,11 @@ abstract class AbstractController implements ControllerInterface
         exit;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     /**
      * @param array $inputParams
      *

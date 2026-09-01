@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Validators\Awb\Generate;
 
+use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
+
 final class GenerateAwbValidator
 {
+    /**
+     * @param GenerateAwbValidatorRequest $request
+     *
+     * @return GenerateAwbValidatorResponse
+     */
     public function validate(GenerateAwbValidatorRequest $request): GenerateAwbValidatorResponse
     {
-        $billing = $request->getBilling();
         $service = $request->getCarrierService();
         $pickupPoint = $request->getPickupPoint();
 
@@ -35,17 +41,34 @@ final class GenerateAwbValidator
             );
         }
 
-        if (null === $billing->getPhone()) {
+        if (null === $request->getRecipientPhone()) {
             $response->setErrors(
                 'phone',
                 'Must complete phone number.'
             );
         }
 
-        if (null === $billing->getEmail()) {
+        if (null === $request->getRecipientEmail()) {
             $response->setErrors(
                 'email',
                 'Must complete email.'
+            );
+        }
+
+        $destinationCountry = $request->getDestinationCountry();
+        if (null === $destinationCountry || '' === $destinationCountry) {
+            $response->setErrors(
+                'destination_country',
+                'Must complete the destination country.'
+            );
+        } elseif (null === CarrierCurrencyRules::resolveForCountry($destinationCountry)) {
+            $response->setErrors(
+                'destination_country',
+                sprintf(
+                    'SamedayCourier does not deliver to %s. Available destinations: %s.',
+                    $destinationCountry,
+                    implode(', ', CarrierCurrencyRules::supportedCountries())
+                )
             );
         }
 

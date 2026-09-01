@@ -14,6 +14,12 @@ final class GetCitiesRequestDto
 
     private int $page;
 
+    /**
+     * @param ?int $countyId
+     * @param ?string $name
+     * @param ?string $postalCode
+     * @param int $page
+     */
     public function __construct(
         ?int $countyId = null,
         ?string $name = null,
@@ -26,21 +32,33 @@ final class GetCitiesRequestDto
         $this->page = $page;
     }
 
+    /**
+     * @return ?int
+     */
     public function getCountyId(): ?int
     {
         return $this->countyId;
     }
 
+    /**
+     * @return ?string
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
+    /**
+     * @return int
+     */
     public function getPage(): int
     {
         return $this->page;

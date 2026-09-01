@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\Common\Factories;
 
 use JsonException;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\DTOs\Requests\LockerDtoRequest;
+use SamedayCourier\Shipping\Domain\Ports\LockerServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
 
 final class LockerDtoFactory
 {
@@ -18,17 +20,26 @@ final class LockerDtoFactory
         'county',
     ];
 
-    private SamedayLockerRepository $samedayLockerRepository;
+    private const OPTIONAL_PAYLOAD_KEYS = [
+        'oohType',
+        'postalCode',
+    ];
 
+    private LockerServiceProviderInterface $lockerServiceProvider;
+
+    /**
+     * @param ?LockerServiceProviderInterface $lockerServiceProvider
+     */
     public function __construct(
-        ?SamedayLockerRepository $samedayLockerRepository = null
-    )
-    {
-        $this->samedayLockerRepository = $samedayLockerRepository ?? new SamedayLockerRepository();
+        ?LockerServiceProviderInterface $lockerServiceProvider = null
+    ) {
+        $this->lockerServiceProvider = $lockerServiceProvider ?? new LockerServiceProvider();
     }
 
     /**
-     * @param mixed $raw JSON string, array (map), or locker id (dropdown)
+     * @param mixed $raw
+     *
+     * @return ?LockerDto
      */
     public function fromInput($raw): ?LockerDto
     {
@@ -64,26 +75,39 @@ final class LockerDtoFactory
      */
     private function fromLockerId(int $lockerId): ?LockerDto
     {
-        $locker = $this->samedayLockerRepository->getLockerSameday($lockerId);
+        $locker = $this->lockerServiceProvider
+            ->getLocker(new LockerDtoRequest($lockerId))
+            ->getLocker();
+
         if (null === $locker) {
             return null;
         }
 
-        $dto = LockerDto::fromSamedayLocker($locker);
-
-        return $this->isComplete($dto) ? $dto : null;
+        return $this->isComplete($locker) ? $locker : null;
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
+     *
+     * @return ?LockerDto
      */
     private function fromPayload(array $data): ?LockerDto
     {
         if ($this->hasRequiredPayloadFields($data)) {
-            return LockerDto::fromArray($data);
+            $mapped = $this->mapLockerInput($data);
+
+            return new LockerDto(
+                $mapped['lockerId'],
+                $mapped['oohType'],
+                $mapped['name'],
+                $mapped['county'],
+                $mapped['city'],
+                $mapped['address'],
+                $mapped['postalCode']
+            );
         }
 
-        if (isset($data['lockerId']) && '' !== $data['lockerId'] && null !== $data['lockerId']) {
+        if (isset($data['lockerId']) && '' !== $data['lockerId']) {
             return $this->fromLockerId((int) $data['lockerId']);
         }
 
@@ -91,12 +115,53 @@ final class LockerDtoFactory
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @return string[]
+     */
+    private function getLockerKeys(): array
+    {
+        return array_merge(self::REQUIRED_PAYLOAD_KEYS, self::OPTIONAL_PAYLOAD_KEYS);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array{
+     *     lockerId: ?int,
+     *     oohType: ?string,
+     *     name: ?string,
+     *     county: ?string,
+     *     city: ?string,
+     *     address: ?string,
+     *     postalCode: ?string
+     * }
+     */
+    private function mapLockerInput(array $data): array
+    {
+        $mapped = [];
+
+        foreach ($this->getLockerKeys() as $key) {
+            if (!isset($data[$key]) || '' === $data[$key]) {
+                $mapped[$key] = null;
+                continue;
+            }
+
+            $mapped[$key] = 'lockerId' === $key
+                ? (int) $data[$key]
+                : (string) $data[$key];
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return bool
      */
     private function hasRequiredPayloadFields(array $data): bool
     {
         foreach (self::REQUIRED_PAYLOAD_KEYS as $key) {
-            if (!isset($data[$key]) || '' === $data[$key] || null === $data[$key]) {
+            if (!isset($data[$key]) || '' === $data[$key]) {
                 return false;
             }
         }
@@ -104,12 +169,13 @@ final class LockerDtoFactory
         return true;
     }
 
+    /**
+     * @param LockerDto $locker
+     *
+     * @return bool
+     */
     private function isComplete(LockerDto $locker): bool
     {
-        return null !== $locker->getLockerId()
-            && null !== $locker->getName() && '' !== $locker->getName()
-            && null !== $locker->getAddress() && '' !== $locker->getAddress()
-            && null !== $locker->getCity() && '' !== $locker->getCity()
-            && null !== $locker->getCounty() && '' !== $locker->getCounty();
+        return $this->hasRequiredPayloadFields($locker->toArray());
     }
 }

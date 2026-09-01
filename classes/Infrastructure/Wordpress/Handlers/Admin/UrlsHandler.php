@@ -1,9 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin;
 
 class UrlsHandler
 {
+    /**
+     * @param string $adminUrlPath
+     * @param array $queryArgs
+     *
+     * @return string
+     */
     /**
      * @param string $adminUrlPath
      * @param array $queryArgs
@@ -24,11 +32,20 @@ class UrlsHandler
      *
      * @return string
      */
+    /**
+     * @param string $adminUrlPath
+     * @param array $queryArgs
+     *
+     * @return string
+     */
     public static function buildEscaped(string $adminUrlPath = "admin.php", array $queryArgs = []): string
     {
         return esc_url(self::build($adminUrlPath, $queryArgs));
     }
 
+    /**
+     * @return string
+     */
     /**
      * @return string
      */

@@ -38,6 +38,9 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
         $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
     }
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);
@@ -81,7 +84,8 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
     public function getServiceIdOptionalTaxes(int $samedayServiceId): array
     {
         $rows = $this->dbHandler->getRows(
-            "SELECT service_optional_taxes FROM {$this->getTableName()} WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
+            "SELECT service_optional_taxes FROM {$this->getTableName()}"
+            . " WHERE is_testing = %s AND sameday_id = %d LIMIT 1",
             [
                 $this->isTesting(),
                 $samedayServiceId,
@@ -220,7 +224,8 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
     {
         $serviceName = $service->getName();
         if ($service->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$this->carrierSettingsProvider->get()->getHostCountry()];
+            $hostCountry = $this->carrierSettingsProvider->get()->getHostCountry();
+            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
         return $this->dbHandler->updateRow(

@@ -9,7 +9,7 @@ interface CarrierShippingHdAddressParserInterface
     /**
      * @param int $orderId
      *
-     * @return array<string, mixed>|null
+     * @return array<string,
      */
     public function parse(int $orderId): ?array;
 }

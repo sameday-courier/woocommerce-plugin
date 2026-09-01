@@ -14,6 +14,9 @@ class UserPermissionChecker
     /**
      * @return int
      */
+    /**
+     * @return int
+     */
     public static function getCurrentUserId(): int
     {
         return (int) get_current_user_id();
@@ -22,11 +25,17 @@ class UserPermissionChecker
     /**
      * @return bool
      */
+    /**
+     * @return bool
+     */
     public static function isLoggedIn(): bool
     {
         return self::getCurrentUserId() > 0;
     }
 
+    /**
+     * @return bool
+     */
     /**
      * @return bool
      */
@@ -46,6 +55,9 @@ class UserPermissionChecker
     /**
      * Authenticated user with an allowed admin role.
      *
+     * @return bool
+     */
+    /**
      * @return bool
      */
     public static function canAccess(): bool

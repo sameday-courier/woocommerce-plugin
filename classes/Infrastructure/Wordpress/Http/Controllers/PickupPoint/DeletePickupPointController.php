@@ -4,24 +4,31 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\PickupPoint;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPoint;
-use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointItem;
 use SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete\DeletePickupPointRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\DeletePickupPointFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\DeletePickupPointMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class DeletePickupPointController extends AbstractController
 {
     private const ACTION = 'delete_pickup_point';
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return self::ACTION;
     }
 
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     public function processAction(array $inputParams): void
     {
         if (empty($inputParams)) {
@@ -39,7 +46,7 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
-        if (null === ($inputParams['sameday_id'] ?? null)) {
+        if (null === ($inputParams[DeletePickupPointMapper::SAMEDAY_ID_KEY] ?? null)) {
             NoticerHandler::addFlashNotice(
                 TranslatorHandler::translate('Invalid data format.'),
                 ResponseNoticeType::ERROR,
@@ -54,22 +61,19 @@ final class DeletePickupPointController extends AbstractController
             );
         }
 
-        $deletePickupPointItem = DeletePickupPointItem::fromArray($inputParams);
+        $params = new DeletePickupPointMapper($inputParams);
+        $deletePickupPoint = DeletePickupPointFactory::create();
 
-        $request = new DeletePickupPointRequest(
-            $deletePickupPointItem,
-            new CourierServiceProvider()
+        $result = $deletePickupPoint->execute(
+            new DeletePickupPointRequest(
+                $params->samedayId()
+            )
         );
 
-        $deletePickupPoint = new DeletePickupPoint($request);
-        $result = $deletePickupPoint->execute();
-
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
-            );
-        }
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
+        );
 
         $this->redirectTo(
             'edit.php',

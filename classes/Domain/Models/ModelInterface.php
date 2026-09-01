@@ -6,5 +6,4 @@ namespace SamedayCourier\Shipping\Domain\Models;
 
 interface ModelInterface
 {
-
 }

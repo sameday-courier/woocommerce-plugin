@@ -117,26 +117,25 @@ final class CarrierSettings
      * @param int $samedaySyncLockersTs
      */
     public function __construct(
-        bool    $enabled,
-        string  $title,
+        bool $enabled,
+        string $title,
         ?string $user,
         ?string $password,
-        string  $defaultLabelFormat,
-        string  $estimatedCost,
-        int     $estimatedCostExtraFee,
+        string $defaultLabelFormat,
+        string $estimatedCost,
+        int $estimatedCostExtraFee,
         ?string $repaymentTaxLabel,
-        ?int    $repaymentTax,
-        bool    $openPackageStatusEnabled,
-        bool    $discountFreeShippingEnabled,
+        ?int $repaymentTax,
+        bool $openPackageStatusEnabled,
+        bool $discountFreeShippingEnabled,
         ?string $openPackageLabel,
-        int     $lockerMaxItems,
-        bool    $lockersMapEnabled,
-        bool    $testing,
-        string  $hostCountry,
-        bool    $useSamedayNomenclator,
-        int     $samedaySyncLockersTs
-    )
-    {
+        int $lockerMaxItems,
+        bool $lockersMapEnabled,
+        bool $testing,
+        string $hostCountry,
+        bool $useSamedayNomenclator,
+        int $samedaySyncLockersTs
+    ) {
         $this->enabled = $enabled;
         $this->title = $title;
         $this->user = $user;

@@ -4,17 +4,61 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use Sameday\Objects\Service\OptionalTaxObject;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\FrontPageValidatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OpenPackageAvailabilityProvider;
 
+/**
+ * Classic checkout only: woocommerce_review_order_after_shipping is not fired by the
+ * Checkout block. OpenPackageBlocksIntegration covers Blocks-based checkouts.
+ */
 final class ShowOpenPackageFieldAction extends AbstractAction
 {
     private const ACTION_NAME = 'woocommerce_review_order_after_shipping';
+
+    /**
+     * @var WooShippingMethodProvider $wooShippingMethodProvider
+     */
+    private WooShippingMethodProvider $wooShippingMethodProvider;
+
+    /**
+     * @var OpenPackageAvailabilityProvider $openPackageAvailabilityProvider
+     */
+    private OpenPackageAvailabilityProvider $openPackageAvailabilityProvider;
+
+    /**
+     * @var CarrierSettingsServiceProvider $carrierSettingsServiceProvider
+     */
+    private CarrierSettingsServiceProvider $carrierSettingsServiceProvider;
+
+    /**
+     * @var SessionHandlerInterface $sessionHandler
+     */
+    private SessionHandlerInterface $sessionHandler;
+
+    /**
+     * @param WooShippingMethodProvider|null $wooShippingMethodProvider
+     * @param OpenPackageAvailabilityProvider|null $openPackageAvailabilityProvider
+     * @param CarrierSettingsServiceProvider|null $carrierSettingsServiceProvider
+     * @param SessionHandlerInterface|null $sessionHandler
+     */
+    public function __construct(
+        ?WooShippingMethodProvider $wooShippingMethodProvider = null,
+        ?OpenPackageAvailabilityProvider $openPackageAvailabilityProvider = null,
+        ?CarrierSettingsServiceProvider $carrierSettingsServiceProvider = null,
+        ?SessionHandlerInterface $sessionHandler = null
+    ) {
+        $this->wooShippingMethodProvider = $wooShippingMethodProvider ?? new WooShippingMethodProvider();
+        $this->openPackageAvailabilityProvider = $openPackageAvailabilityProvider
+            ?? new OpenPackageAvailabilityProvider();
+        $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider
+            ?? new CarrierSettingsServiceProvider();
+        $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
+    }
 
     /**
      * @return string
@@ -25,54 +69,25 @@ final class ShowOpenPackageFieldAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
     public function handle(...$args): void
     {
-        if (!is_checkout()) {
+        if (!FrontPageValidatorHandler::isCheckoutPage()) {
             return;
         }
 
-        $samedayServiceRepository = new SamedayServiceRepository();
-        $service = $samedayServiceRepository->getServiceSamedayByCode(
-            (new WooShippingMethodProvider())->getChosenServiceCode()
+        $isAvailable = $this->openPackageAvailabilityProvider->isAvailableForServiceCode(
+            $this->wooShippingMethodProvider->getChosenServiceCode()
         );
 
-        /** @var OptionalTaxObject[] $optionalTaxes */
-        $optionalTaxes = [];
-        if (null !== $service && null !== $service->getServiceOptionalTaxes() && '' !== $service->getServiceOptionalTaxes()) {
-            $optionalTaxes = unserialize($service->getServiceOptionalTaxes(), ['']);
-            if (!$optionalTaxes) {
-                $optionalTaxes = [];
-            }
+        if (!$isAvailable) {
+            return;
         }
 
-        $taxOpenPackage = null;
-        foreach ($optionalTaxes as $optionalTax) {
-            if ($optionalTax->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE) {
-                $taxOpenPackage = $optionalTax->getId();
-            }
-        }
-
-        if ($this->hasToShowOpenPackageOption($taxOpenPackage)) {
-            echo $this->buildHtmlContent();
-        }
-    }
-
-    /**
-     * @param int|null $taxId
-     *
-     * @return bool
-     */
-    private function hasToShowOpenPackageOption(?int $taxId): bool
-    {
-        if (null === $taxId) {
-            return false;
-        }
-
-        return (new CarrierSettingsServiceProvider())->get()->isOpenPackageStatusEnabled();
+        echo $this->buildHtmlContent();
     }
 
     /**
@@ -86,11 +101,11 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'type' => 'checkbox',
                 'class' => ['input-checkbox'],
                 'id' => 'sameday_open_package',
-                'label' => (new CarrierSettingsServiceProvider())->get()->getOpenPackageLabel(),
+                'label' => $this->carrierSettingsServiceProvider->get()->getOpenPackageLabel(),
                 'required' => false,
                 'return' => true,
             ],
-            'yes' === (new WooSessionHandler())->get(CarrierSessionKeys::OPEN_PACKAGE)
+            'yes' === $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE)
         );
     }
 
@@ -100,7 +115,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
     private function buildHtmlContent(): string
     {
         return sprintf(
-    '<tr class="shipping-pickup-store">
+            '<tr class="shipping-pickup-store">
                 <th></th>
                 <td>
                     <ul id="shipping_method" class="woocommerce-shipping-methods sameday-shipping-methods">

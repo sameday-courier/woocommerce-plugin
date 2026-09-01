@@ -4,19 +4,83 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use Exception;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
-use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\FrontPageValidatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerChoicesProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
+/**
+ * Renders locker map/dropdown on classic WooCommerce checkout
+ * (woocommerce_review_order_after_shipping in review-order.php).
+ *
+ * WooCommerce Blocks checkout never fires this hook — see
+ * RegisterCheckoutBlocksIntegrationAction + CheckoutBlocksIntegration.
+ */
 final class ShowLockerFieldAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_review_order_after_shipping';
+
+    /**
+     * @var WooShippingMethodProvider $wooShippingMethodProvider
+     */
+    private WooShippingMethodProvider $wooShippingMethodProvider;
+
+    /**
+     * @var SessionHandlerInterface $sessionHandler
+     */
+    private SessionHandlerInterface $sessionHandler;
+
+    /**
+     * @var CarrierServiceRules $carrierServiceRules
+     */
+    private CarrierServiceRules $carrierServiceRules;
+
+    /**
+     * @var CarrierSettingsServiceProvider $carrierSettingsServiceProvider
+     */
+    private CarrierSettingsServiceProvider $carrierSettingsServiceProvider;
+
+    /**
+     * @var LockerDtoFactory $lockerDtoFactory
+     */
+    private LockerDtoFactory $lockerDtoFactory;
+
+    /**
+     * @var LockerChoicesProvider $lockerChoicesProvider
+     */
+    private LockerChoicesProvider $lockerChoicesProvider;
+
+    /**
+     * @param WooShippingMethodProvider|null $wooShippingMethodProvider
+     * @param CarrierServiceRules|null $carrierServiceRules
+     * @param SessionHandlerInterface|null $sessionHandler
+     * @param CarrierSettingsServiceProvider|null $carrierSettingsServiceProvider
+     * @param LockerDtoFactory|null $lockerDtoFactory
+     * @param LockerChoicesProvider|null $lockerChoicesProvider
+     */
+    public function __construct(
+        ?WooShippingMethodProvider $wooShippingMethodProvider = null,
+        ?CarrierServiceRules $carrierServiceRules = null,
+        ?SessionHandlerInterface $sessionHandler = null,
+        ?CarrierSettingsServiceProvider $carrierSettingsServiceProvider = null,
+        ?LockerDtoFactory $lockerDtoFactory = null,
+        ?LockerChoicesProvider $lockerChoicesProvider = null
+    ) {
+        $this->wooShippingMethodProvider = $wooShippingMethodProvider ?? new WooShippingMethodProvider();
+        $this->carrierServiceRules = $carrierServiceRules ?? new CarrierServiceRules(new SamedayServiceRepository());
+        $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
+        $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider ?? new CarrierSettingsServiceProvider();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerChoicesProvider = $lockerChoicesProvider ?? new LockerChoicesProvider();
+    }
 
     /**
      * @return string
@@ -27,16 +91,18 @@ final class ShowLockerFieldAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
     public function handle(...$args): void
     {
-        $serviceCode = (new WooShippingMethodProvider())->getChosenServiceCode();
-        if (!(new CarrierServiceRules(new SamedayServiceRepository()))->isOohDeliveryOptionByCode($serviceCode)
-            || !is_checkout()
-        ) {
+        $serviceCode = $this->wooShippingMethodProvider->getChosenServiceCode();
+        if (!FrontPageValidatorHandler::isCheckoutPage()) {
+            return;
+        }
+
+        if (false === $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)) {
             return;
         }
 
@@ -44,143 +110,55 @@ final class ShowLockerFieldAction extends AbstractAction
     }
 
     /**
+     * @return LockerDto|null
+     */
+    private function resolveShipTo(): ?LockerDto
+    {
+        return $this->lockerDtoFactory->fromInput(
+            $this->sessionHandler->get(CarrierSessionKeys::LOCKER)
+        );
+    }
+
+    /**
+     * @param LockerDto|null $locker
+     *
      * @return string|null
      */
-    private function resolveShipTo(): ?string
+    private function buildShipToLabel(?LockerDto $locker): ?string
     {
-        $lockerSession = (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER);
-        if (null === $lockerSession) {
-            return null;
-        }
-
-        try {
-            $lockerSession = json_decode($lockerSession, false, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $exception) {
+        if (null === $locker) {
             return null;
         }
 
         return sprintf(
             '%s <br/> %s',
-            esc_html($lockerSession->name ?? ''),
-            esc_html($lockerSession->address ?? '')
+            esc_html($locker->getName() ?? ''),
+            esc_html($locker->getAddress() ?? '')
         );
     }
 
     /**
-     * @param string|null $shipTo
+     * @param LockerDto|null $locker
      *
      * @return string
      */
-    private function buildHtmlContent(?string $shipTo): string
+    private function buildHtmlContent(?LockerDto $locker): string
     {
-        $settings = (new CarrierSettingsServiceProvider())->get();
+        $shipTo = $this->buildShipToLabel($locker);
+        $settings = $this->carrierSettingsServiceProvider->get();
         if ($settings->isLockersMapEnabled()) {
-            return $this->buildLockersMapHtml($shipTo);
+            return HtmlHandler::buildHtml('locker-map-field', [
+                'username' => $settings->getUser() ?? '',
+                'hostCountry' => $settings->getHostCountry(),
+                'shipTo' => $shipTo,
+            ]);
         }
 
-        return $this->buildLockersDropdownHtml();
-    }
+        $selectedLockerId = null !== $locker ? $locker->getLockerId() : null;
 
-    /**
-     * @param string|null $shipTo
-     *
-     * @return string
-     */
-    private function buildLockersMapHtml(?string $shipTo): string
-    {
-        $settings = (new CarrierSettingsServiceProvider())->get();
-        $html = sprintf(
-            '<tr class="shipping-pickup-store">
-                <td><strong>%s</strong></td>
-                <th>
-                    <button type="button" class="button alt sameday_select_locker"
-                        id="select_locker"
-                        data-username="%s"
-                        data-country="%s"
-                    >
-                        %s
-                    </button>
-                </th>
-            </tr>',
-            TranslatorHandler::translate('Sameday Locker'),
-            esc_attr($settings->getUser() ?? ''),
-            esc_attr($settings->getHostCountry()),
-            TranslatorHandler::translate('Show Locations Map')
-        );
-
-        if (null === $shipTo) {
-            return $html;
-        }
-
-        return $html . sprintf(
-            '<tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
-                <td><strong>%s</strong></td>
-                <th><span id="showLockerDetails">%s</span></th>
-            </tr>',
-            TranslatorHandler::translate('Ship to'),
-            wp_kses_post($shipTo)
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function buildLockersDropdownHtml(): string
-    {
-        return sprintf(
-            '<tr>
-                <th><label for="shipping-pickup-store-select"></label></th>
-                <td>
-                    <select name="locker_id" id="shipping-pickup-store-select">
-                        <option value="" class="sameday-locker-placeholder">
-                            %s
-                        </option>
-                        %s
-                    </select>
-                </td>
-            </tr>',
-            TranslatorHandler::translate('Select easyBox'),
-            $this->buildLockerOptions()
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function buildLockerOptions(): string
-    {
-        $samedayLockerRepository = new SamedayLockerRepository();
-        $cities = $samedayLockerRepository->getCitiesWithLockers();
-        $lockers = [];
-        foreach ($cities as $city) {
-            if (null !== $city->getCity()) {
-                $lockers[$city->getCity() . ' (' . $city->getCounty() . ')'] = $samedayLockerRepository->getLockersByCity(
-                    (string) $city->getCity()
-                );
-            }
-        }
-
-        $lockerOptions = '';
-        foreach ($lockers as $city => $cityLockers) {
-            $optionGroup = '<optgroup label="' . esc_attr($city) . '" class="sameday-locker-optgroup"></optgroup>';
-            $options = '';
-            foreach ($cityLockers as $locker) {
-                $lockerDetails = esc_html($locker->getName() . ' - ' . $locker->getAddress());
-                $isSelected = '';
-                if ((int) (new WooSessionHandler())->get(CarrierSessionKeys::LOCKER) === (int) $locker->getLockerId()) {
-                    $isSelected = "selected='selected'";
-                }
-                $options .= sprintf(
-                    '<option value="%s" class="sameday-locker-option" %s> %s </option>',
-                    esc_attr((string) $locker->getLockerId()),
-                    $isSelected,
-                    $lockerDetails
-                );
-            }
-
-            $lockerOptions .= $optionGroup . $options;
-        }
-
-        return $lockerOptions;
+        return HtmlHandler::buildHtml('locker-dropdown-field', [
+            'lockersByCity' => $this->lockerChoicesProvider->groupedByCity($selectedLockerId),
+            'shipTo' => $shipTo,
+        ]);
     }
 }

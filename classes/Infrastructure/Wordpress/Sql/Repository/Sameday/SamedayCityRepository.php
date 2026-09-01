@@ -20,13 +20,16 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
 
     private const CITIES_CACHE_TTL_SECONDS = 31556926;
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return $this->dbHandler->buildTableName(self::TABLE_NAME);
     }
 
     /**
-     * @return array<string, CarrierCity[]>
+     * @return array<string,
      */
     public function getCachedCities(): array
     {
@@ -57,7 +60,7 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @return array<string, CarrierCity[]>
+     * @return array<string,
      */
     public function getCities(): array
     {
@@ -127,7 +130,7 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @param array<string, mixed> $cities
+     * @param array $cities
      *
      * @return bool
      */

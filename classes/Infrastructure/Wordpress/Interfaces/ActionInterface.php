@@ -22,7 +22,7 @@ interface ActionInterface
     public function getParams(): ?array;
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */

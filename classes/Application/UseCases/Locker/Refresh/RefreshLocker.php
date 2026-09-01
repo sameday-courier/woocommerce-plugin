@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetLockersRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
@@ -14,20 +13,41 @@ use SamedayCourier\Shipping\Domain\Ports\LockerStoreServiceProviderInterface;
 
 final class RefreshLocker
 {
+    /**
+     * @var CourierServiceProviderInterface $courierServiceProvider
+     */
     private CourierServiceProviderInterface $courierServiceProvider;
 
+    /**
+     * @var LockerStoreServiceProviderInterface $lockerStore
+     */
     private LockerStoreServiceProviderInterface $lockerStore;
 
+    /**
+     * @var CarrierSettingsProviderInterface $carrierSettingsProvider
+     */
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
-    public function __construct(RefreshLockerRequest $refreshLockerRequest)
-    {
-        $this->courierServiceProvider = $refreshLockerRequest->getCourierServiceProvider();
-        $this->lockerStore = $refreshLockerRequest->getLockerStore();
-        $this->carrierSettingsProvider = $refreshLockerRequest->getCarrierSettingsProvider();
+    /**
+     * @param CourierServiceProviderInterface $courierServiceProvider
+     * @param LockerStoreServiceProviderInterface $lockerStore
+     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
+     */
+    public function __construct(
+        CourierServiceProviderInterface $courierServiceProvider,
+        LockerStoreServiceProviderInterface $lockerStore,
+        CarrierSettingsProviderInterface $carrierSettingsProvider
+    ) {
+        $this->courierServiceProvider = $courierServiceProvider;
+        $this->lockerStore = $lockerStore;
+        $this->carrierSettingsProvider = $carrierSettingsProvider;
     }
 
-    public function execute(): RefreshLockerResponse
+    /**
+     * @param RefreshLockerRequest $request
+     * @return RefreshLockerResponse
+     */
+    public function execute(RefreshLockerRequest $request): RefreshLockerResponse
     {
         $remoteLockers = [];
         $page = 1;
@@ -38,7 +58,7 @@ final class RefreshLocker
             } catch (CourierServiceException $exception) {
                 return new RefreshLockerResponse(
                     $exception->getMessage(),
-                    ResponseNoticeType::ERROR
+                    true
                 );
             }
 
@@ -49,7 +69,7 @@ final class RefreshLocker
                 } elseif (!$this->lockerStore->updateFromRemote($lockerDto, $locker->getId())) {
                     return new RefreshLockerResponse(
                         'Unable to update locker',
-                        ResponseNoticeType::ERROR
+                        true
                     );
                 }
 
@@ -58,6 +78,11 @@ final class RefreshLocker
         } while ($page <= $lockers->getPages());
 
         $localLockers = array_map(
+            /**
+             * @param CarrierLocker $locker
+             *
+             * @return array
+             */
             static function (CarrierLocker $locker): array {
                 return [
                     'id' => $locker->getId(),
@@ -77,7 +102,7 @@ final class RefreshLocker
 
         return new RefreshLockerResponse(
             'Lockers successfully refreshed.',
-            ResponseNoticeType::SUCCESS
+            false
         );
     }
 }

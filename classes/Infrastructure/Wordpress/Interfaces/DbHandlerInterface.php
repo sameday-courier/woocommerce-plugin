@@ -41,16 +41,16 @@ interface DbHandlerInterface
      * @param string $tableName
      * @param array $params
      *
-     * @return bool True when the row was inserted, false otherwise.
+     * @return bool
      */
     public function insertRow(string $tableName, array $params): bool;
 
     /**
      * @param string $tableName
      * @param array $row
-     * @param array $where [id => $id]
+     * @param array $where
      *
-     * @return bool True when the update query succeeded, false otherwise.
+     * @return bool
      */
     public function updateRow(string $tableName, array $row, array $where): bool;
 

@@ -8,6 +8,8 @@ class Installer
 {
     private SchemaHandler $schemaHandler;
 
+    /**
+     */
     public function __construct()
     {
         $this->schemaHandler = new SchemaHandler();

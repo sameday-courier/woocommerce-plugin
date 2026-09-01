@@ -13,6 +13,8 @@ final class ParcelDimensionsFactory
      * @param mixed $width
      * @param mixed $length
      * @param mixed $height
+     *
+     * @return ParcelDimensionsObject
      */
     public function fromAttributes(
         $weight,
@@ -29,7 +31,7 @@ final class ParcelDimensionsFactory
     }
 
     /**
-     * @param array<int|string, mixed> $parcels
+     * @param array $parcels
      *
      * @return ParcelDimensionsObject[]
      */
@@ -56,6 +58,8 @@ final class ParcelDimensionsFactory
 
     /**
      * @param mixed $value
+     *
+     * @return ?float
      */
     private function optionalDimension($value): ?float
     {

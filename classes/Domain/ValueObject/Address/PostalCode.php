@@ -9,6 +9,8 @@ use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 
 final class PostalCode
 {
+    /**
+     */
     private function __construct()
     {
     }
@@ -21,13 +23,20 @@ final class PostalCode
      *
      * @return PostalCodeDto
      */
+    /**
+     * @param ?string $code
+     * @param string $countyCode
+     * @param string $countryCode
+     * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
+     *
+     * @return PostalCodeDto
+     */
     public static function tryCreate(
         ?string $code,
         string $countyCode,
         string $countryCode,
         CityPostalCodeProviderInterface $cityPostalCodeProvider
-    ): PostalCodeDto
-    {
+    ): PostalCodeDto {
         if (null === $code || '' === $code || '' === $countyCode || '' === $countryCode) {
             return new PostalCodeDto(null);
         }

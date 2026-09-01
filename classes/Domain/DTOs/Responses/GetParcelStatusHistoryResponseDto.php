@@ -23,7 +23,7 @@ final class GetParcelStatusHistoryResponseDto
 
     /**
      * @param mixed $summary
-     * @param array<int, mixed> $history
+     * @param array $history
      * @param mixed $expeditionStatus
      */
     public function __construct($summary, array $history, $expeditionStatus)
@@ -42,7 +42,7 @@ final class GetParcelStatusHistoryResponseDto
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int,
      */
     public function getHistory(): array
     {

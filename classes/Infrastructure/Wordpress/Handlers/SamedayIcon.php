@@ -21,6 +21,11 @@ final class SamedayIcon
      *
      * @return string
      */
+    /**
+     * @param string $relativePath
+     *
+     * @return string
+     */
     public static function getDataUri(string $relativePath = self::DEFAULT_RELATIVE_PATH): string
     {
         if (isset(self::$dataUriCache[$relativePath])) {
@@ -52,6 +57,12 @@ final class SamedayIcon
      *
      * @return string
      */
+    /**
+     * @param string $className
+     * @param int $size
+     *
+     * @return string
+     */
     public static function render(string $className = 'sameday-icon', int $size = 16): string
     {
         $dataUri = self::getDataUri();
@@ -61,8 +72,8 @@ final class SamedayIcon
 
         return sprintf(
             '<img class="%1$s" src="%2$s" alt="" width="%3$d" height="%3$d" decoding="async" />',
-            esc_attr($className),
-            esc_attr($dataUri),
+            $className,
+            $dataUri,
             max(1, $size)
         );
     }

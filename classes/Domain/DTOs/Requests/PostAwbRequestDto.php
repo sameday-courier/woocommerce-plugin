@@ -62,9 +62,28 @@ final class PostAwbRequestDto
     private ?string $currency;
 
     /**
-     * @param array<int, array<string, mixed>> $parcelsDimensions
-     * @param array<int, int|string> $serviceTaxIds
+     * @param int $pickupPointId
+     * @param ?int $contactPersonId
+     * @param int $packageType
+     * @param array $parcelsDimensions
+     * @param int $serviceId
+     * @param int $awbPayment
+     * @param RecipientDto $awbRecipient
+     * @param float $insuredValue
+     * @param float $cashOnDeliveryAmount
+     * @param ?int $cashOnDeliveryCollector
      * @param mixed $thirdPartyPickup
+     * @param array $serviceTaxIds
+     * @param ?int $deliveryIntervalServiceType
+     * @param ?string $reference
+     * @param ?string $observation
+     * @param ?string $priceObservation
+     * @param ?string $clientObservation
+     * @param ?int $lockerFirstMile
+     * @param ?int $lockerLastMile
+     * @param ?int $oohFirstMile
+     * @param ?int $oohLastMile
+     * @param ?string $currency
      */
     public function __construct(
         int $pickupPointId,
@@ -114,54 +133,81 @@ final class PostAwbRequestDto
         $this->currency = $currency;
     }
 
+    /**
+     * @return int
+     */
     public function getPickupPointId(): int
     {
         return $this->pickupPointId;
     }
 
+    /**
+     * @return ?int
+     */
     public function getContactPersonId(): ?int
     {
         return $this->contactPersonId;
     }
 
+    /**
+     * @return int
+     */
     public function getPackageType(): int
     {
         return $this->packageType;
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int,
      */
     public function getParcelsDimensions(): array
     {
         return $this->parcelsDimensions;
     }
 
+    /**
+     * @return int
+     */
     public function getServiceId(): int
     {
         return $this->serviceId;
     }
 
+    /**
+     * @return int
+     */
     public function getAwbPayment(): int
     {
         return $this->awbPayment;
     }
 
+    /**
+     * @return RecipientDto
+     */
     public function getAwbRecipient(): RecipientDto
     {
         return $this->awbRecipient;
     }
 
+    /**
+     * @return float
+     */
     public function getInsuredValue(): float
     {
         return $this->insuredValue;
     }
 
+    /**
+     * @return float
+     */
     public function getCashOnDeliveryAmount(): float
     {
         return $this->cashOnDeliveryAmount;
     }
 
+    /**
+     * @return ?int
+     */
     public function getCashOnDeliveryCollector(): ?int
     {
         return $this->cashOnDeliveryCollector;
@@ -176,58 +222,88 @@ final class PostAwbRequestDto
     }
 
     /**
-     * @return array<int, int|string>
+     * @return array<int,
      */
     public function getServiceTaxIds(): array
     {
         return $this->serviceTaxIds;
     }
 
+    /**
+     * @return ?int
+     */
     public function getDeliveryIntervalServiceType(): ?int
     {
         return $this->deliveryIntervalServiceType;
     }
 
+    /**
+     * @return ?string
+     */
     public function getReference(): ?string
     {
         return $this->reference;
     }
 
+    /**
+     * @return ?string
+     */
     public function getObservation(): ?string
     {
         return $this->observation;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPriceObservation(): ?string
     {
         return $this->priceObservation;
     }
 
+    /**
+     * @return ?string
+     */
     public function getClientObservation(): ?string
     {
         return $this->clientObservation;
     }
 
+    /**
+     * @return ?int
+     */
     public function getLockerFirstMile(): ?int
     {
         return $this->lockerFirstMile;
     }
 
+    /**
+     * @return ?int
+     */
     public function getLockerLastMile(): ?int
     {
         return $this->lockerLastMile;
     }
 
+    /**
+     * @return ?int
+     */
     public function getOohFirstMile(): ?int
     {
         return $this->oohFirstMile;
     }
 
+    /**
+     * @return ?int
+     */
     public function getOohLastMile(): ?int
     {
         return $this->oohLastMile;
     }
 
+    /**
+     * @return ?string
+     */
     public function getCurrency(): ?string
     {
         return $this->currency;

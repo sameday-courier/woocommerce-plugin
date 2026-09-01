@@ -10,7 +10,7 @@ final class AwbErrorParser
     private const SEPARATOR = '; ';
 
     /**
-     * @param array<int, mixed> $errors
+     * @param array $errors
      *
      * @return string
      */
@@ -36,7 +36,7 @@ final class AwbErrorParser
     /**
      * @param mixed $error
      *
-     * @return array<int, string>
+     * @return array<int,
      */
     private function extractMessages($error): array
     {
@@ -68,9 +68,9 @@ final class AwbErrorParser
     }
 
     /**
-     * @param array<string, mixed> $error
+     * @param array $error
      *
-     * @return array<int, string>
+     * @return array<int,
      */
     private function extractValidationMessages(array $error): array
     {

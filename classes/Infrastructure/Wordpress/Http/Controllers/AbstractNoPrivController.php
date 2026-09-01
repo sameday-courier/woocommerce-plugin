@@ -33,5 +33,10 @@ abstract class AbstractNoPrivController implements ControllerInterface
      *
      * @return void
      */
+    /**
+     * @param array $inputParams
+     *
+     * @return void
+     */
     abstract protected function processNoPrivAction(array $inputParams): void;
 }

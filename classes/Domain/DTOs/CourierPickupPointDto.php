@@ -20,6 +20,15 @@ final class CourierPickupPointDto
 
     private ?string $serializedContactPersons;
 
+    /**
+     * @param int $id
+     * @param string $alias
+     * @param string $cityName
+     * @param string $countyName
+     * @param string $address
+     * @param bool $isDefault
+     * @param ?string $serializedContactPersons
+     */
     public function __construct(
         int $id,
         string $alias,
@@ -38,36 +47,57 @@ final class CourierPickupPointDto
         $this->serializedContactPersons = $serializedContactPersons;
     }
 
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getAlias(): string
     {
         return $this->alias;
     }
 
+    /**
+     * @return string
+     */
     public function getCityName(): string
     {
         return $this->cityName;
     }
 
+    /**
+     * @return string
+     */
     public function getCountyName(): string
     {
         return $this->countyName;
     }
 
+    /**
+     * @return string
+     */
     public function getAddress(): string
     {
         return $this->address;
     }
 
+    /**
+     * @return bool
+     */
     public function isDefault(): bool
     {
         return $this->isDefault;
     }
 
+    /**
+     * @return ?string
+     */
     public function getSerializedContactPersons(): ?string
     {
         return $this->serializedContactPersons;

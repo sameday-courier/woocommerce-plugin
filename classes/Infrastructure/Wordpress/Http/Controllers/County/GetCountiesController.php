@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\County;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCounties;
 use SamedayCourier\Shipping\Application\UseCases\County\Get\GetCountiesRequest;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GetCountiesFactory;
 
 final class GetCountiesController extends AbstractController
 {
@@ -23,17 +22,21 @@ final class GetCountiesController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */
     protected function processAction(array $inputParams): void
     {
-        $getCounties = new GetCounties(new GetCountiesRequest(new CourierServiceProvider()));
-        $result = $getCounties->execute();
+        $getCounties = GetCountiesFactory::create();
 
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
-            $this->sendJsonErrorResponse($result->getNoticeMessage(), 500);
+        $result = $getCounties->execute(new GetCountiesRequest());
+
+        if ($result->hasError()) {
+            $this->sendJsonErrorResponse(
+                TranslatorHandler::translate($result->getNoticeMessage()),
+                500
+            );
         }
 
         wp_send_json($result->getCounties());

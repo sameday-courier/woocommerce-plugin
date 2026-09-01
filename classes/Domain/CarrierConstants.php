@@ -7,6 +7,8 @@ namespace SamedayCourier\Shipping\Domain;
 final class CarrierConstants
 {
     public const PLUGIN_NAME = 'samedaycourier';
+    public const LOCKER_PLUGIN_SDK_URL = 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js';
+    public const LOCKER_PLUGIN_CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
     public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
     public const CASH_ON_DELIVERY = 'cod';
@@ -69,7 +71,8 @@ final class CarrierConstants
     public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
     public const POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION = '_sameday_shipping_open_package_option';
     public const OOH_POPUP_TITLE = [
-        self::API_HOST_LOCALE_RO => 'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',
+        self::API_HOST_LOCALE_RO =>
+            'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',
         self::API_HOST_LOCALE_BG => 'Тази опция включва LockerNextDay и PUDO!',
         self::API_HOST_LOCALE_HU => 'Ez az opció magában foglalja a LockerNextDay és a PUDO szolgáltatást is!',
     ];

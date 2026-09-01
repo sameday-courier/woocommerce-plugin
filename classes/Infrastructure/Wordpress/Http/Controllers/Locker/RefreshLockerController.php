@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
 use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerStoreServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\RefreshLockerFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 
 final class RefreshLockerController extends AbstractController
 {
@@ -28,27 +27,20 @@ final class RefreshLockerController extends AbstractController
     }
 
     /**
-     * @param array<string, mixed> $inputParams
+     * @param array $inputParams
      *
      * @return void
      */
     protected function processAction(array $inputParams): void
     {
-        $request = new RefreshLockerRequest(
-            new CourierServiceProvider(),
-            new LockerStoreServiceProvider(),
-            new CarrierSettingsServiceProvider()
+        $refreshLocker = RefreshLockerFactory::create();
+
+        $result = $refreshLocker->execute(new RefreshLockerRequest());
+
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError() ? ResponseNoticeType::ERROR : ResponseNoticeType::SUCCESS,
         );
-        $refreshLocker = new RefreshLocker($request);
-
-        $result = $refreshLocker->execute();
-
-        if ($result->hasNotices()) {
-            NoticerHandler::addFlashNotice(
-                $result->getNoticeMessage(),
-                $result->getNoticeType(),
-            );
-        }
 
         $this->redirectTo('edit.php', ['post_type' => 'page', 'page' => 'sameday_lockers']);
     }

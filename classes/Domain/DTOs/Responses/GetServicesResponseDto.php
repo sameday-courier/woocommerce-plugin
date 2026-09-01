@@ -17,6 +17,7 @@ final class GetServicesResponseDto
 
     /**
      * @param CourierServiceDto[] $services
+     * @param int $pages
      */
     public function __construct(array $services, int $pages)
     {
@@ -32,6 +33,9 @@ final class GetServicesResponseDto
         return $this->services;
     }
 
+    /**
+     * @return int
+     */
     public function getPages(): int
     {
         return $this->pages;

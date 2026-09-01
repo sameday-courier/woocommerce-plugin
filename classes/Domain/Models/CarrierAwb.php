@@ -22,7 +22,7 @@ final class CarrierAwb implements ModelInterface
 
     /**
      * @param int $id
-     * 
+     *
      * @return self
      */
     public function setId(int $id): self
@@ -42,7 +42,7 @@ final class CarrierAwb implements ModelInterface
 
     /**
      * @param int $orderId
-     * 
+     *
      * @return self
      */
     public function setOrderId(int $orderId): self
@@ -62,7 +62,7 @@ final class CarrierAwb implements ModelInterface
 
     /**
      * @param string|null $awbNumber
-     * 
+     *
      * @return self
      */
     public function setAwbNumber(?string $awbNumber): self
@@ -82,7 +82,7 @@ final class CarrierAwb implements ModelInterface
 
     /**
      * @param string|null $parcels
-     * 
+     *
      * @return self
      */
     public function setParcels(?string $parcels): self
@@ -102,7 +102,7 @@ final class CarrierAwb implements ModelInterface
 
     /**
      * @param float|null $awbCost
-     * 
+     *
      * @return self
      */
     public function setAwbCost(?float $awbCost): self

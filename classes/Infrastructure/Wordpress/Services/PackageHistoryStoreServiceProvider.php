@@ -12,13 +12,18 @@ final class PackageHistoryStoreServiceProvider implements PackageHistoryStoreSer
 {
     private SamedayPackageRepository $samedayPackageRepository;
 
+    /**
+     * @param ?SamedayPackageRepository $samedayPackageRepository
+     */
     public function __construct(?SamedayPackageRepository $samedayPackageRepository = null)
     {
         $this->samedayPackageRepository = $samedayPackageRepository ?? new SamedayPackageRepository();
     }
 
     /**
-     * @inheritDoc
+     * @param int $orderId
+     *
+     * @return array
      */
     public function getForOrder(int $orderId): array
     {
@@ -26,7 +31,9 @@ final class PackageHistoryStoreServiceProvider implements PackageHistoryStoreSer
     }
 
     /**
-     * @inheritDoc
+     * @param int $orderId
+     *
+     * @return void
      */
     public function deleteByOrder(int $orderId): void
     {
@@ -34,7 +41,11 @@ final class PackageHistoryStoreServiceProvider implements PackageHistoryStoreSer
     }
 
     /**
-     * @inheritDoc
+     * @param int $orderId
+     * @param string $parcelAwbNumber
+     * @param GetParcelStatusHistoryResponseDto $parcelStatus
+     *
+     * @return void
      */
     public function refresh(
         int $orderId,

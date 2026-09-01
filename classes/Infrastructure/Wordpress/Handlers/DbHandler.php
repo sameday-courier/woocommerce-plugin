@@ -12,6 +12,8 @@ final class DbHandler implements DbHandlerInterface
      * @var $db
      */
     private $db;
+    /**
+     */
     public function __construct()
     {
         global $wpdb;
@@ -73,7 +75,7 @@ final class DbHandler implements DbHandlerInterface
      * @param string $tableName
      * @param array $params
      *
-     * @return bool True when the row was inserted, false otherwise.
+     * @return bool
      */
     public function insertRow(string $tableName, array $params): bool
     {
@@ -83,9 +85,9 @@ final class DbHandler implements DbHandlerInterface
     /**
      * @param string $tableName
      * @param array $row
-     * @param array $where [id => $id]
+     * @param array $where
      *
-     * @return bool True when the update query succeeded, false otherwise.
+     * @return bool
      */
     public function updateRow(string $tableName, array $row, array $where): bool
     {
@@ -133,7 +135,7 @@ final class DbHandler implements DbHandlerInterface
 
     /**
      * @param string $tableName
-     * 
+     *
      * @return void
      */
     public function truncateTable(string $tableName): void
@@ -172,7 +174,7 @@ final class DbHandler implements DbHandlerInterface
     /**
      * @param array $params
      *
-     * @return array [%s, %s, %d, ....]
+     * @return array
      */
     private function buildFormat(array $params): array
     {
@@ -181,10 +183,10 @@ final class DbHandler implements DbHandlerInterface
             switch (gettype($value)) {
                 case 'string' || 'NULL':
                     $format[] = '%s';
-                break;
+                    break;
                 case 'integer':
                     $format[] = '%d';
-                break;
+                    break;
             }
         }
 

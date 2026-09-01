@@ -22,20 +22,20 @@ final class ShowAsPdfAwbResponse implements ResponseInterface
     private ?string $pdf;
 
     /**
+     * @param string $noticeMessage
+     * @param bool $hasError
      * @param int $orderId
-     * @param string|null $noticeMessage
-     * @param string $noticeType
      * @param string|null $pdf
      */
     public function __construct(
+        string $noticeMessage,
+        bool $hasError,
         int $orderId,
-        ?string $noticeMessage,
-        string $noticeType,
         ?string $pdf = null
     ) {
-        $this->orderId = $orderId;
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
+        $this->orderId = $orderId;
         $this->pdf = $pdf;
     }
 

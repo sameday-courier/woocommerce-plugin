@@ -25,7 +25,7 @@ final class GenerateAwbOrderSnapshotDto
     private array $billing;
 
     /**
-     * Opaque shipping-line collection for GenerateAwbItem (platform objects).
+     * Opaque shipping-line collection for GenerateAwbRequest (platform objects).
      *
      * @var array<int|string, mixed>
      */
@@ -39,9 +39,14 @@ final class GenerateAwbOrderSnapshotDto
     private $locker;
 
     /**
-     * @param array<string, mixed> $shipping
-     * @param array<string, mixed> $billing
-     * @param array<int|string, mixed> $shippingLines
+     * @param int $orderId
+     * @param string $orderNumber
+     * @param float $orderTotal
+     * @param ?string $paymentMethodId
+     * @param array $shipping
+     * @param array $billing
+     * @param array $shippingLines
+     * @param ?string $samedayServiceCode
      * @param mixed $locker
      */
     public function __construct(
@@ -66,28 +71,40 @@ final class GenerateAwbOrderSnapshotDto
         $this->locker = $locker;
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int
     {
         return $this->orderId;
     }
 
+    /**
+     * @return string
+     */
     public function getOrderNumber(): string
     {
         return $this->orderNumber;
     }
 
+    /**
+     * @return float
+     */
     public function getOrderTotal(): float
     {
         return $this->orderTotal;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPaymentMethodId(): ?string
     {
         return $this->paymentMethodId;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,
      */
     public function getShipping(): array
     {
@@ -95,7 +112,7 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,
      */
     public function getBilling(): array
     {
@@ -103,13 +120,16 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<int|string, mixed>
+     * @return array<int|string,
      */
     public function getShippingLines(): array
     {
         return $this->shippingLines;
     }
 
+    /**
+     * @return ?string
+     */
     public function getSamedayServiceCode(): ?string
     {
         return $this->samedayServiceCode;

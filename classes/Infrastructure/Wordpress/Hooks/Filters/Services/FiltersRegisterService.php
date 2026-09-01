@@ -20,6 +20,9 @@ class FiltersRegisterService implements RegistryHandlerInterface
         ShippingMethodFullLabelFilter::class,
     ];
 
+    /**
+     * @return void
+     */
     public function register(): void
     {
         foreach (self::FILTERS as $filterClass) {

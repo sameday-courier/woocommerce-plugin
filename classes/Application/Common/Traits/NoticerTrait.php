@@ -7,27 +7,19 @@ namespace SamedayCourier\Shipping\Application\Common\Traits;
 trait NoticerTrait
 {
     /**
-     * @var string $noticeType
+     * @var string $noticeMessage
      */
-    protected string $noticeType;
+    protected string $noticeMessage;
 
     /**
-     * @var string|null $noticeMessage
+     * @var bool $hasError
      */
-    protected ?string $noticeMessage;
+    protected bool $hasError = false;
 
     /**
      * @return string
      */
-    public function getNoticeType(): string
-    {
-        return $this->noticeType;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getNoticeMessage(): ?string
+    public function getNoticeMessage(): string
     {
         return $this->noticeMessage;
     }
@@ -35,8 +27,8 @@ trait NoticerTrait
     /**
      * @return bool
      */
-    public function hasNotices(): bool
+    public function hasError(): bool
     {
-        return null !== $this->noticeMessage;
+        return $this->hasError;
     }
 }

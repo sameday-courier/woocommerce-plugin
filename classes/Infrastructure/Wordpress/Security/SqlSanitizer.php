@@ -11,6 +11,11 @@ final class SqlSanitizer
      *
      * @return string
      */
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
     public static function escSql(string $value): string
     {
         return esc_sql($value);

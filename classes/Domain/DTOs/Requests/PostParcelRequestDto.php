@@ -37,10 +37,15 @@ final class PostParcelRequestDto
     private bool $last;
 
     /**
+     * @param string $awbNumber
      * @param mixed $parcelWeight
      * @param mixed $parcelWidth
      * @param mixed $parcelLength
      * @param mixed $parcelHeight
+     * @param int $position
+     * @param ?string $observation
+     * @param ?string $priceObservation
+     * @param bool $last
      */
     public function __construct(
         string $awbNumber,
@@ -64,6 +69,9 @@ final class PostParcelRequestDto
         $this->last = $last;
     }
 
+    /**
+     * @return string
+     */
     public function getAwbNumber(): string
     {
         return $this->awbNumber;
@@ -101,21 +109,33 @@ final class PostParcelRequestDto
         return $this->parcelHeight;
     }
 
+    /**
+     * @return int
+     */
     public function getPosition(): int
     {
         return $this->position;
     }
 
+    /**
+     * @return ?string
+     */
     public function getObservation(): ?string
     {
         return $this->observation;
     }
 
+    /**
+     * @return ?string
+     */
     public function getPriceObservation(): ?string
     {
         return $this->priceObservation;
     }
 
+    /**
+     * @return bool
+     */
     public function isLast(): bool
     {
         return $this->last;

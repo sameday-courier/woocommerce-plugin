@@ -17,6 +17,10 @@ final class ParcelStatusHistoryService
     private const FALLBACK_STATUS_DATE = '1970-01-01 00:00:00';
 
     /**
+     * @param Sameday $sameday
+     * @param string $awbNumber
+     *
+     * @return SamedayGetParcelStatusHistoryResponse
      * @throws Exception
      */
     public function get(Sameday $sameday, string $awbNumber): SamedayGetParcelStatusHistoryResponse
@@ -42,6 +46,10 @@ final class ParcelStatusHistoryService
     }
 
     /**
+     * @param string $body
+     * @param string $awbNumber
+     *
+     * @return string
      * @throws JsonException
      */
     private function normalizeResponseBody(string $body, string $awbNumber): string
@@ -67,9 +75,10 @@ final class ParcelStatusHistoryService
     }
 
     /**
-     * @param array<string, mixed> $summary
+     * @param array $summary
+     * @param string $awbNumber
      *
-     * @return array<string, mixed>
+     * @return array<string,
      */
     private function normalizeParcelSummary(array $summary, string $awbNumber): array
     {
@@ -87,9 +96,9 @@ final class ParcelStatusHistoryService
     }
 
     /**
-     * @param array<string, mixed> $expeditionStatus
+     * @param array $expeditionStatus
      *
-     * @return array<string, mixed>
+     * @return array<string,
      */
     private function normalizeExpeditionStatus(array $expeditionStatus): array
     {
@@ -116,9 +125,9 @@ final class ParcelStatusHistoryService
     }
 
     /**
-     * @param array<int, mixed> $parcelHistory
+     * @param array $parcelHistory
      *
-     * @return array<int, array<string, mixed>>
+     * @return array<int,
      */
     private function normalizeParcelHistory(array $parcelHistory): array
     {
@@ -152,6 +161,11 @@ final class ParcelStatusHistoryService
         return $normalizedHistory;
     }
 
+    /**
+     * @param ?string $statusDate
+     *
+     * @return string
+     */
     private function normalizeStatusDate(?string $statusDate): string
     {
         if (null === $statusDate || '' === $statusDate) {

@@ -23,7 +23,7 @@ final class RefreshShippingMethodsAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
@@ -35,7 +35,7 @@ final class RefreshShippingMethodsAction extends AbstractAction
         foreach ($wooHandler->getWC()->cart->get_shipping_packages() as $package_key => $package) {
             $packageHash = sprintf(
                 'wc_ship_%s',
-                md5( wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'))
+                md5(wp_json_encode($package) . WC_Cache_Helper::get_transient_version('shipping'))
             );
             $package['package_hash'] = $packageHash;
             $sessionHandler->set(CarrierSessionKeys::shippingForPackage((int) $package_key), $package);

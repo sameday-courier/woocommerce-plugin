@@ -39,7 +39,7 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
     }
 
     /**
-     * @param ...$args
+     * @param mixed ...$args
      *
      * @return void
      */
@@ -68,7 +68,7 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
     }
 
     /**
-     * @param array<string, mixed> $changes
+     * @param array $changes
      *
      * @return bool
      */
@@ -79,7 +79,8 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
         }
 
         foreach (array_keys($changes) as $changedProp) {
-            if (0 === strpos((string) $changedProp, 'billing_')
+            if (
+                0 === strpos((string) $changedProp, 'billing_')
                 || 0 === strpos((string) $changedProp, 'shipping_')
             ) {
                 return true;

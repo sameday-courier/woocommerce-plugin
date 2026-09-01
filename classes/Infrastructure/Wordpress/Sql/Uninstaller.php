@@ -19,6 +19,8 @@ class Uninstaller
      */
     private SchemaDefinition $schemaDefinition;
 
+    /**
+     */
     public function __construct()
     {
         $this->dbHandler = new DbHandler();

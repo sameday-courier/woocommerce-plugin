@@ -4,29 +4,26 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
-use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-
 final class GetCitiesRequest
 {
-    private GetCitiesItem $getCitiesItem;
+    /**
+     * @var int $countyId
+     */
+    private int $countyId;
 
-    private CourierServiceProviderInterface $courierServiceProvider;
-
-    public function __construct(
-        GetCitiesItem $getCitiesItem,
-        CourierServiceProviderInterface $courierServiceProvider
-    ) {
-        $this->getCitiesItem = $getCitiesItem;
-        $this->courierServiceProvider = $courierServiceProvider;
+    /**
+     * @param int $countyId
+     */
+    public function __construct(int $countyId)
+    {
+        $this->countyId = $countyId;
     }
 
-    public function getGetCitiesItem(): GetCitiesItem
+    /**
+     * @return int
+     */
+    public function getCountyId(): int
     {
-        return $this->getCitiesItem;
-    }
-
-    public function getCourierServiceProvider(): CourierServiceProviderInterface
-    {
-        return $this->courierServiceProvider;
+        return $this->countyId;
     }
 }

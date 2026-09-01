@@ -5,7 +5,8 @@
     var MODAL_SELECTOR = '[data-sameday-bulk-awb-modal]';
     var config = window.samedayBulkAwb || {};
 
-    function getSelectedOrderIds() {
+    function getSelectedOrders() {
+        var orders = [];
         var ids = [];
         var selectors = [
             '#the-list input[name="id[]"]:checked',
@@ -13,13 +14,37 @@
         ];
 
         $(selectors.join(',')).each(function () {
-            var value = String($(this).val() || '').trim();
-            if (value && ids.indexOf(value) === -1) {
-                ids.push(value);
+            var $checkbox = $(this);
+            var value = String($checkbox.val() || '').trim();
+            if (!value || ids.indexOf(value) !== -1) {
+                return;
             }
+
+            ids.push(value);
+            orders.push({
+                id: value,
+                currencyWarning: String(
+                    $checkbox
+                        .closest('tr')
+                        .find('[data-sameday-currency-warning]')
+                        .attr('data-sameday-currency-warning') || ''
+                )
+            });
         });
 
-        return ids;
+        return orders;
+    }
+
+    function getSelectedOrderIds() {
+        return getSelectedOrders().map(function (order) {
+            return order.id;
+        });
+    }
+
+    function hasCurrencyWarnings(orders) {
+        return orders.some(function (order) {
+            return order.currencyWarning !== '';
+        });
     }
 
     function syncButtonLayout($button, $anchor) {
@@ -75,21 +100,53 @@
         return (config.i18n && config.i18n[key]) ? config.i18n[key] : fallback;
     }
 
+    function supportsCurrencyWarning($modal) {
+        return $modal.find('[data-sameday-bulk-awb-currency-confirm]').length > 0;
+    }
+
+    function isCurrencyConfirmed($modal) {
+        if (!supportsCurrencyWarning($modal)) {
+            return true;
+        }
+
+        var $confirm = $modal.find('[data-sameday-bulk-awb-currency-confirm]');
+
+        if ($confirm.prop('hidden')) {
+            return true;
+        }
+
+        return $modal.find('[data-sameday-bulk-awb-currency-agree]').is(':checked');
+    }
+
     function updateConfirmState($modal) {
         var hasOrders = getSelectedOrderIds().length > 0;
         var agreed = $modal.find('[data-sameday-bulk-awb-agree]').is(':checked');
-        $modal.find('[data-sameday-bulk-awb-confirm]').prop('disabled', !(hasOrders && agreed));
+        $modal
+            .find('[data-sameday-bulk-awb-confirm]')
+            .prop('disabled', !(hasOrders && agreed && isCurrencyConfirmed($modal)));
     }
 
-    function renderOrders($modal, ids) {
+    function toggleCurrencyConfirm($modal, orders) {
+        if (!supportsCurrencyWarning($modal)) {
+            return;
+        }
+
+        $modal.find('[data-sameday-bulk-awb-currency-agree]').prop('checked', false);
+        $modal
+            .find('[data-sameday-bulk-awb-currency-confirm]')
+            .prop('hidden', !hasCurrencyWarnings(orders));
+    }
+
+    function renderOrders($modal, orders) {
         var $list = $modal.find('[data-sameday-bulk-awb-order-list]');
         var $empty = $modal.find('[data-sameday-bulk-awb-empty]');
         var orderLabel = i18n('order', 'Order');
+        var showCurrencyWarning = supportsCurrencyWarning($modal);
 
         $list.empty();
-        $modal.find('[data-sameday-bulk-awb-order-count]').text(String(ids.length));
+        $modal.find('[data-sameday-bulk-awb-order-count]').text(String(orders.length));
 
-        if (!ids.length) {
+        if (!orders.length) {
             $list.hide();
             $empty.prop('hidden', false);
             return;
@@ -98,18 +155,31 @@
         $empty.prop('hidden', true);
         $list.show();
 
-        ids.forEach(function (id) {
-            $list.append($('<li/>').text(orderLabel + ' #' + id));
+        orders.forEach(function (order) {
+            var $item = $('<li/>');
+            var $orderId = $('<span/>')
+                .addClass('sameday-bulk-awb-modal__order-id')
+                .text(orderLabel + ' #' + order.id);
+
+            if (showCurrencyWarning && order.currencyWarning) {
+                $orderId.addClass('sameday-bulk-awb-modal__order-id--warning');
+                $item.append($orderId);
+                $item.append(
+                    $('<span/>')
+                        .addClass('sameday-bulk-awb-modal__order-warning')
+                        .text('! ' + order.currencyWarning)
+                );
+            } else {
+                $item.append($orderId);
+            }
+
+            $list.append($item);
         });
     }
 
     function setHeaderIcon($modal, variant) {
         var $icon = $modal.find('[data-sameday-bulk-awb-header-icon]');
-        var isSuccess = variant === 'success';
-
-        $icon.toggleClass('is-success', isSuccess);
-        $icon.find('.sameday-bulk-awb-modal__icon-svg--package').prop('hidden', isSuccess);
-        $icon.find('.sameday-bulk-awb-modal__icon-svg--success').prop('hidden', !isSuccess);
+        $icon.toggleClass('is-success', variant === 'success');
     }
 
     function setStep($modal, step) {
@@ -240,8 +310,11 @@
             return;
         }
 
+        var orders = getSelectedOrders();
+
         closeAllModals();
-        renderOrders($modal, getSelectedOrderIds());
+        renderOrders($modal, orders);
+        toggleCurrencyConfirm($modal, orders);
         $modal.find('[data-sameday-bulk-awb-agree]').prop('checked', false);
         updateConfirmState($modal);
         setStep($modal, 'confirm');
@@ -399,9 +472,13 @@
             closeModal($modal);
         });
 
-        $(document).on('change', '[data-sameday-bulk-awb-agree]', function () {
-            updateConfirmState(getModal($(this)));
-        });
+        $(document).on(
+            'change',
+            '[data-sameday-bulk-awb-agree], [data-sameday-bulk-awb-currency-agree]',
+            function () {
+                updateConfirmState(getModal($(this)));
+            }
+        );
 
         $(document).on('change', '[data-sameday-bulk-awb-log-filter]', function () {
             applyLogFilter(getModal($(this)));

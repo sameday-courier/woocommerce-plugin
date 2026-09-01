@@ -17,18 +17,18 @@ final class EditServiceResponse implements ResponseInterface
     private int $serviceId;
 
     /**
+     * @param string $noticeMessage
+     * @param bool $hasError
      * @param int $serviceId
-     * @param string|null $noticeMessage
-     * @param string $noticeType
      */
     public function __construct(
-        int $serviceId,
-        ?string $noticeMessage,
-        string $noticeType
+        string $noticeMessage,
+        bool $hasError,
+        int $serviceId
     ) {
-        $this->serviceId = $serviceId;
         $this->noticeMessage = $noticeMessage;
-        $this->noticeType = $noticeType;
+        $this->hasError = $hasError;
+        $this->serviceId = $serviceId;
     }
 
     /**

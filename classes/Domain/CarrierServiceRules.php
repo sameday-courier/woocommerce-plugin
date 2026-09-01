@@ -20,8 +20,7 @@ final class CarrierServiceRules
      */
     public function __construct(
         CarrierServiceProviderInterface $carrierServiceProvider
-    )
-    {
+    ) {
         $this->carrierServiceProvider = $carrierServiceProvider;
     }
 
@@ -45,6 +44,7 @@ final class CarrierServiceRules
 
     /**
      * @param CarrierService $carrierService
+     *
      * @return bool
      */
     public function isOohDeliveryOption(CarrierService $carrierService): bool

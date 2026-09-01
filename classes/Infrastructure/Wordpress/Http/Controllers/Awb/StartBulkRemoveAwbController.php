@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
-use SamedayCourier\Shipping\Application\Common\ResponseNoticeType\ResponseNoticeType;
-use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwb;
-use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbItem;
 use SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove\StartBulkRemoveAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\StartBulkRemoveAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\StartBulkGenerateAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\BulkJobStoreServiceProvider;
 
 final class StartBulkRemoveAwbController extends AbstractController
 {
@@ -31,30 +29,30 @@ final class StartBulkRemoveAwbController extends AbstractController
      */
     protected function processAction(array $inputParams): void
     {
-        $result = (new StartBulkRemoveAwb(
-            new StartBulkRemoveAwbRequest(
-                StartBulkRemoveAwbItem::fromArray(
-                    array_merge(
-                        $inputParams,
-                        ['samedaycourier-user-id' => $this->getCurrentUserId()]
-                    )
-                ),
-                new BulkJobStoreServiceProvider()
-            )
-        ))->execute();
+        $params = new StartBulkGenerateAwbMapper($inputParams);
+        $startBulkRemoveAwb = StartBulkRemoveAwbFactory::create();
 
-        if (ResponseNoticeType::ERROR === $result->getNoticeType()) {
+        $result = $startBulkRemoveAwb->execute(
+            new StartBulkRemoveAwbRequest(
+                $params->orderIds(),
+                $this->getCurrentUserId()
+            )
+        );
+
+        if ($result->hasError()) {
             $this->sendJsonErrorResponse(
                 [
                     'message' => TranslatorHandler::translate(
-                        $result->getNoticeMessage() ?? 'There is no data to process.'
+                        $result->getNoticeMessage()
                     ),
                 ]
             );
         }
 
+        $jobId = $result->getJobId();
+
         $this->sendJsonSuccessResponse([
-            'jobId' => $result->getJobId(),
+            'jobId' => null !== $jobId ? $jobId->toString() : null,
             'total' => $result->getTotal(),
             'processed' => $result->getProcessed(),
             'done' => $result->isDone(),

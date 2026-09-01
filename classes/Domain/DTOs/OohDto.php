@@ -23,8 +23,7 @@ final class OohDto
     public function __construct(
         ?int $lockerId = null,
         ?int $oohLastMile = null
-    )
-    {
+    ) {
         $this->lockerId = $lockerId;
         $this->oohLastMile = $oohLastMile;
     }

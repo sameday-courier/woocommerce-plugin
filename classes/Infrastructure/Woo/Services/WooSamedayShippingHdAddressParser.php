@@ -14,7 +14,7 @@ final class WooSamedayShippingHdAddressParser implements CarrierShippingHdAddres
     /**
      * @param int $orderId
      *
-     * @return array<string, mixed>|null
+     * @return array<string,
      */
     public function parse(int $orderId): ?array
     {

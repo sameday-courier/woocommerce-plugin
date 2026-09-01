@@ -16,7 +16,9 @@ final class PostAwbResponseDto
     private array $parcels;
 
     /**
-     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     * @param string $awbNumber
+     * @param float $cost
+     * @param array $parcels
      */
     public function __construct(string $awbNumber, float $cost, array $parcels)
     {
@@ -25,18 +27,24 @@ final class PostAwbResponseDto
         $this->parcels = $parcels;
     }
 
+    /**
+     * @return string
+     */
     public function getAwbNumber(): string
     {
         return $this->awbNumber;
     }
 
+    /**
+     * @return float
+     */
     public function getCost(): float
     {
         return $this->cost;
     }
 
     /**
-     * @return array<int, array{position: int, awbNumber: string}>
+     * @return array<int,
      */
     public function getParcels(): array
     {

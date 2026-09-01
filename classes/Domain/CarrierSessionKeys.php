@@ -13,6 +13,11 @@ final class CarrierSessionKeys
     public const CHOSEN_SHIPPING_METHODS = 'chosen_shipping_methods';
     public const SHIPPING_FOR_PACKAGE_PREFIX = 'shipping_for_package_';
 
+    /**
+     * @param int $packageKey
+     *
+     * @return string
+     */
     public static function shippingForPackage(int $packageKey): string
     {
         return self::SHIPPING_FOR_PACKAGE_PREFIX . $packageKey;

@@ -7,12 +7,14 @@ namespace SamedayCourier\Shipping\Domain\Ports;
 interface CountriesHandlerInterface
 {
     /**
-     * @return array<string, string>
+     * @return array<string,
      */
     public function getShippingCountries(): array;
 
     /**
-     * @return array<string, string>|null
+     * @param string $countryCode
+     *
+     * @return array<string,
      */
     public function getStatesForCountry(string $countryCode): ?array;
 
