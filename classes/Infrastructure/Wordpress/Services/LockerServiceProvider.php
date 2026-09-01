@@ -39,13 +39,14 @@ final class LockerServiceProvider implements LockerServiceProviderInterface
 
         return new LockerDtoResponse(
             new LockerDto(
-            $lockerId,
-            CarrierLockerRules::resolveOohType($lockerId),
-            $locker->getName(),
-            $locker->getCounty(),
-            $locker->getCity(),
-            $locker->getAddress(),
-            $locker->getPostalCode()
-        ));
+                $lockerId,
+                CarrierLockerRules::resolveOohType($lockerId),
+                $locker->getName(),
+                $locker->getCounty(),
+                $locker->getCity(),
+                $locker->getAddress(),
+                $locker->getPostalCode()
+            )
+        );
     }
 }

@@ -22,8 +22,7 @@ final class StoreOpenPackageInSessionController extends AbstractNoPrivController
      */
     public function __construct(
         ?WooSessionHandler $sessionHandler = null
-    )
-    {
+    ) {
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
     }
 

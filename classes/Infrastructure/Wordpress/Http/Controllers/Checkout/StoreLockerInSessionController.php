@@ -21,8 +21,7 @@ final class StoreLockerInSessionController extends AbstractNoPrivController
      */
     public function __construct(
         ?LockerSessionStore $lockerSessionStore = null
-    )
-    {
+    ) {
         $this->lockerSessionStore = $lockerSessionStore ?? new LockerSessionStore();
     }
 
