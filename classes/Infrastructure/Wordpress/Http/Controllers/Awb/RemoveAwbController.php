@@ -45,7 +45,7 @@ final class RemoveAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectToOrderEdit($orderId);
+            $this->redirectAfterRemove($orderId);
 
             return;
         }
@@ -57,6 +57,22 @@ final class RemoveAwbController extends AbstractController
                     ? ResponseNoticeType::ERROR
                     : ResponseNoticeType::SUCCESS,
             );
+        }
+
+        $this->redirectAfterRemove($orderId);
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return void
+     */
+    private function redirectAfterRemove(int $orderId): void
+    {
+        $referer = wp_get_referer();
+        if (false !== $referer && '' !== $referer) {
+            wp_safe_redirect($referer);
+            exit;
         }
 
         $this->redirectToOrderEdit($orderId);

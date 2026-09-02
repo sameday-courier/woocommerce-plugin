@@ -63,7 +63,9 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo esc_html((string) $awb->getAwbNumber());
+        echo '<span style="display: block">'.esc_html((string) $awb->getAwbNumber()).'</span>';
+        echo $this->generateShowPDFButton($awb);
+        echo $this->removeAWB($awb);
     }
 
     /**
@@ -84,6 +86,36 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         return sprintf(
             '<span hidden data-sameday-currency-warning="%s"></span>',
             esc_attr($currencyWarning)
+        );
+    }
+
+    private function generateShowPDFButton($awb): string
+    {
+        return sprintf(
+            '<button type="button"
+                    class="sameday-show-awb-pdf button-link wp-menu-image dashicons-before dashicons-admin-page"
+                    style="display: inline-block"
+                    title="%s"
+                    data-order-id="%s"
+                    data-awb-number="%s"></button>',
+            esc_attr('Show as PDF'),
+            esc_attr((string) $awb->getOrderId()),
+            esc_attr((string) $awb->getAwbNumber())
+        );
+    }
+
+    private function removeAWB($awb): string
+    {
+        return sprintf(
+            '<button type="button"
+                    class="sameday-remove-awb button-link wp-menu-image dashicons-before dashicons-trash"
+                    style="display: inline-block; color: #b32d2e;"
+                    title="%s"
+                    data-order-id="%s"
+                    data-awb-number="%s"></button>',
+            esc_attr('Remove AWB'),
+            esc_attr((string) $awb->getOrderId()),
+            esc_attr((string) $awb->getAwbNumber())
         );
     }
 }
