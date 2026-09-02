@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
@@ -63,7 +64,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo '<span style="display: block">'.esc_html((string) $awb->getAwbNumber()).'</span>';
+        echo '<span style="display: block">' . esc_html((string) $awb->getAwbNumber()) . '</span>';
         echo $this->generateShowPDFButton($awb);
         echo $this->removeAWB($awb);
     }
@@ -89,7 +90,12 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         );
     }
 
-    private function generateShowPDFButton($awb): string
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string
+     */
+    private function generateShowPDFButton(CarrierAwb $awb): string
     {
         return sprintf(
             '<button type="button"
@@ -104,7 +110,12 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         );
     }
 
-    private function removeAWB($awb): string
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string
+     */
+    private function removeAWB(CarrierAwb $awb): string
     {
         return sprintf(
             '<button type="button"
