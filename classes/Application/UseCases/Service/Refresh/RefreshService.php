@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetServicesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
@@ -11,7 +14,12 @@ use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 
-final class RefreshService
+/**
+ * @extends AbstractUseCase<RefreshServiceRequest, RefreshServiceResponse>
+ *
+ * @method RefreshServiceResponse execute(RefreshServiceRequest $request)
+ */
+final class RefreshService extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -39,7 +47,7 @@ final class RefreshService
      * @param RefreshServiceRequest $request
      * @return RefreshServiceResponse
      */
-    public function execute(RefreshServiceRequest $request): RefreshServiceResponse
+    protected function processAction(RequestInterface $request): RefreshServiceResponse
     {
         $remoteServices = [];
         $page = 1;

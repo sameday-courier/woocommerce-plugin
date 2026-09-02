@@ -179,6 +179,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 2.2.0 =
+
+* Add PHPStan for static code testing
+
 = 2.1.0 =
 
 * Fix issues from previous version.

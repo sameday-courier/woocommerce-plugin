@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
 use Exception;
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
-final class ChangeLocker
+/**
+ * @extends AbstractUseCase<ChangeLockerRequest, ChangeLockerResponse>
+ *
+ * @method ChangeLockerResponse execute(ChangeLockerRequest $request)
+ */
+final class ChangeLocker extends AbstractUseCase
 {
     /**
      * @var LockerOrderDataHandlerInterface $lockerOrderDataHandler
@@ -27,7 +35,7 @@ final class ChangeLocker
      * @param ChangeLockerRequest $request
      * @return ChangeLockerResponse
      */
-    public function execute(ChangeLockerRequest $request): ChangeLockerResponse
+    protected function processAction(RequestInterface $request): ChangeLockerResponse
     {
         $orderId = $request->getOrderId();
         $locker = $request->getLocker();

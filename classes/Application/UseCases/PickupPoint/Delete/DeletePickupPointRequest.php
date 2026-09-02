@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Delete;
 
-final class DeletePickupPointRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class DeletePickupPointRequest implements RequestInterface
 {
     /**
      * @var int $samedayId

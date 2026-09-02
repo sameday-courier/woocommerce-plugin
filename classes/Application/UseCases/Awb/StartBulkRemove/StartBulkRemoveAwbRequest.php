@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
-final class StartBulkRemoveAwbRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class StartBulkRemoveAwbRequest implements RequestInterface
 {
     /**
      * @var int[] $orderIds

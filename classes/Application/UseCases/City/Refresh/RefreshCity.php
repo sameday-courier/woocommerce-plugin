@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
 use SamedayCourier\Shipping\Domain\Ports\CityCatalogStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CitySourceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;
 
-final class RefreshCity
+/**
+ * @extends AbstractUseCase<RefreshCityRequest, RefreshCityResponse>
+ *
+ * @method RefreshCityResponse execute(RefreshCityRequest $request)
+ */
+final class RefreshCity extends AbstractUseCase
 {
     /**
      * @var CityCatalogStoreServiceProviderInterface $cityCatalogStore
@@ -44,7 +52,7 @@ final class RefreshCity
      * @param RefreshCityRequest $request
      * @return RefreshCityResponse
      */
-    public function execute(RefreshCityRequest $request): RefreshCityResponse
+    protected function processAction(RequestInterface $request): RefreshCityResponse
     {
         $this->cityCatalogStore->ensureTableExists();
 

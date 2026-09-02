@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
-final class ShowHistoryAwbResponse
+use SamedayCourier\Shipping\Application\Common\Interfaces\ResponseInterface;
+use SamedayCourier\Shipping\Application\Common\Traits\NoticerTrait;
+
+final class ShowHistoryAwbResponse implements ResponseInterface
 {
+    use NoticerTrait;
+
     /**
      * @var int $orderId
      */
@@ -25,15 +30,21 @@ final class ShowHistoryAwbResponse
      * @param int $orderId
      * @param bool $hasAwb
      * @param array $packages
+     * @param string $noticeMessage
+     * @param bool $hasError
      */
     public function __construct(
         int $orderId,
         bool $hasAwb,
-        array $packages
+        array $packages,
+        string $noticeMessage = '',
+        bool $hasError = false
     ) {
         $this->orderId = $orderId;
         $this->hasAwb = $hasAwb;
         $this->packages = $packages;
+        $this->noticeMessage = $noticeMessage;
+        $this->hasError = $hasError;
     }
 
     /**

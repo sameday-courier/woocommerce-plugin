@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetLockersRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
@@ -11,7 +14,12 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\LockerStoreServiceProviderInterface;
 
-final class RefreshLocker
+/**
+ * @extends AbstractUseCase<RefreshLockerRequest, RefreshLockerResponse>
+ *
+ * @method RefreshLockerResponse execute(RefreshLockerRequest $request)
+ */
+final class RefreshLocker extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -47,7 +55,7 @@ final class RefreshLocker
      * @param RefreshLockerRequest $request
      * @return RefreshLockerResponse
      */
-    public function execute(RefreshLockerRequest $request): RefreshLockerResponse
+    protected function processAction(RequestInterface $request): RefreshLockerResponse
     {
         $remoteLockers = [];
         $page = 1;

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
-final class StartBulkGenerateAwbRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class StartBulkGenerateAwbRequest implements RequestInterface
 {
     /**
      * @var int[] $orderIds

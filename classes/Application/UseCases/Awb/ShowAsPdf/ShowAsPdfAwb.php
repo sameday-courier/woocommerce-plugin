@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
 use SamedayCourier\Shipping\Domain\DTOs\Requests\ShowAsPdfRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 
-final class ShowAsPdfAwb
+/**
+ * @extends AbstractUseCase<ShowAsPdfAwbRequest, ShowAsPdfAwbResponse>
+ *
+ * @method ShowAsPdfAwbResponse execute(ShowAsPdfAwbRequest $request)
+ */
+final class ShowAsPdfAwb extends AbstractUseCase
 {
     /**
      * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
@@ -47,7 +55,7 @@ final class ShowAsPdfAwb
      *
      * @return ShowAsPdfAwbResponse
      */
-    public function execute(ShowAsPdfAwbRequest $request): ShowAsPdfAwbResponse
+    protected function processAction(RequestInterface $request): ShowAsPdfAwbResponse
     {
         $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);

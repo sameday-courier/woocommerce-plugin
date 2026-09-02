@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
-final class RemoveAwbRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class RemoveAwbRequest implements RequestInterface
 {
     /**
      * @var int $orderId
