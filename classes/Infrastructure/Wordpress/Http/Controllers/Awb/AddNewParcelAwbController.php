@@ -36,6 +36,7 @@ final class AddNewParcelAwbController extends AbstractController
         $orderId = $params->orderId();
 
         $addNewParcelAwb = AddNewParcelAwbFactory::create();
+        $result = null;
 
         try {
             $result = $addNewParcelAwb->execute(
@@ -62,6 +63,10 @@ final class AddNewParcelAwbController extends AbstractController
                     'add-new-parcel' => ResponseNoticeType::ERROR,
                 ]
             );
+        }
+
+        if (null === $result) {
+            return;
         }
 
         $noticeType = $result->hasError()

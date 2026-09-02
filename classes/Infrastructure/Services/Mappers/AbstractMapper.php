@@ -6,12 +6,17 @@ namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use SamedayCourier\Shipping\Domain\Models\ModelInterface;
 
+/**
+ * @template T of ModelInterface
+ *
+ * @implements MapperInterface<T>
+ */
 abstract class AbstractMapper implements MapperInterface
 {
     /**
      * @param array $rows
      *
-     * @return ModelInterface[]
+     * @return list<T>
      */
     public function mapCollection(array $rows): array
     {

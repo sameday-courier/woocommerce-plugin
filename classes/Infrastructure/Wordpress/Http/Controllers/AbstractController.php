@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
-use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Exceptions\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -61,16 +61,14 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @param mixed $payload
      * @param int $statusCode
-     * @param bool $flag
      *
      * @return void
      */
     protected function sendJsonSuccessResponse(
         $payload,
-        int $statusCode = 200,
-        bool $flag = false
+        int $statusCode = 200
     ): void {
-        wp_send_json_success($payload, $statusCode, $flag);
+        wp_send_json_success($payload, $statusCode);
     }
 
     /**
@@ -86,11 +84,6 @@ abstract class AbstractController implements ControllerInterface
         exit;
     }
 
-    /**
-     * @param array $inputParams
-     *
-     * @return void
-     */
     /**
      * @param array $inputParams
      *

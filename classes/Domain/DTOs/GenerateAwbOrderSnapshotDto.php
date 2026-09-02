@@ -104,7 +104,7 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<string,
+     * @return array<string, mixed>
      */
     public function getShipping(): array
     {
@@ -112,7 +112,7 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<string,
+     * @return array<string, mixed>
      */
     public function getBilling(): array
     {
@@ -120,7 +120,7 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<int|string,
+     * @return array<int|string, mixed>
      */
     public function getShippingLines(): array
     {

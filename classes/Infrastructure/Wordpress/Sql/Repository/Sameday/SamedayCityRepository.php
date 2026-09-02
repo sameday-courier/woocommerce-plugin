@@ -29,7 +29,7 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @return array<string,
+     * @return array<string, array<int, CarrierCity>>
      */
     public function getCachedCities(): array
     {
@@ -60,7 +60,7 @@ class SamedayCityRepository extends AbstractRepository implements CityPostalCode
     }
 
     /**
-     * @return array<string,
+     * @return array<string, array<int, CarrierCity>>
      */
     public function getCities(): array
     {

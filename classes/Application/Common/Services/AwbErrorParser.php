@@ -36,7 +36,7 @@ final class AwbErrorParser
     /**
      * @param mixed $error
      *
-     * @return array<int,
+     * @return list<string>
      */
     private function extractMessages($error): array
     {
@@ -70,7 +70,7 @@ final class AwbErrorParser
     /**
      * @param array $error
      *
-     * @return array<int,
+     * @return list<string>
      */
     private function extractValidationMessages(array $error): array
     {

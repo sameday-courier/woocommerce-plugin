@@ -124,7 +124,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     /**
      * @param int $orderId
      *
-     * @return array<string,
+     * @return array{name: string, city: string, county: string, address: string, postalCode: string}|null
      */
     private function resolveLockerFields(int $orderId): ?array
     {

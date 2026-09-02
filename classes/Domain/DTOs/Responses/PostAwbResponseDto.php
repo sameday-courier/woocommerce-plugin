@@ -44,7 +44,7 @@ final class PostAwbResponseDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, array{position: int, awbNumber: string}>
      */
     public function getParcels(): array
     {

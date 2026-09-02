@@ -29,9 +29,9 @@ final class BlocksPostOrderPlacementAction extends AbstractAction
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
-    public function getParams(): ?array
+    public function getParams(): array
     {
         return ['order'];
     }

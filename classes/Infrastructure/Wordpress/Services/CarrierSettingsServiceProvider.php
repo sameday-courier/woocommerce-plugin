@@ -75,7 +75,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     }
 
     /**
-     * @return array<string,
+     * @return array<string, mixed>
      */
     private function getSamedayOptions(): array
     {

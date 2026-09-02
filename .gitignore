@@ -1,3 +1,6 @@
 .phpcs.cache
 .phpcs-cache
 phpcs-report.xml
+.phpstan*
+phpstan-report.xml
+/tmp/

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
-use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Exceptions\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
@@ -28,11 +28,6 @@ abstract class AbstractNoPrivController implements ControllerInterface
         $this->processNoPrivAction($inputParams);
     }
 
-    /**
-     * @param array $inputParams
-     *
-     * @return void
-     */
     /**
      * @param array $inputParams
      *

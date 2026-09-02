@@ -17,9 +17,9 @@ interface ActionInterface
     public function getPriority(): int;
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getParams(): ?array;
+    public function getParams(): array;
 
     /**
      * @param mixed ...$args

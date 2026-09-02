@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Common\Services;
 
 use RuntimeException;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
 
 /**
  * Renders PHP HTML views from classes/files/templates.
@@ -53,7 +54,7 @@ final class HtmlHandler
     private static function resolveTemplatePath(string $htmlFileName): string
     {
         $fileName = str_replace(['.php', '.html'], '', $htmlFileName) . '.' . self::FILE_EXT;
-        $filePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'classes/files/templates/' . $fileName;
+        $filePath = PluginPathHandler::to('classes/files/templates/' . $fileName);
 
         if (!is_readable($filePath)) {
             throw new RuntimeException('HTML template not found: ' . $filePath);

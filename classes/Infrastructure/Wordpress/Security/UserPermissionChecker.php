@@ -41,7 +41,7 @@ class UserPermissionChecker
      */
     public static function hasAllowedRole(): bool
     {
-        $roles = wp_get_current_user()->roles ?? [];
+        $roles = wp_get_current_user()->roles;
 
         foreach (self::USER_ROLE_PERMISSIONS as $role) {
             if (in_array($role, $roles, true)) {

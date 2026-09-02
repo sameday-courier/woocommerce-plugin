@@ -80,9 +80,9 @@ final class FrontPageValidatorHandler
 
         self::$checkoutUsesBlocks = false;
 
-        if (method_exists(CartCheckoutUtils::class, 'is_checkout_block_default')) {
+        if (class_exists(CartCheckoutUtils::class)) {
             self::$checkoutUsesBlocks = (bool) CartCheckoutUtils::is_checkout_block_default();
-        } elseif (method_exists(WC_Blocks_Utils::class, 'has_block_in_page') && function_exists('wc_get_page_id')) {
+        } elseif (class_exists(WC_Blocks_Utils::class) && function_exists('wc_get_page_id')) {
             self::$checkoutUsesBlocks = (bool) WC_Blocks_Utils::has_block_in_page(
                 wc_get_page_id('checkout'),
                 'woocommerce/checkout'

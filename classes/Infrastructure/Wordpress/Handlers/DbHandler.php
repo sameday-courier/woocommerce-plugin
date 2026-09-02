@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterfa
 final class DbHandler implements DbHandlerInterface
 {
     /**
-     * @var $db
+     * @var \wpdb $db
      */
     private $db;
     /**
@@ -181,7 +181,8 @@ final class DbHandler implements DbHandlerInterface
         $format = [];
         foreach ($params as $value) {
             switch (gettype($value)) {
-                case 'string' || 'NULL':
+                case 'string':
+                case 'NULL':
                     $format[] = '%s';
                     break;
                 case 'integer':

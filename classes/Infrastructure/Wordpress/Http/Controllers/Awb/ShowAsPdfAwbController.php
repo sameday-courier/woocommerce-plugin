@@ -35,6 +35,7 @@ final class ShowAsPdfAwbController extends AbstractController
         $params = new ShowAsPdfAwbMapper($inputParams);
         $orderId = $params->orderId();
         $showAsPdfAwb = ShowAsPdfAwbFactory::create();
+        $result = null;
 
         try {
             $result = $showAsPdfAwb->execute(
@@ -52,6 +53,10 @@ final class ShowAsPdfAwbController extends AbstractController
                     'action' => 'edit',
                 ]
             );
+        }
+
+        if (null === $result) {
+            return;
         }
 
         if ($result->hasPdf()) {

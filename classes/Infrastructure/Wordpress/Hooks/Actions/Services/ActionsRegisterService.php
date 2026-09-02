@@ -20,7 +20,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowLockerFie
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowOpenPackageFieldAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateBlocksCheckoutLockerAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateCheckoutLockerAction;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\ActionInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
 class ActionsRegisterService implements RegistryHandlerInterface
@@ -51,16 +50,14 @@ class ActionsRegisterService implements RegistryHandlerInterface
     {
         foreach (self::ACTIONS as $actionClass) {
             $action = new $actionClass();
-            if ($action instanceof ActionInterface) {
-                add_action(
-                    $action->getActionName(),
-                    static function (...$args) use ($action): void {
-                        $action->handle(...$args);
-                    },
-                    $action->getPriority(),
-                    $action->getAcceptedArgs()
-                );
-            }
+            add_action(
+                $action->getActionName(),
+                static function (...$args) use ($action): void {
+                    $action->handle(...$args);
+                },
+                $action->getPriority(),
+                $action->getAcceptedArgs()
+            );
         }
     }
 }

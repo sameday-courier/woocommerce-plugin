@@ -67,7 +67,6 @@ final class WooSessionHandler implements SessionHandlerInterface
 
         if (
             (!isset($woocommerce->session) || !is_object($woocommerce->session))
-            && is_object($woocommerce)
             && method_exists($woocommerce, 'initialize_session')
         ) {
             $woocommerce->initialize_session();

@@ -105,7 +105,7 @@ final class ShowOpenPackageFieldAction extends AbstractAction
                 'required' => false,
                 'return' => true,
             ],
-            'yes' === $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE)
+            'yes' === $this->sessionHandler->get(CarrierSessionKeys::OPEN_PACKAGE) ? '1' : ''
         );
     }
 

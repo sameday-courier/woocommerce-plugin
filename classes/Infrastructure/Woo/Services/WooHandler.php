@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
 use WooCommerce;
 
 final class WooHandler implements WooCommerceHandlerInterface
@@ -35,7 +36,7 @@ final class WooHandler implements WooCommerceHandlerInterface
      */
     public function getPluginMainFile(): string
     {
-        return SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'samedaycourier-shipping.php';
+        return PluginPathHandler::mainFile();
     }
 
     /**

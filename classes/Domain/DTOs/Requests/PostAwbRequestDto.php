@@ -158,7 +158,7 @@ final class PostAwbRequestDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, array<string, mixed>>
      */
     public function getParcelsDimensions(): array
     {
@@ -222,7 +222,7 @@ final class PostAwbRequestDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, int|string>
      */
     public function getServiceTaxIds(): array
     {

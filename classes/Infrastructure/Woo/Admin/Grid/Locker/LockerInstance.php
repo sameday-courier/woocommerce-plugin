@@ -34,9 +34,9 @@ class LockerInstance
     }
 
     /**
-     * @return mixed
+     * @return void
      */
-    public function plugin_menu()
+    public function plugin_menu(): void
     {
         $parentSlug = 'edit.php?post_type=page';
         $pageSlug = 'sameday_lockers';
@@ -61,9 +61,9 @@ class LockerInstance
     /**
      * Plugin settings page
      *
-     * @return mixed
+     * @return void
      */
-    public function plugin_settings_page()
+    public function plugin_settings_page(): void
     {
         ?>
         <div class="wrap">
@@ -104,9 +104,9 @@ class LockerInstance
     /**
      * Screen options
      *
-     * @return mixed
+     * @return void
      */
-    public function screen_option()
+    public function screen_option(): void
     {
 
         $option = 'per_page';

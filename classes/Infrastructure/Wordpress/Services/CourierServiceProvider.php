@@ -653,7 +653,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
     /**
      * @param Exception $exception
      *
-     * @return array<int,
+     * @return array<int, mixed>
      */
     private function extractErrors(Exception $exception): array
     {

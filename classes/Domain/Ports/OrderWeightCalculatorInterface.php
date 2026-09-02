@@ -11,7 +11,7 @@ interface OrderWeightCalculatorInterface
      *
      * @param int $orderId
      *
-     * @return array<int,
+     * @return array<int, array{weight: float}>
      */
     public function toPackageDimensions(int $orderId): array;
 }

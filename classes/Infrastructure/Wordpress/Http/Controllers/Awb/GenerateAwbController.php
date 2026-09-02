@@ -54,6 +54,7 @@ final class GenerateAwbController extends AbstractController
 
         $mapper = new GenerateAwbMapper(array_merge($inputParams, $orderData));
         $generateAwb = GenerateAwbFactory::create();
+        $result = null;
 
         try {
             $result = $generateAwb->execute(
@@ -89,6 +90,10 @@ final class GenerateAwbController extends AbstractController
                     'add-awb' => ResponseNoticeType::ERROR,
                 ]
             );
+        }
+
+        if (null === $result) {
+            return;
         }
 
         if ('' !== $result->getNoticeMessage()) {

@@ -25,9 +25,9 @@ final class ShippingMethodFullLabelFilter extends AbstractFilter
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
-    public function getParams(): ?array
+    public function getParams(): array
     {
         return ['label', 'method'];
     }

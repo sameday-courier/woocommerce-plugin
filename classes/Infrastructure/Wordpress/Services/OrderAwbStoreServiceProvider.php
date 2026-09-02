@@ -165,7 +165,7 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
     /**
      * @param string $parcels
      *
-     * @return array<int,
+     * @return array<int, mixed>
      */
     private function unserializeParcels(string $parcels): array
     {

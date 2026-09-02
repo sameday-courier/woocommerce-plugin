@@ -78,7 +78,7 @@ final class ParcelStatusHistoryService
      * @param array $summary
      * @param string $awbNumber
      *
-     * @return array<string,
+     * @return array<string, mixed>
      */
     private function normalizeParcelSummary(array $summary, string $awbNumber): array
     {
@@ -98,7 +98,7 @@ final class ParcelStatusHistoryService
     /**
      * @param array $expeditionStatus
      *
-     * @return array<string,
+     * @return array<string, mixed>
      */
     private function normalizeExpeditionStatus(array $expeditionStatus): array
     {
@@ -127,7 +127,7 @@ final class ParcelStatusHistoryService
     /**
      * @param array $parcelHistory
      *
-     * @return array<int,
+     * @return array<int, array<string, mixed>>
      */
     private function normalizeParcelHistory(array $parcelHistory): array
     {

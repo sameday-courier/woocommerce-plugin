@@ -3,11 +3,11 @@
         'name' => 'samedaycourier/samedaycourier-shipping',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '5d98453c5ec27d759cf0b83d1c99ed17fac2ab5f',
+        'reference' => '16a760c1e78c8c143edf8b135d9041776ee2e494',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'sameday-courier/php-sdk' => array(
@@ -22,7 +22,7 @@
         'samedaycourier/samedaycourier-shipping' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '5d98453c5ec27d759cf0b83d1c99ed17fac2ab5f',
+            'reference' => '16a760c1e78c8c143edf8b135d9041776ee2e494',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

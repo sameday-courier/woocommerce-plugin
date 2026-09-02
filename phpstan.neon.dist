@@ -1,0 +1,12 @@
+parameters:
+    level: 5
+    phpVersion: 70400
+    paths:
+        - classes
+    excludePaths:
+        analyseAndScan:
+            - classes/*/files/*
+    bootstrapFiles:
+        - vendor/autoload.php
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: true

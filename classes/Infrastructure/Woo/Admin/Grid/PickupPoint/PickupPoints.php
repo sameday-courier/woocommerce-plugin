@@ -211,7 +211,7 @@ class PickupPoints extends WP_List_Table
     /**
      * @param array $searchParams
      *
-     * @return array{0:
+     * @return array{0: array<string, string>, 1: array<string, int>}
      */
     private function buildSearchFilters(array $searchParams): array
     {

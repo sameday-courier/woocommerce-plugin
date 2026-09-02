@@ -576,14 +576,19 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $this->init_settings();
 
-        add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
+        add_action(
+            'woocommerce_update_options_shipping_' . $this->id,
+            function (): void {
+                $this->process_admin_options();
+            }
+        );
         add_action('woocommerce_after_settings_shipping', array($this, 'renderSettingsActions'));
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function process_admin_options(): void
+    public function process_admin_options(): bool
     {
         $post_data = $this->get_post_data();
 
@@ -627,14 +632,16 @@ final class SamedayCourier extends WC_Shipping_Method
         if ($isLogged) {
             $this->set_post_data($post_data);
 
-            parent::process_admin_options();
-        } else {
-            WC_Admin_Settings::add_error(
-                TranslatorHandler::translate(
-                    'Invalid username/password combination provided! Settings have not been changed!'
-                )
-            );
+            return parent::process_admin_options();
         }
+
+        WC_Admin_Settings::add_error(
+            TranslatorHandler::translate(
+                'Invalid username/password combination provided! Settings have not been changed!'
+            )
+        );
+
+        return false;
     }
 
     /**

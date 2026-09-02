@@ -14,9 +14,11 @@ interface RepositoryInterface
     public function getTableName(): string;
 
     /**
-     * @param string $mapperClass
+     * @template T of MapperInterface
      *
-     * @return MapperInterface
+     * @param class-string<T> $mapperClass
+     *
+     * @return T
      */
     public function getMapper(string $mapperClass): MapperInterface;
 }

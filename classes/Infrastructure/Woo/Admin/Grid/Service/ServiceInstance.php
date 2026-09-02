@@ -47,9 +47,9 @@ class ServiceInstance
     }
 
     /**
-     * @return mixed
+     * @return void
      */
-    public function plugin_menu()
+    public function plugin_menu(): void
     {
         $parentSlug = 'edit.php?post_type=page';
         $pageSlug = 'sameday_services';
@@ -74,9 +74,9 @@ class ServiceInstance
     /**
      * Plugin settings page
      *
-     * @return mixed
+     * @return void
      */
-    public function plugin_settings_page()
+    public function plugin_settings_page(): void
     {
         ?>
         <div class="wrap">
@@ -160,7 +160,7 @@ class ServiceInstance
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
-        $currentStatus = (int) ($service->getStatus() ?? 0);
+        $currentStatus = (int) $service->getStatus();
         $statuses = [];
         foreach ($this->getStatuses() as $status) {
             $statuses[] = [
@@ -185,9 +185,9 @@ class ServiceInstance
     /**
      * Screen options
      *
-     * @return mixed
+     * @return void
      */
-    public function screen_option()
+    public function screen_option(): void
     {
 
         $option = 'per_page';

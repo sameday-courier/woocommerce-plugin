@@ -84,9 +84,7 @@ class ControllersRegisterService implements RegistryHandlerInterface
         foreach (self::CONTROLLERS as $controllersType => $controllers) {
             foreach ($controllers as $controller) {
                 $controller = new $controller();
-                if ($controller instanceof ControllerInterface) {
-                    self::addAction($controllersType, $controller);
-                }
+                self::addAction($controllersType, $controller);
             }
         }
     }
