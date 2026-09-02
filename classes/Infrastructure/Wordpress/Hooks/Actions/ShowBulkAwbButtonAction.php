@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateBulkAwbModal;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\RemoveBulkAwbModal;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\RemoveSingleAwbModal;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\AdminPageValidatorHandler;
 
 final class ShowBulkAwbButtonAction extends AbstractAction
@@ -33,5 +34,6 @@ final class ShowBulkAwbButtonAction extends AbstractAction
 
         echo GenerateBulkAwbModal::render();
         echo RemoveBulkAwbModal::render();
+        echo RemoveSingleAwbModal::render();
     }
 }
