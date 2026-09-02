@@ -64,7 +64,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo '<span style="display: block">' . esc_html((string) $awb->getAwbNumber()) . '</span>';
+        echo '<span style="display: block">'. esc_html((string) $awb->getAwbNumber()) .'</span>';
         echo $this->generateShowPDFButton($awb);
         echo $this->removeAWB($awb);
     }

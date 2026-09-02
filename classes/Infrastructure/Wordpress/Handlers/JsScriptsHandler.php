@@ -305,6 +305,12 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'sameday-admin-modal'],
                 true
             ),
+            'sameday-show-awb-as-pdf' => self::addScript(
+                'showAWBasPDF',
+                self::WP_CONTEXT['orders_list'],
+                ['jquery'],
+                true
+            ),
         ];
 
         return self::$scripts;
