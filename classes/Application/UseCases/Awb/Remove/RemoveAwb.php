@@ -67,18 +67,28 @@ final class RemoveAwb extends AbstractUseCase
             );
         }
 
+        $apiErrorMessage = null;
+
         try {
             $this->courierServiceProvider->removeAwb(
                 new RemoveAwbRequestDto((string) $awb->getAwbNumber())
             );
         } catch (CourierServiceException $exception) {
-            return new RemoveAwbResponse(
-                $exception->getMessage(),
-                true
-            );
+            // API may already be missing this AWB; still remove the local record.
+            $apiErrorMessage = $exception->getMessage();
         }
 
         $this->postRemoveAwbServiceProvider->apply(new PostRemoveAwbRequestDto($awb));
+
+        if (null !== $apiErrorMessage) {
+            return new RemoveAwbResponse(
+                sprintf(
+                    'AWB removed locally. API remove did not succeed: %s',
+                    $apiErrorMessage
+                ),
+                false
+            );
+        }
 
         return new RemoveAwbResponse(
             'Awb removed with success.',
