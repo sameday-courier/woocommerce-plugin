@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;

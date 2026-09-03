@@ -12,6 +12,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RefreshShippi
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterCheckoutBlocksIntegrationAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterOpenPackageBlocksIntegrationAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterOpenPackageCartUpdateCallbackAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxBlocksIntegrationAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxCartUpdateCallbackAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RenderAdminAwbFormsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAdminOrderAwbActionsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAwbNumberColumnInWcOrderGridAction;
@@ -33,6 +35,8 @@ class ActionsRegisterService implements RegistryHandlerInterface
         RegisterCheckoutBlocksIntegrationAction::class,
         RegisterOpenPackageBlocksIntegrationAction::class,
         RegisterOpenPackageCartUpdateCallbackAction::class,
+        RegisterRepaymentTaxBlocksIntegrationAction::class,
+        RegisterRepaymentTaxCartUpdateCallbackAction::class,
         RenderAdminAwbFormsAction::class,
         ShowAdminOrderAwbActionsAction::class,
         ShowAwbNumberColumnInWcOrderGridAction::class,

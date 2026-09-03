@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\City\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Domain\Ports\CityCatalogStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CitySourceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CountriesHandlerInterface;

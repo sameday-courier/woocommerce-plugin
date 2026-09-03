@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetServicesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;

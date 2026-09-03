@@ -574,9 +574,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                         'store_sameday_open_package_in_session' => NonceHandler::createNonce(
                             'store_sameday_open_package_in_session'
                         ),
-                        'store_sameday_payment_method_in_session' => NonceHandler::createNonce(
-                            'store_sameday_payment_method_in_session'
-                        ),
                     ],
                 ]);
                 break;

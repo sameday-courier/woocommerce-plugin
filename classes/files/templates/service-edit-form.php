@@ -29,7 +29,7 @@ $t = static function (string $text): string {
             <input type="hidden"
                    name="samedaycourier-service-id"
                    value="<?php echo esc_attr((string) $serviceId); ?>">
-            <input type="hidden" name="_wpnonce" value="<?php echo $nonce; ?>">
+            <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
             <tr valign="top">
                 <th scope="row" class="titledesc">
                     <label for="samedaycourier-service-name">

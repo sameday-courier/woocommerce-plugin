@@ -15,10 +15,6 @@
             return 'store_sameday_open_package_in_session';
         }
 
-        if (Object.prototype.hasOwnProperty.call(params, 'payment_method')) {
-            return 'store_sameday_payment_method_in_session';
-        }
-
         return null;
     };
 

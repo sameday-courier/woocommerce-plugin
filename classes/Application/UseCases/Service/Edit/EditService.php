@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 

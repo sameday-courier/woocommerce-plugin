@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday;
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Objects\Types\CostType;
-use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierServiceProviderInterface;
@@ -15,6 +13,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayServiceMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\AbstractRepository;
 
 class SamedayServiceRepository extends AbstractRepository implements CarrierServiceProviderInterface
@@ -95,19 +94,16 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
             return [];
         }
 
-        /** @var OptionalTaxObject[]|false $result */
-        $result = unserialize(
-            $rows[0]['service_optional_taxes'],
-            [
-                'allowed_classes' => [
-                    OptionalTaxObject::class,
-                    PackageType::class,
-                    CostType::class,
-                ],
-            ]
-        );
+        $result = SerializedPayloadReader::readOptionalTaxes($rows[0]['service_optional_taxes']);
 
-        return is_array($result) ? $result : [];
+        return array_values(
+            array_filter(
+                $result,
+                static function ($optionalTax): bool {
+                    return $optionalTax instanceof OptionalTaxObject;
+                }
+            )
+        );
     }
 
     /**

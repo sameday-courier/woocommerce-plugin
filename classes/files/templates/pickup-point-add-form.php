@@ -17,7 +17,7 @@ $t = static function (string $text): string {
 ?>
 <form id="sameday-pickup-point-form" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="send_pickup_point">
-    <input type="hidden" name="_wpnonce" value="<?php echo $nonce; ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
     <div class="sameday-pickup-point-form">
         <div class="sameday-pickup-point-form__group">
             <label for="pickupPointCountryDisplay"><?php echo $t('Country'); ?></label>

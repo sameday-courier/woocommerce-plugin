@@ -285,8 +285,8 @@ final class SamedayCourier extends WC_Shipping_Method
 
         // Check if the client has to pay anything as repayment value
         $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
-        $paymentMethod = $this->sessionHandler->get(CarrierSessionKeys::PAYMENT_METHOD);
-        if (isset($paymentMethod) && ($paymentMethod !== CarrierConstants::CASH_ON_DELIVERY)) {
+        $paymentMethod = $this->sessionHandler->getChosenPaymentMethod();
+        if (null !== $paymentMethod && CarrierConstants::CASH_ON_DELIVERY !== $paymentMethod) {
             $repaymentAmount = 0;
         }
 

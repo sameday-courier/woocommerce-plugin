@@ -6,5 +6,4 @@ namespace SamedayCourier\Shipping\Application\Common\Interfaces;
 
 interface RequestInterface
 {
-
 }

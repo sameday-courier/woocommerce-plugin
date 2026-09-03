@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetPickupPointsRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;

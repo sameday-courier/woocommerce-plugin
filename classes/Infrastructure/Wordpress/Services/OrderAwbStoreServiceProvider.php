@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 use Sameday\Objects\PostAwb\ParcelObject;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use Throwable;
 
@@ -173,8 +174,6 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
             return [];
         }
 
-        $decoded = unserialize($parcels, ['allowed_classes' => true]);
-
-        return is_array($decoded) ? $decoded : [];
+        return SerializedPayloadReader::readPostAwbParcels($parcels);
     }
 }

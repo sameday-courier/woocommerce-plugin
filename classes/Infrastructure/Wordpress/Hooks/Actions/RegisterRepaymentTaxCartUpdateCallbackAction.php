@@ -6,12 +6,12 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Woo\Blocks\OpenPackageBlocksIntegration;
+use SamedayCourier\Shipping\Infrastructure\Woo\Blocks\RepaymentTaxBlocksIntegration;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\ShippingRatesRefresher;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\OpenPackageSessionNormalizer;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\ChosenPaymentMethodValidator;
 
-final class RegisterOpenPackageCartUpdateCallbackAction extends AbstractAction
+final class RegisterRepaymentTaxCartUpdateCallbackAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_blocks_loaded';
 
@@ -58,7 +58,7 @@ final class RegisterOpenPackageCartUpdateCallbackAction extends AbstractAction
 
         woocommerce_store_api_register_update_callback(
             [
-                'namespace' => OpenPackageBlocksIntegration::CART_UPDATE_NAMESPACE,
+                'namespace' => RepaymentTaxBlocksIntegration::CART_UPDATE_NAMESPACE,
                 'callback' => function ($data): void {
                     $this->store(is_array($data) ? $data : []);
                 },
@@ -73,11 +73,15 @@ final class RegisterOpenPackageCartUpdateCallbackAction extends AbstractAction
      */
     private function store(array $data): void
     {
-        $openPackage = OpenPackageSessionNormalizer::normalize(
-            $data[OpenPackageBlocksIntegration::CART_UPDATE_FIELD] ?? null
+        $paymentMethod = ChosenPaymentMethodValidator::normalize(
+            $data[RepaymentTaxBlocksIntegration::CART_UPDATE_FIELD] ?? null
         );
 
-        $this->sessionHandler->set(CarrierSessionKeys::OPEN_PACKAGE, $openPackage);
+        if (null === $paymentMethod) {
+            return;
+        }
+
+        $this->sessionHandler->set(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD, $paymentMethod);
         $this->shippingRatesRefresher->refresh();
     }
 }

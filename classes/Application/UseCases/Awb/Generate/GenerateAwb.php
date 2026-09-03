@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-
 use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;

@@ -11,7 +11,7 @@ $t = static function (string $text): string {
 /**
  * @var string $username
  * @var string $hostCountry
- * @var string|null $shipTo
+ * @var array{name: string, address: string}|null $shipToParts
  */
 ?>
 <tr class="shipping-pickup-store">
@@ -26,9 +26,16 @@ $t = static function (string $text): string {
         </button>
     </th>
 </tr>
-<?php if (null !== $shipTo) : ?>
+<?php if (null !== $shipToParts) : ?>
     <tr id="showSamedayLockerDetailsCheckoutLine" class="shipping-pickup-store">
         <td><strong><?php echo $t('Ship to'); ?></strong></td>
-        <th><span id="showLockerDetails"><?php echo $shipTo; ?></span></th>
+        <th>
+            <span id="showLockerDetails">
+                <?php if ('' !== $shipToParts['name']) : ?>
+                    <?php echo esc_html($shipToParts['name']); ?><br/>
+                <?php endif; ?>
+                <?php echo esc_html($shipToParts['address']); ?>
+            </span>
+        </th>
     </tr>
 <?php endif; ?>

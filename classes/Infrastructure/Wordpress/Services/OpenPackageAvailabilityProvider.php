@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Objects\Types\CostType;
-use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 /**
@@ -112,26 +112,15 @@ final class OpenPackageAvailabilityProvider
             return [];
         }
 
-        $optionalTaxes = unserialize(
-            $serializedOptionalTaxes,
-            [
-                'allowed_classes' => [
-                    OptionalTaxObject::class,
-                    PackageType::class,
-                    CostType::class,
-                ],
-            ]
-        );
+        $optionalTaxes = SerializedPayloadReader::readOptionalTaxes($serializedOptionalTaxes);
 
-        if (!is_array($optionalTaxes)) {
-            return [];
-        }
-
-        return array_filter(
-            $optionalTaxes,
-            static function ($optionalTax): bool {
-                return $optionalTax instanceof OptionalTaxObject;
-            }
+        return array_values(
+            array_filter(
+                $optionalTaxes,
+                static function ($optionalTax): bool {
+                    return $optionalTax instanceof OptionalTaxObject;
+                }
+            )
         );
     }
 }

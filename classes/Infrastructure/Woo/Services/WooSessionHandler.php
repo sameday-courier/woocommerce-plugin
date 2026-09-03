@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
+use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 
@@ -52,6 +53,22 @@ final class WooSessionHandler implements SessionHandlerInterface
         }
 
         $session->set($key, $value);
+    }
+
+    /**
+     * WooCommerce stores the checkout payment gateway id under chosen_payment_method.
+     *
+     * @return string|null
+     */
+    public function getChosenPaymentMethod(): ?string
+    {
+        $paymentMethod = $this->get(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD);
+
+        if (!is_string($paymentMethod) || '' === $paymentMethod) {
+            return null;
+        }
+
+        return $paymentMethod;
     }
 
     /**

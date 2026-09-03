@@ -12,17 +12,17 @@ declare(strict_types=1);
 ?>
 <form id="addAwbForm" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="add-awb">
-    <input type="hidden" name="_wpnonce" value="<?php echo $addAwbNonce; ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($addAwbNonce); ?>">
 </form>
 <form id="showAsPdf" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="show-as-pdf">
-    <input type="hidden" name="_wpnonce" value="<?php echo $showAsPdfNonce; ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($showAsPdfNonce); ?>">
 </form>
 <form id="addNewParcelForm" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="add-new-parcel">
-    <input type="hidden" name="_wpnonce" value="<?php echo $addNewParcelNonce; ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($addNewParcelNonce); ?>">
 </form>
 <form id="removeAwb" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="remove-awb">
-    <input type="hidden" name="_wpnonce" value="<?php echo $removeAwbNonce; ?>">
+    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($removeAwbNonce); ?>">
 </form>

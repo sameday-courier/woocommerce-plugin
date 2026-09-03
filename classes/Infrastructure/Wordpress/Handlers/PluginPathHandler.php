@@ -20,7 +20,7 @@ final class PluginPathHandler
     private static ?string $root = null;
 
     /**
-     * @param string $mainFile Absolute path to samedaycourier-shipping.php
+     * @param string $mainFile Absolute path to samedaycourier-shipping.php.
      *
      * @return void
      */
@@ -45,7 +45,7 @@ final class PluginPathHandler
     }
 
     /**
-     * @param string $relativePath Path relative to the plugin root
+     * @param string $relativePath Path relative to the plugin root.
      *
      * @return string
      */
