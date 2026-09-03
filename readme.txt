@@ -181,7 +181,9 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 = 2.2.0 =
 
-* Introduce PHPStan in deployment workflow for static code analize
+* Add PHPStan for static code analize.
+* Refactor backend code base to meet PHPStan static code analyze requirements and fix all issues that PHPStan found
+* Complete refactor of JS assets to resolve all leftover corner-cases.
 
 = 2.1.0 =
 
