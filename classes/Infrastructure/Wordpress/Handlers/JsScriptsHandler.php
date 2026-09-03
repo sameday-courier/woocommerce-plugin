@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 final class JsScriptsHandler implements RegistryHandlerInterface
 {
@@ -511,6 +512,18 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                             'store_sameday_payment_method_in_session'
                         ),
                     ],
+                ]);
+                break;
+            case 'sameday-lockers-script':
+                $lockerSyncSettings = (new CarrierSettingsServiceProvider())->get();
+                wp_localize_script($handle, 'samedayLockerSync', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'action' => 'refresh_lockers_checkout',
+                    'nonce' => NonceHandler::createNonce('refresh_lockers_checkout'),
+                    'ttl' => CarrierConstants::LOCKERS_SYNC_TTL,
+                    'ts' => $lockerSyncSettings->getSamedaySyncLockersTs(),
+                    'useLockerMap' => $lockerSyncSettings->isLockersMapEnabled(),
+                    'selectLockerText' => TranslatorHandler::translate('Select easyBox'),
                 ]);
                 break;
             case 'sameday-county-city-handle':

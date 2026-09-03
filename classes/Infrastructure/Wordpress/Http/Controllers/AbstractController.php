@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\JsonResponseTrait;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Exceptions\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
@@ -13,6 +14,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChec
 
 abstract class AbstractController implements ControllerInterface
 {
+    use JsonResponseTrait;
+
     /**
      * @return void
      * @throws AccessDeniedException
@@ -43,32 +46,6 @@ abstract class AbstractController implements ControllerInterface
     protected function getCurrentUserId(): int
     {
         return UserPermissionChecker::getCurrentUserId();
-    }
-
-    /**
-     * @param mixed $payload
-     * @param int $statusCode
-     *
-     * @return void
-     */
-    protected function sendJsonErrorResponse(
-        $payload,
-        int $statusCode = 400
-    ): void {
-        wp_send_json_error($payload, $statusCode);
-    }
-
-    /**
-     * @param mixed $payload
-     * @param int $statusCode
-     *
-     * @return void
-     */
-    protected function sendJsonSuccessResponse(
-        $payload,
-        int $statusCode = 200
-    ): void {
-        wp_send_json_success($payload, $statusCode);
     }
 
     /**

@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Services;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StoreLockerInSessionController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StoreOpenPackageInSessionController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\StorePaymentMethodInSessionController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Checkout\SyncLockersController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ControllerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\AddNewParcelAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\BulkGenerateAwbController;
@@ -67,12 +68,14 @@ class ControllersRegisterService implements RegistryHandlerInterface
                 StoreLockerInSessionController::class,
                 StoreOpenPackageInSessionController::class,
                 StorePaymentMethodInSessionController::class,
+                SyncLockersController::class,
             ],
             self::NO_PRIV_AJAX_CONTROLLERS =>
             [
                 StoreLockerInSessionController::class,
                 StoreOpenPackageInSessionController::class,
                 StorePaymentMethodInSessionController::class,
+                SyncLockersController::class,
             ]
         ];
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\JsonResponseTrait;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Exceptions\AccessDeniedException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -11,6 +12,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
 
 abstract class AbstractNoPrivController implements ControllerInterface
 {
+    use JsonResponseTrait;
+
     /**
      * @return void
      * @throws AccessDeniedException

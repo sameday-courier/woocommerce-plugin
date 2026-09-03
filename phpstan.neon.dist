@@ -10,3 +10,15 @@ parameters:
         - vendor/autoload.php
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: true
+
+services:
+    -
+        class: SamedayCourier\PHPStan\UseCaseCallableOnlyFromControllerRule
+        arguments:
+            useCaseInterface: SamedayCourier\Shipping\Application\Common\Interfaces\UseCaseInterface
+            controllerInterface: SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ControllerInterface
+            entryPointMethod: execute
+            controllerNamespaces:
+                - SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers
+        tags:
+            - phpstan.rules.rule

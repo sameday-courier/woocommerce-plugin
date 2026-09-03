@@ -58,6 +58,7 @@ jobs:
 
           "${{ runner.temp }}/phpstan/vendor/bin/phpstan" analyse \
             --configuration="${WRAPPER}" \
+            --autoload-file="${{ github.workspace }}/phpstan/bootstrap.php" \
             --memory-limit=1G \
             --error-format=github
 
@@ -67,6 +68,7 @@ jobs:
           WRAPPER="${{ runner.temp }}/phpstan-wrapper.neon"
           "${{ runner.temp }}/phpstan/vendor/bin/phpstan" analyse \
             --configuration="${WRAPPER}" \
+            --autoload-file="${{ github.workspace }}/phpstan/bootstrap.php" \
             --memory-limit=1G \
             --error-format=junit \
             --no-progress \

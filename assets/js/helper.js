@@ -293,5 +293,89 @@
         });
     };
 
+    /**
+     * Client-side TTL gate mirroring the server check, so an unnecessary sync request is skipped.
+     *
+     * @param {number|string} ts Last sync UNIX timestamp (seconds).
+     * @param {number|string} ttl TTL in seconds.
+     * @returns {boolean}
+     */
+    SamedayCourier.isLockerSyncExpired = function (ts, ttl) {
+        var now = Math.floor(Date.now() / 1000);
+
+        return now > ((parseInt(ts, 10) || 0) + (parseInt(ttl, 10) || 0));
+    };
+
+    /**
+     * Ask the server to refresh the locker nomenclator and return the grouped choices. The server
+     * re-checks mode and TTL, so this is safe to call optimistically.
+     *
+     * @param {Object} opts
+     * @param {string} opts.ajaxUrl
+     * @param {string} opts.action
+     * @param {string} opts.nonce
+     * @param {string|number} [opts.selectedLockerId]
+     * @param {Function} onSuccess function(lockersByCity)
+     * @returns {void}
+     */
+    SamedayCourier.refreshCheckoutLockers = function (opts, onSuccess) {
+        opts = opts || {};
+
+        if (!opts.ajaxUrl || !opts.action || !opts.nonce) {
+            return;
+        }
+
+        jQuery.ajax({
+            type: 'POST',
+            url: opts.ajaxUrl,
+            data: {
+                action: opts.action,
+                _wpnonce: opts.nonce,
+                selected_locker_id: opts.selectedLockerId || ''
+            },
+            success: function (response) {
+                if (
+                    response
+                    && response.success
+                    && response.data
+                    && typeof onSuccess === 'function'
+                ) {
+                    onSuccess(response.data.lockersByCity || {});
+                }
+            }
+        });
+    };
+
+    /**
+     * Rebuild a locker <select> from grouped choices, preserving the current selection. Markup
+     * mirrors classes/files/templates/locker-dropdown-field.php.
+     *
+     * @param {HTMLSelectElement} dropdown
+     * @param {Object} lockersByCity
+     * @param {string} [placeholderText]
+     * @returns {void}
+     */
+    SamedayCourier.populateLockerDropdown = function (dropdown, lockersByCity, placeholderText) {
+        if (!dropdown) {
+            return;
+        }
+
+        var previous = dropdown.value;
+        var html = '<option value="" class="sameday-locker-placeholder">' +
+            (placeholderText || 'Select easyBox') + '</option>';
+
+        Object.keys(lockersByCity || {}).forEach(function (city) {
+            html += '<optgroup label="' + city + '" class="sameday-locker-optgroup">';
+            (lockersByCity[city] || []).forEach(function (locker) {
+                var isSelected = locker.selected || String(locker.id) === String(previous);
+                html += '<option value="' + locker.id + '" class="sameday-locker-option"' +
+                    (isSelected ? " selected='selected'" : '') + '>' + locker.label + '</option>';
+            });
+            html += '</optgroup>';
+        });
+
+        dropdown.innerHTML = html;
+    };
+
     window.SamedayCourier = SamedayCourier;
 }(window, jQuery));

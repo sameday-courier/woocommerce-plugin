@@ -6,6 +6,42 @@
 
     var SamedayCourier = window.SamedayCourier || {};
 
+    // Guards a single sync per page load once the server-side TTL has lapsed.
+    var lockerSyncDone = false;
+
+    var maybeSyncLockers = function () {
+        var config = window.samedayLockerSync || {};
+
+        // Dropdown mode only; the map picks lockers via the SDK. The field is rendered by
+        // ShowLockerFieldAction only for OOH services, so its presence is the service gate.
+        if (config.useLockerMap) {
+            return;
+        }
+
+        var dropdown = document.getElementById('shipping-pickup-store-select');
+        if (!dropdown || lockerSyncDone) {
+            return;
+        }
+
+        if (!SamedayCourier.isLockerSyncExpired(config.ts, config.ttl)) {
+            return;
+        }
+
+        SamedayCourier.refreshCheckoutLockers(
+            {
+                ajaxUrl: config.ajaxUrl,
+                action: config.action,
+                nonce: config.nonce,
+                selectedLockerId: dropdown.value
+            },
+            function (lockersByCity) {
+                lockerSyncDone = true;
+                SamedayCourier.populateLockerDropdown(dropdown, lockersByCity, config.selectLockerText);
+                jQuery(dropdown).trigger('change.select2');
+            }
+        );
+    };
+
     var isSet = function (accessor) {
         try {
             return accessor() !== undefined && accessor() !== null;
@@ -56,6 +92,7 @@
         if (isSet(function () { return selectors.selectLockerMap; })) {
             selectors.selectLockerMap.addEventListener('click', openLockers);
         } else if (isSet(function () { return selectors.selectLocker; })) {
+            maybeSyncLockers();
             jQuery('select#shipping-pickup-store-select').select2();
 
             selectors.selectLocker.onchange = function (event) {

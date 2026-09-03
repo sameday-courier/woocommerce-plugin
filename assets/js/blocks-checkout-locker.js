@@ -15,6 +15,8 @@
     var observer = null;
     var boundPlaceOrder = false;
     var selectedLocker = null;
+    // Guards a single sync per page load once the server-side TTL has lapsed.
+    var blocksSyncDone = false;
 
     var readConfig = function () {
         var wcSettings = window.wc && window.wc.wcSettings;
@@ -46,6 +48,39 @@
 
     var isOohSelected = function () {
         return isOohRateId(SamedayCourier.getSelectedShippingRateId());
+    };
+
+    // Refreshes the dropdown nomenclator on demand. Only meaningful in dropdown mode, and the
+    // server re-checks mode + TTL, so this stays a best-effort optimization.
+    var maybeSyncBlocksLockers = function () {
+        if (config.useLockerMap || blocksSyncDone) {
+            return;
+        }
+
+        if (!SamedayCourier.isLockerSyncExpired(config.syncTs, config.syncTtl)) {
+            return;
+        }
+
+        blocksSyncDone = true;
+
+        SamedayCourier.refreshCheckoutLockers(
+            {
+                ajaxUrl: config.ajaxUrl,
+                action: config.syncAction,
+                nonce: config.syncNonce,
+                selectedLockerId: typeof selectedLocker === 'string' ? selectedLocker : ''
+            },
+            function (lockersByCity) {
+                config.lockersByCity = lockersByCity;
+
+                var existing = document.getElementById(UI_ROOT_ID);
+                if (existing) {
+                    existing.remove();
+                }
+
+                ensureUi();
+            }
+        );
     };
 
     var openLockers = function () {
@@ -166,6 +201,9 @@
             }
             return;
         }
+
+        // OOH is selected: refresh the dropdown nomenclator if the TTL lapsed (no-op in map mode).
+        maybeSyncBlocksLockers();
 
         // Blocks keeps previously rendered rate options mounted, so the UI has to be moved
         // whenever the selection changes instead of lingering under the old rate.

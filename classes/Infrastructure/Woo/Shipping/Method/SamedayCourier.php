@@ -13,7 +13,6 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\CourierLoginRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -21,8 +20,6 @@ use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
@@ -32,8 +29,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerStoreServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
@@ -163,7 +158,6 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $useEstimatedCost = $settings->getEstimatedCost();
         $estimatedCostExtraFee = $settings->getEstimatedCostExtraFee();
-        $useLockerMap = $settings->isLockersMapEnabled();
 
         $cartValue = $this->wooCommerceHandler->getWC()->cart->get_subtotal();
 
@@ -252,55 +246,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
             }
 
-            if (
-                (false === $useLockerMap)
-                && ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE)
-            ) {
-                $this->syncLockers();
-                $rate['lockers'] = array_map(
-                    /**
-                     * @param CarrierLocker $locker
-                     *
-                     * @return array
-                     */
-                    static function (CarrierLocker $locker): array {
-                        return [
-                            'id' => $locker->getId(),
-                            'locker_id' => $locker->getLockerId(),
-                            'name' => $locker->getName(),
-                            'city' => $locker->getCity(),
-                            'county' => $locker->getCounty(),
-                            'address' => $locker->getAddress(),
-                            'lat' => $locker->getLat(),
-                            'lng' => $locker->getLng(),
-                            'postal_code' => $locker->getPostalCode(),
-                            'boxes' => $locker->getBoxes(),
-                            'is_testing' => $locker->getIsTesting(),
-                        ];
-                    },
-                    (new SamedayLockerRepository())->getLockers()
-                );
-            }
-
             $this->add_rate($rate);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function syncLockers(): void
-    {
-        $time = time();
-
-        $ltSync = $this->carrierSettingsProvider->get()->getSamedaySyncLockersTs();
-
-        if ($time > ($ltSync + 86400)) {
-            (new RefreshLocker(
-                $this->courierServiceProvider,
-                new LockerStoreServiceProvider(),
-                $this->carrierSettingsProvider
-            ))->execute(new RefreshLockerRequest());
         }
     }
 
