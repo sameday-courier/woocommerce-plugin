@@ -72,3 +72,33 @@
     overflow-y: auto;
     font-size: 12px;
 }
+
+.sameday-locker-sync-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #50575e;
+}
+
+.sameday-locker-sync-loading__spinner {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid #dcdcde;
+    border-top-color: #ed2224;
+    animation: sameday-locker-sync-spin 0.75s linear infinite;
+}
+
+.sameday-locker-sync-loading__text {
+    font-weight: 500;
+}
+
+@keyframes sameday-locker-sync-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

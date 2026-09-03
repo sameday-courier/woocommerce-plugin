@@ -17,11 +17,11 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getParams(): ?array
+    public function getParams(): array
     {
-        return null;
+        return [];
     }
 
     /**
@@ -29,10 +29,6 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getAcceptedArgs(): int
     {
-        if (null === $this->getParams()) {
-            return 0;
-        }
-
         return count($this->getParams());
     }
 }

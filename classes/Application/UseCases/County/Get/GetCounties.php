@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\County\Get;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCountiesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
-final class GetCounties
+/**
+ * @extends AbstractUseCase<GetCountiesRequest, GetCountiesResponse>
+ *
+ * @method GetCountiesResponse execute(GetCountiesRequest $request)
+ */
+final class GetCounties extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -28,7 +35,7 @@ final class GetCounties
      * @param GetCountiesRequest $request
      * @return GetCountiesResponse
      */
-    public function execute(GetCountiesRequest $request): GetCountiesResponse
+    protected function processAction(RequestInterface $request): GetCountiesResponse
     {
         try {
             $counties = $this->courierServiceProvider

@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkRemove;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-final class StartBulkRemoveAwb
+/**
+ * @extends AbstractUseCase<StartBulkRemoveAwbRequest, StartBulkRemoveAwbResponse>
+ *
+ * @method StartBulkRemoveAwbResponse execute(StartBulkRemoveAwbRequest $request)
+ */
+final class StartBulkRemoveAwb extends AbstractUseCase
 {
     /**
      * @var BulkJobStoreInterface $bulkJobStore
@@ -37,7 +44,7 @@ final class StartBulkRemoveAwb
      *
      * @return StartBulkRemoveAwbResponse
      */
-    public function execute(StartBulkRemoveAwbRequest $request): StartBulkRemoveAwbResponse
+    protected function processAction(RequestInterface $request): StartBulkRemoveAwbResponse
     {
         $orderIds = $request->getOrderIds();
         $userId = $request->getUserId();

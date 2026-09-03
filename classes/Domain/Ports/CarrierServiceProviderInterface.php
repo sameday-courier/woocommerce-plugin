@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
-use Sameday\Objects\Service\OptionalTaxObject;
+use SamedayCourier\Shipping\Domain\DTOs\CarrierOptionalTaxDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 
 interface CarrierServiceProviderInterface
@@ -17,7 +17,7 @@ interface CarrierServiceProviderInterface
     /**
      * @param int $samedayServiceId
      *
-     * @return OptionalTaxObject[]
+     * @return CarrierOptionalTaxDto[]
      */
     public function getServiceIdOptionalTaxes(int $samedayServiceId): array;
 }

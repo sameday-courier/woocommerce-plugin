@@ -35,9 +35,9 @@ class PickupPointInstance
     }
 
     /**
-     * @return mixed
+     * @return void
      */
-    public function plugin_menu()
+    public function plugin_menu(): void
     {
         $parentSlug = 'edit.php?post_type=page';
         $pageSlug = PickupPoints::PAGE_SLUG;
@@ -62,9 +62,9 @@ class PickupPointInstance
     /**
      * Plugin settings page
      *
-     * @return mixed
+     * @return void
      */
-    public function plugin_settings_page()
+    public function plugin_settings_page(): void
     {
         ?>
         <div class="wrap">
@@ -119,9 +119,9 @@ class PickupPointInstance
     /**
      * Screen options
      *
-     * @return mixed
+     * @return void
      */
-    public function screen_option()
+    public function screen_option(): void
     {
         $option = 'per_page';
         $args   = [

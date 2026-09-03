@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
-final class RefreshPickupPointRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class RefreshPickupPointRequest implements RequestInterface
 {
 }

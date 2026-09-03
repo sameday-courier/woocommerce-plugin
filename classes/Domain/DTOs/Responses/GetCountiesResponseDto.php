@@ -20,7 +20,7 @@ final class GetCountiesResponseDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, array{id: int, name: string}>
      */
     public function getCounties(): array
     {

@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostPickupPointRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
-final class AddNewPickupPoint
+/**
+ * @extends AbstractUseCase<AddNewPickupPointRequest, AddNewPickupPointResponse>
+ *
+ * @method AddNewPickupPointResponse execute(AddNewPickupPointRequest $request)
+ */
+final class AddNewPickupPoint extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -28,7 +35,7 @@ final class AddNewPickupPoint
      * @param AddNewPickupPointRequest $request
      * @return AddNewPickupPointResponse
      */
-    public function execute(AddNewPickupPointRequest $request): AddNewPickupPointResponse
+    protected function processAction(RequestInterface $request): AddNewPickupPointResponse
     {
         try {
             $this->courierServiceProvider->postPickupPoint(

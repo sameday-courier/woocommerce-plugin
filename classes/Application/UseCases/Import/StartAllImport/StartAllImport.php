@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-final class StartAllImport
+/**
+ * @extends AbstractUseCase<StartAllImportRequest, StartAllImportResponse>
+ *
+ * @method StartAllImportResponse execute(StartAllImportRequest $request)
+ */
+final class StartAllImport extends AbstractUseCase
 {
     /**
      * @var BulkJobStoreInterface $bulkJobStore
@@ -37,7 +44,7 @@ final class StartAllImport
      * @param StartAllImportRequest $request
      * @return StartAllImportResponse
      */
-    public function execute(StartAllImportRequest $request): StartAllImportResponse
+    protected function processAction(RequestInterface $request): StartAllImportResponse
     {
         $itemIds = AllImportSteps::ids();
         if ([] === $itemIds) {

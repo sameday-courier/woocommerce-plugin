@@ -23,7 +23,7 @@ final class WooCountriesHandler implements CountriesHandlerInterface
     }
 
     /**
-     * @return array<string,
+     * @return array<string, string>
      */
     public function getShippingCountries(): array
     {
@@ -33,7 +33,7 @@ final class WooCountriesHandler implements CountriesHandlerInterface
     /**
      * @param string $countryCode
      *
-     * @return array<string,
+     * @return array<string, string>|null
      */
     public function getStatesForCountry(string $countryCode): ?array
     {
@@ -60,7 +60,7 @@ final class WooCountriesHandler implements CountriesHandlerInterface
     }
 
     /**
-     * @return array<string,
+     * @return array<string, array<string, string>>
      */
     private function getAllStates(): array
     {

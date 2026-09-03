@@ -112,7 +112,7 @@ class GenerateAwbValidatorRequest
     }
 
     /**
-     * @return array<int,
+     * @return array<int, mixed>
      */
     public function getShippingLines(): array
     {

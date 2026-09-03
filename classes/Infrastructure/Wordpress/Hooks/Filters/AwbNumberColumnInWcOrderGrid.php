@@ -28,9 +28,9 @@ final class AwbNumberColumnInWcOrderGrid extends AbstractFilter
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
-    public function getParams(): ?array
+    public function getParams(): array
     {
         return ['columns'];
     }

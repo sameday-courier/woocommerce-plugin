@@ -1,0 +1,83 @@
+name: PHPStan
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install plugin Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --no-dev
+
+      - name: Install PHPStan tooling
+        run: |
+          mkdir -p "${{ runner.temp }}/phpstan"
+          cd "${{ runner.temp }}/phpstan"
+          cat > composer.json << 'EOF'
+          {
+            "require": {
+              "php": ">=7.4",
+              "php-stubs/woocommerce-stubs": "^11.0",
+              "phpstan/phpstan": "^2.0",
+              "szepeviktor/phpstan-wordpress": "^2.0"
+            },
+            "config": {
+              "sort-packages": true
+            }
+          }
+          EOF
+          composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run PHPStan
+        run: |
+          WRAPPER="${{ runner.temp }}/phpstan-wrapper.neon"
+          TOOLS_VENDOR="${{ runner.temp }}/phpstan/vendor"
+          cat > "${WRAPPER}" <<EOF
+          includes:
+              - ${{ github.workspace }}/phpstan.neon.dist
+              - ${TOOLS_VENDOR}/szepeviktor/phpstan-wordpress/extension.neon
+
+          parameters:
+              bootstrapFiles:
+                  - ${{ github.workspace }}/vendor/autoload.php
+                  - ${TOOLS_VENDOR}/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+          EOF
+
+          "${{ runner.temp }}/phpstan/vendor/bin/phpstan" analyse \
+            --configuration="${WRAPPER}" \
+            --autoload-file="${{ github.workspace }}/phpstan/bootstrap.php" \
+            --memory-limit=1G \
+            --error-format=github
+
+      - name: Generate PHPStan JUnit report
+        if: always()
+        run: |
+          WRAPPER="${{ runner.temp }}/phpstan-wrapper.neon"
+          "${{ runner.temp }}/phpstan/vendor/bin/phpstan" analyse \
+            --configuration="${WRAPPER}" \
+            --autoload-file="${{ github.workspace }}/phpstan/bootstrap.php" \
+            --memory-limit=1G \
+            --error-format=junit \
+            --no-progress \
+            > phpstan-report.xml || true
+
+      - name: Upload PHPStan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-report
+          path: phpstan-report.xml
+          if-no-files-found: warn

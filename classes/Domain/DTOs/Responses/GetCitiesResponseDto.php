@@ -24,7 +24,7 @@ final class GetCitiesResponseDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, array{id: int, name: string}>
      */
     public function getCities(): array
     {

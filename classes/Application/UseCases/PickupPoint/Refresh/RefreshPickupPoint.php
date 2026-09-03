@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\Refresh;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetPickupPointsRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterface;
 
-final class RefreshPickupPoint
+/**
+ * @extends AbstractUseCase<RefreshPickupPointRequest, RefreshPickupPointResponse>
+ *
+ * @method RefreshPickupPointResponse execute(RefreshPickupPointRequest $request)
+ */
+final class RefreshPickupPoint extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -38,7 +45,7 @@ final class RefreshPickupPoint
      * @param RefreshPickupPointRequest $request
      * @return RefreshPickupPointResponse
      */
-    public function execute(RefreshPickupPointRequest $request): RefreshPickupPointResponse
+    protected function processAction(RequestInterface $request): RefreshPickupPointResponse
     {
         $remotePickupPoints = [];
         $page = 1;

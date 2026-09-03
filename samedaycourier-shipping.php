@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -19,8 +19,9 @@ if (!defined( 'ABSPATH')) {
  * Text Domain: sameday
  */
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\PluginHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\RegistryHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\PluginHandler;
 
 /**
  * Check if WooCommerce plugin is enabled
@@ -42,7 +43,7 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-define('SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH', plugin_dir_path(__FILE__));
+PluginPathHandler::bootstrap(__FILE__);
 
 RegistryHandler::register();
 

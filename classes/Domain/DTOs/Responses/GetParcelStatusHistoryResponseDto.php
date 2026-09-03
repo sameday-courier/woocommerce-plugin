@@ -42,7 +42,7 @@ final class GetParcelStatusHistoryResponseDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, mixed>
      */
     public function getHistory(): array
     {

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
-final class EditServiceRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class EditServiceRequest implements RequestInterface
 {
     /**
      * @var int $id

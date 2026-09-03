@@ -46,7 +46,7 @@ class AwbGenerateServiceTaxResolver
             foreach ($optionalServices as $optionalService) {
                 if (
                     $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $packageType
+                    && $optionalService->getPackageType() === $packageType
                 ) {
                     $serviceTaxIds[] = CarrierConstants::OPEN_PACKAGE_OPTION_CODE;
 
@@ -59,7 +59,7 @@ class AwbGenerateServiceTaxResolver
             foreach ($optionalServices as $optionalService) {
                 if (
                     $optionalService->getCode() === CarrierConstants::PERSONAL_DELIVERY_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === $packageType
+                    && $optionalService->getPackageType() === $packageType
                 ) {
                     $serviceTaxIds[] = CarrierConstants::PERSONAL_DELIVERY_OPTION_CODE;
                     break;

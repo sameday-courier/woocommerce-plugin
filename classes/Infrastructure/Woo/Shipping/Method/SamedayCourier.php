@@ -13,7 +13,6 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\CourierLoginRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\EstimateCostRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\EstimateCostResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
-use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -21,8 +20,6 @@ use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Domain\CarrierCurrencyRules;
 use SamedayCourier\Shipping\Domain\CarrierServiceSelector;
 use SamedayCourier\Shipping\Domain\Text\RomanianDiacriticsNormalizer;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLocker;
-use SamedayCourier\Shipping\Application\UseCases\Locker\Refresh\RefreshLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
@@ -32,17 +29,17 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerStoreServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
+use SamedayCourier\Shipping\Domain\Ports\ChosenPaymentMethodReaderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
@@ -89,6 +86,11 @@ final class SamedayCourier extends WC_Shipping_Method
     private SessionHandlerInterface $sessionHandler;
 
     /**
+     * @var ChosenPaymentMethodReaderInterface
+     */
+    private ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader;
+
+    /**
      * @var WeightConverterInterface
      */
     private WeightConverterInterface $weightConverter;
@@ -132,7 +134,9 @@ final class SamedayCourier extends WC_Shipping_Method
         $this->samedayServiceRepository = new SamedayServiceRepository();
         $this->carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
         $this->wooCommerceHandler = new WooHandler();
-        $this->sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
+        $sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
+        $this->sessionHandler = $sessionHandler;
+        $this->chosenPaymentMethodReader = new WooChosenPaymentMethodReader($sessionHandler);
         $this->weightConverter = new WooWeightHandler();
         $this->stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler($this->wooCommerceHandler));
         $this->courierServiceProvider = new CourierServiceProvider();
@@ -163,7 +167,6 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $useEstimatedCost = $settings->getEstimatedCost();
         $estimatedCostExtraFee = $settings->getEstimatedCostExtraFee();
-        $useLockerMap = $settings->isLockersMapEnabled();
 
         $cartValue = $this->wooCommerceHandler->getWC()->cart->get_subtotal();
 
@@ -252,55 +255,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 $rate['meta_data']['currency_conversion_label'] = $currencyConversionLabel;
             }
 
-            if (
-                (false === $useLockerMap)
-                && ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE)
-            ) {
-                $this->syncLockers();
-                $rate['lockers'] = array_map(
-                    /**
-                     * @param CarrierLocker $locker
-                     *
-                     * @return array
-                     */
-                    static function (CarrierLocker $locker): array {
-                        return [
-                            'id' => $locker->getId(),
-                            'locker_id' => $locker->getLockerId(),
-                            'name' => $locker->getName(),
-                            'city' => $locker->getCity(),
-                            'county' => $locker->getCounty(),
-                            'address' => $locker->getAddress(),
-                            'lat' => $locker->getLat(),
-                            'lng' => $locker->getLng(),
-                            'postal_code' => $locker->getPostalCode(),
-                            'boxes' => $locker->getBoxes(),
-                            'is_testing' => $locker->getIsTesting(),
-                        ];
-                    },
-                    (new SamedayLockerRepository())->getLockers()
-                );
-            }
-
             $this->add_rate($rate);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function syncLockers(): void
-    {
-        $time = time();
-
-        $ltSync = $this->carrierSettingsProvider->get()->getSamedaySyncLockersTs();
-
-        if ($time > ($ltSync + 86400)) {
-            (new RefreshLocker(
-                $this->courierServiceProvider,
-                new LockerStoreServiceProvider(),
-                $this->carrierSettingsProvider
-            ))->execute(new RefreshLockerRequest());
         }
     }
 
@@ -329,7 +284,7 @@ final class SamedayCourier extends WC_Shipping_Method
             foreach ($optionalServices as $optionalService) {
                 if (
                     $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === CarrierPackageTypes::PARCEL
+                    && $optionalService->getPackageType() === CarrierPackageTypes::PARCEL
                 ) {
                     $serviceTaxIds[] = $optionalService->getId();
                     break;
@@ -339,8 +294,8 @@ final class SamedayCourier extends WC_Shipping_Method
 
         // Check if the client has to pay anything as repayment value
         $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
-        $paymentMethod = $this->sessionHandler->get(CarrierSessionKeys::PAYMENT_METHOD);
-        if (isset($paymentMethod) && ($paymentMethod !== CarrierConstants::CASH_ON_DELIVERY)) {
+        $paymentMethod = $this->chosenPaymentMethodReader->getChosenPaymentMethod();
+        if (null !== $paymentMethod && CarrierConstants::CASH_ON_DELIVERY !== $paymentMethod) {
             $repaymentAmount = 0;
         }
 
@@ -576,14 +531,19 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $this->init_settings();
 
-        add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
+        add_action(
+            'woocommerce_update_options_shipping_' . $this->id,
+            function (): void {
+                $this->process_admin_options();
+            }
+        );
         add_action('woocommerce_after_settings_shipping', array($this, 'renderSettingsActions'));
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function process_admin_options(): void
+    public function process_admin_options(): bool
     {
         $post_data = $this->get_post_data();
 
@@ -627,14 +587,16 @@ final class SamedayCourier extends WC_Shipping_Method
         if ($isLogged) {
             $this->set_post_data($post_data);
 
-            parent::process_admin_options();
-        } else {
-            WC_Admin_Settings::add_error(
-                TranslatorHandler::translate(
-                    'Invalid username/password combination provided! Settings have not been changed!'
-                )
-            );
+            return parent::process_admin_options();
         }
+
+        WC_Admin_Settings::add_error(
+            TranslatorHandler::translate(
+                'Invalid username/password combination provided! Settings have not been changed!'
+            )
+        );
+
+        return false;
     }
 
     /**

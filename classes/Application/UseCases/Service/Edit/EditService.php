@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Service\Edit;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 
-final class EditService
+/**
+ * @extends AbstractUseCase<EditServiceRequest, EditServiceResponse>
+ *
+ * @method EditServiceResponse execute(EditServiceRequest $request)
+ */
+final class EditService extends AbstractUseCase
 {
     /**
      * @var ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
@@ -27,7 +34,7 @@ final class EditService
      * @param EditServiceRequest $request
      * @return EditServiceResponse
      */
-    public function execute(EditServiceRequest $request): EditServiceResponse
+    protected function processAction(RequestInterface $request): EditServiceResponse
     {
         $serviceId = $request->getId();
         $name = trim($request->getName());

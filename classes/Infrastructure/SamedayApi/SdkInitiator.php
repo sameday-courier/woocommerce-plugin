@@ -54,7 +54,7 @@ final class SdkInitiator
             $apiUrl = $this->getApiUrl();
         }
 
-        if (null === $username || null === $password || null === $apiUrl || '' === $apiUrl) {
+        if (null === $username || null === $password || '' === $apiUrl) {
             return null;
         }
 

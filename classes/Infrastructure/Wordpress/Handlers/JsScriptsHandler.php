@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\NonceHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 final class JsScriptsHandler implements RegistryHandlerInterface
 {
@@ -128,6 +129,45 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }
 
         self::$scripts = [
+            'sameday-modal-core' => self::addScript(
+                'sameday-modal-core',
+                self::WP_CONTEXT['admin_full'],
+                ['jquery'],
+                true
+            ),
+            'sameday-modal-core-pickup' => self::withHandle(
+                self::addScript(
+                    'sameday-modal-core',
+                    self::WP_CONTEXT['pickup_points'],
+                    ['jquery'],
+                    true
+                ),
+                'sameday-modal-core'
+            ),
+            'sameday-modal-core-orders' => self::withHandle(
+                self::addScript(
+                    'sameday-modal-core',
+                    self::WP_CONTEXT['orders_list'],
+                    ['jquery'],
+                    true
+                ),
+                'sameday-modal-core'
+            ),
+            'sameday-recursive-job' => self::addScript(
+                'sameday-recursive-job',
+                self::WP_CONTEXT['orders_list'],
+                [],
+                true
+            ),
+            'sameday-recursive-job-settings' => self::withHandle(
+                self::addScript(
+                    'sameday-recursive-job',
+                    self::WP_CONTEXT['admin_settings'],
+                    [],
+                    true
+                ),
+                'sameday-recursive-job'
+            ),
             'sameday-select2' => self::addScript(
                 'select2',
                 self::WP_CONTEXT['admin_full'],
@@ -141,13 +181,22 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-lockers-sync-admin' => self::addScript(
                 'lockers_sync_admin',
                 self::WP_CONTEXT['admin_full'],
-                ['jquery'],
+                ['jquery', 'sameday-helper'],
                 false
+            ),
+            'sameday-helper-admin' => self::withHandle(
+                self::addScript(
+                    'helper',
+                    self::WP_CONTEXT['admin_full'],
+                    ['jquery'],
+                    true
+                ),
+                'sameday-helper'
             ),
             'sameday-add-awb' => self::addScript(
                 'add-awb',
                 self::WP_CONTEXT['admin_full'],
-                ['jquery'],
+                ['jquery', 'sameday-modal-core'],
                 false
             ),
             'sameday-admin-helper' => self::addScript(
@@ -157,14 +206,14 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-admin-modal' => self::addScript(
                 'sameday-admin-modal',
                 self::WP_CONTEXT['admin_full'],
-                ['jquery'],
+                ['jquery', 'sameday-modal-core'],
                 true
             ),
             'sameday-admin-modal-pickup' => self::withHandle(
                 self::addScript(
                     'sameday-admin-modal',
                     self::WP_CONTEXT['pickup_points'],
-                    ['jquery'],
+                    ['jquery', 'sameday-modal-core'],
                     true
                 ),
                 'sameday-admin-modal'
@@ -220,7 +269,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-settings-actions' => self::addScript(
                 'sameday_settings_actions',
                 self::WP_CONTEXT['admin_settings'],
-                [],
+                ['sameday-recursive-job'],
                 true
             ),
             'sameday-awb-history' => self::addScript(
@@ -238,7 +287,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-bulk-awb' => self::addScript(
                 'bulk-awb',
                 self::WP_CONTEXT['orders_list'],
-                ['jquery'],
+                ['jquery', 'sameday-modal-core', 'sameday-recursive-job'],
                 true
             ),
         ];
@@ -479,6 +528,19 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     'nonces' => [
                         'change_locker' => wp_create_nonce('change_locker'),
                     ],
+                    'i18n' => [
+                        'genericError' => TranslatorHandler::translate(
+                            'Something went wrong! Please try again later!'
+                        ),
+                    ],
+                ]);
+                break;
+            case 'sameday-add-awb':
+                wp_localize_script($handle, 'samedayAddAwb', [
+                    'weightUnit' => OptionsHandler::getOption('woocommerce_weight_unit', 'kg'),
+                    'i18n' => [
+                        'calculatedWeight' => TranslatorHandler::translate('Calculated Weight: %1$s %2$s'),
+                    ],
                 ]);
                 break;
             case 'sameday-admin-script':
@@ -495,6 +557,11 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                         'pickCity' => TranslatorHandler::translate('Choose a City'),
                         'loading' => TranslatorHandler::translate('Loading...'),
                     ],
+                    'i18n' => [
+                        'genericError' => TranslatorHandler::translate(
+                            'Something went wrong! Please try again later!'
+                        ),
+                    ],
                 ]);
                 break;
             case 'sameday-helper':
@@ -507,10 +574,20 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                         'store_sameday_open_package_in_session' => NonceHandler::createNonce(
                             'store_sameday_open_package_in_session'
                         ),
-                        'store_sameday_payment_method_in_session' => NonceHandler::createNonce(
-                            'store_sameday_payment_method_in_session'
-                        ),
                     ],
+                ]);
+                break;
+            case 'sameday-lockers-script':
+                $lockerSyncSettings = (new CarrierSettingsServiceProvider())->get();
+                wp_localize_script($handle, 'samedayLockerSync', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'action' => 'refresh_lockers_checkout',
+                    'nonce' => NonceHandler::createNonce('refresh_lockers_checkout'),
+                    'ttl' => CarrierConstants::LOCKERS_SYNC_TTL,
+                    'ts' => $lockerSyncSettings->getSamedaySyncLockersTs(),
+                    'useLockerMap' => $lockerSyncSettings->isLockersMapEnabled(),
+                    'selectLockerText' => TranslatorHandler::translate('Select easyBox'),
+                    'loadingText' => TranslatorHandler::translate('Please wait for easyBox list to be populated'),
                 ]);
                 break;
             case 'sameday-county-city-handle':

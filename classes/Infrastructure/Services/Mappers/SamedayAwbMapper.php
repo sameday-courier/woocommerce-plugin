@@ -6,6 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 
+/**
+ * @extends AbstractMapper<CarrierAwb>
+ */
 final class SamedayAwbMapper extends AbstractMapper
 {
     /**

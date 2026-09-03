@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
 use RuntimeException;
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetParcelStatusHistoryRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PackageHistoryStoreServiceProviderInterface;
 
-final class ShowHistoryAwb
+/**
+ * @extends AbstractUseCase<ShowHistoryAwbRequest, ShowHistoryAwbResponse>
+ *
+ * @method ShowHistoryAwbResponse execute(ShowHistoryAwbRequest $request)
+ */
+final class ShowHistoryAwb extends AbstractUseCase
 {
     /**
      * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
@@ -48,7 +55,7 @@ final class ShowHistoryAwb
      *
      * @return ShowHistoryAwbResponse
      */
-    public function execute(ShowHistoryAwbRequest $request): ShowHistoryAwbResponse
+    protected function processAction(RequestInterface $request): ShowHistoryAwbResponse
     {
         $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);

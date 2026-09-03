@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
@@ -78,7 +79,7 @@ final class ShowLockerFieldAction extends AbstractAction
         $this->carrierServiceRules = $carrierServiceRules ?? new CarrierServiceRules(new SamedayServiceRepository());
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
         $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider ?? new CarrierSettingsServiceProvider();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
         $this->lockerChoicesProvider = $lockerChoicesProvider ?? new LockerChoicesProvider();
     }
 
@@ -122,19 +123,18 @@ final class ShowLockerFieldAction extends AbstractAction
     /**
      * @param LockerDto|null $locker
      *
-     * @return string|null
+     * @return array{name: string, address: string}|null
      */
-    private function buildShipToLabel(?LockerDto $locker): ?string
+    private function buildShipToParts(?LockerDto $locker): ?array
     {
         if (null === $locker) {
             return null;
         }
 
-        return sprintf(
-            '%s <br/> %s',
-            esc_html($locker->getName() ?? ''),
-            esc_html($locker->getAddress() ?? '')
-        );
+        return [
+            'name' => $locker->getName() ?? '',
+            'address' => $locker->getAddress() ?? '',
+        ];
     }
 
     /**
@@ -144,13 +144,13 @@ final class ShowLockerFieldAction extends AbstractAction
      */
     private function buildHtmlContent(?LockerDto $locker): string
     {
-        $shipTo = $this->buildShipToLabel($locker);
+        $shipToParts = $this->buildShipToParts($locker);
         $settings = $this->carrierSettingsServiceProvider->get();
         if ($settings->isLockersMapEnabled()) {
             return HtmlHandler::buildHtml('locker-map-field', [
                 'username' => $settings->getUser() ?? '',
                 'hostCountry' => $settings->getHostCountry(),
-                'shipTo' => $shipTo,
+                'shipToParts' => $shipToParts,
             ]);
         }
 
@@ -158,7 +158,7 @@ final class ShowLockerFieldAction extends AbstractAction
 
         return HtmlHandler::buildHtml('locker-dropdown-field', [
             'lockersByCity' => $this->lockerChoicesProvider->groupedByCity($selectedLockerId),
-            'shipTo' => $shipTo,
+            'shipToParts' => $shipToParts,
         ]);
     }
 }

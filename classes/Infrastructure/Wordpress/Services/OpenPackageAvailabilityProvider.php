@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use Sameday\Objects\Service\OptionalTaxObject;
-use Sameday\Objects\Types\CostType;
-use Sameday\Objects\Types\PackageType;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\DTOs\CarrierOptionalTaxDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayOptionalTaxMapper;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
 /**
@@ -28,15 +30,23 @@ final class OpenPackageAvailabilityProvider
     private CarrierSettingsProviderInterface $carrierSettingsProvider;
 
     /**
+     * @var SamedayOptionalTaxMapper $optionalTaxMapper
+     */
+    private SamedayOptionalTaxMapper $optionalTaxMapper;
+
+    /**
      * @param SamedayServiceRepository|null $samedayServiceRepository
      * @param CarrierSettingsProviderInterface|null $carrierSettingsProvider
+     * @param SamedayOptionalTaxMapper|null $optionalTaxMapper
      */
     public function __construct(
         ?SamedayServiceRepository $samedayServiceRepository = null,
-        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null
+        ?CarrierSettingsProviderInterface $carrierSettingsProvider = null,
+        ?SamedayOptionalTaxMapper $optionalTaxMapper = null
     ) {
         $this->samedayServiceRepository = $samedayServiceRepository ?? new SamedayServiceRepository();
         $this->carrierSettingsProvider = $carrierSettingsProvider ?? new CarrierSettingsServiceProvider();
+        $this->optionalTaxMapper = $optionalTaxMapper ?? new SamedayOptionalTaxMapper();
     }
 
     /**
@@ -92,7 +102,7 @@ final class OpenPackageAvailabilityProvider
      */
     private function findOpenPackageTaxId(CarrierService $service): ?int
     {
-        foreach ($this->unserializeOptionalTaxes($service->getServiceOptionalTaxes()) as $optionalTax) {
+        foreach ($this->readOptionalTaxes($service->getServiceOptionalTaxes()) as $optionalTax) {
             if ($optionalTax->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE) {
                 return $optionalTax->getId();
             }
@@ -104,34 +114,24 @@ final class OpenPackageAvailabilityProvider
     /**
      * @param string|null $serializedOptionalTaxes
      *
-     * @return OptionalTaxObject[]
+     * @return CarrierOptionalTaxDto[]
      */
-    private function unserializeOptionalTaxes(?string $serializedOptionalTaxes): array
+    private function readOptionalTaxes(?string $serializedOptionalTaxes): array
     {
         if (null === $serializedOptionalTaxes || '' === $serializedOptionalTaxes) {
             return [];
         }
 
-        $optionalTaxes = unserialize(
-            $serializedOptionalTaxes,
-            [
-                'allowed_classes' => [
-                    OptionalTaxObject::class,
-                    PackageType::class,
-                    CostType::class,
-                ],
-            ]
+        $optionalTaxes = SerializedPayloadReader::readOptionalTaxes($serializedOptionalTaxes);
+        $sdkOptionalTaxes = array_values(
+            array_filter(
+                $optionalTaxes,
+                static function ($optionalTax): bool {
+                    return $optionalTax instanceof OptionalTaxObject;
+                }
+            )
         );
 
-        if (!is_array($optionalTaxes)) {
-            return [];
-        }
-
-        return array_filter(
-            $optionalTaxes,
-            static function ($optionalTax): bool {
-                return $optionalTax instanceof OptionalTaxObject;
-            }
-        );
+        return $this->optionalTaxMapper->mapCollection($sdkOptionalTaxes);
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowHistory;
 
-final class ShowHistoryAwbRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class ShowHistoryAwbRequest implements RequestInterface
 {
     /**
      * @var int $orderId

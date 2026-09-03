@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\ShowAsPdf;
 
-final class ShowAsPdfAwbRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class ShowAsPdfAwbRequest implements RequestInterface
 {
     /**
      * @var int $orderId

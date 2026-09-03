@@ -14,6 +14,9 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 
 class SchemaDefinition
 {
+    /**
+     * @var list<class-string<RepositoryInterface>>
+     */
     private const SAMEDAY_REPOSITORIES = [
         SamedayAwbRepository::class,
         SamedayLockerRepository::class,
@@ -24,20 +27,15 @@ class SchemaDefinition
     ];
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getSamedayTables(): array
     {
-        return array_map(
-            /**
-             * @param RepositoryInterface $repo
-             *
-             * @return mixed
-             */
-            static function (RepositoryInterface $repo) {
-                return $repo->getTableName();
-            },
-            self::SAMEDAY_REPOSITORIES
-        );
+        $tables = [];
+        foreach (self::SAMEDAY_REPOSITORIES as $repositoryClass) {
+            $tables[] = (new $repositoryClass())->getTableName();
+        }
+
+        return $tables;
     }
 }

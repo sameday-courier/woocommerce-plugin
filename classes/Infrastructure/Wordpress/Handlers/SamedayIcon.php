@@ -21,18 +21,13 @@ final class SamedayIcon
      *
      * @return string
      */
-    /**
-     * @param string $relativePath
-     *
-     * @return string
-     */
     public static function getDataUri(string $relativePath = self::DEFAULT_RELATIVE_PATH): string
     {
         if (isset(self::$dataUriCache[$relativePath])) {
             return self::$dataUriCache[$relativePath];
         }
 
-        $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . ltrim($relativePath, '/');
+        $absolutePath = PluginPathHandler::to($relativePath);
         if (!is_readable($absolutePath)) {
             self::$dataUriCache[$relativePath] = '';
 

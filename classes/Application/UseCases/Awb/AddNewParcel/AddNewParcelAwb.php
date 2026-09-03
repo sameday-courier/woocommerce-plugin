@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\AddNewParcel;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostParcelRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 
-final class AddNewParcelAwb
+/**
+ * @extends AbstractUseCase<AddNewParcelAwbRequest, AddNewParcelAwbResponse>
+ *
+ * @method AddNewParcelAwbResponse execute(AddNewParcelAwbRequest $request)
+ */
+final class AddNewParcelAwb extends AbstractUseCase
 {
     /**
      * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
@@ -38,7 +45,7 @@ final class AddNewParcelAwb
      *
      * @return AddNewParcelAwbResponse
      */
-    public function execute(AddNewParcelAwbRequest $request): AddNewParcelAwbResponse
+    protected function processAction(RequestInterface $request): AddNewParcelAwbResponse
     {
         $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);

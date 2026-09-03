@@ -11,6 +11,7 @@ final class CarrierConstants
     public const LOCKER_PLUGIN_CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';
     public const DEFAULT_VALUE_LOCKER_MAX_ITEMS = 5;
+    public const LOCKERS_SYNC_TTL = 86400;
     public const CASH_ON_DELIVERY = 'cod';
     public const COD_COLLECTOR_CLIENT = 1;
     public const LOCKER_NEXT_DAY_CODE = "LN";

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
-use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\GenerateAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\NoticerHandler;
@@ -54,27 +54,11 @@ final class GenerateAwbController extends AbstractController
 
         $mapper = new GenerateAwbMapper(array_merge($inputParams, $orderData));
         $generateAwb = GenerateAwbFactory::create();
+        $result = null;
 
         try {
             $result = $generateAwb->execute(
-                new GenerateAwbRequest(
-                    $mapper->orderId(),
-                    $mapper->serviceId(),
-                    $mapper->pickupPointId(),
-                    $mapper->shippingLines(),
-                    $mapper->shipping(),
-                    $mapper->billing(),
-                    $mapper->locker(),
-                    $mapper->hasOpenPackage(),
-                    $mapper->hasLockerFirstMile(),
-                    $mapper->packageType(),
-                    $mapper->awbPayment(),
-                    $mapper->insuranceValue(),
-                    $mapper->repayment(),
-                    $mapper->clientReference(),
-                    $mapper->observation(),
-                    $mapper->packageDimensions()
-                )
+                GenerateAwbRequestFactory::create()->fromMapper($mapper)
             );
         } catch (Exception $exception) {
             NoticerHandler::addFlashNotice(
@@ -89,6 +73,10 @@ final class GenerateAwbController extends AbstractController
                     'add-awb' => ResponseNoticeType::ERROR,
                 ]
             );
+        }
+
+        if (null === $result) {
+            return;
         }
 
         if ('' !== $result->getNoticeMessage()) {

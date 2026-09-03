@@ -11,6 +11,8 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
 {
     private const STYLE_PATH = 'path';
     private const STYLE_CONTEXT = 'context';
+    private const STYLE_HANDLE = 'handle';
+    private const STYLE_DEPS = 'deps';
 
     private const CONTEXT_GROUP_ADMIN = 'admin';
     private const CONTEXT_GROUP_FRONTEND = 'frontend';
@@ -74,13 +76,10 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 continue;
             }
 
-            self::enqueue($handle, $style[self::STYLE_PATH]);
+            self::enqueue(self::resolveHandle($handle, $style), $style);
         }
     }
 
-    /**
-     * @return void
-     */
     /**
      * @return void
      */
@@ -95,7 +94,7 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 continue;
             }
 
-            self::enqueue($handle, $style[self::STYLE_PATH]);
+            self::enqueue(self::resolveHandle($handle, $style), $style);
         }
     }
 
@@ -128,17 +127,41 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
                 'select2',
                 self::WP_CONTEXT['admin_full']
             ),
+            'sameday-modal-base-style-orders' => self::withHandle(
+                self::addStyleSheet(
+                    'sameday_modal_base',
+                    self::WP_CONTEXT['orders_list']
+                ),
+                'sameday-modal-base-style'
+            ),
+            'sameday-modal-base-style-order-edit' => self::withHandle(
+                self::addStyleSheet(
+                    'sameday_modal_base',
+                    self::WP_CONTEXT['order_edit']
+                ),
+                'sameday-modal-base-style'
+            ),
+            'sameday-modal-base-style-pickup' => self::withHandle(
+                self::addStyleSheet(
+                    'sameday_modal_base',
+                    self::WP_CONTEXT['pickup_points']
+                ),
+                'sameday-modal-base-style'
+            ),
             'sameday-bulk-awb-modal-style' => self::addStyleSheet(
                 'sameday_bulk_awb_modal',
-                self::WP_CONTEXT['orders_list']
+                self::WP_CONTEXT['orders_list'],
+                ['sameday-modal-base-style']
             ),
             'sameday-generate-awb-modal-style' => self::addStyleSheet(
                 'sameday_bulk_awb_modal',
-                self::WP_CONTEXT['order_edit']
+                self::WP_CONTEXT['order_edit'],
+                ['sameday-modal-base-style']
             ),
             'sameday-pickup-point-modal-style' => self::addStyleSheet(
                 'sameday_bulk_awb_modal',
-                self::WP_CONTEXT['pickup_points']
+                self::WP_CONTEXT['pickup_points'],
+                ['sameday-modal-base-style']
             ),
             'sameday-select2-pickup-style' => self::addStyleSheet(
                 'select2',
@@ -176,16 +199,11 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     /**
      * @param string $fileName
      * @param string $context
+     * @param array $deps
      *
      * @return array
      */
-    /**
-     * @param string $fileName
-     * @param string $context
-     *
-     * @return array
-     */
-    private static function addStyleSheet(string $fileName, string $context): array
+    private static function addStyleSheet(string $fileName, string $context, array $deps = []): array
     {
         if (!isset(self::WP_CONTEXT[$context])) {
             throw new InvalidArgumentException(
@@ -200,7 +218,32 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         return [
             self::STYLE_PATH => sprintf('assets/css/%s.css', str_replace('.css', '', $fileName)),
             self::STYLE_CONTEXT => $context,
+            self::STYLE_DEPS => $deps,
         ];
+    }
+
+    /**
+     * @param array $style
+     * @param string $handle
+     *
+     * @return array
+     */
+    private static function withHandle(array $style, string $handle): array
+    {
+        $style[self::STYLE_HANDLE] = $handle;
+
+        return $style;
+    }
+
+    /**
+     * @param string $registryKey
+     * @param array $style
+     *
+     * @return string
+     */
+    private static function resolveHandle(string $registryKey, array $style): string
+    {
+        return $style[self::STYLE_HANDLE] ?? $registryKey;
     }
 
     /**
@@ -262,22 +305,19 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
 
     /**
      * @param string $handle
-     * @param string $relativePath
+     * @param array $style
      *
      * @return void
      */
-    /**
-     * @param string $handle
-     * @param string $relativePath
-     *
-     * @return void
-     */
-    private static function enqueue(string $handle, string $relativePath): void
+    private static function enqueue(string $handle, array $style): void
     {
+        $relativePath = $style[self::STYLE_PATH];
+        $deps = $style[self::STYLE_DEPS] ?? [];
+
         wp_enqueue_style(
             $handle,
             self::getStyleUrl($relativePath),
-            [],
+            $deps,
             self::getStyleVersion($relativePath)
         );
     }

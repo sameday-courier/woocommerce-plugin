@@ -32,7 +32,7 @@ final class BulkJobItemDto
     }
 
     /**
-     * @return array{status:
+     * @return array{status: string, message: string, ...}|null
      */
     public function getPayload(): ?array
     {
@@ -58,7 +58,7 @@ final class BulkJobItemDto
     }
 
     /**
-     * @return array{itemId:
+     * @return array{itemId: int, payload: array{status: string, message: string, ...}|null}
      */
     public function toArray(): array
     {

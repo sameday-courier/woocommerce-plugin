@@ -30,7 +30,7 @@ final class AssetPathHandler
      */
     public static function version(string $relativePath): string
     {
-        $absolutePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . ltrim($relativePath, '/');
+        $absolutePath = PluginPathHandler::to($relativePath);
 
         if (file_exists($absolutePath)) {
             return (string) filemtime($absolutePath);

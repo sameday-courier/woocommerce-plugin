@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
-final class GetCitiesRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class GetCitiesRequest implements RequestInterface
 {
     /**
      * @var int $countyId

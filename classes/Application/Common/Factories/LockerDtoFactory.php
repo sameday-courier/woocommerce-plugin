@@ -8,7 +8,6 @@ use JsonException;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\LockerDtoRequest;
 use SamedayCourier\Shipping\Domain\Ports\LockerServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
 
 final class LockerDtoFactory
 {
@@ -28,12 +27,11 @@ final class LockerDtoFactory
     private LockerServiceProviderInterface $lockerServiceProvider;
 
     /**
-     * @param ?LockerServiceProviderInterface $lockerServiceProvider
+     * @param LockerServiceProviderInterface $lockerServiceProvider
      */
-    public function __construct(
-        ?LockerServiceProviderInterface $lockerServiceProvider = null
-    ) {
-        $this->lockerServiceProvider = $lockerServiceProvider ?? new LockerServiceProvider();
+    public function __construct(LockerServiceProviderInterface $lockerServiceProvider)
+    {
+        $this->lockerServiceProvider = $lockerServiceProvider;
     }
 
     /**

@@ -15,10 +15,6 @@
             return 'store_sameday_open_package_in_session';
         }
 
-        if (Object.prototype.hasOwnProperty.call(params, 'payment_method')) {
-            return 'store_sameday_payment_method_in_session';
-        }
-
         return null;
     };
 
@@ -291,6 +287,178 @@
                 onSelect(locker, pluginInstance);
             }
         });
+    };
+
+    /**
+     * Client-side TTL gate mirroring the server check, so an unnecessary sync request is skipped.
+     *
+     * @param {number|string} ts Last sync UNIX timestamp (seconds).
+     * @param {number|string} ttl TTL in seconds.
+     * @returns {boolean}
+     */
+    SamedayCourier.isLockerSyncExpired = function (ts, ttl) {
+        var now = Math.floor(Date.now() / 1000);
+
+        return now > ((parseInt(ts, 10) || 0) + (parseInt(ttl, 10) || 0));
+    };
+
+    SamedayCourier.LOCKER_SYNC_LOADING_CLASS = 'sameday-locker-sync-loading';
+
+    /**
+     * @param {Element|null} container
+     * @param {string} [message]
+     * @returns {Element|null}
+     */
+    SamedayCourier.showLockerSyncLoading = function (container, message) {
+        if (!container) {
+            return null;
+        }
+
+        var loadingClass = SamedayCourier.LOCKER_SYNC_LOADING_CLASS;
+        var existing = container.querySelector('.' + loadingClass);
+
+        if (existing) {
+            return existing;
+        }
+
+        var dropdown = container.querySelector('#shipping-pickup-store-select');
+
+        if (dropdown) {
+            dropdown.disabled = true;
+            dropdown.setAttribute('aria-busy', 'true');
+            dropdown.style.display = 'none';
+        }
+
+        var loading = document.createElement('div');
+        loading.className = loadingClass;
+        loading.setAttribute('role', 'status');
+        loading.setAttribute('aria-live', 'polite');
+
+        var spinner = document.createElement('span');
+        spinner.className = loadingClass + '__spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+
+        var text = document.createElement('span');
+        text.className = loadingClass + '__text';
+        text.textContent = message || 'Please wait for easyBox list to be populated';
+
+        loading.appendChild(spinner);
+        loading.appendChild(text);
+        container.appendChild(loading);
+
+        return loading;
+    };
+
+    /**
+     * @param {Element|null} container
+     * @returns {void}
+     */
+    SamedayCourier.hideLockerSyncLoading = function (container) {
+        if (!container) {
+            return;
+        }
+
+        var loadingClass = SamedayCourier.LOCKER_SYNC_LOADING_CLASS;
+        var loading = container.querySelector('.' + loadingClass);
+
+        if (loading) {
+            loading.remove();
+        }
+
+        var dropdown = container.querySelector('#shipping-pickup-store-select');
+
+        if (dropdown) {
+            dropdown.disabled = false;
+            dropdown.removeAttribute('aria-busy');
+            dropdown.style.display = '';
+        }
+    };
+
+    /**
+     * Ask the server to refresh the locker nomenclator and return the grouped choices. The server
+     * re-checks mode and TTL, so this is safe to call optimistically.
+     *
+     * @param {Object} opts
+     * @param {string} opts.ajaxUrl
+     * @param {string} opts.action
+     * @param {string} opts.nonce
+     * @param {string|number} [opts.selectedLockerId]
+     * @param {Element} [opts.loadingContainer]
+     * @param {string} [opts.loadingText]
+     * @param {Function} [opts.onComplete]
+     * @param {Function} onSuccess function(lockersByCity)
+     * @returns {void}
+     */
+    SamedayCourier.refreshCheckoutLockers = function (opts, onSuccess) {
+        opts = opts || {};
+
+        if (!opts.ajaxUrl || !opts.action || !opts.nonce) {
+            return;
+        }
+
+        if (opts.loadingContainer) {
+            SamedayCourier.showLockerSyncLoading(opts.loadingContainer, opts.loadingText);
+        }
+
+        jQuery.ajax({
+            type: 'POST',
+            url: opts.ajaxUrl,
+            data: {
+                action: opts.action,
+                _wpnonce: opts.nonce,
+                selected_locker_id: opts.selectedLockerId || ''
+            },
+            success: function (response) {
+                if (
+                    response
+                    && response.success
+                    && response.data
+                    && typeof onSuccess === 'function'
+                ) {
+                    onSuccess(response.data.lockersByCity || {});
+                }
+            },
+            complete: function () {
+                if (opts.loadingContainer) {
+                    SamedayCourier.hideLockerSyncLoading(opts.loadingContainer);
+                }
+
+                if (typeof opts.onComplete === 'function') {
+                    opts.onComplete();
+                }
+            }
+        });
+    };
+
+    /**
+     * Rebuild a locker <select> from grouped choices, preserving the current selection. Markup
+     * mirrors classes/files/templates/locker-dropdown-field.php.
+     *
+     * @param {HTMLSelectElement} dropdown
+     * @param {Object} lockersByCity
+     * @param {string} [placeholderText]
+     * @returns {void}
+     */
+    SamedayCourier.populateLockerDropdown = function (dropdown, lockersByCity, placeholderText) {
+        if (!dropdown) {
+            return;
+        }
+
+        var previous = dropdown.value;
+        var html = '<option value="" class="sameday-locker-placeholder">' +
+            (placeholderText || 'Select easyBox') + '</option>';
+
+        Object.keys(lockersByCity || {}).forEach(function (city) {
+            html += '<optgroup label="' + city + '" class="sameday-locker-optgroup">';
+            (lockersByCity[city] || []).forEach(function (locker) {
+                var isSelected = locker.selected || String(locker.id) === String(previous);
+                html += '<option value="' + locker.id + '" class="sameday-locker-option"' +
+                    (isSelected ? " selected='selected'" : '') + '>' + locker.label + '</option>';
+            });
+            html += '</optgroup>';
+        });
+
+        dropdown.innerHTML = html;
     };
 
     window.SamedayCourier = SamedayCourier;

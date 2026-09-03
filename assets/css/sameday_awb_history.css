@@ -4,7 +4,8 @@
   font-weight: 700;
 }
 
-.packages {
+.packages,
+.history {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: separate;
   border-spacing: 0;
@@ -16,22 +17,41 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.history {
+  max-width: 100%;
+  box-sizing: border-box;
+  display: none;
+  text-align: center;
+}
+
+.history.is-open {
+  display: table;
+}
+
 .packages td,
-.packages th {
+.packages th,
+.history td,
+.history th {
   border: 1px solid #ddd;
   padding: 8px;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-.packages td {
+.history td,
+.history th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.packages td,
+.history td {
   background-color: #fff;
   color: #222;
   font-weight: 400;
 }
 
-.packages th {
-  padding-top: 14px;
-  padding-bottom: 14px;
+.packages th,
+.history th {
   text-align: left;
   background: linear-gradient(90deg, #ed2224, #b21f24);
   color: #fff;
@@ -39,7 +59,18 @@
   font-weight: 700;
 }
 
-.packages tbody tr:hover td:not(.history-details-cell) {
+.packages th {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.history th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.packages tbody tr:hover td:not(.history-details-cell),
+.history tbody tr:hover td {
   background-color: #f2f2f2;
 }
 
@@ -61,55 +92,6 @@
   padding: 12px;
   background-color: #fff;
   border-color: #ddd;
-}
-
-.history {
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-  max-width: 100%;
-  table-layout: fixed;
-  box-sizing: border-box;
-  display: none;
-  text-align: center;
-  background-color: #fff;
-  border-radius: 5px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.history.is-open {
-  display: table;
-}
-
-.history td,
-.history th {
-  border: 1px solid #ddd;
-  padding: 8px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  transition: background-color 0.25s ease, color 0.25s ease;
-}
-
-.history td {
-  background-color: #fff;
-  color: #222;
-  font-weight: 400;
-}
-
-.history th {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  text-align: left;
-  background: linear-gradient(90deg, #ed2224, #b21f24);
-  color: #fff;
-  border-color: #b21f24;
-  font-weight: 700;
-}
-
-.history tbody tr:hover td {
-  background-color: #f2f2f2;
 }
 
 .history th:nth-child(1),

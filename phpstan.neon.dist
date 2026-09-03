@@ -1,0 +1,109 @@
+parameters:
+    level: 5
+    phpVersion: 70400
+    paths:
+        - classes
+    excludePaths:
+        analyseAndScan:
+            - classes/*/files/*
+    bootstrapFiles:
+        - vendor/autoload.php
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: true
+
+services:
+    -
+        class: SamedayCourier\PHPStan\UseCaseCallableOnlyFromControllerRule
+        arguments:
+            useCaseInterface: SamedayCourier\Shipping\Application\Common\Interfaces\UseCaseInterface
+            controllerInterface: SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\ControllerInterface
+            entryPointMethod: execute
+            controllerNamespaces:
+                - SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers
+        tags:
+            - phpstan.rules.rule
+
+    domainLayerBoundary:
+        class: SamedayCourier\PHPStan\LayerBoundarySupport
+        arguments:
+            sourceLayerNamespacePrefix: SamedayCourier\Shipping\Domain\
+            forbiddenNamespacePrefixes:
+                - SamedayCourier\Shipping\Application\
+                - SamedayCourier\Shipping\Infrastructure\
+
+    applicationLayerBoundary:
+        class: SamedayCourier\PHPStan\LayerBoundarySupport
+        arguments:
+            sourceLayerNamespacePrefix: SamedayCourier\Shipping\Application\
+            forbiddenNamespacePrefixes:
+                - SamedayCourier\Shipping\Infrastructure\
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerUseRule
+        arguments:
+            layerBoundarySupport: @domainLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.domain.use
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerInstantiationRule
+        arguments:
+            layerBoundarySupport: @domainLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.domain.instantiation
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerStaticCallRule
+        arguments:
+            layerBoundarySupport: @domainLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.domain.staticCall
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerUseRule
+        arguments:
+            layerBoundarySupport: @applicationLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.application.use
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerInstantiationRule
+        arguments:
+            layerBoundarySupport: @applicationLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.application.instantiation
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\ForbiddenLayerStaticCallRule
+        arguments:
+            layerBoundarySupport: @applicationLayerBoundary
+            ruleIdentifier: samedaycourier.layerBoundary.application.staticCall
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\UseCaseForbiddenInputFactoryInstantiationRule
+        tags:
+            - phpstan.rules.rule
+
+    -
+        class: SamedayCourier\PHPStan\UseCaseRequestMustExposeDomainDtoRule
+        arguments:
+            forbiddenRawGetterReturnTypesByRequestClass:
+                'SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest':
+                    getShipping:
+                        - array
+                    getBilling:
+                        - array
+                    getLocker:
+                        - mixed
+                'SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest':
+                    getLocker:
+                        - mixed
+        tags:
+            - phpstan.rules.rule

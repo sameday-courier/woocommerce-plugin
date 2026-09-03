@@ -1,17 +1,15 @@
 (function ($) {
     'use strict';
 
-    var BUTTON_SELECTOR = '[data-sameday-generate-awb-open]';
     var MODAL_SELECTOR = '[data-sameday-generate-awb-modal]';
-    var BODY_OPEN_CLASS = 'sameday-bulk-awb-modal-open';
+    var addAwbConfig = window.samedayAddAwb || {};
 
-    function getModal($from) {
-        if ($from.is(MODAL_SELECTOR)) {
-            return $from;
-        }
-
-        return $from.closest(MODAL_SELECTOR);
-    }
+    var controller = window.SamedayModalCore.create({
+        modalSelector: MODAL_SELECTOR,
+        openSelector: '[data-sameday-generate-awb-open]',
+        closeSelector: '[data-sameday-generate-awb-close]',
+        openDataKey: 'samedayGenerateAwbOpen'
+    });
 
     function getModalRoot($modal) {
         return $modal && $modal.length
@@ -19,33 +17,10 @@
             : document.querySelector(MODAL_SELECTOR);
     }
 
-    function openModal(modalId) {
-        var $modal = modalId ? $('#' + modalId) : $(MODAL_SELECTOR).first();
-        if (!$modal.length) {
-            return;
-        }
-
-        $modal.prop('hidden', false);
-        $('body').addClass(BODY_OPEN_CLASS);
-    }
-
-    function closeModal($modal) {
-        if (!$modal || !$modal.length) {
-            return;
-        }
-
-        $modal.prop('hidden', true);
-
-        if (!$(MODAL_SELECTOR).filter(':not([hidden])').length) {
-            $('body').removeClass(BODY_OPEN_CLASS);
-        }
-    }
-
     function checkPackageLength(modalRoot) {
-        var packageWeightClass = modalRoot.querySelectorAll('.samedaycourier-package-weight-class');
         var packageLength = modalRoot.querySelector('#samedaycourier-package-length');
         if (packageLength) {
-            packageLength.value = packageWeightClass.length;
+            packageLength.value = modalRoot.querySelectorAll('.samedaycourier-package-weight-class').length;
         }
     }
 
@@ -61,19 +36,27 @@
         });
     }
 
-    function bindWeightRecalculation(modalRoot) {
-        modalRoot.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (input) {
-            input.addEventListener('change', function () {
-                var weight = 0;
-                modalRoot.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (item) {
-                    weight += parseFloat(item.value) || 0;
-                });
-                var weightInput = modalRoot.querySelector('#sameday-package-weight');
-                if (weightInput) {
-                    weightInput.value = 'Calculated Weight: ' + weight + ' kg';
-                }
-            });
+    function formatCalculatedWeight(totalWeight) {
+        var template = (addAwbConfig.i18n && addAwbConfig.i18n.calculatedWeight)
+            ? addAwbConfig.i18n.calculatedWeight
+            : 'Calculated Weight: %1$s %2$s';
+        var unit = addAwbConfig.weightUnit || 'kg';
+
+        return template
+            .replace('%1$s', String(totalWeight))
+            .replace('%2$s', unit);
+    }
+
+    function updateCalculatedWeight(modalRoot) {
+        var weight = 0;
+        modalRoot.querySelectorAll('.samedaycourier-package-weight-class').forEach(function (item) {
+            weight += parseFloat(item.value) || 0;
         });
+
+        var weightInput = modalRoot.querySelector('#sameday-package-weight');
+        if (weightInput) {
+            weightInput.value = formatCalculatedWeight(weight);
+        }
     }
 
     function addParcelRow(modalRoot) {
@@ -93,48 +76,35 @@
         );
         renumberInputs(modalRoot);
         checkPackageLength(modalRoot);
-        bindWeightRecalculation(modalRoot);
+        updateCalculatedWeight(modalRoot);
     }
 
     $(function () {
-        $(document).on('click', BUTTON_SELECTOR, function (event) {
-            event.preventDefault();
-            openModal($(this).data('sameday-generate-awb-open'));
-        });
+        controller.bindEvents();
 
-        $(document).on('click', '[data-sameday-generate-awb-close]', function (event) {
-            event.preventDefault();
-            closeModal(getModal($(this)));
-        });
-
-        $(document).on('keydown', function (event) {
-            if (event.key !== 'Escape') {
-                return;
+        $(document).on('change', MODAL_SELECTOR + ' .samedaycourier-package-weight-class', function () {
+            var modalRoot = getModalRoot(controller.getModal($(this)));
+            if (modalRoot) {
+                updateCalculatedWeight(modalRoot);
             }
-
-            var $openModal = $(MODAL_SELECTOR).filter(':not([hidden])').last();
-            if (!$openModal.length) {
-                return;
-            }
-
-            closeModal($openModal);
         });
 
         $(document).on('click', '#addParcelButton', function (event) {
             event.preventDefault();
-            var modalRoot = getModalRoot(getModal($(this)));
+            var modalRoot = getModalRoot(controller.getModal($(this)));
             if (!modalRoot) {
                 return;
             }
             addParcelRow(modalRoot);
         });
 
-        document.addEventListener('click', function (e) {
-            if (!e.target || !e.target.classList.contains('deleteParcelButton')) {
+        document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target || !target.classList.contains('deleteParcelButton')) {
                 return;
             }
 
-            var modalRoot = e.target.closest(MODAL_SELECTOR);
+            var modalRoot = target.closest(MODAL_SELECTOR);
             if (!modalRoot) {
                 return;
             }
@@ -143,7 +113,7 @@
                 return;
             }
 
-            var tableRow = e.target.closest('tr');
+            var tableRow = target.closest('tr');
             if (!tableRow) {
                 return;
             }
@@ -151,6 +121,7 @@
             tableRow.remove();
             renumberInputs(modalRoot);
             checkPackageLength(modalRoot);
+            updateCalculatedWeight(modalRoot);
         });
     });
 }(jQuery));

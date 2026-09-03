@@ -6,6 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierCity;
 
+/**
+ * @extends AbstractMapper<CarrierCity>
+ */
 final class SamedayCityMapper extends AbstractMapper
 {
     /**
@@ -19,7 +22,7 @@ final class SamedayCityMapper extends AbstractMapper
 
         $city->setId(isset($row['id']) ? (int) $row['id'] : 0);
         $city->setCityId(
-            isset($row['city_id']) && $row['city_id'] !== '' && $row['city_id'] !== null
+            isset($row['city_id']) && $row['city_id'] !== ''
                 ? (int) $row['city_id']
                 : null
         );

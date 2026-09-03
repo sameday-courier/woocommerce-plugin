@@ -15,6 +15,8 @@
     var observer = null;
     var boundPlaceOrder = false;
     var selectedLocker = null;
+    // Guards a single sync per page load once the server-side TTL has lapsed.
+    var blocksSyncDone = false;
 
     var readConfig = function () {
         var wcSettings = window.wc && window.wc.wcSettings;
@@ -46,6 +48,55 @@
 
     var isOohSelected = function () {
         return isOohRateId(SamedayCourier.getSelectedShippingRateId());
+    };
+
+    var SYNCING_CLASS = 'sameday-blocks-locker--syncing';
+
+    var isSyncNeeded = function () {
+        return !config.useLockerMap
+            && !blocksSyncDone
+            && SamedayCourier.isLockerSyncExpired(config.syncTs, config.syncTtl);
+    };
+
+    var buildLoadingUi = function (rateId) {
+        var loadingClass = SamedayCourier.LOCKER_SYNC_LOADING_CLASS || 'sameday-locker-sync-loading';
+        var loadingText = config.loadingText || 'Please wait for easyBox list to be populated';
+
+        return (
+            '<div id="' + UI_ROOT_ID + '" class="sameday-blocks-locker ' + SYNCING_CLASS + '" ' +
+                RATE_ATTRIBUTE + '="' + rateId + '">' +
+                '<div class="' + loadingClass + '" role="status" aria-live="polite">' +
+                    '<span class="' + loadingClass + '__spinner" aria-hidden="true"></span>' +
+                    '<span class="' + loadingClass + '__text">' + loadingText + '</span>' +
+                '</div>' +
+            '</div>'
+        );
+    };
+
+    var startBlocksLockerSync = function (rateId) {
+        blocksSyncDone = true;
+
+        SamedayCourier.refreshCheckoutLockers(
+            {
+                ajaxUrl: config.ajaxUrl,
+                action: config.syncAction,
+                nonce: config.syncNonce,
+                selectedLockerId: typeof selectedLocker === 'string' ? selectedLocker : '',
+                loadingContainer: document.getElementById(UI_ROOT_ID),
+                loadingText: config.loadingText,
+                onComplete: function () {
+                    var syncingRoot = document.getElementById(UI_ROOT_ID);
+
+                    if (syncingRoot && syncingRoot.classList.contains(SYNCING_CLASS)) {
+                        syncingRoot.remove();
+                        ensureUi(true);
+                    }
+                }
+            },
+            function (lockersByCity) {
+                config.lockersByCity = lockersByCity;
+            }
+        );
     };
 
     var openLockers = function () {
@@ -94,24 +145,19 @@
     };
 
     var buildDropdownUi = function (rateId) {
-        var lockersByCity = config.lockersByCity || {};
-        var options = '<option value="">' + (config.selectLockerText || 'Select easyBox') + '</option>';
-
-        Object.keys(lockersByCity).forEach(function (city) {
-            options += '<optgroup label="' + city + '">';
-            (lockersByCity[city] || []).forEach(function (locker) {
-                options +=
-                    '<option value="' + locker.id + '"' + (locker.selected ? ' selected' : '') + '>' +
-                        locker.label +
-                    '</option>';
-            });
-            options += '</optgroup>';
-        });
+        var select = document.createElement('select');
+        select.id = 'shipping-pickup-store-select';
+        select.name = 'locker_id';
+        SamedayCourier.populateLockerDropdown(
+            select,
+            config.lockersByCity || {},
+            config.selectLockerText || 'Select easyBox'
+        );
 
         return (
             '<div id="' + UI_ROOT_ID + '" class="sameday-blocks-locker" ' +
                 RATE_ATTRIBUTE + '="' + rateId + '">' +
-                '<select id="shipping-pickup-store-select" name="locker_id">' + options + '</select>' +
+                select.outerHTML +
                 '<div id="placeOrderError">' + (config.errorText || 'Please choose an easybox') + '</div>' +
             '</div>'
         );
@@ -150,7 +196,7 @@
         }
     };
 
-    var ensureUi = function () {
+    var ensureUi = function (skipSync) {
         var existing = document.getElementById(UI_ROOT_ID);
         var rateId = SamedayCourier.getSelectedShippingRateId();
 
@@ -180,6 +226,12 @@
 
         var anchor = SamedayCourier.findShippingMethodOption(rateId);
         if (!anchor) {
+            return;
+        }
+
+        if (!skipSync && isSyncNeeded()) {
+            anchor.insertAdjacentHTML('beforeend', buildLoadingUi(rateId));
+            startBlocksLockerSync(rateId);
             return;
         }
 

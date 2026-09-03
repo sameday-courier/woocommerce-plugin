@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Refresh;
 
-final class RefreshLockerRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class RefreshLockerRequest implements RequestInterface
 {
 }

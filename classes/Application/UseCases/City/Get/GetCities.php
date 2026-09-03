@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\City\Get;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\GetCitiesRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 
-final class GetCities
+/**
+ * @extends AbstractUseCase<GetCitiesRequest, GetCitiesResponse>
+ *
+ * @method GetCitiesResponse execute(GetCitiesRequest $request)
+ */
+final class GetCities extends AbstractUseCase
 {
     /**
      * @var CourierServiceProviderInterface $courierServiceProvider
@@ -28,7 +35,7 @@ final class GetCities
      * @param GetCitiesRequest $request
      * @return GetCitiesResponse
      */
-    public function execute(GetCitiesRequest $request): GetCitiesResponse
+    protected function processAction(RequestInterface $request): GetCitiesResponse
     {
         $page = 1;
         $remoteCities = [];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
+use SamedayCourier\Shipping\Domain\DTOs\CarrierOptionalTaxDto;
 use SamedayCourier\Shipping\Domain\DTOs\CourierServiceDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
@@ -70,7 +71,7 @@ final class ServiceCatalogStoreServiceProvider implements ServiceCatalogStoreSer
     /**
      * @param int $samedayServiceId
      *
-     * @return array
+     * @return CarrierOptionalTaxDto[]
      */
     public function getServiceIdOptionalTaxes(int $samedayServiceId): array
     {

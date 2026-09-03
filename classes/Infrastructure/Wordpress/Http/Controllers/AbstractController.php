@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
-use Automattic\WooCommerce\EmailEditor\AccessDeniedException;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\HandlesControllerAccessTrait;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\JsonResponseTrait;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -13,22 +14,25 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\UserPermissionChec
 
 abstract class AbstractController implements ControllerInterface
 {
+    use JsonResponseTrait;
+    use HandlesControllerAccessTrait;
+
     /**
      * @return void
-     * @throws AccessDeniedException
      */
     public function handle(): void
     {
         $inputParams = InputSanitizer::sanitizeInputs($_POST);
+
         if (!UserPermissionChecker::canAccess()) {
-            throw new AccessDeniedException(
-                TranslatorHandler::translate("Not enough permission to access this content.")
+            $this->denyAccess(
+                TranslatorHandler::translate('Not enough permission to access this content.')
             );
         }
 
-        if (!NonceHandler::verify($inputParams['_wpnonce'], $this->getAction())) {
-            throw new AccessDeniedException(
-                TranslatorHandler::translate("Invalid nonce.")
+        if (!NonceHandler::verify($inputParams['_wpnonce'] ?? '', $this->getAction())) {
+            $this->denyAccess(
+                TranslatorHandler::translate('Invalid nonce.')
             );
         }
 
@@ -46,34 +50,6 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param mixed $payload
-     * @param int $statusCode
-     *
-     * @return void
-     */
-    protected function sendJsonErrorResponse(
-        $payload,
-        int $statusCode = 400
-    ): void {
-        wp_send_json_error($payload, $statusCode);
-    }
-
-    /**
-     * @param mixed $payload
-     * @param int $statusCode
-     * @param bool $flag
-     *
-     * @return void
-     */
-    protected function sendJsonSuccessResponse(
-        $payload,
-        int $statusCode = 200,
-        bool $flag = false
-    ): void {
-        wp_send_json_success($payload, $statusCode, $flag);
-    }
-
-    /**
      * @param string $mainPath
      * @param array $queryArgs
      *
@@ -86,11 +62,6 @@ abstract class AbstractController implements ControllerInterface
         exit;
     }
 
-    /**
-     * @param array $inputParams
-     *
-     * @return void
-     */
     /**
      * @param array $inputParams
      *

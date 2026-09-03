@@ -5,14 +5,27 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Domain\Ports\ChosenPaymentMethodReaderInterface;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 final class AddExtraFeesAction extends AbstractAction
 {
     private const ACTION = 'woocommerce_cart_calculate_fees';
+
+    /**
+     * @var ChosenPaymentMethodReaderInterface
+     */
+    private ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader;
+
+    /**
+     * @param ChosenPaymentMethodReaderInterface|null $chosenPaymentMethodReader
+     */
+    public function __construct(?ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader = null)
+    {
+        $this->chosenPaymentMethodReader = $chosenPaymentMethodReader ?? new WooChosenPaymentMethodReader();
+    }
 
     /**
      * @return string
@@ -63,9 +76,8 @@ final class AddExtraFeesAction extends AbstractAction
             return false;
         }
 
-        $chosenDeliveryMethod = (new WooSessionHandler())->get(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD);
-        $isCod = CarrierConstants::CASH_ON_DELIVERY;
+        $chosenPaymentMethod = $this->chosenPaymentMethodReader->getChosenPaymentMethod();
 
-        return $chosenDeliveryMethod === $isCod;
+        return CarrierConstants::CASH_ON_DELIVERY === $chosenPaymentMethod;
     }
 }

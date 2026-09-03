@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Chec
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractNoPrivController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\OpenPackageSessionNormalizer;
 
 final class StoreOpenPackageInSessionController extends AbstractNoPrivController
 {
@@ -41,13 +42,13 @@ final class StoreOpenPackageInSessionController extends AbstractNoPrivController
      */
     protected function processNoPrivAction(array $inputParams): void
     {
-        if (null === ($openPackage = $inputParams['open_package'] ?? null)) {
+        if (!array_key_exists('open_package', $inputParams)) {
             return;
         }
 
         $this->sessionHandler->set(
             CarrierSessionKeys::OPEN_PACKAGE,
-            $openPackage
+            OpenPackageSessionNormalizer::normalize($inputParams['open_package'])
         );
     }
 }

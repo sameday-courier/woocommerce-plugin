@@ -49,16 +49,14 @@ final class ShippingRatesRefresher
     public function refresh(): void
     {
         $woocommerce = $this->wooCommerceHandler->getWC();
+        $cart = $woocommerce->cart;
+        $session = $woocommerce->session;
 
-        if (
-            !isset($woocommerce->cart, $woocommerce->session)
-            || !is_object($woocommerce->cart)
-            || !is_object($woocommerce->session)
-        ) {
+        if (null === $cart || null === $session) {
             return;
         }
 
-        foreach (array_keys($woocommerce->cart->get_shipping_packages()) as $packageKey) {
+        foreach (array_keys($cart->get_shipping_packages()) as $packageKey) {
             // Unset the cached rates entry. Storing `false` also works for WC_Shipping's
             // is_array() check, but leaving a permanent false key pollutes the session blob.
             $this->sessionHandler->set(

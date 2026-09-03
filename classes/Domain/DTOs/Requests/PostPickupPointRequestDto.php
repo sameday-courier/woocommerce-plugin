@@ -113,7 +113,7 @@ final class PostPickupPointRequestDto
     }
 
     /**
-     * @return array<int,
+     * @return array<int, array{name: string, phone: string, default: bool}>
      */
     public function getContactPersons(): array
     {

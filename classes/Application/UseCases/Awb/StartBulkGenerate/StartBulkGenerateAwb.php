@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\StartBulkGenerate;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\BulkJobDto;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobIdGeneratorInterface;
 use SamedayCourier\Shipping\Domain\Ports\BulkJobStoreInterface;
 
-final class StartBulkGenerateAwb
+/**
+ * @extends AbstractUseCase<StartBulkGenerateAwbRequest, StartBulkGenerateAwbResponse>
+ *
+ * @method StartBulkGenerateAwbResponse execute(StartBulkGenerateAwbRequest $request)
+ */
+final class StartBulkGenerateAwb extends AbstractUseCase
 {
     /**
      * @var BulkJobStoreInterface $bulkJobStore
@@ -36,7 +43,7 @@ final class StartBulkGenerateAwb
      * @param StartBulkGenerateAwbRequest $request
      * @return StartBulkGenerateAwbResponse
      */
-    public function execute(StartBulkGenerateAwbRequest $request): StartBulkGenerateAwbResponse
+    protected function processAction(RequestInterface $request): StartBulkGenerateAwbResponse
     {
         $orderIds = $request->getOrderIds();
         $userId = $request->getUserId();

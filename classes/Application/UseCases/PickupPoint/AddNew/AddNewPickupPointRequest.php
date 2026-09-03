@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\PickupPoint\AddNew;
 
-final class AddNewPickupPointRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class AddNewPickupPointRequest implements RequestInterface
 {
     /**
      * @var string $pickupPointCountryId

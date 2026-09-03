@@ -134,7 +134,7 @@ final class CarrierCity implements ModelInterface
     }
 
     /**
-     * @return array{city_name:
+     * @return array{city_name: string, county_code: string}
      */
     public function toArray(): array
     {

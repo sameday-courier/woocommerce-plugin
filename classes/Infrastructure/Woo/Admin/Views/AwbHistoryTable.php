@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierPackage;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 
 class AwbHistoryTable
 {
@@ -56,11 +57,15 @@ class AwbHistoryTable
             $historySerialized = $package instanceof CarrierPackage
                 ? ($package->getHistory() ?? '')
                 : ($package['history'] ?? '');
-            $summary = unserialize($summarySerialized, ['']);
-            $packageHistory = unserialize($historySerialized, ['']);
+            $summary = SerializedPayloadReader::readParcelStatusSummary((string) $summarySerialized);
+            $packageHistory = SerializedPayloadReader::readParcelStatusHistory((string) $historySerialized);
+
+            if (null === $summary) {
+                continue;
+            }
 
             $history = [];
-            if (!empty($packageHistory)) {
+            if ([] !== $packageHistory) {
                 foreach ($packageHistory as $historyItem) {
                     $history[] = [
                         'name' => $historyItem->getName(),

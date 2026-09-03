@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Common\Services;
 use Exception;
 use JsonException;
 use RuntimeException;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
 use stdClass;
 
 class FileReadHandler
@@ -71,7 +72,7 @@ class FileReadHandler
      */
     private static function buildFilePath(string $fileName): string
     {
-        $filePath = SAMEDAYCOURIER_SHIPPING_PLUGIN_PATH . 'classes/files/' . $fileName;
+        $filePath = PluginPathHandler::to('classes/files/' . $fileName);
 
         if (!file_exists($filePath)) {
             throw new RuntimeException("File not found: " . $filePath);

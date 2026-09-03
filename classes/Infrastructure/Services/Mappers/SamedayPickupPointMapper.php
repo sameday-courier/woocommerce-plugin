@@ -6,6 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierPickupPoint;
 
+/**
+ * @extends AbstractMapper<CarrierPickupPoint>
+ */
 final class SamedayPickupPointMapper extends AbstractMapper
 {
     /**

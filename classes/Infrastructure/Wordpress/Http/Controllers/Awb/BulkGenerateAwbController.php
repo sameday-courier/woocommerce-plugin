@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataH
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFromOrderFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
@@ -41,6 +42,7 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
         $dbHandler = new DbHandler();
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
         $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
+        $generateAwbRequestFactory = GenerateAwbRequestFactory::createWithDbHandler($dbHandler);
         $requestFactory = new GenerateAwbRequestFromOrderFactory(
             new WooGenerateAwbOrderProvider(),
             new WooOrderWeightCalculator(),
@@ -48,6 +50,7 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
             new CarrierServiceRules($samedayServiceRepository),
+            $generateAwbRequestFactory
         );
 
         try {

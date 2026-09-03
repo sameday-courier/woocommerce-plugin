@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,6 +178,12 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.2.0 =
+
+* Add PHPStan for static code analize.
+* Refactor backend code base to meet PHPStan static code analyze requirements and fix all issues that PHPStan found
+* Complete refactor of JS assets to resolve all leftover corner-cases.
 
 = 2.1.0 =
 

@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 
@@ -36,7 +37,7 @@ final class LockerSessionStore
         ?LockerDtoFactory $lockerDtoFactory = null
     ) {
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
     }
 
     /**

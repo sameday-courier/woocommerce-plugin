@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
-use Exception;
+use JsonException;
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
-final class ChangeLocker
+/**
+ * @extends AbstractUseCase<ChangeLockerRequest, ChangeLockerResponse>
+ *
+ * @method ChangeLockerResponse execute(ChangeLockerRequest $request)
+ */
+final class ChangeLocker extends AbstractUseCase
 {
     /**
      * @var LockerOrderDataHandlerInterface $lockerOrderDataHandler
@@ -17,20 +24,20 @@ final class ChangeLocker
     /**
      * @param LockerOrderDataHandlerInterface $lockerOrderDataHandler
      */
-    public function __construct(
-        LockerOrderDataHandlerInterface $lockerOrderDataHandler
-    ) {
+    public function __construct(LockerOrderDataHandlerInterface $lockerOrderDataHandler)
+    {
         $this->lockerOrderDataHandler = $lockerOrderDataHandler;
     }
 
     /**
      * @param ChangeLockerRequest $request
+     *
      * @return ChangeLockerResponse
      */
-    public function execute(ChangeLockerRequest $request): ChangeLockerResponse
+    protected function processAction(RequestInterface $request): ChangeLockerResponse
     {
         $orderId = $request->getOrderId();
-        $locker = $request->getLocker();
+        $lockerDto = $request->getLocker();
 
         if ($orderId <= 0) {
             return new ChangeLockerResponse(
@@ -39,18 +46,22 @@ final class ChangeLocker
             );
         }
 
-        if (null === $locker || '' === $locker) {
+        if (null === $lockerDto) {
             return new ChangeLockerResponse(
-                'Locker data is required.',
+                'Invalid locker data.',
                 true
             );
         }
 
         try {
-            $this->lockerOrderDataHandler->add($orderId, $locker);
-        } catch (Exception $exception) {
+            $encodedLocker = json_encode(
+                $lockerDto->toArray(),
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+            );
+            $this->lockerOrderDataHandler->add($orderId, $encodedLocker);
+        } catch (JsonException $exception) {
             return new ChangeLockerResponse(
-                $exception->getMessage(),
+                'Unable to store locker data.',
                 true
             );
         }

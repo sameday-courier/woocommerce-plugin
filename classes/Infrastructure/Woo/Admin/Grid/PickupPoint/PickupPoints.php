@@ -12,6 +12,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\Same
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WP_List_Table;
@@ -98,7 +99,9 @@ class PickupPoints extends WP_List_Table
     {
         switch ($column_name) {
             case 'contactPersons':
-                return $this->parseContactPersons(unserialize($item[$column_name], ['']));
+                return $this->parseContactPersons(
+                    SerializedPayloadReader::readPickupPointContactPersons((string) $item[$column_name])
+                );
             case 'default_pickup_point':
                 return $item[$column_name] ? "<strong>Yes</strong>" : "No";
             case 'delete':
@@ -211,7 +214,7 @@ class PickupPoints extends WP_List_Table
     /**
      * @param array $searchParams
      *
-     * @return array{0:
+     * @return array{0: array<string, string>, 1: array<string, int>}
      */
     private function buildSearchFilters(array $searchParams): array
     {

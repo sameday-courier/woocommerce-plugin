@@ -12,6 +12,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RefreshShippi
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterCheckoutBlocksIntegrationAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterOpenPackageBlocksIntegrationAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterOpenPackageCartUpdateCallbackAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxBlocksIntegrationAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxCartUpdateCallbackAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RenderAdminAwbFormsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAdminOrderAwbActionsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAwbNumberColumnInWcOrderGridAction;
@@ -20,7 +22,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowLockerFie
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowOpenPackageFieldAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateBlocksCheckoutLockerAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ValidateCheckoutLockerAction;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\ActionInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\RegistryHandlerInterface;
 
 class ActionsRegisterService implements RegistryHandlerInterface
@@ -34,6 +35,8 @@ class ActionsRegisterService implements RegistryHandlerInterface
         RegisterCheckoutBlocksIntegrationAction::class,
         RegisterOpenPackageBlocksIntegrationAction::class,
         RegisterOpenPackageCartUpdateCallbackAction::class,
+        RegisterRepaymentTaxBlocksIntegrationAction::class,
+        RegisterRepaymentTaxCartUpdateCallbackAction::class,
         RenderAdminAwbFormsAction::class,
         ShowAdminOrderAwbActionsAction::class,
         ShowAwbNumberColumnInWcOrderGridAction::class,
@@ -51,16 +54,14 @@ class ActionsRegisterService implements RegistryHandlerInterface
     {
         foreach (self::ACTIONS as $actionClass) {
             $action = new $actionClass();
-            if ($action instanceof ActionInterface) {
-                add_action(
-                    $action->getActionName(),
-                    static function (...$args) use ($action): void {
-                        $action->handle(...$args);
-                    },
-                    $action->getPriority(),
-                    $action->getAcceptedArgs()
-                );
-            }
+            add_action(
+                $action->getActionName(),
+                static function (...$args) use ($action): void {
+                    $action->handle(...$args);
+                },
+                $action->getPriority(),
+                $action->getAcceptedArgs()
+            );
         }
     }
 }

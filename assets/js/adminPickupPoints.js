@@ -5,50 +5,58 @@
         return;
     }
 
-    const labels = samedayPickupPointsAdmin.labels;
-    const $modal = $('#sameday-pickup-point-modal');
+    var labels = samedayPickupPointsAdmin.labels;
+    var adminLabels = samedayPickupPointsAdmin.i18n || {};
+    var $modal = $('#sameday-pickup-point-modal');
 
-    const select2Options = {
+    var select2Options = {
         dropdownParent: $modal,
         width: '100%',
     };
 
-    const requestOptions = (action, params = {}) => ({
-        url: ajaxurl,
-        data: {
-            action: action,
-            _wpnonce: samedayPickupPointsAdmin.nonces[action],
-            ...params,
-        },
-    });
+    function genericErrorMessage() {
+        return adminLabels.genericError || 'Something went wrong! Please try again later!';
+    }
 
-    const populateSelectOptions = (selectElement, items, placeholder = '') => {
+    var requestOptions = function (action, params) {
+        params = params || {};
+
+        return {
+            url: ajaxurl,
+            data: Object.assign({
+                action: action,
+                _wpnonce: samedayPickupPointsAdmin.nonces[action],
+            }, params),
+        };
+    };
+
+    var populateSelectOptions = function (selectElement, items, placeholder) {
         selectElement.innerHTML = '';
 
         if ('' !== placeholder) {
-            selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+            selectElement.innerHTML = '<option value="">' + placeholder + '</option>';
         }
 
-        items.forEach((item) => {
-            selectElement.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+        items.forEach(function (item) {
+            selectElement.innerHTML += '<option value="' + item.id + '">' + item.name + '</option>';
         });
     };
 
-    const createSelect2Field = (selector) => {
-        const $select = $(selector);
+    var createSelect2Field = function (selector) {
+        var $select = $(selector);
 
-        const destroy = () => {
+        var destroy = function () {
             if ($select.data('select2')) {
                 $select.select2('destroy');
             }
         };
 
-        const init = () => {
+        var init = function () {
             destroy();
             $select.select2(select2Options);
         };
 
-        const setDisabled = (disabled) => {
+        var setDisabled = function (disabled) {
             $select.prop('disabled', disabled);
 
             if ($select.data('select2')) {
@@ -56,7 +64,7 @@
             }
         };
 
-        const refresh = (items, placeholder, disabled) => {
+        var refresh = function (items, placeholder, disabled) {
             destroy();
             populateSelectOptions($select[0], items, placeholder);
             init();
@@ -64,58 +72,55 @@
         };
 
         return {
-            $select,
-            refresh,
+            $select: $select,
+            refresh: refresh,
         };
     };
 
-    const countyField = createSelect2Field('#pickupPointCounty');
-    const cityField = createSelect2Field('#pickupPointCity');
+    var countyField = createSelect2Field('#pickupPointCounty');
+    var cityField = createSelect2Field('#pickupPointCity');
 
-    const resetCitySelect = () => {
+    var resetCitySelect = function () {
         cityField.refresh([], labels.selectCountyFirst, true);
     };
 
-    const handleRequestError = () => {
-        alert('Something went wrong! Please try again latter!');
+    var handleRequestError = function () {
+        alert(genericErrorMessage());
     };
 
     resetCitySelect();
     countyField.refresh([], labels.loading, true);
 
-    $.post({
-        ...requestOptions('get_counties'),
-        beforeSend: () => {
+    $.post(Object.assign({}, requestOptions('get_counties'), {
+        beforeSend: function () {
             countyField.refresh([], labels.loading, true);
         },
-        success: (counties) => {
+        success: function (counties) {
             countyField.refresh(counties, labels.chooseCounty, false);
         },
         error: handleRequestError,
-    });
+    }));
 
     countyField.$select.on('change', function () {
-        const countyId = $(this).val();
+        var countyId = $(this).val();
 
         if ('' === countyId) {
             resetCitySelect();
-
             return;
         }
 
-        $.post({
-            ...requestOptions('get_cities', { countyId: countyId }),
-            beforeSend: () => {
+        $.post(Object.assign({}, requestOptions('get_cities', { countyId: countyId }), {
+            beforeSend: function () {
                 cityField.refresh([], labels.loading, true);
             },
-            success: (cities) => {
+            success: function (cities) {
                 cityField.refresh(cities, labels.pickCity, false);
             },
             error: handleRequestError,
-        });
+        }));
+    });
+
+    $(document).on('click', '.delete-pickup-point', function () {
+        $('#form-deletePickupPoint #input-deletePickupPoint').val($(this).data('id'));
     });
 }(jQuery));
-
-jQuery('body').on('click', '.delete-pickup-point', function () {
-    jQuery('#form-deletePickupPoint #input-deletePickupPoint').val(jQuery(this).data('id'));
-});

@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerChoicesProvider;
@@ -67,7 +68,7 @@ final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
     ) {
         $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider
             ?? new CarrierSettingsServiceProvider();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
         $this->lockerChoicesProvider = $lockerChoicesProvider ?? new LockerChoicesProvider();
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
     }
@@ -131,8 +132,14 @@ final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
             'clientId' => CarrierConstants::LOCKER_PLUGIN_CLIENT_ID,
             'oohServiceCodes' => CarrierConstants::OOH_SERVICES,
             'useLockerMap' => $useLockerMap,
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'syncAction' => 'refresh_lockers_checkout',
+            'syncNonce' => wp_create_nonce('refresh_lockers_checkout'),
+            'syncTtl' => CarrierConstants::LOCKERS_SYNC_TTL,
+            'syncTs' => $settings->getSamedaySyncLockersTs(),
             'buttonText' => TranslatorHandler::translate('Show Locations Map'),
             'selectLockerText' => TranslatorHandler::translate('Select easyBox'),
+            'loadingText' => TranslatorHandler::translate('Please wait for easyBox list to be populated'),
             'shipToText' => TranslatorHandler::translate('Ship to'),
             'errorText' => TranslatorHandler::translate('Please choose your EasyBox Locker !'),
             'pluginName' => CarrierConstants::PLUGIN_NAME,

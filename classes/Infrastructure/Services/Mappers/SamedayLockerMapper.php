@@ -6,6 +6,9 @@ namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierLocker;
 
+/**
+ * @extends AbstractMapper<CarrierLocker>
+ */
 final class SamedayLockerMapper extends AbstractMapper
 {
     /**
@@ -19,7 +22,7 @@ final class SamedayLockerMapper extends AbstractMapper
 
         $locker->setId(isset($row['id']) ? (int) $row['id'] : 0);
         $locker->setLockerId(
-            isset($row['locker_id']) && $row['locker_id'] !== '' && $row['locker_id'] !== null
+            isset($row['locker_id']) && $row['locker_id'] !== ''
                 ? (int) $row['locker_id']
                 : null
         );

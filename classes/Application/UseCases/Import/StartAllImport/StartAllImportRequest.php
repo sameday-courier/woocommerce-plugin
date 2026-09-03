@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Import\StartAllImport;
 
-final class StartAllImportRequest
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+
+final class StartAllImportRequest implements RequestInterface
 {
     /**
      * @var int $userId

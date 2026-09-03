@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Remove;
 
+use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
+use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\PostRemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
@@ -11,7 +13,12 @@ use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
 
-final class RemoveAwb
+/**
+ * @extends AbstractUseCase<RemoveAwbRequest, RemoveAwbResponse>
+ *
+ * @method RemoveAwbResponse execute(RemoveAwbRequest $request)
+ */
+final class RemoveAwb extends AbstractUseCase
 {
     /**
      * @var OrderAwbStoreServiceProviderInterface $orderAwbStore
@@ -48,7 +55,7 @@ final class RemoveAwb
      *
      * @return RemoveAwbResponse
      */
-    public function execute(RemoveAwbRequest $request): RemoveAwbResponse
+    protected function processAction(RequestInterface $request): RemoveAwbResponse
     {
         $orderId = $request->getOrderId();
         $awb = $this->orderAwbStore->getByOrderId($orderId);

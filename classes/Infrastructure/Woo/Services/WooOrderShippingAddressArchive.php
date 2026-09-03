@@ -68,7 +68,7 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
     /**
      * @param WC_Order $order
      *
-     * @return array<string,
+     * @return array<string, string>
      */
     private function buildSnapshotFromOrder(WC_Order $order): array
     {

@@ -9,6 +9,7 @@ use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Blocks\OpenPackageBlocksIntegration;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\ShippingRatesRefresher;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\OpenPackageSessionNormalizer;
 
 final class RegisterOpenPackageCartUpdateCallbackAction extends AbstractAction
 {
@@ -72,7 +73,9 @@ final class RegisterOpenPackageCartUpdateCallbackAction extends AbstractAction
      */
     private function store(array $data): void
     {
-        $openPackage = 'yes' === ($data[OpenPackageBlocksIntegration::CART_UPDATE_FIELD] ?? null) ? 'yes' : 'no';
+        $openPackage = OpenPackageSessionNormalizer::normalize(
+            $data[OpenPackageBlocksIntegration::CART_UPDATE_FIELD] ?? null
+        );
 
         $this->sessionHandler->set(CarrierSessionKeys::OPEN_PACKAGE, $openPackage);
         $this->shippingRatesRefresher->refresh();
