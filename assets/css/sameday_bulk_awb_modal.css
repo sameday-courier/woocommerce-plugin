@@ -472,6 +472,10 @@
     margin-bottom: 0;
 }
 
+.sameday-bulk-awb-modal__log-item[hidden] {
+    display: none !important;
+}
+
 .sameday-bulk-awb-modal__log-item--error {
     background: #fef2f2;
     border-color: #fecaca;

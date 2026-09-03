@@ -50,17 +50,30 @@
         return isOohRateId(SamedayCourier.getSelectedShippingRateId());
     };
 
-    // Refreshes the dropdown nomenclator on demand. Only meaningful in dropdown mode, and the
-    // server re-checks mode + TTL, so this stays a best-effort optimization.
-    var maybeSyncBlocksLockers = function () {
-        if (config.useLockerMap || blocksSyncDone) {
-            return;
-        }
+    var SYNCING_CLASS = 'sameday-blocks-locker--syncing';
 
-        if (!SamedayCourier.isLockerSyncExpired(config.syncTs, config.syncTtl)) {
-            return;
-        }
+    var isSyncNeeded = function () {
+        return !config.useLockerMap
+            && !blocksSyncDone
+            && SamedayCourier.isLockerSyncExpired(config.syncTs, config.syncTtl);
+    };
 
+    var buildLoadingUi = function (rateId) {
+        var loadingClass = SamedayCourier.LOCKER_SYNC_LOADING_CLASS || 'sameday-locker-sync-loading';
+        var loadingText = config.loadingText || 'Please wait for easyBox list to be populated';
+
+        return (
+            '<div id="' + UI_ROOT_ID + '" class="sameday-blocks-locker ' + SYNCING_CLASS + '" ' +
+                RATE_ATTRIBUTE + '="' + rateId + '">' +
+                '<div class="' + loadingClass + '" role="status" aria-live="polite">' +
+                    '<span class="' + loadingClass + '__spinner" aria-hidden="true"></span>' +
+                    '<span class="' + loadingClass + '__text">' + loadingText + '</span>' +
+                '</div>' +
+            '</div>'
+        );
+    };
+
+    var startBlocksLockerSync = function (rateId) {
         blocksSyncDone = true;
 
         SamedayCourier.refreshCheckoutLockers(
@@ -68,17 +81,20 @@
                 ajaxUrl: config.ajaxUrl,
                 action: config.syncAction,
                 nonce: config.syncNonce,
-                selectedLockerId: typeof selectedLocker === 'string' ? selectedLocker : ''
+                selectedLockerId: typeof selectedLocker === 'string' ? selectedLocker : '',
+                loadingContainer: document.getElementById(UI_ROOT_ID),
+                loadingText: config.loadingText,
+                onComplete: function () {
+                    var syncingRoot = document.getElementById(UI_ROOT_ID);
+
+                    if (syncingRoot && syncingRoot.classList.contains(SYNCING_CLASS)) {
+                        syncingRoot.remove();
+                        ensureUi(true);
+                    }
+                }
             },
             function (lockersByCity) {
                 config.lockersByCity = lockersByCity;
-
-                var existing = document.getElementById(UI_ROOT_ID);
-                if (existing) {
-                    existing.remove();
-                }
-
-                ensureUi();
             }
         );
     };
@@ -185,7 +201,7 @@
         }
     };
 
-    var ensureUi = function () {
+    var ensureUi = function (skipSync) {
         var existing = document.getElementById(UI_ROOT_ID);
         var rateId = SamedayCourier.getSelectedShippingRateId();
 
@@ -202,9 +218,6 @@
             return;
         }
 
-        // OOH is selected: refresh the dropdown nomenclator if the TTL lapsed (no-op in map mode).
-        maybeSyncBlocksLockers();
-
         // Blocks keeps previously rendered rate options mounted, so the UI has to be moved
         // whenever the selection changes instead of lingering under the old rate.
         if (existing && existing.getAttribute(RATE_ATTRIBUTE) !== rateId) {
@@ -218,6 +231,12 @@
 
         var anchor = SamedayCourier.findShippingMethodOption(rateId);
         if (!anchor) {
+            return;
+        }
+
+        if (!skipSync && isSyncNeeded()) {
+            anchor.insertAdjacentHTML('beforeend', buildLoadingUi(rateId));
+            startBlocksLockerSync(rateId);
             return;
         }
 

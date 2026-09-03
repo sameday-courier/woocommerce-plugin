@@ -9,37 +9,55 @@
     // Guards a single sync per page load once the server-side TTL has lapsed.
     var lockerSyncDone = false;
 
-    var maybeSyncLockers = function () {
+    var initLockerDropdown = function (dropdown) {
+        if (!dropdown || jQuery(dropdown).hasClass('select2-hidden-accessible')) {
+            return;
+        }
+
+        jQuery(dropdown).select2();
+    };
+
+    var maybeSyncLockers = function (dropdown) {
         var config = window.samedayLockerSync || {};
 
         // Dropdown mode only; the map picks lockers via the SDK. The field is rendered by
         // ShowLockerFieldAction only for OOH services, so its presence is the service gate.
         if (config.useLockerMap) {
-            return;
+            return false;
         }
 
-        var dropdown = document.getElementById('shipping-pickup-store-select');
         if (!dropdown || lockerSyncDone) {
-            return;
+            return false;
         }
 
         if (!SamedayCourier.isLockerSyncExpired(config.ts, config.ttl)) {
-            return;
+            return false;
         }
+
+        lockerSyncDone = true;
 
         SamedayCourier.refreshCheckoutLockers(
             {
                 ajaxUrl: config.ajaxUrl,
                 action: config.action,
                 nonce: config.nonce,
-                selectedLockerId: dropdown.value
+                selectedLockerId: dropdown.value,
+                loadingContainer: dropdown.closest('td') || dropdown.parentElement,
+                loadingText: config.loadingText,
+                onComplete: function () {
+                    initLockerDropdown(dropdown);
+
+                    if (jQuery(dropdown).hasClass('select2-hidden-accessible')) {
+                        jQuery(dropdown).trigger('change.select2');
+                    }
+                }
             },
             function (lockersByCity) {
-                lockerSyncDone = true;
                 SamedayCourier.populateLockerDropdown(dropdown, lockersByCity, config.selectLockerText);
-                jQuery(dropdown).trigger('change.select2');
             }
         );
+
+        return true;
     };
 
     var isSet = function (accessor) {
@@ -92,8 +110,9 @@
         if (isSet(function () { return selectors.selectLockerMap; })) {
             selectors.selectLockerMap.addEventListener('click', openLockers);
         } else if (isSet(function () { return selectors.selectLocker; })) {
-            maybeSyncLockers();
-            jQuery('select#shipping-pickup-store-select').select2();
+            if (!maybeSyncLockers(selectors.selectLocker)) {
+                initLockerDropdown(selectors.selectLocker);
+            }
 
             selectors.selectLocker.onchange = function (event) {
                 SamedayCourier.doAjaxCall({

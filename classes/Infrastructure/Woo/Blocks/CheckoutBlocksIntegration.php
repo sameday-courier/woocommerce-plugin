@@ -138,6 +138,7 @@ final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
             'syncTs' => $settings->getSamedaySyncLockersTs(),
             'buttonText' => TranslatorHandler::translate('Show Locations Map'),
             'selectLockerText' => TranslatorHandler::translate('Select easyBox'),
+            'loadingText' => TranslatorHandler::translate('Please wait for easyBox list to be populated'),
             'shipToText' => TranslatorHandler::translate('Ship to'),
             'errorText' => TranslatorHandler::translate('Please choose your EasyBox Locker !'),
             'pluginName' => CarrierConstants::PLUGIN_NAME,

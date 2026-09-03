@@ -524,6 +524,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     'ts' => $lockerSyncSettings->getSamedaySyncLockersTs(),
                     'useLockerMap' => $lockerSyncSettings->isLockersMapEnabled(),
                     'selectLockerText' => TranslatorHandler::translate('Select easyBox'),
+                    'loadingText' => TranslatorHandler::translate('Please wait for easyBox list to be populated'),
                 ]);
                 break;
             case 'sameday-county-city-handle':

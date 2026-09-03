@@ -255,9 +255,9 @@
     function applyLogFilter($modal) {
         var filter = String($modal.find('[data-sameday-bulk-awb-log-filter]').val() || 'all');
         $modal.find('[data-sameday-bulk-awb-report-list] .sameday-bulk-awb-modal__log-item').each(function () {
-            var status = String($(this).data('status') || '');
+            var status = String(this.getAttribute('data-status') || '');
             var visible = filter === 'all' || filter === status;
-            $(this).prop('hidden', !visible);
+            $(this).toggle(visible);
         });
     }
 
