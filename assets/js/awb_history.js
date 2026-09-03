@@ -1,19 +1,18 @@
 jQuery(document).ready(function ($) {
     $(document).on('click', '.sameday-show-history-details', function () {
-        const show = $(this).val();
-        const awbNumber = $(this).data('awb-number');
-        const $historyTable = $('#history-' + awbNumber);
+        var $toggle = $(this);
+        var awbNumber = $toggle.data('awb-number');
+        var $historyTable = $('#history-' + awbNumber);
+        var isExpanded = String($toggle.attr('data-expanded')) === 'true';
 
-        if (show === '+') {
+        if (!isExpanded) {
             $historyTable.addClass('is-open');
-            $(this).val('-');
-            $(this).html('<strong> - </strong>');
+            $toggle.attr('data-expanded', 'true');
+            $toggle.html('<strong> - </strong>');
         } else {
             $historyTable.removeClass('is-open');
-            $(this).val('+');
-            $(this).html('<strong> + </strong>');
+            $toggle.attr('data-expanded', 'false');
+            $toggle.html('<strong> + </strong>');
         }
     });
-
-    $('.sameday-show-history-details').trigger('click');
 });

@@ -145,24 +145,19 @@
     };
 
     var buildDropdownUi = function (rateId) {
-        var lockersByCity = config.lockersByCity || {};
-        var options = '<option value="">' + (config.selectLockerText || 'Select easyBox') + '</option>';
-
-        Object.keys(lockersByCity).forEach(function (city) {
-            options += '<optgroup label="' + city + '">';
-            (lockersByCity[city] || []).forEach(function (locker) {
-                options +=
-                    '<option value="' + locker.id + '"' + (locker.selected ? ' selected' : '') + '>' +
-                        locker.label +
-                    '</option>';
-            });
-            options += '</optgroup>';
-        });
+        var select = document.createElement('select');
+        select.id = 'shipping-pickup-store-select';
+        select.name = 'locker_id';
+        SamedayCourier.populateLockerDropdown(
+            select,
+            config.lockersByCity || {},
+            config.selectLockerText || 'Select easyBox'
+        );
 
         return (
             '<div id="' + UI_ROOT_ID + '" class="sameday-blocks-locker" ' +
                 RATE_ATTRIBUTE + '="' + rateId + '">' +
-                '<select id="shipping-pickup-store-select" name="locker_id">' + options + '</select>' +
+                select.outerHTML +
                 '<div id="placeOrderError">' + (config.errorText || 'Please choose an easybox') + '</div>' +
             '</div>'
         );

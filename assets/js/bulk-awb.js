@@ -5,6 +5,17 @@
     var MODAL_SELECTOR = '[data-sameday-bulk-awb-modal]';
     var config = window.samedayBulkAwb || {};
 
+    var modalController = window.SamedayModalCore.create({
+        modalSelector: MODAL_SELECTOR,
+        closeSelector: '[data-sameday-bulk-awb-close]',
+        openSelector: BUTTON_SELECTOR,
+        openDataKey: 'samedayBulkAwbOpen',
+        bindOpen: false,
+        canClose: function ($modal) {
+            return !isBusyStep($modal);
+        }
+    });
+
     function getSelectedOrders() {
         var orders = [];
         var ids = [];
@@ -89,11 +100,7 @@
     }
 
     function getModal($from) {
-        if ($from.is(MODAL_SELECTOR)) {
-            return $from;
-        }
-
-        return $from.closest(MODAL_SELECTOR);
+        return modalController.getModal($from);
     }
 
     function i18n(key, fallback) {
@@ -312,43 +319,13 @@
 
         var orders = getSelectedOrders();
 
-        closeAllModals();
+        modalController.closeAllModals();
         renderOrders($modal, orders);
         toggleCurrencyConfirm($modal, orders);
         $modal.find('[data-sameday-bulk-awb-agree]').prop('checked', false);
         updateConfirmState($modal);
         setStep($modal, 'confirm');
-
-        $modal.prop('hidden', false);
-        $('body').addClass('sameday-bulk-awb-modal-open');
-    }
-
-    function closeModal($modal) {
-        if (!$modal || !$modal.length) {
-            return;
-        }
-
-        $modal.prop('hidden', true);
-        if (!$(MODAL_SELECTOR).filter(':not([hidden])').length) {
-            $('body').removeClass('sameday-bulk-awb-modal-open');
-        }
-    }
-
-    function closeAllModals() {
-        $(MODAL_SELECTOR).prop('hidden', true);
-        $('body').removeClass('sameday-bulk-awb-modal-open');
-    }
-
-    function request(action, nonce, data) {
-        return $.ajax({
-            url: config.ajaxUrl,
-            method: 'POST',
-            dataType: 'json',
-            data: $.extend({
-                action: action,
-                _wpnonce: nonce
-            }, data)
-        });
+        modalController.openModal(modalId);
     }
 
     function getModeName($modal) {
@@ -356,63 +333,14 @@
     }
 
     function getModeConfig($modal) {
-        let modes = config.modes || {};
+        var modes = config.modes || {};
         return modes[getModeName($modal)] || null;
     }
 
-    function processNext($modal, jobId, totalHint, firstOrderId) {
-        let modeConfig = getModeConfig($modal);
-        if (!modeConfig) {
-            throw new Error(i18n('genericError', 'Something went wrong.'));
-        }
-
-        setStep($modal, 'progress');
-        if (typeof totalHint === 'number') {
-            updateProgress($modal, 0, totalHint, firstOrderId);
-        }
-
-        return request(modeConfig.nextAction, modeConfig.nextNonce, { jobId: jobId })
-            .then(function (response) {
-                var data = (response && response.data) ? response.data : {};
-                return handleNextPayload($modal, jobId, data);
-            }, function (xhr) {
-                let data = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : null;
-                if (data && data.done) {
-                    return handleNextPayload($modal, jobId, data);
-                }
-
-                let message = i18n('genericError', 'Something went wrong.');
-                if (data && data.message) {
-                    message = data.message;
-                }
-
-                throw new Error(message);
-            });
-    }
-
-    function handleNextPayload($modal, jobId, data) {
-        if (data.done) {
-            updateProgress(
-                $modal,
-                data.processed || data.total || 0,
-                data.total || 0,
-                data.currentItemId || data.currentOrderId
-            );
-            renderReport($modal, data);
-            setStep($modal, 'report');
-            return null;
-        }
-
-        updateProgress(
-            $modal,
-            data.processed || 0,
-            data.total || 0,
-            data.currentItemId
-                || data.currentOrderId
-                || (data.lastResult && (data.lastResult.itemId || data.lastResult.orderId))
-        );
-
-        return processNext($modal, jobId);
+    function resolveCurrentItemId(data) {
+        return data.currentItemId
+            || data.currentOrderId
+            || (data.lastResult && (data.lastResult.itemId || data.lastResult.orderId));
     }
 
     function startBulk($modal) {
@@ -424,52 +352,63 @@
 
         setStep($modal, 'starting');
 
-        request(modeConfig.startAction, modeConfig.startNonce, {
-            'samedaycourier-order-ids': orderIds
-        }).then(function (response) {
-            var data = (response && response.data) ? response.data : {};
-            if (!data.jobId) {
-                throw new Error(i18n('genericError', 'Something went wrong.'));
+        window.SamedayRecursiveJob.run({
+            ajaxUrl: config.ajaxUrl,
+            startAction: modeConfig.startAction,
+            startNonce: modeConfig.startNonce,
+            nextAction: modeConfig.nextAction,
+            nextNonce: modeConfig.nextNonce,
+            startData: {
+                'samedaycourier-order-ids': orderIds
+            },
+            genericError: i18n('genericError', 'Something went wrong.'),
+            onStart: function (data) {
+                setStep($modal, 'progress');
+                updateProgress($modal, 0, data.total || orderIds.length, orderIds[0]);
+            },
+            onProgress: function (data) {
+                updateProgress(
+                    $modal,
+                    data.processed || 0,
+                    data.total || 0,
+                    resolveCurrentItemId(data)
+                );
+            },
+            onComplete: function (data) {
+                updateProgress(
+                    $modal,
+                    data.processed || data.total || 0,
+                    data.total || 0,
+                    resolveCurrentItemId(data)
+                );
+                renderReport($modal, data);
+                setStep($modal, 'report');
+            },
+            onError: function (message) {
+                renderReport($modal, {
+                    successCount: 0,
+                    errorCount: orderIds.length,
+                    total: orderIds.length,
+                    items: orderIds.map(function (orderId) {
+                        return {
+                            itemId: orderId,
+                            status: 'error',
+                            message: message
+                        };
+                    })
+                });
+                setStep($modal, 'report');
             }
-
-            return processNext($modal, data.jobId, data.total || orderIds.length, orderIds[0]);
-        }).fail(function (xhr) {
-            var message = i18n('genericError', 'Something went wrong.');
-            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
-                message = xhr.responseJSON.data.message;
-            }
-
-            renderReport($modal, {
-                successCount: 0,
-                errorCount: orderIds.length,
-                total: orderIds.length,
-                items: orderIds.map(function (orderId) {
-                    return {
-                        itemId: orderId,
-                        status: 'error',
-                        message: message
-                    };
-                })
-            });
-            setStep($modal, 'report');
         });
     }
 
     $(function () {
         placeButtons();
+        modalController.bindEvents();
 
         $(document).on('click', BUTTON_SELECTOR, function (event) {
             event.preventDefault();
-            openModal($(this).data('sameday-bulk-awb-open'));
-        });
-
-        $(document).on('click', '[data-sameday-bulk-awb-close]', function (event) {
-            event.preventDefault();
-            var $modal = getModal($(this));
-            if (isBusyStep($modal)) {
-                return;
-            }
-            closeModal($modal);
+            openModal($(this).data('samedayBulkAwbOpen'));
         });
 
         $(document).on(
@@ -484,23 +423,6 @@
             applyLogFilter(getModal($(this)));
         });
 
-        $(document).on('keydown', function (event) {
-            if (event.key !== 'Escape') {
-                return;
-            }
-
-            var $openModal = $(MODAL_SELECTOR).filter(':not([hidden])').last();
-            if (!$openModal.length) {
-                return;
-            }
-
-            if (isBusyStep($openModal)) {
-                return;
-            }
-
-            closeModal($openModal);
-        });
-
         $(document).on('click', '[data-sameday-bulk-awb-confirm]', function (event) {
             event.preventDefault();
             if ($(this).is(':disabled')) {
@@ -509,7 +431,7 @@
 
             var $modal = getModal($(this));
             if (!getModeConfig($modal)) {
-                closeModal($modal);
+                modalController.closeModal($modal);
                 return;
             }
 

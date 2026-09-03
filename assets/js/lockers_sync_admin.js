@@ -1,12 +1,17 @@
 /**
  * Component: Sync and select lockers Admin
- * ------------------------------------------------------------------------------
- *
- * @namespace selectLocker
  */
-
 (function ($) {
     'use strict';
+
+    var adminConfig = window.samedayLockerAdmin || {};
+    var SamedayCourier = window.SamedayCourier || {};
+
+    function adminErrorMessage() {
+        return (adminConfig.i18n && adminConfig.i18n.genericError)
+            ? adminConfig.i18n.genericError
+            : 'Something went wrong! Please try again later!';
+    }
 
     function displayDetails(optionFistMile, optionLastMile) {
         var $firstMile = $('#LockerFirstMile');
@@ -37,52 +42,39 @@
 
     function openLockers() {
         var changeLockerButton = document.querySelector('#select_locker');
-        if (!changeLockerButton || !window.LockerPlugin) {
+        if (!changeLockerButton || typeof SamedayCourier.openLockerPlugin !== 'function') {
             return;
         }
 
-        var clientId = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
-        var samedayUser = changeLockerButton.getAttribute('data-username');
-        var countryCode = changeLockerButton.getAttribute('data-country') || '';
-        var langCode = countryCode.toLowerCase();
-        var destCity = changeLockerButton.getAttribute('data-dest_city');
-        var destCountry = changeLockerButton.getAttribute('data-dest_country');
+        SamedayCourier.openLockerPlugin(
+            {
+                apiUsername: changeLockerButton.getAttribute('data-username') || '',
+                city: changeLockerButton.getAttribute('data-dest_city') || '',
+                countryCode: changeLockerButton.getAttribute('data-dest_country') || '',
+            },
+            function (locker, pluginInstance) {
+                pluginInstance.close();
 
-        window.LockerPlugin.init({
-            apiUsername: samedayUser,
-            city: destCity,
-            countryCode: destCountry,
-            clientId: clientId,
-            langCode: langCode
-        });
+                var lockerJson = JSON.stringify(locker);
 
-        var pluginInstance = window.LockerPlugin.getInstance();
-        pluginInstance.open();
-
-        pluginInstance.subscribe(function (locker) {
-            pluginInstance.close();
-
-            var _locker = JSON.stringify(locker);
-
-            $.post({
-                url: ajaxurl,
-                data: {
-                    action: 'change_locker',
-                    orderId: $('#samedaycourier-order-id').val(),
-                    locker: _locker,
-                    _wpnonce: (window.samedayLockerAdmin && window.samedayLockerAdmin.nonces)
-                        ? window.samedayLockerAdmin.nonces.change_locker
-                        : ''
-                },
-                success: function () {
-                    $('#sameday_locker_name').val(locker.name + ' - ' + locker.address);
-                    $('#locker').val(_locker);
-                },
-                error: function () {
-                    alert('Something went wrong! Please try again latter!');
-                }
-            });
-        });
+                $.post({
+                    url: ajaxurl,
+                    data: {
+                        action: 'change_locker',
+                        orderId: $('#samedaycourier-order-id').val(),
+                        locker: lockerJson,
+                        _wpnonce: adminConfig.nonces ? adminConfig.nonces.change_locker : ''
+                    },
+                    success: function () {
+                        $('#sameday_locker_name').val(locker.name + ' - ' + locker.address);
+                        $('#locker').val(lockerJson);
+                    },
+                    error: function () {
+                        alert(adminErrorMessage());
+                    }
+                });
+            }
+        );
     }
 
     function init() {

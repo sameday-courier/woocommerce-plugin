@@ -46,7 +46,7 @@ $t = static function (string $text): string {
         <?php foreach ($packages as $package) : ?>
             <tr>
                 <td class="sameday-show-history-details"
-                    value="-"
+                    data-expanded="false"
                     data-awb-number="<?php echo esc_attr((string) $package['awbNumber']); ?>">
                     <strong> + </strong>
                 </td>
