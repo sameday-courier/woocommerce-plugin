@@ -284,7 +284,7 @@ final class SamedayCourier extends WC_Shipping_Method
             foreach ($optionalServices as $optionalService) {
                 if (
                     $optionalService->getCode() === CarrierConstants::OPEN_PACKAGE_OPTION_CODE
-                    && $optionalService->getPackageType()->getType() === CarrierPackageTypes::PARCEL
+                    && $optionalService->getPackageType() === CarrierPackageTypes::PARCEL
                 ) {
                     $serviceTaxIds[] = $optionalService->getId();
                     break;

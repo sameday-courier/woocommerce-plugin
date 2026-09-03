@@ -6,7 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
 use JsonException;
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
-use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 
@@ -23,20 +22,11 @@ final class ChangeLocker extends AbstractUseCase
     private LockerOrderDataHandlerInterface $lockerOrderDataHandler;
 
     /**
-     * @var LockerDtoFactory $lockerDtoFactory
-     */
-    private LockerDtoFactory $lockerDtoFactory;
-
-    /**
      * @param LockerOrderDataHandlerInterface $lockerOrderDataHandler
-     * @param LockerDtoFactory|null $lockerDtoFactory
      */
-    public function __construct(
-        LockerOrderDataHandlerInterface $lockerOrderDataHandler,
-        ?LockerDtoFactory $lockerDtoFactory = null
-    ) {
+    public function __construct(LockerOrderDataHandlerInterface $lockerOrderDataHandler)
+    {
         $this->lockerOrderDataHandler = $lockerOrderDataHandler;
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
     }
 
     /**
@@ -47,7 +37,7 @@ final class ChangeLocker extends AbstractUseCase
     protected function processAction(RequestInterface $request): ChangeLockerResponse
     {
         $orderId = $request->getOrderId();
-        $locker = $request->getLocker();
+        $lockerDto = $request->getLocker();
 
         if ($orderId <= 0) {
             return new ChangeLockerResponse(
@@ -56,14 +46,6 @@ final class ChangeLocker extends AbstractUseCase
             );
         }
 
-        if (null === $locker || '' === $locker) {
-            return new ChangeLockerResponse(
-                'Locker data is required.',
-                true
-            );
-        }
-
-        $lockerDto = $this->lockerDtoFactory->fromInput($locker);
         if (null === $lockerDto) {
             return new ChangeLockerResponse(
                 'Invalid locker data.',

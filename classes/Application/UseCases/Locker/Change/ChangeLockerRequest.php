@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Locker\Change;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 
 final class ChangeLockerRequest implements RequestInterface
 {
@@ -14,15 +15,15 @@ final class ChangeLockerRequest implements RequestInterface
     private int $orderId;
 
     /**
-     * @var mixed $locker
+     * @var LockerDto|null $locker
      */
-    private $locker;
+    private ?LockerDto $locker;
 
     /**
      * @param int $orderId
-     * @param mixed $locker
+     * @param LockerDto|null $locker
      */
-    public function __construct(int $orderId, $locker)
+    public function __construct(int $orderId, ?LockerDto $locker)
     {
         $this->orderId = $orderId;
         $this->locker = $locker;
@@ -37,9 +38,9 @@ final class ChangeLockerRequest implements RequestInterface
     }
 
     /**
-     * @return mixed
+     * @return LockerDto|null
      */
-    public function getLocker()
+    public function getLocker(): ?LockerDto
     {
         return $this->locker;
     }

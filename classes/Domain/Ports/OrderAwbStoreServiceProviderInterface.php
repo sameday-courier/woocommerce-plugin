@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\Ports;
 
+use SamedayCourier\Shipping\Domain\DTOs\CarrierAwbParcelDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 
 interface OrderAwbStoreServiceProviderInterface
@@ -19,7 +20,7 @@ interface OrderAwbStoreServiceProviderInterface
      * @param int $orderId
      * @param string $awbNumber
      * @param float $awbCost
-     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     * @param CarrierAwbParcelDto[] $parcels
      *
      * @return bool
      */

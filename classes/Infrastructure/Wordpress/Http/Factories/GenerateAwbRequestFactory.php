@@ -10,8 +10,6 @@ use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\GenerateAwbMapper;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 
 final class GenerateAwbRequestFactory
 {
@@ -42,7 +40,7 @@ final class GenerateAwbRequestFactory
     ) {
         $this->shippingDtoFactory = $shippingDtoFactory ?? new ShippingDtoFactory();
         $this->billingDtoFactory = $billingDtoFactory ?? new BillingDtoFactory();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
     }
 
     /**
@@ -50,14 +48,24 @@ final class GenerateAwbRequestFactory
      */
     public static function create(): self
     {
-        $dbHandler = new DbHandler();
-
         return new self(
             new ShippingDtoFactory(),
             new BillingDtoFactory(),
-            new LockerDtoFactory(
-                new LockerServiceProvider(new SamedayLockerRepository($dbHandler))
-            )
+            LockerDtoFactoryFactory::create()
+        );
+    }
+
+    /**
+     * @param DbHandler $dbHandler
+     *
+     * @return self
+     */
+    public static function createWithDbHandler(DbHandler $dbHandler): self
+    {
+        return new self(
+            new ShippingDtoFactory(),
+            new BillingDtoFactory(),
+            LockerDtoFactoryFactory::create($dbHandler)
         );
     }
 

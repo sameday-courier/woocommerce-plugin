@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
@@ -78,7 +79,7 @@ final class ShowLockerFieldAction extends AbstractAction
         $this->carrierServiceRules = $carrierServiceRules ?? new CarrierServiceRules(new SamedayServiceRepository());
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
         $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider ?? new CarrierSettingsServiceProvider();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
         $this->lockerChoicesProvider = $lockerChoicesProvider ?? new LockerChoicesProvider();
     }
 

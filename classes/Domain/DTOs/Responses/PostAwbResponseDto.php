@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Domain\DTOs\Responses;
 
+use SamedayCourier\Shipping\Domain\DTOs\CarrierAwbParcelDto;
+
 final class PostAwbResponseDto
 {
     private string $awbNumber;
@@ -11,14 +13,14 @@ final class PostAwbResponseDto
     private float $cost;
 
     /**
-     * @var array<int, array{position: int, awbNumber: string}>
+     * @var CarrierAwbParcelDto[]
      */
     private array $parcels;
 
     /**
      * @param string $awbNumber
      * @param float $cost
-     * @param array $parcels
+     * @param CarrierAwbParcelDto[] $parcels
      */
     public function __construct(string $awbNumber, float $cost, array $parcels)
     {
@@ -44,7 +46,7 @@ final class PostAwbResponseDto
     }
 
     /**
-     * @return array<int, array{position: int, awbNumber: string}>
+     * @return CarrierAwbParcelDto[]
      */
     public function getParcels(): array
     {

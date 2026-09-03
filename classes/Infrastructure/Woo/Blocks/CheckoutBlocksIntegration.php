@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerChoicesProvider;
@@ -67,7 +68,7 @@ final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
     ) {
         $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider
             ?? new CarrierSettingsServiceProvider();
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->lockerDtoFactory = $lockerDtoFactory ?? LockerDtoFactoryFactory::create();
         $this->lockerChoicesProvider = $lockerChoicesProvider ?? new LockerChoicesProvider();
         $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
     }

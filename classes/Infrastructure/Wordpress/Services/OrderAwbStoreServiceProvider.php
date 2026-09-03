@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Services;
 
 use Sameday\Objects\PostAwb\ParcelObject;
+use SamedayCourier\Shipping\Domain\DTOs\CarrierAwbParcelDto;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbParcelMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
 use Throwable;
@@ -15,12 +17,18 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
 {
     private SamedayAwbRepository $samedayAwbRepository;
 
+    private SamedayAwbParcelMapper $awbParcelMapper;
+
     /**
      * @param ?SamedayAwbRepository $samedayAwbRepository
+     * @param ?SamedayAwbParcelMapper $awbParcelMapper
      */
-    public function __construct(?SamedayAwbRepository $samedayAwbRepository = null)
-    {
+    public function __construct(
+        ?SamedayAwbRepository $samedayAwbRepository = null,
+        ?SamedayAwbParcelMapper $awbParcelMapper = null
+    ) {
         $this->samedayAwbRepository = $samedayAwbRepository ?? new SamedayAwbRepository();
+        $this->awbParcelMapper = $awbParcelMapper ?? new SamedayAwbParcelMapper();
     }
 
     /**
@@ -45,22 +53,14 @@ final class OrderAwbStoreServiceProvider implements OrderAwbStoreServiceProvider
      * @param int $orderId
      * @param string $awbNumber
      * @param float $awbCost
-     * @param array<int, array{position: int, awbNumber: string}> $parcels
+     * @param CarrierAwbParcelDto[] $parcels
      *
      * @return bool
      */
     public function save(int $orderId, string $awbNumber, float $awbCost, array $parcels): bool
     {
         try {
-            $parcelObjects = array_map(
-                static function (array $parcel): ParcelObject {
-                    return new ParcelObject(
-                        (int) $parcel['position'],
-                        (string) $parcel['awbNumber']
-                    );
-                },
-                $parcels
-            );
+            $parcelObjects = $this->awbParcelMapper->toSdkCollection($parcels);
 
             $this->samedayAwbRepository->saveAwb([
                 'order_id' => $orderId,

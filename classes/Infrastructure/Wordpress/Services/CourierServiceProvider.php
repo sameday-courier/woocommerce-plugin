@@ -72,6 +72,7 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\ShowAsPdfRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\ShowAsPdfResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbParcelMapper;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ParcelStatusHistoryService;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
@@ -180,15 +181,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             return new PostAwbResponseDto(
                 $postAwb->getAwbNumber(),
                 $postAwb->getCost(),
-                array_map(
-                    static function ($parcel): array {
-                        return [
-                            'position' => (int) $parcel->getPosition(),
-                            'awbNumber' => (string) $parcel->getAwbNumber(),
-                        ];
-                    },
-                    $postAwb->getParcels()
-                )
+                (new SamedayAwbParcelMapper())->mapCollection($postAwb->getParcels())
             );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);

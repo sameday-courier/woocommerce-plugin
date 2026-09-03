@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Locker;
 
-use SamedayCourier\Shipping\Application\UseCases\Locker\Change\ChangeLockerRequest;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\ChangeLockerFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\ChangeLockerRequestFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\ChangeLockerMapper;
 
 final class ChangeLockerController extends AbstractController
@@ -36,10 +36,7 @@ final class ChangeLockerController extends AbstractController
         $changeLocker = ChangeLockerFactory::create();
 
         $result = $changeLocker->execute(
-            new ChangeLockerRequest(
-                $params->orderId(),
-                $params->locker()
-            )
+            ChangeLockerRequestFactory::create()->fromMapper($params)
         );
 
         if ($result->hasError()) {
