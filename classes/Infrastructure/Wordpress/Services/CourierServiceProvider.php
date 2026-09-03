@@ -36,7 +36,8 @@ use Sameday\Requests\SamedayPostAwbRequest;
 use Sameday\Requests\SamedayPostParcelRequest;
 use Sameday\Requests\SamedayPostPickupPointRequest;
 use Sameday\Sameday;
-use SamedayCourier\Shipping\Application\Common\Factories\ParcelDimensionsFactory;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbParcelMapper;
+use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayParcelDimensionsMapper;
 use SamedayCourier\Shipping\Application\Common\Services\AwbErrorParser;
 use SamedayCourier\Shipping\Domain\DTOs\CourierLockerDto;
 use SamedayCourier\Shipping\Domain\DTOs\CourierPickupPointDto;
@@ -72,7 +73,6 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\ShowAsPdfRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\ShowAsPdfResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
-use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayAwbParcelMapper;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\ParcelStatusHistoryService;
 use SamedayCourier\Shipping\Infrastructure\SamedayApi\SdkInitiator;
 
@@ -84,7 +84,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
 
     private ParcelStatusHistoryService $parcelStatusHistoryService;
 
-    private ParcelDimensionsFactory $parcelDimensionsFactory;
+    private SamedayParcelDimensionsMapper $parcelDimensionsMapper;
 
     private SdkInitiator $sdkInitiator;
 
@@ -92,21 +92,21 @@ class CourierServiceProvider implements CourierServiceProviderInterface
      * @param ?Sameday $sameday
      * @param ?AwbErrorParser $awbErrorParser
      * @param ?ParcelStatusHistoryService $parcelStatusHistoryService
-     * @param ?ParcelDimensionsFactory $parcelDimensionsFactory
+     * @param ?SamedayParcelDimensionsMapper $parcelDimensionsMapper
      * @param ?SdkInitiator $sdkInitiator
      */
     public function __construct(
         ?Sameday $sameday = null,
         ?AwbErrorParser $awbErrorParser = null,
         ?ParcelStatusHistoryService $parcelStatusHistoryService = null,
-        ?ParcelDimensionsFactory $parcelDimensionsFactory = null,
+        ?SamedayParcelDimensionsMapper $parcelDimensionsMapper = null,
         ?SdkInitiator $sdkInitiator = null
     ) {
         $this->sdkInitiator = $sdkInitiator ?? new SdkInitiator();
         $this->sameday = $sameday;
         $this->awbErrorParser = $awbErrorParser ?? new AwbErrorParser();
         $this->parcelStatusHistoryService = $parcelStatusHistoryService ?? new ParcelStatusHistoryService();
-        $this->parcelDimensionsFactory = $parcelDimensionsFactory ?? new ParcelDimensionsFactory();
+        $this->parcelDimensionsMapper = $parcelDimensionsMapper ?? new SamedayParcelDimensionsMapper();
     }
 
     /**
@@ -156,7 +156,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                     $awbRequestDto->getPickupPointId(),
                     $awbRequestDto->getContactPersonId(),
                     new PackageType($awbRequestDto->getPackageType()),
-                    $this->parcelDimensionsFactory->fromList($awbRequestDto->getParcelsDimensions()),
+                    $this->parcelDimensionsMapper->fromList($awbRequestDto->getParcelsDimensions()),
                     $awbRequestDto->getServiceId(),
                     new AwbPaymentType($awbRequestDto->getAwbPayment()),
                     $this->toAwbRecipientEntity($awbRequestDto->getAwbRecipient()),
@@ -265,7 +265,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
             $parcel = $this->getSameday()->postParcel(
                 new SamedayPostParcelRequest(
                     $postParcelRequestDto->getAwbNumber(),
-                    $this->parcelDimensionsFactory->fromAttributes(
+                    $this->parcelDimensionsMapper->fromAttributes(
                         $postParcelRequestDto->getParcelWeight(),
                         $postParcelRequestDto->getParcelWidth(),
                         $postParcelRequestDto->getParcelLength(),
@@ -580,7 +580,7 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                     $requestDto->getPickupPointId(),
                     $requestDto->getContactPersonId(),
                     new PackageType($requestDto->getPackageType()),
-                    $this->parcelDimensionsFactory->fromList($requestDto->getParcelsDimensions()),
+                    $this->parcelDimensionsMapper->fromList($requestDto->getParcelsDimensions()),
                     $requestDto->getServiceId(),
                     new AwbPaymentType($requestDto->getAwbPayment()),
                     $this->toAwbRecipientEntity($requestDto->getAwbRecipient()),

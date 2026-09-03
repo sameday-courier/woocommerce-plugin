@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SamedayCourier\Shipping\Application\Common\Factories;
+namespace SamedayCourier\Shipping\Infrastructure\Services\Mappers;
 
 use Sameday\Objects\ParcelDimensionsObject;
 
-final class ParcelDimensionsFactory
+final class SamedayParcelDimensionsMapper
 {
     /**
      * @param mixed $weight
@@ -31,7 +31,7 @@ final class ParcelDimensionsFactory
     }
 
     /**
-     * @param array $parcels
+     * @param array<int, array<string, mixed>> $parcels
      *
      * @return ParcelDimensionsObject[]
      */
