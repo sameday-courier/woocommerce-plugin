@@ -6,9 +6,6 @@ namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use SamedayCourier\Shipping\Application\Common\AbstractUseCase;
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
-use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
-use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
-use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\DTOs\Requests\OrderShippingChangesRequestDto;
@@ -118,9 +115,9 @@ final class GenerateAwb extends AbstractUseCase
         $packageDimensions = $this->normalizePackageDimensions($request->getPackageDimensions());
         $carrierService = $this->serviceCatalogStore->getBySamedayId($request->getServiceId());
         $pickupPoint = $this->pickupPointStore->getBySamedayId($request->getPickupPointId());
-        $shipping = (new ShippingDtoFactory())->fromInput($request->getShipping());
-        $billing = (new BillingDtoFactory())->fromInput($request->getBilling());
-        $locker = (new LockerDtoFactory())->fromInput($request->getLocker());
+        $shipping = $request->getShipping();
+        $billing = $request->getBilling();
+        $locker = $request->getLocker();
 
         $carrierServiceRules = new CarrierServiceRules($this->serviceCatalogStore);
         $awbValidator = (new GenerateAwbValidator())->validate(

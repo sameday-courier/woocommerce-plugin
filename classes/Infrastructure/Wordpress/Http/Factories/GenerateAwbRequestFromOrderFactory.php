@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories;
 
 use InvalidArgumentException;
-use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwbRequest;
 use SamedayCourier\Shipping\Domain\CarrierAwbPaymentTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -51,9 +50,9 @@ final class GenerateAwbRequestFromOrderFactory
     private CarrierServiceRules $carrierServiceRules;
 
     /**
-     * @var LockerDtoFactory $lockerDtoFactory
+     * @var GenerateAwbRequestFactory $generateAwbRequestFactory
      */
-    private LockerDtoFactory $lockerDtoFactory;
+    private GenerateAwbRequestFactory $generateAwbRequestFactory;
 
     /**
      * @param GenerateAwbOrderProviderInterface $orderProvider
@@ -62,7 +61,7 @@ final class GenerateAwbRequestFromOrderFactory
      * @param SamedayPickupPointRepository $samedayPickupPointRepository
      * @param SamedayServiceRepository $samedayServiceRepository
      * @param CarrierServiceRules $carrierServiceRules
-     * @param LockerDtoFactory|null $lockerDtoFactory
+     * @param GenerateAwbRequestFactory|null $generateAwbRequestFactory
      */
     public function __construct(
         GenerateAwbOrderProviderInterface $orderProvider,
@@ -71,7 +70,7 @@ final class GenerateAwbRequestFromOrderFactory
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayServiceRepository $samedayServiceRepository,
         CarrierServiceRules $carrierServiceRules,
-        ?LockerDtoFactory $lockerDtoFactory = null
+        ?GenerateAwbRequestFactory $generateAwbRequestFactory = null
     ) {
         $this->orderProvider = $orderProvider;
         $this->orderWeightCalculator = $orderWeightCalculator;
@@ -79,7 +78,7 @@ final class GenerateAwbRequestFromOrderFactory
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayServiceRepository = $samedayServiceRepository;
-        $this->lockerDtoFactory = $lockerDtoFactory ?? new LockerDtoFactory();
+        $this->generateAwbRequestFactory = $generateAwbRequestFactory ?? GenerateAwbRequestFactory::create();
     }
 
     /**
@@ -148,24 +147,7 @@ final class GenerateAwbRequestFromOrderFactory
 
         $mapper = new GenerateAwbMapper($inputParams);
 
-        return new GenerateAwbRequest(
-            $mapper->orderId(),
-            $mapper->serviceId(),
-            $mapper->pickupPointId(),
-            $mapper->shippingLines(),
-            $mapper->shipping(),
-            $mapper->billing(),
-            $mapper->locker(),
-            $mapper->hasOpenPackage(),
-            $mapper->hasLockerFirstMile(),
-            $mapper->packageType(),
-            $mapper->awbPayment(),
-            $mapper->insuranceValue(),
-            $mapper->repayment(),
-            $mapper->clientReference(),
-            $mapper->observation(),
-            $mapper->packageDimensions()
-        );
+        return $this->generateAwbRequestFactory->fromMapper($mapper);
     }
 
     /**
@@ -180,7 +162,7 @@ final class GenerateAwbRequestFromOrderFactory
             return null;
         }
 
-        $lockerDto = $this->lockerDtoFactory->fromInput($locker);
+        $lockerDto = $this->generateAwbRequestFactory->getLockerDtoFactory()->fromInput($locker);
 
         if (
             null !== $lockerDto

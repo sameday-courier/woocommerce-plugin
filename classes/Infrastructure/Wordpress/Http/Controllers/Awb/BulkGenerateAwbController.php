@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 
 use Exception;
+use SamedayCourier\Shipping\Application\Common\Factories\BillingDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
+use SamedayCourier\Shipping\Application\Common\Factories\ShippingDtoFactory;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooGenerateAwbOrderProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbFactory;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFromOrderFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayAwbRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
 
 final class BulkGenerateAwbController extends AbstractRecursiveBulkController
 {
@@ -41,6 +47,13 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
         $dbHandler = new DbHandler();
         $samedayAwbRepository = new SamedayAwbRepository($dbHandler);
         $samedayServiceRepository = new SamedayServiceRepository($dbHandler);
+        $generateAwbRequestFactory = new GenerateAwbRequestFactory(
+            new ShippingDtoFactory(),
+            new BillingDtoFactory(),
+            new LockerDtoFactory(
+                new LockerServiceProvider(new SamedayLockerRepository($dbHandler))
+            )
+        );
         $requestFactory = new GenerateAwbRequestFromOrderFactory(
             new WooGenerateAwbOrderProvider(),
             new WooOrderWeightCalculator(),
@@ -48,6 +61,7 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
             new CarrierServiceRules($samedayServiceRepository),
+            $generateAwbRequestFactory
         );
 
         try {

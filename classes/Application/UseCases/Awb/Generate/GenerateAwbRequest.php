@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Application\UseCases\Awb\Generate;
 
 use SamedayCourier\Shipping\Application\Common\Interfaces\RequestInterface;
+use SamedayCourier\Shipping\Domain\DTOs\BillingDto;
+use SamedayCourier\Shipping\Domain\DTOs\LockerDto;
+use SamedayCourier\Shipping\Domain\DTOs\ShippingDto;
 
 final class GenerateAwbRequest implements RequestInterface
 {
@@ -29,19 +32,19 @@ final class GenerateAwbRequest implements RequestInterface
     private array $shippingLines;
 
     /**
-     * @var array<string, mixed> $shipping
+     * @var ShippingDto $shipping
      */
-    private array $shipping;
+    private ShippingDto $shipping;
 
     /**
-     * @var array<string, mixed> $billing
+     * @var BillingDto $billing
      */
-    private array $billing;
+    private BillingDto $billing;
 
     /**
-     * @var mixed $locker
+     * @var LockerDto|null $locker
      */
-    private $locker;
+    private ?LockerDto $locker;
 
     /**
      * @var bool $hasOpenPackage
@@ -93,9 +96,9 @@ final class GenerateAwbRequest implements RequestInterface
      * @param int $serviceId
      * @param int $pickupPointId
      * @param array $shippingLines
-     * @param array $shipping
-     * @param array $billing
-     * @param mixed $locker
+     * @param ShippingDto $shipping
+     * @param BillingDto $billing
+     * @param LockerDto|null $locker
      * @param bool $hasOpenPackage
      * @param bool $hasLockerFirstMile
      * @param int $packageType
@@ -111,9 +114,9 @@ final class GenerateAwbRequest implements RequestInterface
         int $serviceId,
         int $pickupPointId,
         array $shippingLines,
-        array $shipping,
-        array $billing,
-        $locker,
+        ShippingDto $shipping,
+        BillingDto $billing,
+        ?LockerDto $locker,
         bool $hasOpenPackage,
         bool $hasLockerFirstMile,
         int $packageType,
@@ -175,25 +178,25 @@ final class GenerateAwbRequest implements RequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return ShippingDto
      */
-    public function getShipping(): array
+    public function getShipping(): ShippingDto
     {
         return $this->shipping;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return BillingDto
      */
-    public function getBilling(): array
+    public function getBilling(): BillingDto
     {
         return $this->billing;
     }
 
     /**
-     * @return mixed
+     * @return LockerDto|null
      */
-    public function getLocker()
+    public function getLocker(): ?LockerDto
     {
         return $this->locker;
     }
