@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 
-use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 
@@ -56,26 +55,6 @@ final class WooSessionHandler implements SessionHandlerInterface
     }
 
     /**
-     * WooCommerce stores the checkout payment gateway id under chosen_payment_method.
-     *
-     * @return string|null
-     */
-    public function getChosenPaymentMethod(): ?string
-    {
-        $paymentMethod = $this->get(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD);
-
-        if (!is_string($paymentMethod) || '' === $paymentMethod) {
-            return null;
-        }
-
-        return $paymentMethod;
-    }
-
-    /**
-     * WooCommerce only boots the session for frontend requests, so it is absent
-     * on admin-ajax until initialized. Initialize it when missing so a simple
-     * session->set() works the same from classic and Blocks checkout.
-     *
      * @return object|null
      */
     private function resolveSession(): ?object

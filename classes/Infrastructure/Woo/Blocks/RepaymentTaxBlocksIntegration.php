@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Blocks;
 
-use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
-use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
+use SamedayCourier\Shipping\Domain\Ports\ChosenPaymentMethodReaderInterface;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
 /**
@@ -34,21 +33,21 @@ final class RepaymentTaxBlocksIntegration extends AbstractBlocksIntegration
     private CarrierSettingsServiceProvider $carrierSettingsServiceProvider;
 
     /**
-     * @var SessionHandlerInterface $sessionHandler
+     * @var ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader
      */
-    private SessionHandlerInterface $sessionHandler;
+    private ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader;
 
     /**
      * @param CarrierSettingsServiceProvider|null $carrierSettingsServiceProvider
-     * @param SessionHandlerInterface|null $sessionHandler
+     * @param ChosenPaymentMethodReaderInterface|null $chosenPaymentMethodReader
      */
     public function __construct(
         ?CarrierSettingsServiceProvider $carrierSettingsServiceProvider = null,
-        ?SessionHandlerInterface $sessionHandler = null
+        ?ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader = null
     ) {
         $this->carrierSettingsServiceProvider = $carrierSettingsServiceProvider
             ?? new CarrierSettingsServiceProvider();
-        $this->sessionHandler = $sessionHandler ?? new WooSessionHandler();
+        $this->chosenPaymentMethodReader = $chosenPaymentMethodReader ?? new WooChosenPaymentMethodReader();
     }
 
     /**
@@ -100,12 +99,12 @@ final class RepaymentTaxBlocksIntegration extends AbstractBlocksIntegration
             return [];
         }
 
-        $sessionPaymentMethod = $this->sessionHandler->get(CarrierSessionKeys::CHOSEN_PAYMENT_METHOD);
+        $sessionPaymentMethod = $this->chosenPaymentMethodReader->getChosenPaymentMethod();
 
         return [
             'cartUpdateNamespace' => self::CART_UPDATE_NAMESPACE,
             'cartUpdateField' => self::CART_UPDATE_FIELD,
-            'sessionPaymentMethod' => is_string($sessionPaymentMethod) ? $sessionPaymentMethod : '',
+            'sessionPaymentMethod' => $sessionPaymentMethod ?? '',
         ];
     }
 

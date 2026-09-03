@@ -32,12 +32,14 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProv
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
+use SamedayCourier\Shipping\Domain\Ports\ChosenPaymentMethodReaderInterface;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
@@ -84,6 +86,11 @@ final class SamedayCourier extends WC_Shipping_Method
     private SessionHandlerInterface $sessionHandler;
 
     /**
+     * @var ChosenPaymentMethodReaderInterface
+     */
+    private ChosenPaymentMethodReaderInterface $chosenPaymentMethodReader;
+
+    /**
      * @var WeightConverterInterface
      */
     private WeightConverterInterface $weightConverter;
@@ -127,7 +134,9 @@ final class SamedayCourier extends WC_Shipping_Method
         $this->samedayServiceRepository = new SamedayServiceRepository();
         $this->carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
         $this->wooCommerceHandler = new WooHandler();
-        $this->sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
+        $sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
+        $this->sessionHandler = $sessionHandler;
+        $this->chosenPaymentMethodReader = new WooChosenPaymentMethodReader($sessionHandler);
         $this->weightConverter = new WooWeightHandler();
         $this->stateCodeResolver = new WooStateCodeResolver(new WooCountriesHandler($this->wooCommerceHandler));
         $this->courierServiceProvider = new CourierServiceProvider();
@@ -285,7 +294,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         // Check if the client has to pay anything as repayment value
         $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
-        $paymentMethod = $this->sessionHandler->getChosenPaymentMethod();
+        $paymentMethod = $this->chosenPaymentMethodReader->getChosenPaymentMethod();
         if (null !== $paymentMethod && CarrierConstants::CASH_ON_DELIVERY !== $paymentMethod) {
             $repaymentAmount = 0;
         }
