@@ -45,7 +45,7 @@ final class RemoveAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectToReferer();
+            $this->redirectTo();
         }
 
         if ('' !== $result->getNoticeMessage()) {
@@ -57,6 +57,6 @@ final class RemoveAwbController extends AbstractController
             );
         }
 
-        $this->redirectToReferer();
+        $this->redirectTo();
     }
 }
