@@ -182,7 +182,6 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 = 2.2.1 =
 
 * Add Show as PDF and Remove AWB actions in the WooCommerce orders list AWB column.
-* Improve AWB remove flow: attempt API removal first, then always remove the local AWB record (including when the API call fails).
 
 = 2.2.0 =
 
