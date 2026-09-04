@@ -45,9 +45,7 @@ final class RemoveAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectAfterRemove($orderId);
-
-            return;
+            $this->redirectToReferer();
         }
 
         if ('' !== $result->getNoticeMessage()) {
@@ -59,38 +57,6 @@ final class RemoveAwbController extends AbstractController
             );
         }
 
-        $this->redirectAfterRemove($orderId);
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     */
-    private function redirectAfterRemove(int $orderId): void
-    {
-        $referer = wp_get_referer();
-        if (false !== $referer && '' !== $referer) {
-            wp_safe_redirect($referer);
-            exit;
-        }
-
-        $this->redirectToOrderEdit($orderId);
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     */
-    private function redirectToOrderEdit(int $orderId): void
-    {
-        $this->redirectTo(
-            'post.php',
-            [
-                'post' => $orderId,
-                'action' => 'edit',
-            ]
-        );
+        $this->redirectToReferer();
     }
 }

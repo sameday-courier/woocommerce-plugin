@@ -42,10 +42,22 @@ declare(strict_types=1);
             </button>
         </div>
         <div class="sameday-bulk-awb-modal__body">
+            <div class="sameday-bulk-awb-modal__notice notice notice-error"
+                 data-sameday-modal-notice
+                 hidden
+                 role="alert"></div>
             <?php echo $body; ?>
         </div>
         <div class="sameday-bulk-awb-modal__footer">
             <?php echo $footerHtml; ?>
+        </div>
+        <div class="sameday-bulk-awb-modal__busy"
+             data-sameday-modal-busy
+             hidden
+             aria-live="polite"
+             aria-busy="true">
+            <div class="sameday-bulk-awb-modal__spinner" aria-hidden="true"></div>
+            <p class="sameday-bulk-awb-modal__starting-text" data-sameday-modal-busy-text></p>
         </div>
     </div>
 </div>

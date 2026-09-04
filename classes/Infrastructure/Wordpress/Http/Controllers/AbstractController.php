@@ -63,6 +63,27 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * @param string $fallbackMainPath
+     * @param array $fallbackQueryArgs
+     *
+     * @return void
+     */
+    protected function redirectToReferer(string $fallbackMainPath = '', array $fallbackQueryArgs = []): void
+    {
+        $referer = wp_get_referer();
+        if (false !== $referer && '' !== $referer) {
+            wp_safe_redirect($referer);
+            exit;
+        }
+
+        if ('' !== $fallbackMainPath) {
+            $this->redirectTo($fallbackMainPath, $fallbackQueryArgs);
+        }
+
+        exit;
+    }
+
+    /**
      * @param array $inputParams
      *
      * @return void

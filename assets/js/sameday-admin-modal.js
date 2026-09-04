@@ -5,7 +5,10 @@
         modalSelector: '[data-sameday-modal]',
         openSelector: '[data-sameday-modal-open]',
         closeSelector: '[data-sameday-modal-close]',
-        openDataKey: 'samedayModalOpen'
+        openDataKey: 'samedayModalOpen',
+        canClose: function ($modal) {
+            return !$modal.hasClass('is-busy');
+        }
     });
 
     $(function () {

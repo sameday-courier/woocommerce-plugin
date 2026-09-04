@@ -209,6 +209,12 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'sameday-modal-core'],
                 true
             ),
+            'sameday-admin-modal-confirm' => self::addScript(
+                'sameday-admin-modal-confirm',
+                self::WP_CONTEXT['admin_full'],
+                ['jquery', 'sameday-admin-modal'],
+                true
+            ),
             'sameday-admin-modal-pickup' => self::withHandle(
                 self::addScript(
                     'sameday-admin-modal',
@@ -299,10 +305,19 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ),
                 'sameday-admin-modal'
             ),
+            'sameday-admin-modal-confirm-orders' => self::withHandle(
+                self::addScript(
+                    'sameday-admin-modal-confirm',
+                    self::WP_CONTEXT['orders_list'],
+                    ['jquery', 'sameday-admin-modal'],
+                    true
+                ),
+                'sameday-admin-modal-confirm'
+            ),
             'sameday-orders-list-awb-form' => self::addScript(
                 'sameday-orders-list-awb-form',
                 self::WP_CONTEXT['orders_list'],
-                ['jquery'],
+                ['jquery', 'sameday-admin-modal-confirm'],
                 true
             ),
             'sameday-show-awb-as-pdf' => self::addScript(
@@ -314,7 +329,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-remove-awb-orders-list' => self::addScript(
                 'remove-awb-orders-list',
                 self::WP_CONTEXT['orders_list'],
-                ['jquery', 'sameday-orders-list-awb-form', 'sameday-admin-modal'],
+                ['jquery', 'sameday-orders-list-awb-form', 'sameday-admin-modal-confirm'],
                 true
             ),
         ];

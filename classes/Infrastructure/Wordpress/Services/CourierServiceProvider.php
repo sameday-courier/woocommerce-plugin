@@ -225,7 +225,9 @@ class CourierServiceProvider implements CourierServiceProviderInterface
                 new SamedayDeleteAwbRequest($removeAwbRequestDto->getAwb())
             );
 
-            return new RemoveAwbResponseDto();
+            return new RemoveAwbResponseDto(
+                'Awb removed with success.'
+            );
         } catch (Exception $exception) {
             throw $this->toCourierServiceException($exception);
         }
