@@ -6,8 +6,10 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories;
 
 use SamedayCourier\Shipping\Application\UseCases\Awb\Generate\GenerateAwb;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooCountriesHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusUpdater;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSamedayShippingHdAddressParser;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooStateCodeResolver;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderShippingChangesServiceProvider;
@@ -30,7 +32,9 @@ final class GenerateAwbFactory
             new OrderShippingChangesServiceProvider(),
             new WooSamedayShippingHdAddressParser(),
             new WooStateCodeResolver(new WooCountriesHandler()),
-            new SamedayCityRepository()
+            new SamedayCityRepository(),
+            new CarrierSettingsServiceProvider(),
+            new WooOrderStatusUpdater()
         );
     }
 }

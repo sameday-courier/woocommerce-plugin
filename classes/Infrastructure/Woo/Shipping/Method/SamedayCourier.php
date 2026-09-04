@@ -521,7 +521,18 @@ final class SamedayCourier extends WC_Shipping_Method
                     'no' => TranslatorHandler::translate('No'),
                     'yes' => TranslatorHandler::translate('Yes'),
                 ]
-            )
+            ),
+
+            'order_status_after_awb' => array(
+                'title' => TranslatorHandler::translate('Order status after AWB'),
+                'type' => 'select',
+                'description' => TranslatorHandler::translate(
+                    'When an AWB is generated successfully, change the WooCommerce order to this status.'
+                    . ' Choose "Do not change" to keep the current status.'
+                ),
+                'default' => '',
+                'options' => $this->getOrderStatusAfterAwbOptions(),
+            ),
         );
 
         // Show on checkout:
@@ -646,5 +657,25 @@ final class SamedayCourier extends WC_Shipping_Method
             && 'wc-settings' === $_GET['page']
             && 'shipping' === $_GET['tab']
             && $this->id === $_GET['section'];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getOrderStatusAfterAwbOptions(): array
+    {
+        $options = [
+            '' => TranslatorHandler::translate('Do not change'),
+        ];
+
+        if (!function_exists('wc_get_order_statuses')) {
+            return $options;
+        }
+
+        foreach (wc_get_order_statuses() as $status => $label) {
+            $options[(string) $status] = (string) $label;
+        }
+
+        return $options;
     }
 }
