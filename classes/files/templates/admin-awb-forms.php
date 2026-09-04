@@ -25,4 +25,5 @@ declare(strict_types=1);
 <form id="removeAwb" method="POST" action="<?php echo esc_url($actionUrl); ?>">
     <input type="hidden" name="action" value="remove-awb">
     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($removeAwbNonce); ?>">
+    <?php echo wp_referer_field(false); ?>
 </form>

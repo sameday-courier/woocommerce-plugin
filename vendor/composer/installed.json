@@ -60,6 +60,6 @@
             "install-path": "../sameday-courier/php-sdk"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }
