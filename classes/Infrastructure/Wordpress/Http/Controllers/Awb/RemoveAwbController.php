@@ -48,14 +48,12 @@ final class RemoveAwbController extends AbstractController
             $this->redirectTo();
         }
 
-        if ('' !== $result->getNoticeMessage()) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($result->getNoticeMessage()),
-                $result->hasError()
-                    ? ResponseNoticeType::ERROR
-                    : ResponseNoticeType::SUCCESS,
-            );
-        }
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError()
+                ? ResponseNoticeType::ERROR
+                : ResponseNoticeType::SUCCESS,
+        );
 
         $this->redirectTo();
     }

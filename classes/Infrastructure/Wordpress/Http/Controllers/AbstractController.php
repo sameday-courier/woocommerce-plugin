@@ -60,7 +60,7 @@ abstract class AbstractController implements ControllerInterface
      * @param string|null $mainPath
      * @param array $queryArgs
      *
-     * @return void
+     * @return never
      */
     protected function redirectTo(?string $mainPath = null, array $queryArgs = []): void
     {
@@ -78,14 +78,14 @@ abstract class AbstractController implements ControllerInterface
         }
 
         wp_safe_redirect($location);
-        exit;
+        exit();
     }
 
     /**
      * @param string $message
      * @param int $statusCode
      *
-     * @return void
+     * @return never
      */
     private function terminateAdminRequest(string $message, int $statusCode = 500): void
     {
