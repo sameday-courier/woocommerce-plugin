@@ -77,7 +77,7 @@
             }
 
             var agreed = $modal().find(agreeSelector).is(':checked');
-            $modal().find(confirmSelector).prop('disabled', !agreed);
+            $modal().find(CONFIRM_SELECTOR).prop('disabled', !agreed);
         }
 
         function showNotice(message) {
