@@ -290,6 +290,33 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 ['jquery', 'sameday-modal-core', 'sameday-recursive-job'],
                 true
             ),
+            'sameday-admin-modal-orders' => self::withHandle(
+                self::addScript(
+                    'sameday-admin-modal',
+                    self::WP_CONTEXT['orders_list'],
+                    ['jquery', 'sameday-modal-core'],
+                    true
+                ),
+                'sameday-admin-modal'
+            ),
+            'sameday-orders-list-awb-form' => self::addScript(
+                'sameday-orders-list-awb-form',
+                self::WP_CONTEXT['orders_list'],
+                ['jquery'],
+                true
+            ),
+            'sameday-show-awb-as-pdf' => self::addScript(
+                'show-awb-as-pdf',
+                self::WP_CONTEXT['orders_list'],
+                ['jquery', 'sameday-orders-list-awb-form'],
+                true
+            ),
+            'sameday-remove-awb-orders-list' => self::addScript(
+                'remove-awb-orders-list',
+                self::WP_CONTEXT['orders_list'],
+                ['jquery', 'sameday-orders-list-awb-form', 'sameday-admin-modal'],
+                true
+            ),
         ];
 
         return self::$scripts;

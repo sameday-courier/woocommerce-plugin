@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
@@ -63,7 +64,9 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo esc_html((string) $awb->getAwbNumber());
+        echo '<span style="display: block">' . esc_html((string) $awb->getAwbNumber()) . '</span>';
+        echo $this->generateShowPDFButton($awb);
+        echo $this->removeAWB($awb);
     }
 
     /**
@@ -84,6 +87,46 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         return sprintf(
             '<span hidden data-sameday-currency-warning="%s"></span>',
             esc_attr($currencyWarning)
+        );
+    }
+
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string
+     */
+    private function generateShowPDFButton(CarrierAwb $awb): string
+    {
+        return sprintf(
+            '<button type="button"
+                    class="sameday-show-awb-pdf button-link wp-menu-image dashicons-before dashicons-admin-page"
+                    style="display: inline-block"
+                    title="%s"
+                    data-order-id="%s"
+                    data-awb-number="%s"></button>',
+            esc_attr('Show as PDF'),
+            esc_attr((string) $awb->getOrderId()),
+            esc_attr((string) $awb->getAwbNumber())
+        );
+    }
+
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string
+     */
+    private function removeAWB(CarrierAwb $awb): string
+    {
+        return sprintf(
+            '<button type="button"
+                    class="sameday-remove-awb button-link wp-menu-image dashicons-before dashicons-trash"
+                    style="display: inline-block; color: #b32d2e;"
+                    title="%s"
+                    data-order-id="%s"
+                    data-awb-number="%s"></button>',
+            esc_attr('Remove AWB'),
+            esc_attr((string) $awb->getOrderId()),
+            esc_attr((string) $awb->getAwbNumber())
         );
     }
 }
