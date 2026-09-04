@@ -14,11 +14,13 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\DTOs\Responses\PostAwbResponseDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Models\CarrierService;
+use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\Ports\CityPostalCodeProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingChangesServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderStatusUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\PickupPointStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\ServiceCatalogStoreServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
@@ -76,6 +78,16 @@ final class GenerateAwb extends AbstractUseCase
     private CityPostalCodeProviderInterface $cityPostalCodeProvider;
 
     /**
+     * @var CarrierSettingsProviderInterface $carrierSettingsProvider
+     */
+    private CarrierSettingsProviderInterface $carrierSettingsProvider;
+
+    /**
+     * @var OrderStatusUpdaterInterface $orderStatusUpdater
+     */
+    private OrderStatusUpdaterInterface $orderStatusUpdater;
+
+    /**
      * @param ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore
      * @param PickupPointStoreServiceProviderInterface $pickupPointStore
      * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
@@ -84,6 +96,8 @@ final class GenerateAwb extends AbstractUseCase
      * @param CarrierShippingHdAddressParserInterface $hdAddressParser
      * @param StateCodeResolverInterface $stateCodeResolver
      * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
+     * @param CarrierSettingsProviderInterface $carrierSettingsProvider
+     * @param OrderStatusUpdaterInterface $orderStatusUpdater
      */
     public function __construct(
         ServiceCatalogStoreServiceProviderInterface $serviceCatalogStore,
@@ -93,7 +107,9 @@ final class GenerateAwb extends AbstractUseCase
         OrderShippingChangesServiceProviderInterface $orderShippingChangesServiceProvider,
         CarrierShippingHdAddressParserInterface $hdAddressParser,
         StateCodeResolverInterface $stateCodeResolver,
-        CityPostalCodeProviderInterface $cityPostalCodeProvider
+        CityPostalCodeProviderInterface $cityPostalCodeProvider,
+        CarrierSettingsProviderInterface $carrierSettingsProvider,
+        OrderStatusUpdaterInterface $orderStatusUpdater
     ) {
         $this->serviceCatalogStore = $serviceCatalogStore;
         $this->pickupPointStore = $pickupPointStore;
@@ -103,6 +119,8 @@ final class GenerateAwb extends AbstractUseCase
         $this->hdAddressParser = $hdAddressParser;
         $this->stateCodeResolver = $stateCodeResolver;
         $this->cityPostalCodeProvider = $cityPostalCodeProvider;
+        $this->carrierSettingsProvider = $carrierSettingsProvider;
+        $this->orderStatusUpdater = $orderStatusUpdater;
     }
 
     /**
@@ -248,9 +266,30 @@ final class GenerateAwb extends AbstractUseCase
             $message .= sprintf("but %s", $applyOrderChanges->getMessage());
         }
 
+        $this->maybeUpdateOrderStatusAfterAwb($request->getOrderId());
+
         return new GenerateAwbResponse(
             $message,
             false
+        );
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return void
+     */
+    private function maybeUpdateOrderStatusAfterAwb(int $orderId): void
+    {
+        $status = $this->carrierSettingsProvider->get()->getOrderStatusAfterAwb();
+        if (null === $status || '' === $status) {
+            return;
+        }
+
+        $this->orderStatusUpdater->update(
+            $orderId,
+            $status,
+            'Sameday AWB generated successfully.'
         );
     }
 
