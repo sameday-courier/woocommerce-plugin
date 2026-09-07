@@ -31,6 +31,42 @@
     overflow: hidden;
 }
 
+.sameday-bulk-awb-modal.is-busy .sameday-bulk-awb-modal__dialog {
+    pointer-events: none;
+}
+
+.sameday-bulk-awb-modal__notice {
+    margin: 0 0 16px;
+    padding: 10px 12px;
+}
+
+.sameday-bulk-awb-modal__notice[hidden] {
+    display: none !important;
+}
+
+.sameday-bulk-awb-modal__busy {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: rgba(255, 255, 255, 0.82);
+    text-align: center;
+}
+
+.sameday-bulk-awb-modal__busy[hidden] {
+    display: none !important;
+}
+
+.sameday-bulk-awb-modal.is-busy .sameday-bulk-awb-modal__close,
+.sameday-bulk-awb-modal.is-busy [data-sameday-modal-close] {
+    pointer-events: none;
+    opacity: 0.45;
+}
+
 .sameday-bulk-awb-modal__header {
     display: flex;
     align-items: flex-start;

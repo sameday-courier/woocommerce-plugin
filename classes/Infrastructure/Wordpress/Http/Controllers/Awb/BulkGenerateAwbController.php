@@ -62,20 +62,16 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
             $status = $result->hasError()
                 ? ResponseNoticeType::ERROR
                 : ResponseNoticeType::SUCCESS;
-            $message = $result->hasError()
-                ? TranslatorHandler::translate($result->getNoticeMessage())
-                : TranslatorHandler::translate('Successfully generated.');
 
             $awbNumber = null;
             if (ResponseNoticeType::SUCCESS === $status) {
                 $awb = $samedayAwbRepository->getAwbForOrderId($itemId);
                 $awbNumber = null !== $awb ? $awb->getAwbNumber() : null;
-                $message = TranslatorHandler::translate('Successfully generated.');
             }
 
             return [
                 'status' => $status,
-                'message' => $message,
+                'message' => TranslatorHandler::translate($result->getNoticeMessage()),
                 'awbNumber' => $awbNumber,
             ];
         } catch (Exception $exception) {

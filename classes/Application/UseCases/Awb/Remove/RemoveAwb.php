@@ -68,7 +68,7 @@ final class RemoveAwb extends AbstractUseCase
         }
 
         try {
-            $this->courierServiceProvider->removeAwb(
+            $remoteRemoveResult = $this->courierServiceProvider->removeAwb(
                 new RemoveAwbRequestDto((string) $awb->getAwbNumber())
             );
         } catch (CourierServiceException $exception) {
@@ -78,10 +78,19 @@ final class RemoveAwb extends AbstractUseCase
             );
         }
 
-        $this->postRemoveAwbServiceProvider->apply(new PostRemoveAwbRequestDto($awb));
+        $message = $remoteRemoveResult->getMessage();
+
+        $localRemoveResult = $this->postRemoveAwbServiceProvider->apply(
+            new PostRemoveAwbRequestDto($awb)
+        );
+
+        if (!$localRemoveResult->isSuccess()) {
+            $message .= ' but the local record could not be deleted from your store.'
+                . ' Please remove the remaining AWB entry from this order manually.';
+        }
 
         return new RemoveAwbResponse(
-            'Awb removed with success.',
+            $message,
             false
         );
     }

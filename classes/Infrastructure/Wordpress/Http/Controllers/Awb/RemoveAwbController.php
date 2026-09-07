@@ -45,36 +45,16 @@ final class RemoveAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectToOrderEdit($orderId);
-
-            return;
+            $this->redirectTo();
         }
 
-        if ('' !== $result->getNoticeMessage()) {
-            NoticerHandler::addFlashNotice(
-                TranslatorHandler::translate($result->getNoticeMessage()),
-                $result->hasError()
-                    ? ResponseNoticeType::ERROR
-                    : ResponseNoticeType::SUCCESS,
-            );
-        }
-
-        $this->redirectToOrderEdit($orderId);
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     */
-    private function redirectToOrderEdit(int $orderId): void
-    {
-        $this->redirectTo(
-            'post.php',
-            [
-                'post' => $orderId,
-                'action' => 'edit',
-            ]
+        NoticerHandler::addFlashNotice(
+            TranslatorHandler::translate($result->getNoticeMessage()),
+            $result->hasError()
+                ? ResponseNoticeType::ERROR
+                : ResponseNoticeType::SUCCESS,
         );
+
+        $this->redirectTo();
     }
 }
