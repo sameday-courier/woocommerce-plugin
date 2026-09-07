@@ -6,10 +6,10 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
-final class AwbNumberColumnInWcOrderGrid extends AbstractFilter
+final class AwbActionsColumnInWcOrderGrid extends AbstractFilter
 {
     private const FILTER = 'manage_woocommerce_page_wc-orders_columns';
-    public const COLUMN_KEY = 'sameday_awb_number';
+    public const COLUMN_KEY = 'sameday_awb_actions';
 
     /**
      * @return string
@@ -48,7 +48,7 @@ final class AwbNumberColumnInWcOrderGrid extends AbstractFilter
         }
 
         unset($columns[self::COLUMN_KEY]);
-        $columns[self::COLUMN_KEY] = TranslatorHandler::translate('Sameday Awb Number');
+        $columns[self::COLUMN_KEY] = TranslatorHandler::translate('Awb actions');
 
         return $columns;
     }

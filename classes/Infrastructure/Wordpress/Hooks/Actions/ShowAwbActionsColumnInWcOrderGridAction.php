@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColumnInWcOrderGrid;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
-final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
+final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';
 
@@ -48,7 +49,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         $column = $args[0] ?? null;
         $order = $args[1] ?? null;
 
-        if (AwbNumberColumnInWcOrderGrid::COLUMN_KEY !== $column) {
+        if (AwbActionsColumnInWcOrderGrid::COLUMN_KEY !== $column) {
             return;
         }
 
@@ -64,9 +65,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo '<span style="display: block">' . esc_html((string) $awb->getAwbNumber()) . '</span>';
-        echo $this->generateShowPDFButton($awb);
-        echo $this->removeAWB($awb);
+        echo $this->buildColumnContent($awb);
     }
 
     /**
@@ -95,38 +94,11 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
      *
      * @return string
      */
-    private function generateShowPDFButton(CarrierAwb $awb): string
+    private function buildColumnContent(CarrierAwb $awb): string
     {
-        return sprintf(
-            '<button type="button"
-                    class="sameday-show-awb-pdf button-link wp-menu-image dashicons-before dashicons-admin-page"
-                    style="display: inline-block"
-                    title="%s"
-                    data-order-id="%s"
-                    data-awb-number="%s"></button>',
-            esc_attr('Show as PDF'),
-            esc_attr((string) $awb->getOrderId()),
-            esc_attr((string) $awb->getAwbNumber())
-        );
-    }
-
-    /**
-     * @param CarrierAwb $awb
-     *
-     * @return string
-     */
-    private function removeAWB(CarrierAwb $awb): string
-    {
-        return sprintf(
-            '<button type="button"
-                    class="sameday-remove-awb button-link wp-menu-image dashicons-before dashicons-trash"
-                    style="display: inline-block; color: #b32d2e;"
-                    title="%s"
-                    data-order-id="%s"
-                    data-awb-number="%s"></button>',
-            esc_attr('Remove AWB'),
-            esc_attr((string) $awb->getOrderId()),
-            esc_attr((string) $awb->getAwbNumber())
-        );
+        return HtmlHandler::buildHtml('awb-actions-column', [
+            'awbNumber' => (string) $awb->getAwbNumber(),
+            'orderId' => (string) $awb->getOrderId(),
+        ]);
     }
 }
