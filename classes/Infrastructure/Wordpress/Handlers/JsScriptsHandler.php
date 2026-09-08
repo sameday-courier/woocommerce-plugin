@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
 use InvalidArgumentException;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayCityRepository;
 use SamedayCourier\Shipping\Domain\AllImportSteps;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
@@ -178,6 +179,13 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 self::LOCKER_PLUGIN_SDK_URL,
                 self::WP_CONTEXT['order_edit']
             ),
+            'sameday-lockerpluginsdk-orders' => self::withHandle(
+                self::addExternalScript(
+                    self::LOCKER_PLUGIN_SDK_URL,
+                    self::WP_CONTEXT['orders_list']
+                ),
+                self::LOCKER_SDK_HANDLE
+            ),
             'sameday-lockers-sync-admin' => self::addScript(
                 'lockers_sync_admin',
                 self::WP_CONTEXT['admin_full'],
@@ -192,12 +200,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     true
                 ),
                 'sameday-helper'
-            ),
-            'sameday-add-awb' => self::addScript(
-                'add-awb',
-                self::WP_CONTEXT['admin_full'],
-                ['jquery', 'sameday-modal-core'],
-                false
             ),
             'sameday-admin-helper' => self::addScript(
                 'helper',
@@ -331,6 +333,38 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                 self::WP_CONTEXT['orders_list'],
                 ['jquery', 'sameday-orders-list-awb-form', 'sameday-admin-modal-confirm'],
                 true
+            ),
+            'sameday-add-awb-modal-orders' => self::withHandle(
+                self::addScript(
+                    'add-awb-modal',
+                    self::WP_CONTEXT['orders_list'],
+                    [
+                        'jquery',
+                        'sameday-modal-core',
+                        self::LOCKER_SDK_HANDLE,
+                        'sameday-awb-form',
+                        'sameday-lockers-sync-admin',
+                        'sameday-admin-modal-confirm',
+                    ],
+                    true
+                ),
+                'sameday-add-awb-modal'
+            ),
+            'sameday-add-awb-modal-order-edit' => self::withHandle(
+                self::addScript(
+                    'add-awb-modal',
+                    self::WP_CONTEXT['order_edit'],
+                    [
+                        'jquery',
+                        'sameday-modal-core',
+                        self::LOCKER_SDK_HANDLE,
+                        'sameday-awb-form',
+                        'sameday-lockers-sync-admin',
+                        'sameday-admin-modal-confirm',
+                    ],
+                    true
+                ),
+                'sameday-add-awb-modal'
             ),
         ];
 
@@ -577,10 +611,19 @@ final class JsScriptsHandler implements RegistryHandlerInterface
                     ],
                 ]);
                 break;
-            case 'sameday-add-awb':
-                wp_localize_script($handle, 'samedayAddAwb', [
+            case 'sameday-add-awb-modal':
+                wp_localize_script($handle, 'samedayAddAwbModal', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'action' => 'render-add-awb-form',
+                    'nonce' => NonceHandler::createNonce('render-add-awb-form'),
+                    'modalId' => AwbForm::MODAL_ID,
+                    'loadingShellHtml' => AwbForm::renderLoadingShell(),
                     'weightUnit' => OptionsHandler::getOption('woocommerce_weight_unit', 'kg'),
                     'i18n' => [
+                        'loading' => TranslatorHandler::translate('Loading AWB form…'),
+                        'genericError' => TranslatorHandler::translate(
+                            'Unable to load AWB form. Please refresh and try again.'
+                        ),
                         'calculatedWeight' => TranslatorHandler::translate('Calculated Weight: %1$s %2$s'),
                     ],
                 ]);

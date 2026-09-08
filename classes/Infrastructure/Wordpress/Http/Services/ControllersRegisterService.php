@@ -13,6 +13,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\BulkGe
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\BulkRemoveAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\GenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RemoveAwbController;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\RenderAddAwbFormController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowAsPdfAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\StartBulkGenerateAwbController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\StartBulkRemoveAwbController;
@@ -62,6 +63,7 @@ class ControllersRegisterService implements RegistryHandlerInterface
                 BulkGenerateAwbController::class,
                 StartBulkRemoveAwbController::class,
                 BulkRemoveAwbController::class,
+                RenderAddAwbFormController::class,
                 StartAllImportController::class,
                 AllImportController::class,
                 StoreLockerInSessionController::class,

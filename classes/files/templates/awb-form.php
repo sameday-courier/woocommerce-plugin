@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
 $t = static function (string $text): string {
@@ -37,9 +38,16 @@ $t = static function (string $text): string {
  * @var string $destCity
  * @var string $destCountry
  * @var bool $openPackage
+ * @var string $fieldIdSuffix
+ * @var string $title
+ * @var string $subtitle
+ * @var string $cancelLabel
  */
+$fieldId = static function (string $base) use ($fieldIdSuffix): string {
+    return $base . $fieldIdSuffix;
+};
 ?>
-<div id="<?php echo $modalId; ?>"
+<div id="<?php echo esc_attr($modalId); ?>"
      class="sameday-bulk-awb-modal sameday-generate-awb-modal"
      hidden
      data-sameday-generate-awb-modal>
@@ -47,36 +55,26 @@ $t = static function (string $text): string {
     <div class="sameday-bulk-awb-modal__dialog"
          role="dialog"
          aria-modal="true"
-         aria-labelledby="<?php echo $modalId; ?>-title">
-        <div class="sameday-bulk-awb-modal__header">
-            <div class="sameday-bulk-awb-modal__heading">
-                <div class="sameday-bulk-awb-modal__icon" aria-hidden="true">
-                    <?php echo $iconHtml; ?>
-                </div>
-                <div class="sameday-bulk-awb-modal__titles">
-                    <h2 id="<?php echo $modalId; ?>-title"><?php echo $t('Generate awb'); ?></h2>
-                    <p><?php echo $t('Configure shipment details before generating the AWB.'); ?></p>
-                </div>
-            </div>
-            <button type="button"
-                    class="sameday-bulk-awb-modal__close"
-                    data-sameday-generate-awb-close
-                    aria-label="<?php echo $t('Cancel'); ?>">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+         aria-labelledby="<?php echo esc_attr($modalId); ?>-title">
+        <?php echo HtmlHandler::buildHtml('awb-form-modal-header', [
+            'modalId' => $modalId,
+            'iconHtml' => $iconHtml,
+            'title' => $title,
+            'subtitle' => $subtitle,
+            'cancelLabel' => $cancelLabel,
+        ]); ?>
         <div class="sameday-bulk-awb-modal__body">
-            <div id="sameday-shipping-content-add-awb">
+            <div id="<?php echo esc_attr($fieldId('sameday-shipping-content-add-awb')); ?>">
                 <table>
                     <tbody>
                         <input type="hidden"
                                form="addAwbForm"
                                name="samedaycourier-order-id"
-                               id="samedaycourier-order-id"
+                               id="<?php echo esc_attr($fieldId('samedaycourier-order-id')); ?>"
                                value="<?php echo esc_attr((string) $orderId); ?>">
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-repayment">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-repayment')); ?>">
                                     <?php echo sprintf('%s (%s)', $t('Repayment'), esc_html($currency)); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -86,7 +84,7 @@ $t = static function (string $text): string {
                                        onkeypress="return (event.charCode !== 8 && event.charCode === 0 || ( event.charCode === 46 || (event.charCode >= 48 && event.charCode <= 57)))"
                                        form="addAwbForm"
                                        name="samedaycourier-package-repayment"
-                                       id="samedaycourier-package-repayment"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-repayment')); ?>"
                                        value="<?php echo esc_attr((string) $repayment); ?>">
                                 <span><?php echo $t('Payment type: '); ?><?php echo esc_html($paymentGatewayTitle); ?></span>
                             </td>
@@ -100,7 +98,7 @@ $t = static function (string $text): string {
                         <?php endif; ?>
                         <tr valign="middle" colspan="4">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-insurance-value">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-insurance-value')); ?>">
                                     <?php echo $t('Insured value'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -111,7 +109,7 @@ $t = static function (string $text): string {
                                        name="samedaycourier-package-insurance-value"
                                        min="0"
                                        step="0.1"
-                                       id="samedaycourier-package-insurance-value"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-insurance-value')); ?>"
                                        value="0">
                             </td>
                         </tr>
@@ -123,7 +121,8 @@ $t = static function (string $text): string {
                                        form="addAwbForm"
                                        min="0"
                                        step="0.1"
-                                       id="samedaycourier-package-length"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-parcel-count')); ?>"
+                                       class="sameday-parcel-count-field"
                                        value="<?php echo $t('1'); ?>">
                             </td>
                             <td class="forminp forminp-text">
@@ -132,16 +131,18 @@ $t = static function (string $text): string {
                                        form="addAwbForm"
                                        min="0"
                                        step="0.1"
-                                       id="sameday-package-weight"
+                                       id="<?php echo esc_attr($fieldId('sameday-package-weight')); ?>"
+                                       class="sameday-calculated-weight-field"
                                        value="<?php echo $calculatedWeightLabel; ?>">
                             </td>
                             <td>
-                                <button type="button" class="sameday_admin_button" id="addParcelButton">+</button>
+                                <button type="button"
+                                        class="sameday_admin_button sameday-add-parcel-button">+</button>
                             </td>
                         </tr>
                         <tr valign="middle" class="rowPackageDimension">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-weight">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-weight')); ?>">
                                     <?php echo $t('Package Dimensions'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -153,7 +154,7 @@ $t = static function (string $text): string {
                                        name="samedaycourier-package-dimensions[1][weight]"
                                        min="0.1"
                                        step="0.1"
-                                       id="samedaycourier-package-weight"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-weight')); ?>"
                                        value="<?php echo esc_attr((string) $totalWeight); ?>"
                                        placeholder="<?php echo $t('Package Weight'); ?>">
                             </td>
@@ -163,7 +164,7 @@ $t = static function (string $text): string {
                                        name="samedaycourier-package-dimensions[1][length]"
                                        min="0"
                                        step="0.1"
-                                       id="samedaycourier-package-length"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-length')); ?>"
                                        placeholder="<?php echo $t('Package Length'); ?>">
                             </td>
                             <td class="forminp forminp-text">
@@ -172,7 +173,7 @@ $t = static function (string $text): string {
                                        name="samedaycourier-package-dimensions[1][height]"
                                        min="0"
                                        step="0.1"
-                                       id="samedaycourier-package-height"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-height')); ?>"
                                        placeholder="<?php echo $t('Package Height'); ?>">
                             </td>
                             <td class="forminp forminp-text">
@@ -181,7 +182,7 @@ $t = static function (string $text): string {
                                        name="samedaycourier-package-dimensions[1][width]"
                                        min="0"
                                        step="0.1"
-                                       id="samedaycourier-package-width"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-package-width')); ?>"
                                        placeholder="<?php echo $t('Package Width'); ?>">
                             </td>
                             <td>
@@ -190,7 +191,7 @@ $t = static function (string $text): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-pickup-point">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-pickup-point')); ?>">
                                     <?php echo $t('Pickup-point'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -198,7 +199,7 @@ $t = static function (string $text): string {
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm"
                                         name="samedaycourier-package-pickup-point"
-                                        id="samedaycourier-package-pickup-point">
+                                        id="<?php echo esc_attr($fieldId('samedaycourier-package-pickup-point')); ?>">
                                     <?php foreach ($pickupPoints as $pickupPoint) : ?>
                                         <option value="<?php echo esc_attr((string) $pickupPoint['id']); ?>"
                                             <?php selected($pickupPoint['selected'], true); ?>>
@@ -210,7 +211,7 @@ $t = static function (string $text): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-type">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-type')); ?>">
                                     <?php echo $t('Package type'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -218,7 +219,7 @@ $t = static function (string $text): string {
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm"
                                         name="samedaycourier-package-type"
-                                        id="samedaycourier-package-type">
+                                        id="<?php echo esc_attr($fieldId('samedaycourier-package-type')); ?>">
                                     <?php foreach ($packageTypes as $packageType) : ?>
                                         <option value="<?php echo esc_attr((string) $packageType['value']); ?>">
                                             <?php echo (string) $packageType['name']; ?>
@@ -229,7 +230,7 @@ $t = static function (string $text): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-awb-payment">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-awb-payment')); ?>">
                                     <?php echo $t('Awb payment'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -237,7 +238,7 @@ $t = static function (string $text): string {
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm"
                                         name="samedaycourier-package-awb-payment"
-                                        id="samedaycourier-package-awb-payment">
+                                        id="<?php echo esc_attr($fieldId('samedaycourier-package-awb-payment')); ?>">
                                     <?php foreach ($awbPaymentTypes as $awbPaymentType) : ?>
                                         <option value="<?php echo esc_attr((string) $awbPaymentType['value']); ?>">
                                             <?php echo (string) $awbPaymentType['name']; ?>
@@ -248,7 +249,7 @@ $t = static function (string $text): string {
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-service">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-service')); ?>">
                                     <?php echo $t('Service'); ?>
                                     <span style="color: #ff2222"> * </span>
                                 </label>
@@ -256,7 +257,7 @@ $t = static function (string $text): string {
                             <td class="forminp forminp-text" colspan="4">
                                 <select form="addAwbForm"
                                         name="samedaycourier-service"
-                                        id="samedaycourier-service">
+                                        id="<?php echo esc_attr($fieldId('samedaycourier-service')); ?>">
                                     <?php foreach ($services as $service) : ?>
                                         <option data-fistMile="<?php echo $service['firstMile']; ?>"
                                                 data-lastMile="<?php echo $service['lastMile']; ?>"
@@ -269,14 +270,14 @@ $t = static function (string $text): string {
                                 <input type="hidden"
                                        form="addAwbForm"
                                        name="samedaycourier-service-optional-tax-id"
-                                       id="samedaycourier-service-optional-tax-id">
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-service-optional-tax-id')); ?>">
                             </td>
                         </tr>
-                        <tr id="LockerFirstMile"
+                        <tr id="<?php echo esc_attr($fieldId('LockerFirstMile')); ?>"
                             class="<?php echo $allowFirstMile; ?>"
                             valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-locker_first_mile">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-locker_first_mile')); ?>">
                                     <?php echo $t('Personal delivery at locker'); ?>
                                 </label>
                             </th>
@@ -285,7 +286,7 @@ $t = static function (string $text): string {
                                     <input type="checkbox"
                                            form="addAwbForm"
                                            name="samedaycourier-locker_first_mile"
-                                           id="samedaycourier-locker_first_mile"
+                                           id="<?php echo esc_attr($fieldId('samedaycourier-locker_first_mile')); ?>"
                                            class="sameday-modal-checkbox">
                                 </div>
                                 <p class="sameday-locker-first-mile-field__description">
@@ -311,35 +312,35 @@ $t = static function (string $text): string {
                                 </div>
                             </td>
                         </tr>
-                        <tr id="LockerLastMile"
+                        <tr id="<?php echo esc_attr($fieldId('LockerLastMile')); ?>"
                             class="<?php echo $allowLastMile; ?>"
                             style="vertical-align: middle;">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-locker-details">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-locker-details')); ?>">
                                     <?php echo $t('Location details'); ?>
                                 </label>
                             </th>
                             <td class="forminp forminp-text" colspan="4">
                                 <input type="hidden"
                                        form="addAwbForm"
-                                       id="locker"
+                                       class="sameday-locker-value-field"
+                                       id="<?php echo esc_attr($fieldId('locker')); ?>"
                                        name="locker"
                                        value="<?php echo esc_attr($lockerDetailsForm); ?>">
-                                <label for="sameday_locker_name"></label><textarea id="sameday_locker_name" disabled="disabled"><?php echo esc_textarea($lockerDetails); ?></textarea><br/>
-                                <button class="sameday_admin_button"
+                                <label for="<?php echo esc_attr($fieldId('sameday_locker_name')); ?>"></label><textarea id="<?php echo esc_attr($fieldId('sameday_locker_name')); ?>" class="sameday-locker-name-field" disabled="disabled"><?php echo esc_textarea($lockerDetails); ?></textarea><br/>
+                                <button class="sameday_admin_button sameday-select-locker-button"
                                         data-username="<?php echo esc_attr($username); ?>"
                                         data-country="<?php echo esc_attr($hostCountry); ?>"
                                         data-dest_city="<?php echo esc_attr($destCity); ?>"
                                         data-dest_country="<?php echo esc_attr($destCountry); ?>"
-                                        type="button"
-                                        id="select_locker">
+                                        type="button">
                                     <?php echo $t('Change location'); ?>
                                 </button>
                             </td>
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-open-package-status">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-open-package-status')); ?>">
                                     <?php echo $t('Open package'); ?>
                                 </label>
                             </th>
@@ -347,26 +348,26 @@ $t = static function (string $text): string {
                                 <input type="checkbox"
                                        form="addAwbForm"
                                        name="samedaycourier-open-package-status"
-                                       id="samedaycourier-open-package-status"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-open-package-status')); ?>"
                                        class="sameday-modal-checkbox"
                                     <?php checked($openPackage); ?>>
                             </td>
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-package-observation">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-package-observation')); ?>">
                                     <?php echo $t('Observation'); ?>
                                 </label>
                             </th>
                             <td class="forminp forminp-text" colspan="4">
                                 <textarea form="addAwbForm"
                                           name="samedaycourier-package-observation"
-                                          id="samedaycourier-package-observation"></textarea>
+                                          id="<?php echo esc_attr($fieldId('samedaycourier-package-observation')); ?>"></textarea>
                             </td>
                         </tr>
                         <tr valign="middle">
                             <th scope="row" class="titledesc">
-                                <label for="samedaycourier-client-reference">
+                                <label for="<?php echo esc_attr($fieldId('samedaycourier-client-reference')); ?>">
                                     <?php echo $t('Client Reference'); ?>
                                 </label>
                             </th>
@@ -374,7 +375,7 @@ $t = static function (string $text): string {
                                 <input type="text"
                                        form="addAwbForm"
                                        name="samedaycourier-client-reference"
-                                       id="samedaycourier-client-reference"
+                                       id="<?php echo esc_attr($fieldId('samedaycourier-client-reference')); ?>"
                                        value="<?php echo esc_attr((string) $orderId); ?>">
                                 <span><?php echo $t('By default this field is complete with Order ID'); ?></span>
                             </td>

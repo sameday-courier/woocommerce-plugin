@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\AwbForm;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateAwbButton;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\NewParcelForm;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\SamedayAdminModal;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb\ShowHistoryAwbController;
@@ -63,16 +60,7 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
      */
     private function buildHtmlContent($order): string
     {
-        $generateAwb = sprintf(
-            '<p class="form-field form-field-wide wc-customer-user">
-                <a href="#"
-                   class="sameday_admin_button button-samll"
-                   role="button"
-                   data-sameday-generate-awb-open="%s"> %s </a>
-            </p>',
-            AwbForm::MODAL_ID,
-            TranslatorHandler::translate('Generate awb')
-        );
+        $generateAwb = GenerateAwbButton::render((int) $order->get_id(), true);
 
         $showAwb = sprintf(
             '<p class="form-field form-field-wide wc-customer-user">
@@ -155,12 +143,6 @@ final class ShowAdminOrderAwbActionsAction extends AbstractAction
             );
         }
 
-        $awbModal = (new AwbForm(
-            new SamedayServiceRepository(),
-            new SamedayLockerRepository(),
-            new SamedayPickupPointRepository()
-        ))->samedaycourierAddAwbForm($order);
-
-        return $buttons . $awbModal . $newParcelModal . $historyModal . $goToEawb;
+        return $buttons . $newParcelModal . $historyModal . $goToEawb;
     }
 }
