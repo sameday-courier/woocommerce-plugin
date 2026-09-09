@@ -39,6 +39,7 @@ use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusKeyResolver;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
@@ -532,7 +533,9 @@ final class SamedayCourier extends WC_Shipping_Method
                     . ' Leave "Do not change" to keep the current status.'
                 ),
                 'default' => '',
-                'options' => $this->getOrderStatusAfterAwbOptions(),
+                'options' => WooOrderStatusOptionsProvider::getSelectOptions(
+                    TranslatorHandler::translate('Do not change')
+                ),
             ),
         );
 
@@ -684,25 +687,5 @@ final class SamedayCourier extends WC_Shipping_Method
             && 'wc-settings' === $_GET['page']
             && 'shipping' === $_GET['tab']
             && $this->id === $_GET['section'];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getOrderStatusAfterAwbOptions(): array
-    {
-        $options = [
-            '' => TranslatorHandler::translate('Do not change'),
-        ];
-
-        if (!function_exists('wc_get_order_statuses')) {
-            return $options;
-        }
-
-        foreach (wc_get_order_statuses() as $status => $label) {
-            $options[(string) $status] = (string) $label;
-        }
-
-        return $options;
     }
 }
