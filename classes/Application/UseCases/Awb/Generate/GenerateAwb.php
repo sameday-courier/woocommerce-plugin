@@ -266,7 +266,7 @@ final class GenerateAwb extends AbstractUseCase
             $message .= sprintf("but %s", $applyOrderChanges->getMessage());
         }
 
-        $this->updateOrderStatusAfterAwb($request->getOrderId());
+        $this->updateOrderStatusAfterAwb($request->getOrderId(), $message);
 
         return new GenerateAwbResponse(
             $message,
@@ -276,10 +276,11 @@ final class GenerateAwb extends AbstractUseCase
 
     /**
      * @param int $orderId
+     * @param string $note
      *
      * @return void
      */
-    private function updateOrderStatusAfterAwb(int $orderId): void
+    private function updateOrderStatusAfterAwb(int $orderId, string $note): void
     {
         $status = $this->carrierSettingsProvider->get()->getOrderStatusAfterAwb();
         if (null === $status || '' === $status) {
@@ -289,7 +290,7 @@ final class GenerateAwb extends AbstractUseCase
         $this->orderStatusUpdater->update(
             $orderId,
             $status,
-            'Sameday AWB generated successfully.'
+            $note
         );
     }
 
