@@ -615,6 +615,9 @@ final class SamedayCourier extends WC_Shipping_Method
     }
 
     /**
+     * WooCommerce calls this via validate_{field_key}_field when saving settings.
+     * @noinspection PhpUnused
+     *
      * @param string $key
      * @param mixed $value
      *
@@ -633,7 +636,7 @@ final class SamedayCourier extends WC_Shipping_Method
 
         WC_Admin_Settings::add_error(
             TranslatorHandler::translate(
-                'Invalid order status selected. Please choose a valid WooCommerce order status.'
+                "Invalid order status selected. Please choose a valid WooCommerce order status for this $key"
             )
         );
 
