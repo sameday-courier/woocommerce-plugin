@@ -8,7 +8,7 @@ interface OrderStatusUpdaterInterface
 {
     /**
      * @param int $orderId
-     * @param string $status Woo status slug with or without wc- prefix
+     * @param string $status  Woo status slug with or without wc- prefix.
      * @param string $note
      *
      * @return bool
