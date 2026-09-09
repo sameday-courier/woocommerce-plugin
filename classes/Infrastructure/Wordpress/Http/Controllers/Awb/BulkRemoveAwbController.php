@@ -46,17 +46,10 @@ final class BulkRemoveAwbController extends AbstractRecursiveBulkController
             $status = $result->hasError()
                 ? ResponseNoticeType::ERROR
                 : ResponseNoticeType::SUCCESS;
-            $message = $result->hasError()
-                ? TranslatorHandler::translate($result->getNoticeMessage())
-                : TranslatorHandler::translate('Successfully removed.');
-
-            if (ResponseNoticeType::SUCCESS === $status) {
-                $message = TranslatorHandler::translate('Successfully removed.');
-            }
 
             return [
                 'status' => $status,
-                'message' => $message,
+                'message' => TranslatorHandler::translate($result->getNoticeMessage()),
                 'awbNumber' => ResponseNoticeType::SUCCESS === $status ? $awbNumber : null,
             ];
         } catch (Exception $exception) {

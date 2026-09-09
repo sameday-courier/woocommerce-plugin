@@ -183,6 +183,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 * Add setting "Order status after AWB" on the SamedayCourier shipping method page.
 * After a successful AWB generation (single or bulk), optionally update the WooCommerce order status to the configured value.
+* Add Show as PDF and Remove AWB actions in the WooCommerce orders list AWB column.
 
 = 2.2.0 =
 

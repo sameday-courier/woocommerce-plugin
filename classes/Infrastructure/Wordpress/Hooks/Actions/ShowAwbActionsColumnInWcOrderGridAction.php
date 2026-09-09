@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 
+use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
+use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbNumberColumnInWcOrderGrid;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
-final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
+final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';
 
@@ -47,7 +49,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
         $column = $args[0] ?? null;
         $order = $args[1] ?? null;
 
-        if (AwbNumberColumnInWcOrderGrid::COLUMN_KEY !== $column) {
+        if (AwbActionsColumnInWcOrderGrid::COLUMN_KEY !== $column) {
             return;
         }
 
@@ -63,7 +65,7 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             return;
         }
 
-        echo esc_html((string) $awb->getAwbNumber());
+        echo $this->buildColumnContent($awb);
     }
 
     /**
@@ -85,5 +87,18 @@ final class ShowAwbNumberColumnInWcOrderGridAction extends AbstractAction
             '<span hidden data-sameday-currency-warning="%s"></span>',
             esc_attr($currencyWarning)
         );
+    }
+
+    /**
+     * @param CarrierAwb $awb
+     *
+     * @return string
+     */
+    private function buildColumnContent(CarrierAwb $awb): string
+    {
+        return HtmlHandler::buildHtml('awb-actions-column', [
+            'awbNumber' => (string) $awb->getAwbNumber(),
+            'orderId' => (string) $awb->getOrderId(),
+        ]);
     }
 }

@@ -6,6 +6,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\HandlesControllerAccessTrait;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Traits\JsonResponseTrait;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Exceptions\RedirectDestinationNotFoundException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\Admin\UrlsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
@@ -36,7 +37,11 @@ abstract class AbstractController implements ControllerInterface
             );
         }
 
-        $this->processAction($inputParams);
+        try {
+            $this->processAction($inputParams);
+        } catch (RedirectDestinationNotFoundException $exception) {
+            $this->terminateAdminRequest($exception->getMessage());
+        }
     }
 
     /**
@@ -50,15 +55,44 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param string $mainPath
+     * Redirect to an admin path or, when $mainPath is omitted, back to the initiating page.
+     *
+     * @param string|null $mainPath
      * @param array $queryArgs
      *
-     * @return void
+     * @return never
      */
-    protected function redirectTo(string $mainPath, array $queryArgs = []): void
+    protected function redirectTo(?string $mainPath = null, array $queryArgs = []): void
     {
-        wp_safe_redirect(UrlsHandler::build($mainPath, $queryArgs));
+        if (null !== $mainPath && '' !== $mainPath) {
+            $location = UrlsHandler::build($mainPath, $queryArgs);
+        } else {
+            $referer = wp_get_referer();
+            $location = (false !== $referer && '' !== $referer) ? $referer : null;
+        }
 
+        if (null === $location) {
+            throw new RedirectDestinationNotFoundException(
+                TranslatorHandler::translate('Unable to determine where to redirect after this action.')
+            );
+        }
+
+        wp_safe_redirect($location);
+        exit();
+    }
+
+    /**
+     * @param string $message
+     * @param int $statusCode
+     *
+     * @return never
+     */
+    private function terminateAdminRequest(string $message, int $statusCode = 500): void
+    {
+        status_header($statusCode);
+        nocache_headers();
+
+        echo esc_html($message);
         exit;
     }
 
