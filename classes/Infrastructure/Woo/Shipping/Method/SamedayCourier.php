@@ -38,6 +38,7 @@ use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusKeyResolver;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
@@ -528,7 +529,7 @@ final class SamedayCourier extends WC_Shipping_Method
                 'type' => 'select',
                 'description' => TranslatorHandler::translate(
                     'When an AWB is generated successfully, change the WooCommerce order to this status.'
-                    . ' Choose "Do not change" to keep the current status.'
+                    . ' Leave "Do not change" to keep the current status.'
                 ),
                 'default' => '',
                 'options' => $this->getOrderStatusAfterAwbOptions(),
@@ -608,6 +609,32 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         return false;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public function validate_order_status_after_awb_field(string $key, $value): string
+    {
+        if (!is_string($value) || '' === $value) {
+            return '';
+        }
+
+        $resolvedStatus = WooOrderStatusKeyResolver::resolve($value);
+        if (null !== $resolvedStatus) {
+            return $resolvedStatus;
+        }
+
+        WC_Admin_Settings::add_error(
+            TranslatorHandler::translate(
+                'Invalid order status selected. Please choose a valid WooCommerce order status.'
+            )
+        );
+
+        return '';
     }
 
     /**

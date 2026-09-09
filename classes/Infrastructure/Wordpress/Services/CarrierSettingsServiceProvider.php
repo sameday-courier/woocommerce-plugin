@@ -8,6 +8,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSettings;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusKeyResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
 final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInterface
@@ -47,7 +48,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
             $this->resolveNullableString($options, self::PASSWORD),
             $this->resolveDefaultLabelFormat($options),
             $this->resolveEstimatedCost($options),
-            (int)($options[self::ESTIMATED_COST_EXTRA_FEE] ?? 0),
+            (int) ($options[self::ESTIMATED_COST_EXTRA_FEE] ?? 0),
             $this->resolveNullableString($options, self::REPAYMENT_TAX_LABEL),
             $this->resolveRepaymentTax($options),
             ($options[self::OPEN_PACKAGE_STATUS] ?? null) === 'yes',
@@ -231,6 +232,6 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
             return null;
         }
 
-        return $status;
+        return WooOrderStatusKeyResolver::resolve($status);
     }
 }
