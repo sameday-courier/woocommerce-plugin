@@ -42,14 +42,7 @@ final class GenerateAwbController extends AbstractController
                 TranslatorHandler::translate("There is no data to process."),
             );
 
-            $this->redirectTo(
-                'post.php',
-                [
-                    'id' => $orderId,
-                    'post' => $orderId,
-                    'action' => 'edit',
-                ]
-            );
+            $this->redirectTo();
         }
 
         $mapper = new GenerateAwbMapper(array_merge($inputParams, $orderData));
@@ -65,14 +58,7 @@ final class GenerateAwbController extends AbstractController
                 TranslatorHandler::translate($exception->getMessage()),
             );
 
-            $this->redirectTo(
-                'post.php',
-                [
-                    'post' => $orderId,
-                    'action' => 'edit',
-                    'add-awb' => ResponseNoticeType::ERROR,
-                ]
-            );
+            $this->redirectTo();
         }
 
         if (null === $result) {
@@ -88,13 +74,6 @@ final class GenerateAwbController extends AbstractController
             );
         }
 
-        $this->redirectTo(
-            'post.php',
-            [
-                'id' => $orderId,
-                'post' => $orderId,
-                'action' => 'edit',
-            ]
-        );
+        $this->redirectTo();
     }
 }

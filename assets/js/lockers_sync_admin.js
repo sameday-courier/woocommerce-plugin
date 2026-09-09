@@ -4,6 +4,7 @@
 (function ($) {
     'use strict';
 
+    var MODAL_SELECTOR = '[data-sameday-generate-awb-modal]';
     var adminConfig = window.samedayLockerAdmin || {};
     var SamedayCourier = window.SamedayCourier || {};
 
@@ -13,10 +14,10 @@
             : 'Something went wrong! Please try again later!';
     }
 
-    function displayDetails(optionFistMile, optionLastMile) {
-        var $firstMile = $('#LockerFirstMile');
-        var $lastMile = $('#LockerLastMile');
-        var $firstMileCheckbox = $('#samedaycourier-locker_first_mile');
+    function displayDetails($modal, optionFistMile, optionLastMile) {
+        var $firstMile = $modal.find('[id^="LockerFirstMile"]');
+        var $lastMile = $modal.find('[id^="LockerLastMile"]');
+        var $firstMileCheckbox = $modal.find('input[name="samedaycourier-locker_first_mile"]');
 
         if (!$firstMile.length || !$lastMile.length) {
             return;
@@ -27,22 +28,27 @@
         $lastMile.removeClass('sameday-show-element sameday-hide-element').addClass(optionLastMile || 'sameday-hide-element');
     }
 
-    function syncServiceDetails() {
-        var $service = $('#samedaycourier-service');
+    function syncServiceDetailsForModal($modal) {
+        var $service = $modal.find('select[name="samedaycourier-service"]');
         if (!$service.length) {
             return;
         }
 
         var $selected = $service.find('option:selected');
         displayDetails(
+            $modal,
             $selected.attr('data-fistMile'),
             $selected.attr('data-lastMile')
         );
     }
 
-    function openLockers() {
-        var changeLockerButton = document.querySelector('#select_locker');
+    function openLockers(changeLockerButton) {
         if (!changeLockerButton || typeof SamedayCourier.openLockerPlugin !== 'function') {
+            return;
+        }
+
+        var $modal = $(changeLockerButton).closest(MODAL_SELECTOR);
+        if (!$modal.length) {
             return;
         }
 
@@ -61,13 +67,13 @@
                     url: ajaxurl,
                     data: {
                         action: 'change_locker',
-                        orderId: $('#samedaycourier-order-id').val(),
+                        orderId: $modal.find('input[name="samedaycourier-order-id"]').val(),
                         locker: lockerJson,
                         _wpnonce: adminConfig.nonces ? adminConfig.nonces.change_locker : ''
                     },
                     success: function () {
-                        $('#sameday_locker_name').val(locker.name + ' - ' + locker.address);
-                        $('#locker').val(lockerJson);
+                        $modal.find('.sameday-locker-name-field').val(locker.name + ' - ' + locker.address);
+                        $modal.find('.sameday-locker-value-field').val(lockerJson);
                     },
                     error: function () {
                         alert(adminErrorMessage());
@@ -78,23 +84,32 @@
     }
 
     function init() {
-        syncServiceDetails();
+        $(MODAL_SELECTOR).each(function () {
+            syncServiceDetailsForModal($(this));
+        });
 
         $(document)
-            .off('change.samedayLockerService', '#samedaycourier-service')
-            .on('change.samedayLockerService', '#samedaycourier-service', syncServiceDetails);
+            .off('change.samedayLockerService', MODAL_SELECTOR + ' select[name="samedaycourier-service"]')
+            .on('change.samedayLockerService', MODAL_SELECTOR + ' select[name="samedaycourier-service"]', function () {
+                syncServiceDetailsForModal($(this).closest(MODAL_SELECTOR));
+            });
 
         $(document)
-            .off('select2:select.samedayLockerService', '#samedaycourier-service')
-            .on('select2:select.samedayLockerService', '#samedaycourier-service', syncServiceDetails);
+            .off('select2:select.samedayLockerService', MODAL_SELECTOR + ' select[name="samedaycourier-service"]')
+            .on('select2:select.samedayLockerService', MODAL_SELECTOR + ' select[name="samedaycourier-service"]', function () {
+                syncServiceDetailsForModal($(this).closest(MODAL_SELECTOR));
+            });
 
         $(document)
-            .off('click.samedayLockerMap', '#select_locker')
-            .on('click.samedayLockerMap', '#select_locker', function (event) {
+            .off('click.samedayLockerMap', MODAL_SELECTOR + ' .sameday-select-locker-button')
+            .on('click.samedayLockerMap', MODAL_SELECTOR + ' .sameday-select-locker-button', function (event) {
                 event.preventDefault();
-                openLockers();
+                openLockers(this);
             });
     }
+
+    window.SamedayLockerAdmin = window.SamedayLockerAdmin || {};
+    window.SamedayLockerAdmin.syncModal = syncServiceDetailsForModal;
 
     $(init);
 }(jQuery));

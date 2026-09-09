@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions;
 use SamedayCourier\Shipping\Domain\Models\CarrierAwb;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Views\GenerateAwbButton;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
@@ -62,10 +63,22 @@ final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
         $awb = (new OrderAwbStoreServiceProvider())->getByOrderId((int) $order->get_id());
 
         if (null === $awb) {
+            echo $this->buildAddAwbContent($order);
+
             return;
         }
 
         echo $this->buildColumnContent($awb);
+    }
+
+    /**
+     * @param WC_Order $order
+     *
+     * @return string
+     */
+    private function buildAddAwbContent(WC_Order $order): string
+    {
+        return GenerateAwbButton::render((int) $order->get_id());
     }
 
     /**
