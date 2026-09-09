@@ -10,8 +10,9 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbCurrencyWarningProvider;
-use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
@@ -25,6 +26,7 @@ use WC_Order;
 class AwbForm
 {
     public const MODAL_ID = 'sameday-generate-awb-modal';
+    public const ADD_AWB_MODAL_CONTAINER_ID = 'sameday-add-awb-modal-container';
 
     /**
      * @var CarrierServiceRules $carrierServiceRules
@@ -63,6 +65,43 @@ class AwbForm
     }
 
     /**
+     * @return string
+     */
+    public static function renderLoadingShell(): string
+    {
+        $presentation = self::getModalPresentationParams();
+
+        return HtmlHandler::buildHtml('awb-form-loading-shell', array_merge($presentation, [
+            'loadingText' => TranslatorHandler::translate('Loading AWB form…'),
+        ]));
+    }
+
+    /**
+     * @return array{
+     *     modalId: string,
+     *     title: string,
+     *     subtitle: string,
+     *     cancelLabel: string,
+     *     iconHtml: string
+     * }
+     */
+    public static function getModalPresentationParams(): array
+    {
+        return [
+            'modalId' => self::MODAL_ID,
+            'title' => TranslatorHandler::translate('Generate awb'),
+            'subtitle' => TranslatorHandler::translate(
+                'Configure shipment details before generating the AWB.'
+            ),
+            'cancelLabel' => TranslatorHandler::translate('Cancel'),
+            'iconHtml' => SamedayIcon::render(
+                'sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--package',
+                26
+            ),
+        ];
+    }
+
+    /**
      * @param WC_Order $order
      *
      * @return string
@@ -91,12 +130,8 @@ class AwbForm
         $currency = AwbCurrencyWarningProvider::resolveOrderCurrency($order);
         $servicesContext = $this->buildServicesContext($serviceCode);
 
-        return [
-            'modalId' => self::MODAL_ID,
-            'iconHtml' => SamedayIcon::render(
-                'sameday-bulk-awb-modal__icon-svg sameday-bulk-awb-modal__icon-svg--package',
-                26
-            ),
+        return array_merge(self::getModalPresentationParams(), [
+            'fieldIdSuffix' => '-' . $order->get_id(),
             'orderId' => $order->get_id(),
             'repayment' => $repayment,
             'currency' => $currency,
@@ -118,7 +153,7 @@ class AwbForm
             'destCity' => $destCity,
             'destCountry' => $destCountry,
             'openPackage' => (new WooOpenPackageOrderDataHandler())->isEnabled($order->get_id()),
-        ];
+        ]);
     }
 
     /**

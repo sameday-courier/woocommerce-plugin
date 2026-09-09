@@ -1,22 +1,32 @@
 jQuery(document).ready(function ($) {
-    var $modal = $('[data-sameday-generate-awb-modal]');
-    if (!$modal.length) {
-        return;
-    }
+    var MODAL_SELECTOR = '[data-sameday-generate-awb-modal]';
 
-    var options = {
-        dropdownParent: $modal,
-        width: '100%'
-    };
-
-    $modal.find('select').each(function () {
-        var $select = $(this);
-        if ($select.hasClass('select2-hidden-accessible')) {
+    function initModal($modal) {
+        if (!$modal.length) {
             return;
         }
-        $select.select2(options);
+
+        var options = {
+            dropdownParent: $modal,
+            width: '100%'
+        };
+
+        $modal.find('select').each(function () {
+            var $select = $(this);
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.select2('destroy');
+            }
+            $select.select2(options);
+        });
+
+        $modal.find('select[name="samedaycourier-service"]').trigger('change');
+    }
+
+    $(MODAL_SELECTOR).each(function () {
+        initModal($(this));
     });
 
-    // Keep locker first/last mile rows in sync after Select2 init.
-    $('#samedaycourier-service').trigger('change');
+    window.SamedayAwbForm = {
+        initModal: initModal
+    };
 });

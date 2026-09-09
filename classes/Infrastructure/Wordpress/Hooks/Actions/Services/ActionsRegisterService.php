@@ -15,6 +15,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterOpenP
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxBlocksIntegrationAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RegisterRepaymentTaxCartUpdateCallbackAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\RenderAdminAwbFormsAction;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAddAwbModalContainerAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAdminOrderAwbActionsAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowAwbActionsColumnInWcOrderGridAction;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Actions\ShowBulkAwbButtonAction;
@@ -38,6 +39,7 @@ class ActionsRegisterService implements RegistryHandlerInterface
         RegisterRepaymentTaxBlocksIntegrationAction::class,
         RegisterRepaymentTaxCartUpdateCallbackAction::class,
         RenderAdminAwbFormsAction::class,
+        ShowAddAwbModalContainerAction::class,
         ShowAdminOrderAwbActionsAction::class,
         ShowAwbActionsColumnInWcOrderGridAction::class,
         ShowBulkAwbButtonAction::class,
