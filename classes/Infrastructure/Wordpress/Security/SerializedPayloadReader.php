@@ -7,6 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Security;
 use DateTime;
 use Sameday\Objects\ParcelStatusHistory\HistoryObject as ParcelHistoryObject;
 use Sameday\Objects\ParcelStatusHistory\SummaryObject as ParcelSummaryObject;
+use Sameday\Objects\PickupPoint\ContactPersonObject;
 use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use Sameday\Objects\PostAwb\ParcelObject as PostAwbParcelObject;
 use Sameday\Objects\Service\OptionalTaxObject;
@@ -28,11 +29,17 @@ final class SerializedPayloadReader
     /**
      * @param string $serialized
      *
-     * @return PickupPointContactPersonObject[]
+     * @return array<int, ContactPersonObject|PickupPointContactPersonObject>
      */
     public static function readPickupPointContactPersons(string $serialized): array
     {
-        return self::readObjectList($serialized, [PickupPointContactPersonObject::class]);
+        return self::readObjectList(
+            $serialized,
+            [
+                ContactPersonObject::class,
+                PickupPointContactPersonObject::class,
+            ]
+        );
     }
 
     /**
@@ -118,8 +125,18 @@ final class SerializedPayloadReader
         return array_values(
             array_filter(
                 $decoded,
-                static function ($item): bool {
-                    return is_object($item);
+                static function ($item) use ($allowedClasses): bool {
+                    if (!is_object($item)) {
+                        return false;
+                    }
+
+                    foreach ($allowedClasses as $allowedClass) {
+                        if ($item instanceof $allowedClass) {
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }
             )
         );

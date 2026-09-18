@@ -15,6 +15,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Interfaces\DbHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use Sameday\Objects\PickupPoint\ContactPersonObject;
+use Sameday\Objects\PickupPoint\PickupPointContactPersonObject;
 use WP_List_Table;
 
 class PickupPoints extends WP_List_Table
@@ -123,9 +125,17 @@ class PickupPoints extends WP_List_Table
      */
     private function parseContactPersons($contactPersons): string
     {
-        $persons = array();
-        foreach ($contactPersons as $contact_person) {
-            $persons[] = "<strong>{$contact_person->getName()}</strong> <br/> {$contact_person->getPhone()}";
+        $persons = [];
+
+        foreach ($contactPersons as $contactPerson) {
+            if ($contactPerson instanceof ContactPersonObject) {
+                $persons[] = "<strong>{$contactPerson->getName()}</strong> <br/> {$contactPerson->getPhone()}";
+                continue;
+            }
+
+            if ($contactPerson instanceof PickupPointContactPersonObject) {
+                $persons[] = "<strong>{$contactPerson->getName()}</strong> <br/> {$contactPerson->getPhoneNumber()}";
+            }
         }
 
         return implode(',', $persons);
