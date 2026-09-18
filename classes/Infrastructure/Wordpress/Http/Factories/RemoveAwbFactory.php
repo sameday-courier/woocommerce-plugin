@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories;
 
 use SamedayCourier\Shipping\Application\UseCases\Awb\Remove\RemoveAwb;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusUpdater;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CourierServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\PostRemoveAwbServiceProvider;
@@ -22,7 +23,8 @@ final class RemoveAwbFactory
         return new RemoveAwb(
             new OrderAwbStoreServiceProvider($samedayAwbRepository),
             new CourierServiceProvider(),
-            new PostRemoveAwbServiceProvider($samedayAwbRepository)
+            new PostRemoveAwbServiceProvider($samedayAwbRepository),
+            new WooOrderStatusUpdater()
         );
     }
 }

@@ -287,6 +287,7 @@ final class GenerateAwb extends AbstractUseCase
             return;
         }
 
+        $this->orderStatusUpdater->rememberStatusBeforeAwb($orderId);
         $this->orderStatusUpdater->update(
             $orderId,
             $status,
