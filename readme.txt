@@ -179,6 +179,13 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 2.2.4 =
+
+* Add setting "Order status after AWB" on the SamedayCourier shipping method page.
+* After a successful AWB generation (single or bulk), optionally update the WooCommerce order status to the configured value.
+* When generating an AWB and changing order status, store the previous order status.
+* When removing an AWB, restore the order to the previously stored status.
+
 = 2.2.3 =
 
 * Bug fix. Resolve exception when displaying contact persons in Pickup-Point admin grid for pickup points synced from Sameday API.
