@@ -51,10 +51,6 @@ final class LockerSessionStore
             return;
         }
 
-        if (is_array($locker) && empty($locker['lockerId']) && isset($locker['id'])) {
-            $locker['lockerId'] = $locker['id'];
-        }
-
         $dto = $this->lockerDtoFactory->fromInput($locker);
         if (null === $dto) {
             return;

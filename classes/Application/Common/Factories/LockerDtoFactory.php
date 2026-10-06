@@ -91,6 +91,10 @@ final class LockerDtoFactory
      */
     private function fromPayload(array $data): ?LockerDto
     {
+        if (!isset($data['lockerId']) || '' === $data['lockerId']) {
+            $data['lockerId'] = $data['id'] ?? null;
+        }
+
         if ($this->hasRequiredPayloadFields($data)) {
             $mapped = $this->mapLockerInput($data);
 
