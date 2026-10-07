@@ -11,6 +11,7 @@ use SamedayCourier\Shipping\Domain\DTOs\Requests\RemoveAwbRequestDto;
 use SamedayCourier\Shipping\Domain\Exceptions\CourierServiceException;
 use SamedayCourier\Shipping\Domain\Ports\CourierServiceProviderInterface;
 use SamedayCourier\Shipping\Domain\Ports\OrderAwbStoreServiceProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderStatusUpdaterInterface;
 use SamedayCourier\Shipping\Domain\Ports\PostRemoveAwbServiceProviderInterface;
 
 /**
@@ -36,18 +37,26 @@ final class RemoveAwb extends AbstractUseCase
     private PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider;
 
     /**
+     * @var OrderStatusUpdaterInterface $orderStatusUpdater
+     */
+    private OrderStatusUpdaterInterface $orderStatusUpdater;
+
+    /**
      * @param OrderAwbStoreServiceProviderInterface $orderAwbStore
      * @param CourierServiceProviderInterface $courierServiceProvider
      * @param PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
+     * @param OrderStatusUpdaterInterface $orderStatusUpdater
      */
     public function __construct(
         OrderAwbStoreServiceProviderInterface $orderAwbStore,
         CourierServiceProviderInterface $courierServiceProvider,
-        PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider
+        PostRemoveAwbServiceProviderInterface $postRemoveAwbServiceProvider,
+        OrderStatusUpdaterInterface $orderStatusUpdater
     ) {
         $this->orderAwbStore = $orderAwbStore;
         $this->courierServiceProvider = $courierServiceProvider;
         $this->postRemoveAwbServiceProvider = $postRemoveAwbServiceProvider;
+        $this->orderStatusUpdater = $orderStatusUpdater;
     }
 
     /**
@@ -87,7 +96,17 @@ final class RemoveAwb extends AbstractUseCase
         if (!$localRemoveResult->isSuccess()) {
             $message .= ' but the local record could not be deleted from your store.'
                 . ' Please remove the remaining AWB entry from this order manually.';
+
+            return new RemoveAwbResponse(
+                $message,
+                false
+            );
         }
+
+        $this->orderStatusUpdater->restoreStatusBeforeAwb(
+            $orderId,
+            'Sameday AWB removed. Order status restored.'
+        );
 
         return new RemoveAwbResponse(
             $message,

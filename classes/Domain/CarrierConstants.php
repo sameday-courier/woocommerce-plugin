@@ -71,6 +71,7 @@ final class CarrierConstants
     public const POST_META_SAMEDAY_SHIPPING_LOCKER = '_sameday_shipping_locker_id';
     public const POST_META_SAMEDAY_SHIPPING_HD_ADDRESS = '_sameday_shipping_hd_address';
     public const POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION = '_sameday_shipping_open_package_option';
+    public const POST_META_SAMEDAY_ORDER_STATUS_BEFORE_AWB = '_sameday_order_status_before_awb';
     public const OOH_POPUP_TITLE = [
         self::API_HOST_LOCALE_RO =>
             'Optiunea Ridicare Personala include ambele servicii LockerNextDay, respectiv Pudo!',

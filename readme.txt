@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,6 +178,13 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.2.5 =
+
+* Add setting "Order status after AWB" on the SamedayCourier shipping method page.
+* After a successful AWB generation (single or bulk), optionally update the WooCommerce order status to the configured value.
+* When generating an AWB and changing order status, store the previous order status.
+* When removing an AWB, restore the order to the previously stored status.
 
 = 2.2.4 =
 

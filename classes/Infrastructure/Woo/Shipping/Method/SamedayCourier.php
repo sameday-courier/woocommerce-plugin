@@ -38,6 +38,8 @@ use SamedayCourier\Shipping\Domain\Ports\StateCodeResolverInterface;
 use SamedayCourier\Shipping\Domain\Ports\WeightConverterInterface;
 use SamedayCourier\Shipping\Domain\Ports\WooCommerceHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooHandler;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusKeyResolver;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooWeightHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
@@ -521,7 +523,20 @@ final class SamedayCourier extends WC_Shipping_Method
                     'no' => TranslatorHandler::translate('No'),
                     'yes' => TranslatorHandler::translate('Yes'),
                 ]
-            )
+            ),
+
+            'order_status_after_awb' => array(
+                'title' => TranslatorHandler::translate('Order status after AWB'),
+                'type' => 'select',
+                'description' => TranslatorHandler::translate(
+                    'When an AWB is generated successfully, change the WooCommerce order to this status.'
+                    . ' Leave "Do not change" to keep the current status.'
+                ),
+                'default' => '',
+                'options' => WooOrderStatusOptionsProvider::getSelectOptions(
+                    TranslatorHandler::translate('Do not change')
+                ),
+            ),
         );
 
         // Show on checkout:
@@ -597,6 +612,35 @@ final class SamedayCourier extends WC_Shipping_Method
         );
 
         return false;
+    }
+
+    /**
+     * WooCommerce calls this via validate_{field_key}_field when saving settings.
+     * @noinspection PhpUnused
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public function validate_order_status_after_awb_field(string $key, $value): string
+    {
+        if (!is_string($value) || '' === $value) {
+            return '';
+        }
+
+        $resolvedStatus = WooOrderStatusKeyResolver::resolve($value);
+        if (null !== $resolvedStatus) {
+            return $resolvedStatus;
+        }
+
+        WC_Admin_Settings::add_error(
+            TranslatorHandler::translate(
+                "Invalid order status selected. Please choose a valid WooCommerce order status for this $key"
+            )
+        );
+
+        return '';
     }
 
     /**

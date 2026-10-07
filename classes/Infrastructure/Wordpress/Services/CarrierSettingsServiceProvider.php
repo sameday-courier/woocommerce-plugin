@@ -8,6 +8,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierAwbPdfTypes;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSettings;
+use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderStatusKeyResolver;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
 
 final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInterface
@@ -31,6 +32,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
     private const HOST_COUNTRY = 'host_country';
     private const USE_NOMENCLATOR = 'use_nomenclator';
     private const SAMEDAY_SYNC_LOCKERS_TS = 'sameday_sync_lockers_ts';
+    private const ORDER_STATUS_AFTER_AWB = 'order_status_after_awb';
 
     /**
      * @return CarrierSettings
@@ -46,7 +48,7 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
             $this->resolveNullableString($options, self::PASSWORD),
             $this->resolveDefaultLabelFormat($options),
             $this->resolveEstimatedCost($options),
-            (int)($options[self::ESTIMATED_COST_EXTRA_FEE] ?? 0),
+            (int) ($options[self::ESTIMATED_COST_EXTRA_FEE] ?? 0),
             $this->resolveNullableString($options, self::REPAYMENT_TAX_LABEL),
             $this->resolveRepaymentTax($options),
             ($options[self::OPEN_PACKAGE_STATUS] ?? null) === 'yes',
@@ -57,7 +59,8 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
             $this->resolveIsTesting($options),
             $this->resolveHostCountry($options),
             $this->resolveEnabledUnlessNo($options, self::USE_NOMENCLATOR),
-            (int) ($options[self::SAMEDAY_SYNC_LOCKERS_TS] ?? 0)
+            (int) ($options[self::SAMEDAY_SYNC_LOCKERS_TS] ?? 0),
+            $this->resolveOrderStatusAfterAwb($options)
         );
     }
 
@@ -215,5 +218,20 @@ final class CarrierSettingsServiceProvider implements CarrierSettingsProviderInt
         $value = $options[$key] ?? null;
 
         return !(null === $value || 'no' === $value);
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return string|null
+     */
+    private function resolveOrderStatusAfterAwb(array $options): ?string
+    {
+        $status = $options[self::ORDER_STATUS_AFTER_AWB] ?? null;
+        if (!is_string($status) || '' === $status) {
+            return null;
+        }
+
+        return WooOrderStatusKeyResolver::resolve($status);
     }
 }

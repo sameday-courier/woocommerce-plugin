@@ -97,6 +97,13 @@ final class CarrierSettings
     private int $samedaySyncLockersTs;
 
     /**
+     * WooCommerce order status slug (e.g. wc-processing). Empty = do not change.
+     *
+     * @var string|null
+     */
+    private ?string $orderStatusAfterAwb;
+
+    /**
      * @param bool $enabled
      * @param string $title
      * @param string|null $user
@@ -115,6 +122,7 @@ final class CarrierSettings
      * @param string $hostCountry
      * @param bool $useSamedayNomenclator
      * @param int $samedaySyncLockersTs
+     * @param string|null $orderStatusAfterAwb
      */
     public function __construct(
         bool $enabled,
@@ -134,7 +142,8 @@ final class CarrierSettings
         bool $testing,
         string $hostCountry,
         bool $useSamedayNomenclator,
-        int $samedaySyncLockersTs
+        int $samedaySyncLockersTs,
+        ?string $orderStatusAfterAwb = null
     ) {
         $this->enabled = $enabled;
         $this->title = $title;
@@ -154,6 +163,7 @@ final class CarrierSettings
         $this->hostCountry = $hostCountry;
         $this->useSamedayNomenclator = $useSamedayNomenclator;
         $this->samedaySyncLockersTs = $samedaySyncLockersTs;
+        $this->orderStatusAfterAwb = $orderStatusAfterAwb;
     }
 
     /**
@@ -306,5 +316,13 @@ final class CarrierSettings
     public function getSamedaySyncLockersTs(): int
     {
         return $this->samedaySyncLockersTs;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOrderStatusAfterAwb(): ?string
+    {
+        return $this->orderStatusAfterAwb;
     }
 }
