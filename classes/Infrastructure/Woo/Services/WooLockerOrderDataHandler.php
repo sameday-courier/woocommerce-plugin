@@ -21,8 +21,7 @@ final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
         PostMetaHandler::update(
             $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
-            $locker,
-            false
+            $locker
         );
     }
 }
