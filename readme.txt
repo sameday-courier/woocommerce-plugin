@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -178,6 +178,12 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.2.6 =
+
+* Bug fix. A cross-border Sameday Point selected on the locker map now generates the XP service. Easybox selections still use XL. Domestic locker and point services are unchanged.
+* Refreshing or editing Crossborder Locker delivery keeps the cross-border PUDO service status in sync with it.
+* The first service import stores the locker display name for LN and XL. A later import is no longer required to fill that name.
 
 = 2.2.5 =
 

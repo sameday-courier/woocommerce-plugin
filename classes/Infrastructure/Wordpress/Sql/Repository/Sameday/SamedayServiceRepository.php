@@ -187,6 +187,7 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
                 'sameday_id' => $service->getId(),
                 'sameday_name' => $service->getName(),
                 'sameday_code' => $service->getCode(),
+                'name' => $this->resolveStoredServiceName($service),
                 'is_testing' => $this->isTesting(),
                 'status' => 0,
                 'service_optional_taxes' => $service->getSerializedOptionalTaxes(),
@@ -221,23 +222,37 @@ class SamedayServiceRepository extends AbstractRepository implements CarrierServ
      */
     public function updateServiceCode(CourierServiceDto $service, int $id): bool
     {
-        $serviceName = $service->getName();
-        if ($service->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-            $hostCountry = $this->carrierSettingsProvider->get()->getHostCountry();
-            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
-        }
-
         return $this->dbHandler->updateRow(
             $this->getTableName(),
             [
                 'sameday_code' => $service->getCode(),
-                'name' => $serviceName,
+                'name' => $this->resolveStoredServiceName($service),
                 'service_optional_taxes' => $service->getSerializedOptionalTaxes(),
             ],
             [
                 'id' => $id,
             ]
         );
+    }
+
+    /**
+     * @param CourierServiceDto $service
+     *
+     * @return string
+     */
+    private function resolveStoredServiceName(CourierServiceDto $service): string
+    {
+        $hostCountry = $this->carrierSettingsProvider->get()->getHostCountry();
+
+        if ($service->getCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
+            return CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
+        }
+
+        if ($service->getCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE) {
+            return CarrierConstants::CROSSBORDER_OOH_SERVICES_LABELS[$hostCountry];
+        }
+
+        return $service->getName();
     }
 
     /**
