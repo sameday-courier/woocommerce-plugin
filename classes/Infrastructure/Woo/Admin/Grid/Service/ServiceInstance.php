@@ -162,7 +162,7 @@ class ServiceInstance
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
         }
 
-        if ($service->getSamedayCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE){
+        if ($service->getSamedayCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE) {
             $nameDisabled = true;
             $serviceName = CarrierConstants::CROSSBORDER_OOH_SERVICES_LABELS[$hostCountry];
         }

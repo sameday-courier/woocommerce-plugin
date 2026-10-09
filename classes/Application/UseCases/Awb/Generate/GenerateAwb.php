@@ -322,7 +322,6 @@ final class GenerateAwb extends AbstractUseCase
         if (
             null === $postedService
             || null === $orderServiceCode
-            || !$carrierServiceRules->isCheckoutOohCode($orderServiceCode)
         ) {
             return [
                 'service' => $postedService,

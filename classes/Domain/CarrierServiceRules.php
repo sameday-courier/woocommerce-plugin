@@ -83,97 +83,25 @@ final class CarrierServiceRules
     }
 
     /**
-     * Checkout offers one out-of-home rate per lane (LN at home, XL across the border).
-     * The map selection decides the AWB code: easybox stays on that rate, a Sameday point
-     * uses the point service of the same lane (PP or XP).
-     *
      * @param string $orderServiceCode
-     * @param string|null $oohType 0/LN/XL for an easybox, 1/PP/XP for a Sameday point
+     * @param string|null $oohType
      *
      * @return string
      */
     public function resolveAwbServiceCode(string $orderServiceCode, ?string $oohType): string
     {
-        $lane = $this->oohLane($orderServiceCode);
-        if (null === $lane) {
+        $serviceKeys = array_flip(CarrierConstants::EASYBOX_TYPE_SERVICE)
+            + array_flip(CarrierConstants::PUDO_TYPE_SERVICE);
+        if (!isset($serviceKeys[$orderServiceCode])) {
             return $orderServiceCode;
         }
 
-        if ($this->isSamedayPoint($oohType)) {
-            return $lane['point'];
-        }
+        $oohTypeCode = CarrierConstants::OOH_TYPES[$oohType] ?? $oohType;
+        $targetServices = in_array($oohTypeCode, CarrierConstants::PUDO_TYPE_SERVICE, true)
+            ? CarrierConstants::PUDO_TYPE_SERVICE
+            : CarrierConstants::EASYBOX_TYPE_SERVICE;
 
-        return $lane['easybox'];
-    }
-
-    /**
-     * Rates the customer can choose. Point codes are resolved later, at AWB generation.
-     *
-     * @param string $serviceCode
-     *
-     * @return bool
-     */
-    public function isCheckoutOohCode(string $serviceCode): bool
-    {
-        return in_array($serviceCode, [
-            CarrierConstants::LOCKER_NEXT_DAY_CODE,
-            CarrierConstants::LOCKER_CROSSBORDER_CODE,
-        ], true);
-    }
-
-    /**
-     * @param string|null $oohType
-     *
-     * @return bool
-     */
-    private function isSamedayPoint(?string $oohType): bool
-    {
-        if (null === $oohType || '' === $oohType) {
-            return false;
-        }
-
-        if ('1' === $oohType) {
-            return true;
-        }
-
-        return in_array($oohType, [
-            CarrierConstants::PUDO_CODE,
-            CarrierConstants::CROSSBORDER_PUDO,
-        ], true);
-    }
-
-    /**
-     * @param string $serviceCode
-     *
-     * @return array{easybox: string, point: string}|null
-     */
-    private function oohLane(string $serviceCode): ?array
-    {
-        if (
-            in_array($serviceCode, [
-                CarrierConstants::LOCKER_NEXT_DAY_CODE,
-                CarrierConstants::PUDO_CODE,
-            ], true)
-        ) {
-            return [
-                'easybox' => CarrierConstants::LOCKER_NEXT_DAY_CODE,
-                'point' => CarrierConstants::PUDO_CODE,
-            ];
-        }
-
-        if (
-            in_array($serviceCode, [
-                CarrierConstants::LOCKER_CROSSBORDER_CODE,
-                CarrierConstants::CROSSBORDER_PUDO,
-            ], true)
-        ) {
-            return [
-                'easybox' => CarrierConstants::LOCKER_CROSSBORDER_CODE,
-                'point' => CarrierConstants::CROSSBORDER_PUDO,
-            ];
-        }
-
-        return null;
+        return $targetServices[$serviceKeys[$orderServiceCode]] ?? $orderServiceCode;
     }
 
     /**
