@@ -183,6 +183,7 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 * Bug fix. A cross-border Sameday Point selected on the locker map now generates the XP service. Easybox selections still use XL. Domestic locker and point services are unchanged.
 * Refreshing or editing Crossborder Locker delivery keeps the cross-border PUDO service status in sync with it.
+* The first service import stores the locker display name for LN and XL. A later import is no longer required to fill that name.
 
 = 2.2.5 =
 

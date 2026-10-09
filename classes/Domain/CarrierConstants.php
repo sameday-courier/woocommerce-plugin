@@ -55,6 +55,12 @@ final class CarrierConstants
         self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox',
         self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox',
     ];
+
+    public const CROSSBORDER_OOH_SERVICES_LABELS = [
+        self::API_HOST_LOCALE_RO => 'Crossborder Out of home delivery',
+        self::API_HOST_LOCALE_BG => 'Трансгранична доставка извън дома',
+        self::API_HOST_LOCALE_HU => 'Határokon átnyúló, otthonon kívüli kézbesítés',
+    ];
     public const ELIGIBLE_SERVICES = [
         self::SAMEDAY_6H_CODE,
         self::STANDARD_24H_CODE,
