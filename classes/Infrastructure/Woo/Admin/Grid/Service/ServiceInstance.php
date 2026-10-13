@@ -203,9 +203,6 @@ class ServiceInstance
     }
 
     /**
-     * Singleton instance
-     */
-    /**
      * @return self
      */
     public static function get_instance(): self

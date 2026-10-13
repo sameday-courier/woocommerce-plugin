@@ -18,17 +18,11 @@ final class FrontPageValidatorHandler
     /**
      * @return bool
      */
-    /**
-     * @return bool
-     */
     public static function isCheckoutPage(): bool
     {
         return is_checkout();
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */
@@ -41,9 +35,6 @@ final class FrontPageValidatorHandler
             && !isset($wp->query_vars['order-received']);
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */

@@ -74,9 +74,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    /**
-     * @return void
-     */
     public static function enqueueAdmin(): void
     {
         if (!is_admin()) {
@@ -99,9 +96,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    /**
-     * @return void
-     */
     public static function enqueueFrontend(): void
     {
         foreach (self::getScripts() as $handle => $script) {
@@ -117,9 +111,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }
     }
 
-    /**
-     * @return array
-     */
     /**
      * @return array
      */
@@ -379,14 +370,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      *
      * @return array
      */
-    /**
-     * @param string $fileName
-     * @param string $context
-     * @param array $deps
-     * @param bool $inFooter
-     *
-     * @return array
-     */
     private static function addScript(
         string $fileName,
         string $context,
@@ -411,14 +394,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         ];
     }
 
-    /**
-     * @param string $url
-     * @param string $context
-     * @param array $deps
-     * @param bool $inFooter
-     *
-     * @return array
-     */
     /**
      * @param string $url
      * @param string $context
@@ -457,12 +432,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      *
      * @return array
      */
-    /**
-     * @param array $script
-     * @param string $handle
-     *
-     * @return array
-     */
     private static function withHandle(array $script, string $handle): array
     {
         $script[self::SCRIPT_HANDLE] = $handle;
@@ -476,22 +445,11 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
-    /**
-     * @param string $registryKey
-     * @param array $script
-     *
-     * @return string
-     */
     private static function resolveHandle(string $registryKey, array $script): string
     {
         return $script[self::SCRIPT_HANDLE] ?? $registryKey;
     }
 
-    /**
-     * @param string $context
-     *
-     * @return string
-     */
     /**
      * @param string $context
      *
@@ -510,11 +468,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }
     }
 
-    /**
-     * @param string $context
-     *
-     * @return bool
-     */
     /**
      * @param string $context
      *
@@ -558,12 +511,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
      *
      * @return void
      */
-    /**
-     * @param string $handle
-     * @param array $script
-     *
-     * @return void
-     */
     private static function enqueue(string $handle, array $script): void
     {
         $deps = $script[self::SCRIPT_DEPS];
@@ -586,11 +533,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         self::localizeScript($handle);
     }
 
-    /**
-     * @param string $handle
-     *
-     * @return void
-     */
     /**
      * @param string $handle
      *
@@ -733,9 +675,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     /**
      * @return array
      */
-    /**
-     * @return array
-     */
     private static function getCitiesForCheckout(): array
     {
         $cachedCities = (new SamedayCityRepository())->getCachedCities();
@@ -757,11 +696,6 @@ final class JsScriptsHandler implements RegistryHandlerInterface
         }, $cachedCities);
     }
 
-    /**
-     * @param string $relativePath
-     *
-     * @return string
-     */
     /**
      * @param string $relativePath
      *

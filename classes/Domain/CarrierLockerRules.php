@@ -13,11 +13,6 @@ final class CarrierLockerRules
     private const OOH_TYPE_PUDO = '1';
 
     /**
-     * @param int|null $lockerId
-     *
-     * @return string|null
-     */
-    /**
      * @param ?int $lockerId
      *
      * @return ?string

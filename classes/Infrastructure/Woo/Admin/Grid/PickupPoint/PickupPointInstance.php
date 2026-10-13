@@ -135,7 +135,6 @@ class PickupPointInstance
         $this->pickuppoints_obj = new PickupPoints();
     }
 
-    /** Singleton instance */
     /**
      * @return mixed
      */

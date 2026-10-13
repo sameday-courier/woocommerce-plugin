@@ -52,12 +52,6 @@ final class SamedayIcon
      *
      * @return string
      */
-    /**
-     * @param string $className
-     * @param int $size
-     *
-     * @return string
-     */
     public static function render(string $className = 'sameday-icon', int $size = 16): string
     {
         $dataUri = self::getDataUri();
