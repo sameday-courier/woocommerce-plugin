@@ -8,7 +8,6 @@ use Exception;
 use JsonException;
 use RuntimeException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
-use stdClass;
 
 class FileReadHandler
 {
