@@ -69,9 +69,6 @@ final class BulkJobItemDto
     }
 
     /**
-     * @param array<string, mixed> $data
-     */
-    /**
      * @param array $data
      *
      * @return self

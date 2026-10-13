@@ -22,12 +22,6 @@ class NonceHandler
      *
      * @return bool
      */
-    /**
-     * @param string $nonceString
-     * @param string $action
-     *
-     * @return bool
-     */
     public static function verify(string $nonceString, string $action): bool
     {
         return (bool) wp_verify_nonce($nonceString, $action);

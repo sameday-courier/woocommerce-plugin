@@ -10,15 +10,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SqlSanitizer;
 final class GridQueryBuilder
 {
     /**
-     * @param array<int, string> $allowedOrderByColumns
-     * @param array<int, string>|null $whereInValues
-     * @param array<int, string> $allowedSearchColumns
-     * @param array<string, string> $likeFilters
-     * @param array<string, int|string|bool> $exactFilters
-     *
-     * @return array{sql: string, params: array<int, mixed>}
-     */
-    /**
      * @param string $tableName
      * @param bool $isTesting
      * @param array $allowedOrderByColumns
@@ -81,14 +72,6 @@ final class GridQueryBuilder
     }
 
     /**
-     * @param array<int, string>|null $whereInValues
-     * @param array<int, string> $allowedSearchColumns
-     * @param array<string, string> $likeFilters
-     * @param array<string, int|string|bool> $exactFilters
-     *
-     * @return array{sql: string, params: array<int, mixed>}
-     */
-    /**
      * @param string $tableName
      * @param bool $isTesting
      * @param ?string $whereInColumn
@@ -123,14 +106,6 @@ final class GridQueryBuilder
         ];
     }
 
-    /**
-     * @param array<int, string>|null $whereInValues
-     * @param array<int, string> $allowedSearchColumns
-     * @param array<string, string> $likeFilters
-     * @param array<string, int|string|bool> $exactFilters
-     *
-     * @return array{conditions: string, params: array<int, mixed>}
-     */
     /**
      * @param bool $isTesting
      * @param ?string $whereInColumn

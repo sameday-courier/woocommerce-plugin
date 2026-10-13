@@ -25,9 +25,6 @@ final class RegistryHandler
     /**
      * @return void
      */
-    /**
-     * @return void
-     */
     public static function register(): void
     {
         foreach (self::REGISTERS as $class) {
