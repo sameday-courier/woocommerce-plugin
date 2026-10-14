@@ -84,8 +84,6 @@ final class EditServiceController extends AbstractController
     }
 
     /**
-     * The name field is disabled for locker services, so it is not posted.
-     * LN and XL each keep their own label.
      *
      * @param array $inputParams
      *
