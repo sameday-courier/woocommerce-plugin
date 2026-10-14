@@ -115,6 +115,26 @@ final class RefreshService extends AbstractUseCase
             );
         }
 
+        $crossborderLockerService = $this->serviceCatalogStore->getByCode(
+            CarrierConstants::LOCKER_CROSSBORDER_CODE
+        );
+        $crossborderPudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::CROSSBORDER_PUDO);
+
+        if (
+            null !== $crossborderLockerService && null !== $crossborderPudoService
+            && !$this->serviceCatalogStore->updateFields(
+                $crossborderPudoService->getId(),
+                [
+                    'status' => $crossborderLockerService->getStatus(),
+                ]
+            )
+        ) {
+            return new RefreshServiceResponse(
+                'Unable to sync cross-border PUDO status',
+                true
+            );
+        }
+
         return new RefreshServiceResponse(
             'Service successfully refreshed.',
             false

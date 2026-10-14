@@ -138,6 +138,15 @@ final class GenerateAwb extends AbstractUseCase
         $locker = $request->getLocker();
 
         $carrierServiceRules = new CarrierServiceRules($this->serviceCatalogStore);
+        $deliveryPointService = $this->serviceForSelectedDeliveryPoint(
+            $request,
+            $carrierService,
+            $carrierServiceRules
+        );
+        if (null !== $deliveryPointService['error']) {
+            return new GenerateAwbResponse($deliveryPointService['error'], true);
+        }
+        $carrierService = $deliveryPointService['service'];
         $awbValidator = (new GenerateAwbValidator())->validate(
             new GenerateAwbValidatorRequest(
                 $request->getOrderId(),
@@ -293,6 +302,88 @@ final class GenerateAwb extends AbstractUseCase
             $status,
             $note
         );
+    }
+
+    /**
+     * Checkout stores LN or XL. A Sameday point on the map uses PP or XP instead.
+     *
+     * @param GenerateAwbRequest $request
+     * @param CarrierService|null $postedService
+     * @param CarrierServiceRules $carrierServiceRules
+     *
+     * @return array{service: CarrierService|null, error: string|null}
+     */
+    private function serviceForSelectedDeliveryPoint(
+        GenerateAwbRequest $request,
+        ?CarrierService $postedService,
+        CarrierServiceRules $carrierServiceRules
+    ): array {
+        $orderServiceCode = $this->readOrderServiceCode($request->getShippingLines());
+        if (
+            null === $postedService
+            || null === $orderServiceCode
+        ) {
+            return [
+                'service' => $postedService,
+                'error' => null,
+            ];
+        }
+
+        $locker = $request->getLocker();
+        $resolvedCode = $carrierServiceRules->resolveAwbServiceCode(
+            $orderServiceCode,
+            null !== $locker ? $locker->getOohType() : null
+        );
+        if ($resolvedCode === $postedService->getSamedayCode()) {
+            return [
+                'service' => $postedService,
+                'error' => null,
+            ];
+        }
+
+        $resolvedService = $this->serviceCatalogStore->getByCode($resolvedCode);
+        if (null === $resolvedService) {
+            return [
+                'service' => null,
+                'error' => sprintf(
+                    'Sameday service %s could not be found for the selected delivery point.',
+                    $resolvedCode
+                ),
+            ];
+        }
+
+        return [
+            'service' => $resolvedService,
+            'error' => null,
+        ];
+    }
+
+    /**
+     * @param array<int, mixed> $shippingLines
+     *
+     * @return string|null
+     */
+    private function readOrderServiceCode(array $shippingLines): ?string
+    {
+        foreach ($shippingLines as $shippingLine) {
+            if (!is_object($shippingLine) || !method_exists($shippingLine, 'get_meta')) {
+                continue;
+            }
+
+            if (
+                method_exists($shippingLine, 'get_method_id')
+                && CarrierConstants::PLUGIN_NAME !== $shippingLine->get_method_id()
+            ) {
+                continue;
+            }
+
+            $serviceCode = $shippingLine->get_meta('service_code');
+            if (is_string($serviceCode) && '' !== $serviceCode) {
+                return $serviceCode;
+            }
+        }
+
+        return null;
     }
 
     /**

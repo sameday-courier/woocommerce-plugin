@@ -153,11 +153,18 @@ class ServiceInstance
 
         $nameDisabled = false;
         $serviceName = $service->getSamedayName() ?? '';
+
+        $carrierSettingsProvider = new CarrierSettingsServiceProvider();
+        $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
+
         if ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
             $nameDisabled = true;
-            $carrierSettingsProvider = new CarrierSettingsServiceProvider();
-            $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
             $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
+        }
+
+        if ($service->getSamedayCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE) {
+            $nameDisabled = true;
+            $serviceName = CarrierConstants::CROSSBORDER_OOH_SERVICES_LABELS[$hostCountry];
         }
 
         $currentStatus = (int) $service->getStatus();

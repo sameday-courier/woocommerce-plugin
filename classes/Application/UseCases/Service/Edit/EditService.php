@@ -112,6 +112,26 @@ final class EditService extends AbstractUseCase
             }
         }
 
+        if ($currentService->getSamedayCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE) {
+            $crossborderPudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::CROSSBORDER_PUDO);
+
+            if (
+                null !== $crossborderPudoService
+                && !$this->serviceCatalogStore->updateFields(
+                    $crossborderPudoService->getId(),
+                    [
+                        'status' => $status,
+                    ]
+                )
+            ) {
+                return new EditServiceResponse(
+                    'Service updated, but unable to sync cross-border PUDO status',
+                    true,
+                    $serviceId
+                );
+            }
+        }
+
         return new EditServiceResponse(
             'Service has been edited',
             false,

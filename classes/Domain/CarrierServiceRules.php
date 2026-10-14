@@ -83,6 +83,28 @@ final class CarrierServiceRules
     }
 
     /**
+     * @param string $orderServiceCode
+     * @param string|null $oohType
+     *
+     * @return string
+     */
+    public function resolveAwbServiceCode(string $orderServiceCode, ?string $oohType): string
+    {
+        $serviceKeys = array_flip(CarrierConstants::EASYBOX_TYPE_SERVICE)
+            + array_flip(CarrierConstants::PUDO_TYPE_SERVICE);
+        if (!isset($serviceKeys[$orderServiceCode])) {
+            return $orderServiceCode;
+        }
+
+        $oohTypeCode = CarrierConstants::OOH_TYPES[$oohType] ?? $oohType;
+        $targetServices = in_array($oohTypeCode, CarrierConstants::PUDO_TYPE_SERVICE, true)
+            ? CarrierConstants::PUDO_TYPE_SERVICE
+            : CarrierConstants::EASYBOX_TYPE_SERVICE;
+
+        return $targetServices[$serviceKeys[$orderServiceCode]] ?? $orderServiceCode;
+    }
+
+    /**
      * @param CarrierService $carrierService
      * @param string|null $stateName
      *

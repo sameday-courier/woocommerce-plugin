@@ -20,7 +20,7 @@ final class CarrierConstants
     public const STANDARD_CROSSBORDER_CODE = "XB";
     public const LOCKER_CROSSBORDER_CODE = "XL";
     public const PUDO_CODE = "PP";
-    public const CROSSBORDER_PUDO = "PP";
+    public const CROSSBORDER_PUDO = "XP";
     public const OOH_TYPES = [
         0 => self::LOCKER_NEXT_DAY_CODE,
         1 => self::PUDO_CODE,
@@ -40,6 +40,7 @@ final class CarrierConstants
         self::LOCKER_NEXT_DAY_CODE,
         self::LOCKER_CROSSBORDER_CODE,
         self::PUDO_CODE,
+        self::CROSSBORDER_PUDO,
     ];
     public const IN_USE_SERVICES = [
         self::SAMEDAY_6H_CODE,
@@ -53,6 +54,12 @@ final class CarrierConstants
         self::API_HOST_LOCALE_RO => 'Ridicare Sameday Point/Easybox',
         self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox',
         self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox',
+    ];
+
+    public const CROSSBORDER_OOH_SERVICES_LABELS = [
+        self::API_HOST_LOCALE_RO => 'Crossborder Out of home delivery',
+        self::API_HOST_LOCALE_BG => 'Трансгранична доставка извън дома',
+        self::API_HOST_LOCALE_HU => 'Határokon átnyúló, otthonon kívüli kézbesítés',
     ];
     public const ELIGIBLE_SERVICES = [
         self::SAMEDAY_6H_CODE,
