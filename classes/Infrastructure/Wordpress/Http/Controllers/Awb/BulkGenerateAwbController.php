@@ -7,8 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\Awb;
 use Exception;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooGenerateAwbOrderProvider;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataHandler;
-use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOrderWeightCalculator;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Controllers\AbstractRecursiveBulkController;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\GenerateAwbRequestFactory;
@@ -45,8 +43,6 @@ final class BulkGenerateAwbController extends AbstractRecursiveBulkController
         $generateAwbRequestFactory = GenerateAwbRequestFactory::createWithDbHandler($dbHandler);
         $requestFactory = new GenerateAwbRequestFromOrderFactory(
             new WooGenerateAwbOrderProvider(),
-            new WooOrderWeightCalculator(),
-            new WooOpenPackageOrderDataHandler(),
             new SamedayPickupPointRepository($dbHandler),
             $samedayServiceRepository,
             new CarrierServiceRules($samedayServiceRepository),

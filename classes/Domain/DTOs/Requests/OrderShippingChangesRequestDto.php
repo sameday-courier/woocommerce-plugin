@@ -13,14 +13,14 @@ final class OrderShippingChangesRequestDto
     private CarrierService $service;
 
     /**
-     * @var array<int, mixed>
+     * @var array<int, int> WooCommerce shipping-line item IDs
      */
     private array $shippingLines;
 
     /**
      * @param int $orderId
      * @param CarrierService $service
-     * @param array<int, mixed> $shippingLines
+     * @param array<int, int> $shippingLines
      */
     public function __construct(
         int $orderId,
@@ -49,7 +49,7 @@ final class OrderShippingChangesRequestDto
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, int>
      */
     public function getShippingLines(): array
     {

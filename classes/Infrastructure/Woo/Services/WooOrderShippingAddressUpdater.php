@@ -15,7 +15,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Order;
 
@@ -128,12 +128,16 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      */
     private function resolveLockerFields(int $orderId): ?array
     {
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return null;
+        }
+
         $postMetaLocker = JsonStringHandler::fixJson(
             InputSanitizer::sanitizeInput(
-                (string) PostMetaHandler::get(
-                    $orderId,
-                    CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
-                    true
+                (string) PostOrderMetaHandler::get(
+                    $order,
+                    CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
                 )
             )
         );

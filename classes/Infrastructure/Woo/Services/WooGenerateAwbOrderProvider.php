@@ -7,13 +7,23 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use WC_Order;
 use WC_Order_Item_Shipping;
 use WC_Payment_Gateway;
 
 final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInterface
 {
+    private WooOrderWeightCalculator $orderWeightCalculator;
+
+    /**
+     * @param WooOrderWeightCalculator|null $orderWeightCalculator
+     */
+    public function __construct(?WooOrderWeightCalculator $orderWeightCalculator = null)
+    {
+        $this->orderWeightCalculator = $orderWeightCalculator ?? new WooOrderWeightCalculator();
+    }
+
     /**
      * @param int $orderId
      *
@@ -29,24 +39,33 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
         $shippingLines = $order->get_items('shipping');
         $paymentGateway = wc_get_payment_gateway_by_order($order);
 
+        $locker = PostOrderMetaHandler::get(
+            $order,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
+        );
+
+        $isOpenPackage = (bool) PostOrderMetaHandler::get(
+            $order,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION
+        );
+
         return new GenerateAwbOrderSnapshotDto(
-            $orderId,
+            $order->get_id(),
             $order->get_order_number(),
-            (float) $order->get_total(),
+            $order->get_total(),
             $paymentGateway instanceof WC_Payment_Gateway ? $paymentGateway->id : null,
             $order->get_address('shipping'),
             $order->get_address(),
-            $shippingLines,
+            $this->resolveShippingLineIds($shippingLines),
             $this->resolveSamedayServiceCode($shippingLines),
-            PostMetaHandler::get(
-                $orderId,
-                CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
-            ),
+            $locker,
+            $isOpenPackage,
+            $this->orderWeightCalculator->toPackageDimensionsFromOrder($order),
         );
     }
 
     /**
-     * @param array $shippingLines
+     * @param array<int, mixed> $shippingLines
      *
      * @return ?string
      */
@@ -68,5 +87,23 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
         }
 
         return null;
+    }
+
+    /**
+     * @param array<int, mixed> $shippingLines
+     *
+     * @return array<int, int>
+     */
+    private function resolveShippingLineIds(array $shippingLines): array
+    {
+        $shippingLineIds = [];
+
+        foreach ($shippingLines as $shippingLine) {
+            if ($shippingLine instanceof WC_Order_Item_Shipping) {
+                $shippingLineIds[] = $shippingLine->get_id();
+            }
+        }
+
+        return $shippingLineIds;
     }
 }

@@ -15,6 +15,7 @@ use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderShippingChangesServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use WC_Order;
+use WC_Order_Item_Shipping;
 
 final class PostOrderPlacementHandler
 {
@@ -89,31 +90,42 @@ final class PostOrderPlacementHandler
      */
     private function applyOrderShippingChanges(int $orderId): void
     {
-        $serviceCode = $this->wooShippingMethodProvider->getChosenServiceCode();
-        if ('' === $serviceCode) {
-            return;
-        }
-
-        $service = $this->samedayServiceRepository->getServiceSamedayByCode($serviceCode);
-        if (null === $service) {
-            return;
-        }
+//        $serviceCode = $this->wooShippingMethodProvider->getChosenServiceCode();
+//        if ('' === $serviceCode) {
+//            return;
+//        }
 
         $order = wc_get_order($orderId);
         if (!$order instanceof WC_Order) {
             return;
         }
 
+        $serviceCode = "TEST";
+
+        $service = $this->samedayServiceRepository->getServiceSamedayByCode($serviceCode);
+        if (null === $service) {
+            return;
+        }
+
+
+
         $shippingLines = $order->get_items('shipping');
         if ([] === $shippingLines) {
             return;
+        }
+
+        $shippingLineIds = [];
+        foreach ($shippingLines as $shippingLine) {
+            if ($shippingLine instanceof WC_Order_Item_Shipping) {
+                $shippingLineIds[] = $shippingLine->get_id();
+            }
         }
 
         $this->orderShippingChangesServiceProvider->apply(
             new OrderShippingChangesRequestDto(
                 $orderId,
                 $service,
-                $shippingLines
+                $shippingLineIds
             )
         );
     }

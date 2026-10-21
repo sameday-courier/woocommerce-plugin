@@ -25,9 +25,9 @@ final class GenerateAwbOrderSnapshotDto
     private array $billing;
 
     /**
-     * Opaque shipping-line collection for GenerateAwbRequest (platform objects).
+     * WooCommerce order-item IDs associated with the order.
      *
-     * @var array<int|string, mixed>
+     * @var array<int, int>
      */
     private array $shippingLines;
 
@@ -38,6 +38,13 @@ final class GenerateAwbOrderSnapshotDto
      */
     private $locker;
 
+    private bool $hasOpenPackage;
+
+    /**
+     * @var array<int, array{weight: float}>
+     */
+    private array $packageDimensions;
+
     /**
      * @param int $orderId
      * @param string $orderNumber
@@ -45,9 +52,11 @@ final class GenerateAwbOrderSnapshotDto
      * @param ?string $paymentMethodId
      * @param array $shipping
      * @param array $billing
-     * @param array $shippingLines
+     * @param array<int, int> $shippingLines
      * @param ?string $samedayServiceCode
      * @param mixed $locker
+     * @param bool $hasOpenPackage
+     * @param array<int, array{weight: float}> $packageDimensions
      */
     public function __construct(
         int $orderId,
@@ -58,7 +67,9 @@ final class GenerateAwbOrderSnapshotDto
         array $billing,
         array $shippingLines,
         ?string $samedayServiceCode,
-        $locker
+        $locker,
+        bool $hasOpenPackage,
+        array $packageDimensions
     ) {
         $this->orderId = $orderId;
         $this->orderNumber = $orderNumber;
@@ -69,6 +80,8 @@ final class GenerateAwbOrderSnapshotDto
         $this->shippingLines = $shippingLines;
         $this->samedayServiceCode = $samedayServiceCode;
         $this->locker = $locker;
+        $this->hasOpenPackage = $hasOpenPackage;
+        $this->packageDimensions = $packageDimensions;
     }
 
     /**
@@ -120,7 +133,7 @@ final class GenerateAwbOrderSnapshotDto
     }
 
     /**
-     * @return array<int|string, mixed>
+     * @return array<int, int>
      */
     public function getShippingLines(): array
     {
@@ -141,5 +154,21 @@ final class GenerateAwbOrderSnapshotDto
     public function getLocker()
     {
         return $this->locker;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasOpenPackage(): bool
+    {
+        return $this->hasOpenPackage;
+    }
+
+    /**
+     * @return array<int, array{weight: float}>
+     */
+    public function getPackageDimensions(): array
+    {
+        return $this->packageDimensions;
     }
 }

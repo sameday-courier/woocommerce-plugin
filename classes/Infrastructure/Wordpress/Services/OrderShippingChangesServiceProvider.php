@@ -20,6 +20,8 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
+use WC_Order;
+use WC_Order_Item_Shipping;
 use Throwable;
 
 final class OrderShippingChangesServiceProvider implements OrderShippingChangesServiceProviderInterface
@@ -63,9 +65,11 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
     {
         $orderId = $request->getOrderId();
         $service = $request->getService();
-        $shippingLines = $request->getShippingLines();
-        $samedayOrderItemId = array_key_first($shippingLines);
-        $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
+        $shippingLineIds = $request->getShippingLines();
+        $samedayOrderItemId = null !== array_key_first($shippingLineIds)
+            ? (int) reset($shippingLineIds)
+            : null;
+        $shippingLine = $this->resolveShippingLine($orderId, $samedayOrderItemId);
 
         try {
             if ($this->carrierServiceRules->isOohDeliveryOption($service)) {
@@ -103,5 +107,34 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
             true,
             'Order shipping changes applied successfully.'
         );
+    }
+
+    /**
+     * @param int $orderId
+     * @param int|null $shippingLineId
+     *
+     * @return WC_Order_Item_Shipping|null
+     */
+    private function resolveShippingLine(int $orderId, ?int $shippingLineId): ?WC_Order_Item_Shipping
+    {
+        if (null === $shippingLineId) {
+            return null;
+        }
+
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return null;
+        }
+
+        foreach ($order->get_items('shipping') as $shippingLine) {
+            if (
+                $shippingLine instanceof WC_Order_Item_Shipping
+                && $shippingLine->get_id() === $shippingLineId
+            ) {
+                return $shippingLine;
+            }
+        }
+
+        return null;
     }
 }
