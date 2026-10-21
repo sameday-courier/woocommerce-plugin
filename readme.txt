@@ -179,6 +179,10 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
+= 2.2.6 =
+
+* Updated the cities.json with specific namings for dup cities of the same county. They now concatenate the village name.
+
 = 2.2.5 =
 
 * Add setting "Order status after AWB" on the SamedayCourier shipping method page.
