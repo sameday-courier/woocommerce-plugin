@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use WP_REST_Request;
 
@@ -68,7 +69,15 @@ final class ValidateBlocksCheckoutLockerAction extends AbstractAction
         }
 
         $sessionHandler = new WooSessionHandler();
-        if (null !== $sessionHandler->get(CarrierSessionKeys::LOCKER)) {
+        $locker = $sessionHandler->get(CarrierSessionKeys::LOCKER);
+        $lockerDtoFactory = LockerDtoFactoryFactory::create();
+        $isMalformedLocker = null !== $locker && '' !== $locker
+            && null === $lockerDtoFactory->fromInput($locker);
+        if ($isMalformedLocker) {
+            $sessionHandler->set(CarrierSessionKeys::LOCKER, '');
+        }
+
+        if (null !== $locker && '' !== $locker && !$isMalformedLocker) {
             return;
         }
 

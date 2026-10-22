@@ -45,7 +45,10 @@ final class LockerDtoFactory
             return null;
         }
 
-        if (is_int($raw) || (is_string($raw) && ctype_digit($raw))) {
+        if (
+            (is_int($raw) && $raw > 0)
+            || (is_string($raw) && ctype_digit($raw) && (int) $raw > 0)
+        ) {
             return $this->fromLockerId((int) $raw);
         }
 
@@ -95,6 +98,10 @@ final class LockerDtoFactory
             $data['lockerId'] = $data['id'] ?? null;
         }
 
+        if (!$this->hasValidOptionalPayloadFields($data)) {
+            return null;
+        }
+
         if ($this->hasRequiredPayloadFields($data)) {
             $mapped = $this->mapLockerInput($data);
 
@@ -109,7 +116,17 @@ final class LockerDtoFactory
             );
         }
 
-        if (isset($data['lockerId']) && '' !== $data['lockerId']) {
+        if (
+            isset($data['lockerId'])
+            && (
+                (is_int($data['lockerId']) && $data['lockerId'] > 0)
+                || (
+                    is_string($data['lockerId'])
+                    && ctype_digit($data['lockerId'])
+                    && (int) $data['lockerId'] > 0
+                )
+            )
+        ) {
             return $this->fromLockerId((int) $data['lockerId']);
         }
 
@@ -162,8 +179,42 @@ final class LockerDtoFactory
      */
     private function hasRequiredPayloadFields(array $data): bool
     {
-        foreach (self::REQUIRED_PAYLOAD_KEYS as $key) {
-            if (!isset($data[$key]) || '' === $data[$key]) {
+        if (
+            !isset($data['lockerId'])
+            || !(
+                (is_int($data['lockerId']) && $data['lockerId'] > 0)
+                || (
+                    is_string($data['lockerId'])
+                    && ctype_digit($data['lockerId'])
+                    && (int) $data['lockerId'] > 0
+                )
+            )
+        ) {
+            return false;
+        }
+
+        foreach (array_diff(self::REQUIRED_PAYLOAD_KEYS, ['lockerId']) as $key) {
+            if (
+                !isset($data[$key])
+                || !is_string($data[$key])
+                || '' === trim($data[$key])
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return bool
+     */
+    private function hasValidOptionalPayloadFields(array $data): bool
+    {
+        foreach (self::OPTIONAL_PAYLOAD_KEYS as $key) {
+            if (isset($data[$key]) && !is_string($data[$key]) && !is_int($data[$key])) {
                 return false;
             }
         }

@@ -1,11 +1,3 @@
-/**
- * WooCommerce Checkout Blocks — Sameday open package option.
- *
- * Classic checkout uses ShowOpenPackageFieldAction + open_package_script.js.
- * Blocks has no PHP shipping template hooks, so the checkbox is injected next to the
- * selected Sameday shipping rate and persisted through the Store API cart/extensions
- * endpoint, which reprices the cart in the same request.
- */
 (function (window, document) {
     'use strict';
 
@@ -62,8 +54,6 @@
     };
 
     var persist = function (value) {
-        // Never touch the cart while Blocks is placing the order — a concurrent
-        // /cart/extensions write races the checkout session and can wipe the cart.
         if (isCheckoutBusy()) {
             return;
         }
@@ -73,7 +63,6 @@
 
         var blocksCheckout = window.wc && window.wc.blocksCheckout;
         if (!blocksCheckout || typeof blocksCheckout.extensionCartUpdate !== 'function') {
-            // The cart is not repriced without the Store API, but the choice is still stored.
             if (typeof SamedayCourier.doAjaxCall === 'function') {
                 SamedayCourier.doAjaxCall(data, false);
             }
@@ -81,8 +70,6 @@
             return;
         }
 
-        // Overlapping cart updates would land in an arbitrary order, so a change made while a
-        // request is in flight is replayed once that request settles.
         if (isPending) {
             queuedValue = value;
 
@@ -117,7 +104,6 @@
             return;
         }
 
-        // Switching away from a Sameday service must not leave the option set in session.
         isChecked = false;
         persist(false);
     };
@@ -140,8 +126,6 @@
         input.checked = isChecked;
         input.disabled = isPending;
 
-        // The checkbox lives inside a rate option rendered by React, whose listeners sit on the
-        // checkout root. Keeping the events local prevents Blocks from reading them as a rate change.
         input.addEventListener('click', function (event) {
             event.stopPropagation();
         });
@@ -165,14 +149,11 @@
 
     /**
      * @param {boolean} allowSessionClear
-     *        When false (MutationObserver), only sync the DOM. Session clears must wait for a real
-     *        shipping-rate change — observer passes see transient empty selections during place-order.
      */
     var ensureUi = function (allowSessionClear) {
         var existing = document.getElementById(UI_ROOT_ID);
         var rateId = SamedayCourier.getSelectedShippingRateId();
 
-        // Blocks re-renders the rate list in several passes, during which no radio is checked.
         if (!rateId) {
             return;
         }
@@ -190,8 +171,6 @@
             return;
         }
 
-        // Blocks keeps previously rendered rate options mounted, so the checkbox has to be
-        // moved whenever the selection changes instead of lingering under the old rate.
         if (existing && existing.getAttribute(RATE_ATTRIBUTE) !== rateId) {
             existing.remove();
             existing = null;

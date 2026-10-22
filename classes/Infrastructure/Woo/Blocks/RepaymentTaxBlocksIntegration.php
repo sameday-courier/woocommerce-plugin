@@ -8,19 +8,10 @@ use SamedayCourier\Shipping\Domain\Ports\ChosenPaymentMethodReaderInterface;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooChosenPaymentMethodReader;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 
-/**
- * WooCommerce Checkout Blocks integration for COD repayment tax recalculation.
- *
- * Classic checkout uses open_package_script.js to trigger update_checkout on payment change.
- * Blocks checkout persists the active gateway through the Store API cart/extensions callback.
- */
 final class RepaymentTaxBlocksIntegration extends AbstractBlocksIntegration
 {
     public const NAME = 'sameday-repayment-tax-blocks';
 
-    /**
-     * Namespace used by extensionCartUpdate() and RegisterRepaymentTaxCartUpdateCallbackAction.
-     */
     public const CART_UPDATE_NAMESPACE = 'sameday-repayment-tax';
     public const CART_UPDATE_FIELD = 'payment_method';
 

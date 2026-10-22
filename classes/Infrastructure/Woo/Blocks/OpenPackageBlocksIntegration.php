@@ -12,20 +12,10 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OpenPackageAvailabilityProvider;
 
-/**
- * WooCommerce Checkout Blocks integration for the open package option.
- *
- * Classic checkout uses ShowOpenPackageFieldAction + open_package_script.js.
- * Blocks checkout has no PHP shipping template hooks, so the checkbox is injected via JS
- * and persisted through the Store API cart/extensions endpoint, which reprices the cart.
- */
 final class OpenPackageBlocksIntegration extends AbstractBlocksIntegration
 {
     public const NAME = 'sameday-open-package-blocks';
 
-    /**
-     * Namespace used by extensionCartUpdate() and RegisterOpenPackageCartUpdateCallbackAction.
-     */
     public const CART_UPDATE_NAMESPACE = 'sameday-open-package';
     public const CART_UPDATE_FIELD = 'open_package';
 

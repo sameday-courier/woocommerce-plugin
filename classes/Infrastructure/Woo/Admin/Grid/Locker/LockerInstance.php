@@ -52,7 +52,6 @@ class LockerInstance
 
         add_action("load-$hook", [ $this, 'screen_option' ]);
 
-        // Keep page out of the Pages menu while retaining a real parent so WP can resolve $title.
         add_action('admin_head', static function () use ($parentSlug, $pageSlug): void {
             remove_submenu_page($parentSlug, $pageSlug);
         });

@@ -7,13 +7,6 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 
-/**
- * Sameday shipping costs depend on session state (open package, payment method) that is not
- * part of WooCommerce's package hash, so cached rates survive changes that should reprice them.
- *
- * Storing null under `shipping_for_package_{key}` unsets the cached rates entry so WC_Shipping
- * recalculates on the next totals pass (e.g. CartExtensionsSchema::calculate_totals).
- */
 final class ShippingRatesRefresher
 {
     /**
@@ -57,25 +50,16 @@ final class ShippingRatesRefresher
         }
 
         foreach (array_keys($cart->get_shipping_packages()) as $packageKey) {
-            // Unset the cached rates entry. Storing `false` also works for WC_Shipping's
-            // is_array() check, but leaving a permanent false key pollutes the session blob.
             $this->sessionHandler->set(
                 CarrierSessionKeys::shippingForPackage((int) $packageKey),
                 null
             );
         }
 
-        // Do not call calculate_shipping() here. Store API cart/extensions already recalculates
-        // totals after the callback; a nested pass only amplifies session races and API estimates.
         $this->preserveChosenShippingMethod();
     }
 
     /**
-     * Keep the customer's current shipping rate across the next totals recalculation in this request.
-     *
-     * Useful for Store API cart/extensions callbacks that do not reprice shipping but still trigger
-     * WC_Cart::calculate_totals() afterward.
-     *
      * @return void
      */
     public function preserveChosenShippingMethod(): void
@@ -84,13 +68,6 @@ final class ShippingRatesRefresher
     }
 
     /**
-     * WC_Cart::calculate_shipping() re-evaluates the chosen rate for every package and falls back to
-     * the default one whenever `shipping_method_counts` is out of sync - which it always is on Blocks
-     * checkout, since nothing there populates that session key. Repricing would therefore drop the
-     * customer on another shipping option right after they tick an option such as open package.
-     *
-     * The filter stays for the rest of the request so the CartExtensions totals pass is covered.
-     *
      * @return void
      */
     private function registerKeepChosenMethodFilter(): void

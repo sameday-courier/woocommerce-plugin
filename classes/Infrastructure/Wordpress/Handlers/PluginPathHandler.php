@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers;
 
-/**
- * Resolves absolute paths inside the plugin package.
- *
- * Prefer bootstrap() from the main plugin file at runtime.
- * Falls back to this class location when bootstrap was not called (e.g. static analysis).
- */
 final class PluginPathHandler
 {
     private const MAIN_PLUGIN_FILE = 'samedaycourier-shipping.php';
@@ -30,14 +24,11 @@ final class PluginPathHandler
     }
 
     /**
-     * Trailing-slash plugin root, same shape as plugin_dir_path().
-     *
      * @return string
      */
     public static function root(): string
     {
         if (null === self::$root) {
-            // classes/Infrastructure/Wordpress/Handlers -> plugin root
             self::$root = dirname(__DIR__, 4) . '/';
         }
 

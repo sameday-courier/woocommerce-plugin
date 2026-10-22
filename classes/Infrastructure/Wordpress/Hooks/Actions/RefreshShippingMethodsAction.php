@@ -11,7 +11,6 @@ use WC_Cache_Helper;
 
 final class RefreshShippingMethodsAction extends AbstractAction
 {
-    // Enabling, disabling and refreshing session shipping methods data
     private const ACTION_NAME = 'woocommerce_checkout_update_order_review';
 
     /**

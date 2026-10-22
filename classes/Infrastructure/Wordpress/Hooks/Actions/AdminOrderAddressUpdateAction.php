@@ -63,7 +63,6 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
 
             $wpShippingAddressArchive->updateHomeDeliverySnapshotFromOrder($order);
         } catch (JsonException $exception) {
-            // Nothing has changed.
         }
     }
 

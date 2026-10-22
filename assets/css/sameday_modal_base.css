@@ -235,8 +235,6 @@
     margin: 0;
 }
 
-/* .sameday-modal-checkbox appearance lives in sameday_checkbox.css, shared with the checkout. */
-
 .sameday-bulk-awb-modal__footer {
     display: flex;
     align-items: center;

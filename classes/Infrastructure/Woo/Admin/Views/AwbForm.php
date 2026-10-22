@@ -176,7 +176,7 @@ class AwbForm
                 continue;
             }
 
-            $serviceCode = $shippingLine->get_meta('service_code');
+            $serviceCode = $shippingLine->get_meta(CarrierConstants::META_SERVICE_CODE);
             if (null === $serviceCode) {
                 continue;
             }
