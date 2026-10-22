@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use JsonException;
 use SamedayCourier\Shipping\Domain\Ports\OrderShippingAddressArchiveInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use WC_Order;
 
 final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiveInterface
@@ -20,15 +20,11 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      */
     public function ensureHomeDeliverySnapshot(int $orderId): void
     {
-        $order = wc_get_order($orderId);
-        if (!$order instanceof WC_Order) {
-            return;
-        }
-
         if (
-            null !== PostOrderMetaHandler::get(
-                $order,
+            '' !== PostMetaHandler::get(
+                $orderId,
                 CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+                true
             )
         ) {
             return;
@@ -61,10 +57,11 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      */
     public function updateHomeDeliverySnapshotFromOrder(WC_Order $order): void
     {
-        PostOrderMetaHandler::update(
-            $order,
+        PostMetaHandler::update(
+            $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-            json_encode($this->buildSnapshotFromOrder($order), JSON_THROW_ON_ERROR)
+            json_encode($this->buildSnapshotFromOrder($order), JSON_THROW_ON_ERROR),
+            false
         );
     }
 

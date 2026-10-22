@@ -11,6 +11,8 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierPackageTypes;
 use SamedayCourier\Shipping\Domain\CarrierServiceRules;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
+use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
+use SamedayCourier\Shipping\Domain\Ports\OrderWeightCalculatorInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\GenerateAwbMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayPickupPointRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
@@ -21,6 +23,16 @@ final class GenerateAwbRequestFromOrderFactory
      * @var GenerateAwbOrderProviderInterface $orderProvider
      */
     private GenerateAwbOrderProviderInterface $orderProvider;
+
+    /**
+     * @var OrderWeightCalculatorInterface $orderWeightCalculator
+     */
+    private OrderWeightCalculatorInterface $orderWeightCalculator;
+
+    /**
+     * @var OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler
+     */
+    private OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler;
 
     /**
      * @var SamedayPickupPointRepository $samedayPickupPointRepository
@@ -44,6 +56,8 @@ final class GenerateAwbRequestFromOrderFactory
 
     /**
      * @param GenerateAwbOrderProviderInterface $orderProvider
+     * @param OrderWeightCalculatorInterface $orderWeightCalculator
+     * @param OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler
      * @param SamedayPickupPointRepository $samedayPickupPointRepository
      * @param SamedayServiceRepository $samedayServiceRepository
      * @param CarrierServiceRules $carrierServiceRules
@@ -51,12 +65,16 @@ final class GenerateAwbRequestFromOrderFactory
      */
     public function __construct(
         GenerateAwbOrderProviderInterface $orderProvider,
+        OrderWeightCalculatorInterface $orderWeightCalculator,
+        OpenPackageOrderDataHandlerInterface $openPackageOrderDataHandler,
         SamedayPickupPointRepository $samedayPickupPointRepository,
         SamedayServiceRepository $samedayServiceRepository,
         CarrierServiceRules $carrierServiceRules,
         ?GenerateAwbRequestFactory $generateAwbRequestFactory = null
     ) {
         $this->orderProvider = $orderProvider;
+        $this->orderWeightCalculator = $orderWeightCalculator;
+        $this->openPackageOrderDataHandler = $openPackageOrderDataHandler;
         $this->samedayPickupPointRepository = $samedayPickupPointRepository;
         $this->carrierServiceRules = $carrierServiceRules;
         $this->samedayServiceRepository = $samedayServiceRepository;
@@ -120,10 +138,10 @@ final class GenerateAwbRequestFromOrderFactory
             GenerateAwbMapper::INSURANCE_VALUE_KEY => 0,
             GenerateAwbMapper::REPAYMENT_KEY => $repayment,
             GenerateAwbMapper::CLIENT_REFERENCE_KEY => $order->getOrderNumber(),
-            GenerateAwbMapper::PACKAGE_DIMENSIONS_KEY => $order->getPackageDimensions(),
+            GenerateAwbMapper::PACKAGE_DIMENSIONS_KEY => $this->orderWeightCalculator->toPackageDimensions($orderId),
         ];
 
-        if ($order->hasOpenPackage()) {
+        if ($this->openPackageOrderDataHandler->isEnabled($orderId)) {
             $inputParams[GenerateAwbMapper::OPEN_PACKAGE_KEY] = 'on';
         }
 

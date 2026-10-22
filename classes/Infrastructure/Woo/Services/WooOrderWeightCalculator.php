@@ -32,30 +32,26 @@ final class WooOrderWeightCalculator implements OrderWeightCalculatorInterface
      */
     public function toPackageDimensions(int $orderId): array
     {
-        $order = wc_get_order($orderId);
-        if (!$order instanceof WC_Order) {
-            return [
-                1 => [
-                    'weight' => self::MIN_WEIGHT,
-                ],
-            ];
-        }
-
-        return $this->toPackageDimensionsFromOrder($order);
+        return [
+            1 => [
+                'weight' => $this->calculateByOrderId($orderId),
+            ],
+        ];
     }
 
     /**
-     * @param WC_Order $order
+     * @param int $orderId
      *
-     * @return array<int, array{weight: float}>
+     * @return float
      */
-    public function toPackageDimensionsFromOrder(WC_Order $order): array
+    public function calculateByOrderId(int $orderId): float
     {
-        return [
-            1 => [
-                'weight' => $this->calculate($order),
-            ],
-        ];
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return self::MIN_WEIGHT;
+        }
+
+        return $this->calculate($order);
     }
 
     /**

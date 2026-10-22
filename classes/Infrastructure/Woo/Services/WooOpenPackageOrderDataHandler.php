@@ -8,8 +8,7 @@ use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
-use WC_Order;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 
 final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandlerInterface
 {
@@ -37,15 +36,11 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
             return;
         }
 
-        $order = wc_get_order($orderId);
-        if (!$order instanceof WC_Order) {
-            return;
-        }
-
-        PostOrderMetaHandler::update(
-            $order,
+        PostMetaHandler::update(
+            $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
-            1
+            1,
+            true
         );
 
         $this->sessionHandler->set(CarrierSessionKeys::OPEN_PACKAGE, 'no');
@@ -58,14 +53,10 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
      */
     public function isEnabled(int $orderId): bool
     {
-        $order = wc_get_order($orderId);
-        if (!$order instanceof WC_Order) {
-            return false;
-        }
-
-        return (bool) PostOrderMetaHandler::get(
-            $order,
+        return '' !== PostMetaHandler::get(
+            $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
+            true
         );
     }
 }

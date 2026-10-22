@@ -7,21 +7,22 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use WC_Order;
-use WC_Order_Item_Shipping;
 use WC_Payment_Gateway;
 
 final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInterface
 {
-    private WooOrderWeightCalculator $orderWeightCalculator;
+    private CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver;
 
     /**
-     * @param WooOrderWeightCalculator|null $orderWeightCalculator
+     * @param ?CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver
      */
-    public function __construct(?WooOrderWeightCalculator $orderWeightCalculator = null)
-    {
-        $this->orderWeightCalculator = $orderWeightCalculator ?? new WooOrderWeightCalculator();
+    public function __construct(
+        ?CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver = null
+    ) {
+        $this->carrierServiceFromShippingLineResolver = $carrierServiceFromShippingLineResolver
+            ?? new CarrierServiceFromShippingLineResolver();
     }
 
     /**
@@ -38,72 +39,21 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
 
         $shippingLines = $order->get_items('shipping');
         $paymentGateway = wc_get_payment_gateway_by_order($order);
-
-        $locker = PostOrderMetaHandler::get(
-            $order,
-            CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
-        );
-
-        $isOpenPackage = (bool) PostOrderMetaHandler::get(
-            $order,
-            CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION
-        );
+        $service = $this->carrierServiceFromShippingLineResolver->resolve($shippingLines);
 
         return new GenerateAwbOrderSnapshotDto(
-            $order->get_id(),
+            $orderId,
             $order->get_order_number(),
-            $order->get_total(),
+            (float) $order->get_total(),
             $paymentGateway instanceof WC_Payment_Gateway ? $paymentGateway->id : null,
             $order->get_address('shipping'),
             $order->get_address(),
-            $this->resolveShippingLineIds($shippingLines),
-            $this->resolveSamedayServiceCode($shippingLines),
-            $locker,
-            $isOpenPackage,
-            $this->orderWeightCalculator->toPackageDimensionsFromOrder($order),
+            $shippingLines,
+            null !== $service ? $service->getSamedayCode() : null,
+            PostMetaHandler::get(
+                $orderId,
+                CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
+            ),
         );
-    }
-
-    /**
-     * @param array<int, mixed> $shippingLines
-     *
-     * @return ?string
-     */
-    private function resolveSamedayServiceCode(array $shippingLines): ?string
-    {
-        foreach ($shippingLines as $shippingLine) {
-            if (!$shippingLine instanceof WC_Order_Item_Shipping) {
-                continue;
-            }
-
-            if ($shippingLine->get_method_id() !== CarrierConstants::PLUGIN_NAME) {
-                continue;
-            }
-
-            $metaServiceCode = $shippingLine->get_meta('service_code');
-            if (null !== $metaServiceCode && '' !== $metaServiceCode) {
-                return (string) $metaServiceCode;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array<int, mixed> $shippingLines
-     *
-     * @return array<int, int>
-     */
-    private function resolveShippingLineIds(array $shippingLines): array
-    {
-        $shippingLineIds = [];
-
-        foreach ($shippingLines as $shippingLine) {
-            if ($shippingLine instanceof WC_Order_Item_Shipping) {
-                $shippingLineIds[] = $shippingLine->get_id();
-            }
-        }
-
-        return $shippingLineIds;
     }
 }

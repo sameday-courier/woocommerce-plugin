@@ -22,7 +22,7 @@ class GenerateAwbValidatorRequest
     private ?string $recipientEmail;
 
     /**
-     * @var array<int, int> WooCommerce shipping-line item IDs
+     * @var array<int, mixed> $shippingLines
      */
     private array $shippingLines;
 
@@ -37,7 +37,7 @@ class GenerateAwbValidatorRequest
      * @param ?string $destinationCountry
      * @param ?string $recipientPhone
      * @param ?string $recipientEmail
-     * @param array<int, int> $shippingLines
+     * @param array $shippingLines
      * @param bool $hasExistingAwb
      * @param bool $hasParcels
      */
@@ -112,7 +112,7 @@ class GenerateAwbValidatorRequest
     }
 
     /**
-     * @return array<int, int>
+     * @return array<int, mixed>
      */
     public function getShippingLines(): array
     {
