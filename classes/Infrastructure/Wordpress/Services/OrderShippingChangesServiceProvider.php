@@ -82,8 +82,14 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
 
         if (null !== $shippingLine) {
             try {
-                $shippingLine->update_meta_data('service_id', $service->getSamedayId());
-                $shippingLine->update_meta_data('service_code', $service->getSamedayCode());
+                $shippingLine->update_meta_data(
+                    CarrierConstants::META_SERVICE_ID,
+                    (string) $service->getSamedayId()
+                );
+                $shippingLine->update_meta_data(
+                    CarrierConstants::META_SERVICE_CODE,
+                    $service->getSamedayCode()
+                );
                 $shippingLine->save_meta_data();
 
                 $shippingLine->set_method_id(CarrierConstants::PLUGIN_NAME);
