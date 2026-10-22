@@ -27,17 +27,34 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private const LOCKER_PLUGIN_SDK_URL = CarrierConstants::LOCKER_PLUGIN_SDK_URL;
     private const LOCKER_SDK_HANDLE = 'sameday-lockerpluginsdk';
 
+    /**
+     * Available script load contexts.
+     *
+     * Use the array KEY as the 2nd argument of addScript() / addExternalScript().
+     * Inline comments describe when each context loads.
+     */
     private const WP_CONTEXT = [
         'admin_common' => 'admin_common',
+        // Sameday admin pages (sameday_services, sameday_lockers, sameday_pickup_points),
+        // Sameday WC settings section, or order admin (post.php / admin.php).
         'admin_full' => 'admin_full',
+        // Sameday settings section (section=samedaycourier) or order admin pages (post.php / admin.php).
         'pickup_points' => 'pickup_points',
+        // Pickup points admin page only (page=sameday_pickup_points).
         'checkout' => 'checkout',
+        // Any WooCommerce checkout page (is_checkout()).
         'checkout_strict' => 'checkout_strict',
+        // Checkout only, excluding order-pay and order-received.
         'checkout_classic' => 'checkout_classic',
+        // Strict checkout rendered by the classic shortcode, not the Checkout block.
         'checkout_nomenclator' => 'checkout_nomenclator',
+        // Checkout page when Sameday nomenclator is enabled.
         'admin_settings' => 'admin_settings',
+        // Sameday WooCommerce shipping settings section only.
         'order_edit' => 'order_edit',
+        // WooCommerce order edit screen only (classic shop_order or HPOS wc-orders).
         'orders_list' => 'orders_list',
+        // WooCommerce orders list (HPOS wc-orders or classic shop_order list).
     ];
 
     /**
@@ -244,6 +261,7 @@ final class JsScriptsHandler implements RegistryHandlerInterface
             'sameday-county-city-handle' => self::addScript(
                 'county-city-handle',
                 self::WP_CONTEXT['checkout_nomenclator'],
+                // Reuse WooCommerce's registered `select2` on checkout to avoid loading a second copy.
                 ['jquery', 'select2', 'sameday-helper'],
                 false
             ),

@@ -27,7 +27,7 @@ final class GenerateAwbRequest implements RequestInterface
     private int $pickupPointId;
 
     /**
-     * @var array<int, int> WooCommerce shipping-line item IDs
+     * @var array<int, mixed> $shippingLines
      */
     private array $shippingLines;
 
@@ -95,7 +95,7 @@ final class GenerateAwbRequest implements RequestInterface
      * @param int $orderId
      * @param int $serviceId
      * @param int $pickupPointId
-     * @param array<int, int> $shippingLines
+     * @param array $shippingLines
      * @param ShippingDto $shipping
      * @param BillingDto $billing
      * @param LockerDto|null $locker
@@ -170,7 +170,7 @@ final class GenerateAwbRequest implements RequestInterface
     }
 
     /**
-     * @return array<int, int>
+     * @return array<int, mixed>
      */
     public function getShippingLines(): array
     {

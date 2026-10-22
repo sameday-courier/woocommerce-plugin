@@ -14,7 +14,7 @@ use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooOpenPackageOrderDataH
 use SamedayCourier\Shipping\Infrastructure\Woo\Admin\Services\AwbFormOptionsProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\OptionsHandler;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\SamedayIcon;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerServiceProvider;
@@ -163,8 +163,8 @@ class AwbForm
      */
     private function resolveServiceCode(WC_Order $order): ?string
     {
-        $postMetaLocker = PostOrderMetaHandler::get(
-            $order,
+        $postMetaLocker = PostMetaHandler::get(
+            $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
         $lockerDto = (new LockerDtoFactory(
@@ -176,7 +176,7 @@ class AwbForm
                 continue;
             }
 
-            $serviceCode = $shippingLine->get_meta(CarrierConstants::META_SERVICE_CODE);
+            $serviceCode = $shippingLine->get_meta('service_code');
             if (null === $serviceCode) {
                 continue;
             }
@@ -225,8 +225,8 @@ class AwbForm
      */
     private function resolveLockerData(WC_Order $order): array
     {
-        $postMetaLocker = PostOrderMetaHandler::get(
-            $order,
+        $postMetaLocker = PostMetaHandler::get(
+            $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
         $lockerDto = (new LockerDtoFactory(
