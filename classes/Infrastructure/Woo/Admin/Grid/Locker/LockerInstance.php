@@ -121,7 +121,6 @@ class LockerInstance
         $this->lockers_obj = new Lockers();
     }
 
-    /** Singleton instance */
     /**
      * @return mixed
      */

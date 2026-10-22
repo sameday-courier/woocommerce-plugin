@@ -58,9 +58,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
     /**
      * @return void
      */
-    /**
-     * @return void
-     */
     public static function enqueueAdmin(): void
     {
         if (!is_admin()) {
@@ -98,9 +95,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         }
     }
 
-    /**
-     * @return array
-     */
     /**
      * @return array
      */
@@ -251,11 +245,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
      *
      * @return string
      */
-    /**
-     * @param string $context
-     *
-     * @return string
-     */
     private static function getContextGroup(string $context): string
     {
         switch ($context) {
@@ -267,11 +256,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         }
     }
 
-    /**
-     * @param string $context
-     *
-     * @return bool
-     */
     /**
      * @param string $context
      *
@@ -322,11 +306,6 @@ final class CssStylesheetsHandler implements RegistryHandlerInterface
         );
     }
 
-    /**
-     * @param string $relativePath
-     *
-     * @return string
-     */
     /**
      * @param string $relativePath
      *

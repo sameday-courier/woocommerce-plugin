@@ -17,9 +17,6 @@ final class AllImportSteps
     /**
      * @return int[]
      */
-    /**
-     * @return array
-     */
     public static function ids(): array
     {
         return [

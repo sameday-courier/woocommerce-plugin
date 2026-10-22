@@ -9,9 +9,6 @@ use SamedayCourier\Shipping\Domain\CarrierConstants;
 final class RequestSanitizer
 {
     /**
-     * @param array<int, string> $allowedColumns
-     */
-    /**
      * @param array $allowedColumns
      *
      * @return ?string

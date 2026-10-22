@@ -8,10 +8,6 @@ final class ShippingMethodCodeParser
 {
     /**
      * @param string $shippingMethodInput
-     * @return string
-     */
-    /**
-     * @param string $shippingMethodInput
      *
      * @return string
      */

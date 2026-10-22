@@ -13,26 +13,11 @@ final class PostMetaHandler
      *
      * @return mixed
      */
-    /**
-     * @param int $postId
-     * @param string $key
-     * @param bool $single
-     *
-     * @return mixed
-     */
     public static function get(int $postId, string $key, bool $single = true)
     {
         return get_post_meta($postId, $key, $single);
     }
 
-    /**
-     * @param int $postId
-     * @param string $key
-     * @param mixed $value
-     * @param bool $unique
-     *
-     * @return void
-     */
     /**
      * @param int $postId
      * @param string $key

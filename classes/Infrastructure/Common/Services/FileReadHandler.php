@@ -8,15 +8,9 @@ use Exception;
 use JsonException;
 use RuntimeException;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
-use stdClass;
 
 class FileReadHandler
 {
-    /**
-     * @param string $fileName
-     *
-     * @return stdClass[]|null
-     */
     /**
      * @param string $fileName
      *
@@ -43,11 +37,6 @@ class FileReadHandler
     /**
      * @param string $fileName
      *
-     * @return null|string
-     */
-    /**
-     * @param string $fileName
-     *
      * @return ?string
      */
     private static function readFile(string $fileName): ?string
@@ -61,10 +50,6 @@ class FileReadHandler
         return $contents;
     }
 
-    /**
-     * @param string $fileName
-     * @return void
-     */
     /**
      * @param string $fileName
      *

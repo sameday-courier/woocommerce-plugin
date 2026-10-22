@@ -16,14 +16,6 @@ final class PostalCode
     }
 
     /**
-     * @param string|null $code
-     * @param string $countyCode
-     * @param string $countryCode
-     * @param CityPostalCodeProviderInterface $cityPostalCodeProvider
-     *
-     * @return PostalCodeDto
-     */
-    /**
      * @param ?string $code
      * @param string $countyCode
      * @param string $countryCode

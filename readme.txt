@@ -179,12 +179,16 @@ After generating the AWB, the admin can add one or more parcels to the same AWB 
 
 == Changelog ==
 
-= 2.2.6 =
+= 2.2.7 =
 
-* Bug fix. A cross-border Sameday Point selected on the locker map now generates the XP service. Easybox selections still use XL. Domestic locker and point services are unchanged.
+ Bug fix. A cross-border Sameday Point selected on the locker map now generates the XP service. Easybox selections still use XL. Domestic locker and point services are unchanged.
 * Refreshing or editing Crossborder Locker delivery keeps the cross-border PUDO service status in sync with it.
 * The first service import stores the locker display name for LN and XL. A later import is no longer required to fill that name.
 * Saving Crossborder Locker delivery keeps declared const name.
+
+= 2.2.6 =
+
+* Updated the cities.json with specific namings for dup cities of the same county. They now concatenate the village name.
 
 = 2.2.5 =
 
