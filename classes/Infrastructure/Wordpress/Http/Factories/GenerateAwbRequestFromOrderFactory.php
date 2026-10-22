@@ -145,10 +145,14 @@ final class GenerateAwbRequestFromOrderFactory
         }
 
         $lockerDto = $this->generateAwbRequestFactory->getLockerDtoFactory()->fromInput($locker);
-        $serviceCode = $this->carrierServiceRules->resolveAwbServiceCode(
-            $serviceCode,
-            null !== $lockerDto ? $lockerDto->getOohType() : null
-        );
+
+        if (
+            null !== $lockerDto
+            && '1' === $lockerDto->getOohType()
+            && $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)
+        ) {
+            $serviceCode = CarrierConstants::OOH_TYPES[1];
+        }
 
         $service = $this->samedayServiceRepository->getServiceSamedayByCode($serviceCode);
 

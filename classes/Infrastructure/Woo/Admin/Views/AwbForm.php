@@ -163,8 +163,8 @@ class AwbForm
      */
     private function resolveServiceCode(WC_Order $order): ?string
     {
-        $postMetaLocker = PostOrderMetaHandler::get(
-            $order,
+        $postMetaLocker = PostMetaHandler::get(
+            $order->get_id(),
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
         $lockerDto = (new LockerDtoFactory(
@@ -176,15 +176,20 @@ class AwbForm
                 continue;
             }
 
-            $serviceCode = $shippingLine->get_meta(CarrierConstants::META_SERVICE_CODE);
+            $serviceCode = $shippingLine->get_meta('service_code');
             if (!is_string($serviceCode) || '' === $serviceCode) {
                 continue;
             }
 
-            return $this->carrierServiceRules->resolveAwbServiceCode(
-                $serviceCode,
-                null !== $lockerDto ? $lockerDto->getOohType() : null
-            );
+            if (
+                null !== $lockerDto
+                && '1' === $lockerDto->getOohType()
+                && $this->carrierServiceRules->isOohDeliveryOptionByCode($serviceCode)
+            ) {
+                return CarrierConstants::OOH_TYPES['1'];
+            }
+
+            return $serviceCode;
         }
 
         return null;
