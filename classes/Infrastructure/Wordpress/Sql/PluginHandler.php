@@ -17,9 +17,6 @@ class PluginHandler
     /**
      * @return void
      */
-    /**
-     * @return void
-     */
     public static function uninstall(): void
     {
         (new Uninstaller())->run();

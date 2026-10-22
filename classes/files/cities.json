@@ -127,14 +127,14 @@
   },
   {
     "city_id": 156,
-    "city_name": "Avramesti",
+    "city_name": "Avramesti (Arieseni)",
     "county_code": "AB",
     "postal_code": "517041",
     "country_code": "RO"
   },
   {
     "city_id": 175,
-    "city_name": "Avramesti",
+    "city_name": "Avramesti (Avram Iancu)",
     "county_code": "AB",
     "postal_code": "517067",
     "country_code": "RO"
@@ -246,21 +246,21 @@
   },
   {
     "city_id": 219,
-    "city_name": "Barlesti",
+    "city_name": "Barlesti (Bistra)",
     "county_code": "AB",
     "postal_code": "517119",
     "country_code": "RO"
   },
   {
     "city_id": 513,
-    "city_name": "Barlesti",
+    "city_name": "Barlesti (Mogos)",
     "county_code": "AB",
     "postal_code": "517482",
     "country_code": "RO"
   },
   {
     "city_id": 650,
-    "city_name": "Barlesti",
+    "city_name": "Barlesti (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517681",
     "country_code": "RO"
@@ -393,14 +393,14 @@
   },
   {
     "city_id": 674,
-    "city_name": "Bobaresti",
+    "city_name": "Bobaresti (Sohodol)",
     "county_code": "AB",
     "postal_code": "517703",
     "country_code": "RO"
   },
   {
     "city_id": 757,
-    "city_name": "Bobaresti",
+    "city_name": "Bobaresti (Vidra)",
     "county_code": "AB",
     "postal_code": "517827",
     "country_code": "RO"
@@ -435,14 +435,14 @@
   },
   {
     "city_id": 517,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Mogos)",
     "county_code": "AB",
     "postal_code": "517487",
     "country_code": "RO"
   },
   {
     "city_id": 758,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Vidra)",
     "county_code": "AB",
     "postal_code": "517828",
     "country_code": "RO"
@@ -498,21 +498,21 @@
   },
   {
     "city_id": 303,
-    "city_name": "Botesti",
+    "city_name": "Botesti (Campeni)",
     "county_code": "AB",
     "postal_code": "515503",
     "country_code": "RO"
   },
   {
     "city_id": 651,
-    "city_name": "Botesti",
+    "city_name": "Botesti (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517682",
     "country_code": "RO"
   },
   {
     "city_id": 813,
-    "city_name": "Botesti",
+    "city_name": "Botesti (Zlatna)",
     "county_code": "AB",
     "postal_code": "516101",
     "country_code": "RO"
@@ -645,14 +645,14 @@
   },
   {
     "city_id": 418,
-    "city_name": "Butesti",
+    "city_name": "Butesti (Horea)",
     "county_code": "AB",
     "postal_code": "517342",
     "country_code": "RO"
   },
   {
     "city_id": 518,
-    "city_name": "Butesti",
+    "city_name": "Butesti (Mogos)",
     "county_code": "AB",
     "postal_code": "517488",
     "country_code": "RO"
@@ -757,14 +757,14 @@
   },
   {
     "city_id": 392,
-    "city_name": "Carpinis",
+    "city_name": "Carpinis (Garbova)",
     "county_code": "AB",
     "postal_code": "517306",
     "country_code": "RO"
   },
   {
     "city_id": 609,
-    "city_name": "Carpinis",
+    "city_name": "Carpinis (Rosia Montana)",
     "county_code": "AB",
     "postal_code": "517619",
     "country_code": "RO"
@@ -1100,14 +1100,14 @@
   },
   {
     "city_id": 135,
-    "city_name": "Costesti",
+    "city_name": "Costesti (Albac)",
     "county_code": "AB",
     "postal_code": "517009",
     "country_code": "RO"
   },
   {
     "city_id": 559,
-    "city_name": "Costesti",
+    "city_name": "Costesti (Poiana Vadului)",
     "county_code": "AB",
     "postal_code": "517546",
     "country_code": "RO"
@@ -1317,14 +1317,14 @@
   },
   {
     "city_id": 396,
-    "city_name": "Dealu Frumos",
+    "city_name": "Dealu Frumos (Garda de Sus)",
     "county_code": "AB",
     "postal_code": "517312",
     "country_code": "RO"
   },
   {
     "city_id": 740,
-    "city_name": "Dealu Frumos",
+    "city_name": "Dealu Frumos (Vadu Motilor)",
     "county_code": "AB",
     "postal_code": "517798",
     "country_code": "RO"
@@ -1520,28 +1520,28 @@
   },
   {
     "city_id": 346,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Ciugud)",
     "county_code": "AB",
     "postal_code": "517242",
     "country_code": "RO"
   },
   {
     "city_id": 642,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Sasciori)",
     "county_code": "AB",
     "postal_code": "517662",
     "country_code": "RO"
   },
   {
     "city_id": 734,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Unirea)",
     "county_code": "AB",
     "postal_code": "517788",
     "country_code": "RO"
   },
   {
     "city_id": 817,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Zlatna)",
     "county_code": "AB",
     "postal_code": "516105",
     "country_code": "RO"
@@ -1569,14 +1569,14 @@
   },
   {
     "city_id": 470,
-    "city_name": "Dupa Deal",
+    "city_name": "Dupa Deal (Lupsa)",
     "county_code": "AB",
     "postal_code": "517414",
     "country_code": "RO"
   },
   {
     "city_id": 570,
-    "city_name": "Dupa Deal",
+    "city_name": "Dupa Deal (Ponor)",
     "county_code": "AB",
     "postal_code": "517566",
     "country_code": "RO"
@@ -1723,42 +1723,42 @@
   },
   {
     "city_id": 278,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Bucium)",
     "county_code": "AB",
     "postal_code": "517176",
     "country_code": "RO"
   },
   {
     "city_id": 312,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Campeni)",
     "county_code": "AB",
     "postal_code": "515511",
     "country_code": "RO"
   },
   {
     "city_id": 592,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Ramet)",
     "county_code": "AB",
     "postal_code": "517596",
     "country_code": "RO"
   },
   {
     "city_id": 653,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517684",
     "country_code": "RO"
   },
   {
     "city_id": 313,
-    "city_name": "Furduiesti",
+    "city_name": "Furduiesti (Campeni)",
     "county_code": "AB",
     "postal_code": "515512",
     "country_code": "RO"
   },
   {
     "city_id": 679,
-    "city_name": "Furduiesti",
+    "city_name": "Furduiesti (Sohodol)",
     "county_code": "AB",
     "postal_code": "517709",
     "country_code": "RO"
@@ -2052,14 +2052,14 @@
   },
   {
     "city_id": 402,
-    "city_name": "Hanasesti",
+    "city_name": "Hanasesti (Garda de Sus)",
     "county_code": "AB",
     "postal_code": "517318",
     "country_code": "RO"
   },
   {
     "city_id": 563,
-    "city_name": "Hanasesti",
+    "city_name": "Hanasesti (Poiana Vadului)",
     "county_code": "AB",
     "postal_code": "517551",
     "country_code": "RO"
@@ -2122,14 +2122,14 @@
   },
   {
     "city_id": 681,
-    "city_name": "Hoanca",
+    "city_name": "Hoanca (Sohodol)",
     "county_code": "AB",
     "postal_code": "517712",
     "country_code": "RO"
   },
   {
     "city_id": 771,
-    "city_name": "Hoanca",
+    "city_name": "Hoanca (Vidra)",
     "county_code": "AB",
     "postal_code": "517844",
     "country_code": "RO"
@@ -2234,14 +2234,14 @@
   },
   {
     "city_id": 191,
-    "city_name": "Incesti",
+    "city_name": "Incesti (Avram Iancu)",
     "county_code": "AB",
     "postal_code": "517087",
     "country_code": "RO"
   },
   {
     "city_id": 577,
-    "city_name": "Incesti",
+    "city_name": "Incesti (Posaga)",
     "county_code": "AB",
     "postal_code": "517577",
     "country_code": "RO"
@@ -2304,21 +2304,21 @@
   },
   {
     "city_id": 254,
-    "city_name": "Izvoarele",
+    "city_name": "Izvoarele (Blaj)",
     "county_code": "AB",
     "postal_code": "515403",
     "country_code": "RO"
   },
   {
     "city_id": 404,
-    "city_name": "Izvoarele",
+    "city_name": "Izvoarele (Garda de sus)",
     "county_code": "AB",
     "postal_code": "517321",
     "country_code": "RO"
   },
   {
     "city_id": 453,
-    "city_name": "Izvoarele",
+    "city_name": "Izvoarele (Livezile)",
     "county_code": "AB",
     "postal_code": "517391",
     "country_code": "RO"
@@ -2381,42 +2381,42 @@
   },
   {
     "city_id": 643,
-    "city_name": "Laz",
+    "city_name": "Laz (Sasciori)",
     "county_code": "AB",
     "postal_code": "517663",
     "country_code": "RO"
   },
   {
     "city_id": 802,
-    "city_name": "Laz",
+    "city_name": "Laz (Vintu de Jos)",
     "county_code": "AB",
     "postal_code": "517884",
     "country_code": "RO"
   },
   {
     "city_id": 654,
-    "city_name": "Lazesti",
+    "city_name": "Lazesti (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517686",
     "country_code": "RO"
   },
   {
     "city_id": 741,
-    "city_name": "Lazesti",
+    "city_name": "Lazesti (Vadu Motilor)",
     "county_code": "AB",
     "postal_code": "517799",
     "country_code": "RO"
   },
   {
     "city_id": 474,
-    "city_name": "Lazuri",
+    "city_name": "Lazuri (Lupsa)",
     "county_code": "AB",
     "postal_code": "517419",
     "country_code": "RO"
   },
   {
     "city_id": 683,
-    "city_name": "Lazuri",
+    "city_name": "Lazuri (Sohodol)",
     "county_code": "AB",
     "postal_code": "517714",
     "country_code": "RO"
@@ -2493,28 +2493,28 @@
   },
   {
     "city_id": 475,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Lupsa)",
     "county_code": "AB",
     "postal_code": "517421",
     "country_code": "RO"
   },
   {
     "city_id": 578,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Posaga)",
     "county_code": "AB",
     "postal_code": "517578",
     "country_code": "RO"
   },
   {
     "city_id": 753,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Valea lunga)",
     "county_code": "AB",
     "postal_code": "517819",
     "country_code": "RO"
   },
   {
     "city_id": 773,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Vidra)",
     "county_code": "AB",
     "postal_code": "517847",
     "country_code": "RO"
@@ -2549,14 +2549,14 @@
   },
   {
     "city_id": 232,
-    "city_name": "Lunca Larga",
+    "city_name": "Lunca Larga (Bistra)",
     "county_code": "AB",
     "postal_code": "517134",
     "country_code": "RO"
   },
   {
     "city_id": 545,
-    "city_name": "Lunca Larga",
+    "city_name": "Lunca Larga (Ocolis)",
     "county_code": "AB",
     "postal_code": "517526",
     "country_code": "RO"
@@ -2654,14 +2654,14 @@
   },
   {
     "city_id": 285,
-    "city_name": "Magura",
+    "city_name": "Magura (Bucium)",
     "county_code": "AB",
     "postal_code": "517184",
     "country_code": "RO"
   },
   {
     "city_id": 386,
-    "city_name": "Magura",
+    "city_name": "Magura (Galda de Jos)",
     "county_code": "AB",
     "postal_code": "517291",
     "country_code": "RO"
@@ -2752,14 +2752,14 @@
   },
   {
     "city_id": 356,
-    "city_name": "Matisesti",
+    "city_name": "Matisesti (Ciuruleasa)",
     "county_code": "AB",
     "postal_code": "517257",
     "country_code": "RO"
   },
   {
     "city_id": 424,
-    "city_name": "Matisesti",
+    "city_name": "Matisesti (Horea)",
     "county_code": "AB",
     "postal_code": "517348",
     "country_code": "RO"
@@ -2850,14 +2850,14 @@
   },
   {
     "city_id": 443,
-    "city_name": "Modolesti",
+    "city_name": "Modolesti (Intregalde)",
     "county_code": "AB",
     "postal_code": "517372",
     "country_code": "RO"
   },
   {
     "city_id": 778,
-    "city_name": "Modolesti",
+    "city_name": "Modolesti (Vidra)",
     "county_code": "AB",
     "postal_code": "517853",
     "country_code": "RO"
@@ -2871,14 +2871,14 @@
   },
   {
     "city_id": 357,
-    "city_name": "Moraresti",
+    "city_name": "Moraresti (Ciuruleasa)",
     "county_code": "AB",
     "postal_code": "517258",
     "country_code": "RO"
   },
   {
     "city_id": 687,
-    "city_name": "Moraresti",
+    "city_name": "Moraresti (Sohodol)",
     "county_code": "AB",
     "postal_code": "517719",
     "country_code": "RO"
@@ -3347,14 +3347,14 @@
   },
   {
     "city_id": 196,
-    "city_name": "Plai",
+    "city_name": "Plai (Avram Iancu)",
     "county_code": "AB",
     "postal_code": "517093",
     "country_code": "RO"
   },
   {
     "city_id": 407,
-    "city_name": "Plai",
+    "city_name": "Plai (Garda de Sus)",
     "county_code": "AB",
     "postal_code": "517324",
     "country_code": "RO"
@@ -3417,21 +3417,21 @@
   },
   {
     "city_id": 238,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Bistra)",
     "county_code": "AB",
     "postal_code": "517142",
     "country_code": "RO"
   },
   {
     "city_id": 288,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Bucium)",
     "county_code": "AB",
     "postal_code": "517188",
     "country_code": "RO"
   },
   {
     "city_id": 693,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Sohodol)",
     "county_code": "AB",
     "postal_code": "517727",
     "country_code": "RO"
@@ -3473,21 +3473,21 @@
   },
   {
     "city_id": 263,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Blandiana)",
     "county_code": "AB",
     "postal_code": "517163",
     "country_code": "RO"
   },
   {
     "city_id": 289,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Bucium)",
     "county_code": "AB",
     "postal_code": "517189",
     "country_code": "RO"
   },
   {
     "city_id": 783,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Vidra)",
     "county_code": "AB",
     "postal_code": "517859",
     "country_code": "RO"
@@ -3501,14 +3501,14 @@
   },
   {
     "city_id": 168,
-    "city_name": "Poienita",
+    "city_name": "Poienita (Arieseni)",
     "county_code": "AB",
     "postal_code": "517056",
     "country_code": "RO"
   },
   {
     "city_id": 806,
-    "city_name": "Poienita",
+    "city_name": "Poienita (Vintu de Jos)",
     "county_code": "AB",
     "postal_code": "517889",
     "country_code": "RO"
@@ -3592,14 +3592,14 @@
   },
   {
     "city_id": 428,
-    "city_name": "Preluca",
+    "city_name": "Preluca (Horea)",
     "county_code": "AB",
     "postal_code": "517353",
     "country_code": "RO"
   },
   {
     "city_id": 658,
-    "city_name": "Preluca",
+    "city_name": "Preluca (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517691",
     "country_code": "RO"
@@ -3760,28 +3760,28 @@
   },
   {
     "city_id": 547,
-    "city_name": "Runc",
+    "city_name": "Runc (Ocolis)",
     "county_code": "AB",
     "postal_code": "517527",
     "country_code": "RO"
   },
   {
     "city_id": 659,
-    "city_name": "Runc",
+    "city_name": "Runc (Scarisoara)",
     "county_code": "AB",
     "postal_code": "517692",
     "country_code": "RO"
   },
   {
     "city_id": 786,
-    "city_name": "Runc",
+    "city_name": "Runc (Vidra)",
     "county_code": "AB",
     "postal_code": "517863",
     "country_code": "RO"
   },
   {
     "city_id": 825,
-    "city_name": "Runc",
+    "city_name": "Runc (Zlatna)",
     "county_code": "AB",
     "postal_code": "516113",
     "country_code": "RO"
@@ -4068,14 +4068,14 @@
   },
   {
     "city_id": 145,
-    "city_name": "Sohodol",
+    "city_name": "Sohodol (Albac)",
     "county_code": "AB",
     "postal_code": "517022",
     "country_code": "RO"
   },
   {
     "city_id": 698,
-    "city_name": "Sohodol",
+    "city_name": "Sohodol (Sohodol)",
     "county_code": "AB",
     "postal_code": "517700",
     "country_code": "RO"
@@ -4460,14 +4460,14 @@
   },
   {
     "city_id": 430,
-    "city_name": "Trifesti",
+    "city_name": "Trifesti (Horea)",
     "county_code": "AB",
     "postal_code": "517356",
     "country_code": "RO"
   },
   {
     "city_id": 484,
-    "city_name": "Trifesti",
+    "city_name": "Trifesti (Lupsa)",
     "county_code": "AB",
     "postal_code": "517431",
     "country_code": "RO"
@@ -4747,14 +4747,14 @@
   },
   {
     "city_id": 296,
-    "city_name": "Valea Poienii",
+    "city_name": "Valea Poienii (Bucium)",
     "county_code": "AB",
     "postal_code": "517197",
     "country_code": "RO"
   },
   {
     "city_id": 598,
-    "city_name": "Valea Poienii",
+    "city_name": "Valea Poienii (Ramet)",
     "county_code": "AB",
     "postal_code": "517602",
     "country_code": "RO"
@@ -4768,14 +4768,14 @@
   },
   {
     "city_id": 297,
-    "city_name": "Valea Sesii",
+    "city_name": "Valea Sesii (Bucium)",
     "county_code": "AB",
     "postal_code": "517198",
     "country_code": "RO"
   },
   {
     "city_id": 488,
-    "city_name": "Valea Sesii",
+    "city_name": "Valea Sesii (Lupsa)",
     "county_code": "AB",
     "postal_code": "517434",
     "country_code": "RO"
@@ -4817,14 +4817,14 @@
   },
   {
     "city_id": 298,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Bucium)",
     "county_code": "AB",
     "postal_code": "517199",
     "country_code": "RO"
   },
   {
     "city_id": 501,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Metes)",
     "county_code": "AB",
     "postal_code": "517458",
     "country_code": "RO"
@@ -4838,14 +4838,14 @@
   },
   {
     "city_id": 749,
-    "city_name": "Valtori",
+    "city_name": "Valtori (Vadu Motilor)",
     "county_code": "AB",
     "postal_code": "517808",
     "country_code": "RO"
   },
   {
     "city_id": 830,
-    "city_name": "Valtori",
+    "city_name": "Valtori (Zlatna)",
     "county_code": "AB",
     "postal_code": "516118",
     "country_code": "RO"
@@ -5132,14 +5132,14 @@
   },
   {
     "city_id": 12450,
-    "city_name": "Avram Iancu",
+    "city_name": "Avram Iancu (Cermei)",
     "county_code": "AR",
     "postal_code": "317076",
     "country_code": "RO"
   },
   {
     "city_id": 12654,
-    "city_name": "Avram Iancu",
+    "city_name": "Avram Iancu (Varfurile)",
     "county_code": "AR",
     "postal_code": "317391",
     "country_code": "RO"
@@ -6854,14 +6854,14 @@
   },
   {
     "city_id": 12505,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Gurahont)",
     "county_code": "AR",
     "postal_code": "317154",
     "country_code": "RO"
   },
   {
     "city_id": 12596,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Savarsin)",
     "county_code": "AR",
     "postal_code": "317279",
     "country_code": "RO"
@@ -7099,14 +7099,14 @@
   },
   {
     "city_id": 6560,
-    "city_name": "Alunisu",
+    "city_name": "Alunisu (Baiculesti)",
     "county_code": "AG",
     "postal_code": "117066",
     "country_code": "RO"
   },
   {
     "city_id": 6622,
-    "city_name": "Alunisu",
+    "city_name": "Alunisu (Bradulet)",
     "county_code": "AG",
     "postal_code": "117146",
     "country_code": "RO"
@@ -7176,14 +7176,14 @@
   },
   {
     "city_id": 6578,
-    "city_name": "Badesti",
+    "city_name": "Badesti (Barla)",
     "county_code": "AG",
     "postal_code": "117092",
     "country_code": "RO"
   },
   {
     "city_id": 6907,
-    "city_name": "Badesti",
+    "city_name": "Badesti (Pietrosani)",
     "county_code": "AG",
     "postal_code": "117551",
     "country_code": "RO"
@@ -7253,14 +7253,14 @@
   },
   {
     "city_id": 6571,
-    "city_name": "Balilesti",
+    "city_name": "Balilesti (Balilesti)",
     "county_code": "AG",
     "postal_code": "117080",
     "country_code": "RO"
   },
   {
     "city_id": 7038,
-    "city_name": "Balilesti",
+    "city_name": "Balilesti (Tigveni)",
     "county_code": "AG",
     "postal_code": "117742",
     "country_code": "RO"
@@ -7596,28 +7596,28 @@
   },
   {
     "city_id": 6603,
-    "city_name": "Bratia",
+    "city_name": "Bratia (Berevoesti)",
     "county_code": "AG",
     "postal_code": "117116",
     "country_code": "RO"
   },
   {
     "city_id": 6697,
-    "city_name": "Bratia",
+    "city_name": "Bratia (Ciomagesti)",
     "county_code": "AG",
     "postal_code": "117257",
     "country_code": "RO"
   },
   {
     "city_id": 6547,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Aninoasa)",
     "county_code": "AG",
     "postal_code": "117036",
     "country_code": "RO"
   },
   {
     "city_id": 6734,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Costesti)",
     "county_code": "AG",
     "postal_code": "115201",
     "country_code": "RO"
@@ -7708,14 +7708,14 @@
   },
   {
     "city_id": 6742,
-    "city_name": "Bunesti",
+    "city_name": "Bunesti (Cotmeana)",
     "county_code": "AG",
     "postal_code": "117307",
     "country_code": "RO"
   },
   {
     "city_id": 6831,
-    "city_name": "Bunesti",
+    "city_name": "Bunesti (Malureni)",
     "county_code": "AG",
     "postal_code": "117446",
     "country_code": "RO"
@@ -7820,14 +7820,14 @@
   },
   {
     "city_id": 6793,
-    "city_name": "Capu Piscului",
+    "city_name": "Capu Piscului (Godeni)",
     "county_code": "AG",
     "postal_code": "117387",
     "country_code": "RO"
   },
   {
     "city_id": 6840,
-    "city_name": "Capu Piscului",
+    "city_name": "Capu Piscului (Merisani)",
     "county_code": "AG",
     "postal_code": "117458",
     "country_code": "RO"
@@ -7904,14 +7904,14 @@
   },
   {
     "city_id": 6676,
-    "city_name": "Cepari",
+    "city_name": "Cepari (Cepari)",
     "county_code": "AG",
     "postal_code": "117230",
     "country_code": "RO"
   },
   {
     "city_id": 6914,
-    "city_name": "Cepari",
+    "city_name": "Cepari (Poiana Lacului)",
     "county_code": "AG",
     "postal_code": "117557",
     "country_code": "RO"
@@ -7967,21 +7967,21 @@
   },
   {
     "city_id": 7027,
-    "city_name": "Chiritesti",
+    "city_name": "Chiritesti (Suseni)",
     "county_code": "AG",
     "postal_code": "117698",
     "country_code": "RO"
   },
   {
     "city_id": 7058,
-    "city_name": "Chiritesti",
+    "city_name": "Chiritesti (Uda)",
     "county_code": "AG",
     "postal_code": "117759",
     "country_code": "RO"
   },
   {
     "city_id": 7102,
-    "city_name": "Chiritesti",
+    "city_name": "Chiritesti (Vedea)",
     "county_code": "AG",
     "postal_code": "117819",
     "country_code": "RO"
@@ -8219,14 +8219,14 @@
   },
   {
     "city_id": 6735,
-    "city_name": "Costesti",
+    "city_name": "Costesti (Costesti)",
     "county_code": "AG",
     "postal_code": "115200",
     "country_code": "RO"
   },
   {
     "city_id": 6743,
-    "city_name": "Costesti",
+    "city_name": "Costesti (Cotmeana)",
     "county_code": "AG",
     "postal_code": "117310",
     "country_code": "RO"
@@ -8268,14 +8268,14 @@
   },
   {
     "city_id": 6744,
-    "city_name": "Cotmeana",
+    "city_name": "Cotmeana (Cotmeana)",
     "county_code": "AG",
     "postal_code": "117305",
     "country_code": "RO"
   },
   {
     "city_id": 7014,
-    "city_name": "Cotmeana",
+    "city_name": "Cotmeana (Stolnici)",
     "county_code": "AG",
     "postal_code": "117687",
     "country_code": "RO"
@@ -8289,14 +8289,14 @@
   },
   {
     "city_id": 6758,
-    "city_name": "Cotu",
+    "city_name": "Cotu (Cuca)",
     "county_code": "AG",
     "postal_code": "117334",
     "country_code": "RO"
   },
   {
     "city_id": 7059,
-    "city_name": "Cotu",
+    "city_name": "Cotu (Uda)",
     "county_code": "AG",
     "postal_code": "117761",
     "country_code": "RO"
@@ -8457,14 +8457,14 @@
   },
   {
     "city_id": 6879,
-    "city_name": "Dealu Viilor",
+    "city_name": "Dealu Viilor (Mosoaia)",
     "county_code": "AG",
     "postal_code": "117508",
     "country_code": "RO"
   },
   {
     "city_id": 6916,
-    "city_name": "Dealu Viilor",
+    "city_name": "Dealu Viilor (Poiana Lacului)",
     "county_code": "AG",
     "postal_code": "117559",
     "country_code": "RO"
@@ -8709,14 +8709,14 @@
   },
   {
     "city_id": 6635,
-    "city_name": "Galasesti",
+    "city_name": "Galasesti (Budeasa)",
     "county_code": "AG",
     "postal_code": "117159",
     "country_code": "RO"
   },
   {
     "city_id": 7028,
-    "city_name": "Galasesti",
+    "city_name": "Galasesti (Suseni)",
     "county_code": "AG",
     "postal_code": "117699",
     "country_code": "RO"
@@ -8842,14 +8842,14 @@
   },
   {
     "city_id": 6657,
-    "city_name": "Glodu",
+    "city_name": "Glodu (Calinesti)",
     "county_code": "AG",
     "postal_code": "117198",
     "country_code": "RO"
   },
   {
     "city_id": 6815,
-    "city_name": "Glodu",
+    "city_name": "Glodu (Leordeni)",
     "county_code": "AG",
     "postal_code": "117423",
     "country_code": "RO"
@@ -8877,14 +8877,14 @@
   },
   {
     "city_id": 6572,
-    "city_name": "Golesti",
+    "city_name": "Golesti (Balilesti)",
     "county_code": "AG",
     "postal_code": "117082",
     "country_code": "RO"
   },
   {
     "city_id": 6999,
-    "city_name": "Golesti",
+    "city_name": "Golesti (Stefanesti)",
     "county_code": "AG",
     "postal_code": "117717",
     "country_code": "RO"
@@ -8940,14 +8940,14 @@
   },
   {
     "city_id": 6672,
-    "city_name": "Gruiu",
+    "city_name": "Gruiu (Cateasca)",
     "county_code": "AG",
     "postal_code": "117224",
     "country_code": "RO"
   },
   {
     "city_id": 6901,
-    "city_name": "Gruiu",
+    "city_name": "Gruiu (Nucsoara)",
     "county_code": "AG",
     "postal_code": "117541",
     "country_code": "RO"
@@ -9122,14 +9122,14 @@
   },
   {
     "city_id": 6881,
-    "city_name": "Lazaresti",
+    "city_name": "Lazaresti (Mosoaia)",
     "county_code": "AG",
     "postal_code": "117511",
     "country_code": "RO"
   },
   {
     "city_id": 6983,
-    "city_name": "Lazaresti",
+    "city_name": "Lazaresti (Schitu Golesti)",
     "county_code": "AG",
     "postal_code": "117653",
     "country_code": "RO"
@@ -9269,14 +9269,14 @@
   },
   {
     "city_id": 6582,
-    "city_name": "Malu",
+    "city_name": "Malu (Barla)",
     "county_code": "AG",
     "postal_code": "117096",
     "country_code": "RO"
   },
   {
     "city_id": 6796,
-    "city_name": "Malu",
+    "city_name": "Malu (Godeni)",
     "county_code": "AG",
     "postal_code": "117389",
     "country_code": "RO"
@@ -9423,14 +9423,14 @@
   },
   {
     "city_id": 6689,
-    "city_name": "Mioarele",
+    "city_name": "Mioarele (Cicanesti)",
     "county_code": "AG",
     "postal_code": "117247",
     "country_code": "RO"
   },
   {
     "city_id": 6862,
-    "city_name": "Mioarele",
+    "city_name": "Mioarele (Mioarele)",
     "county_code": "AG",
     "postal_code": "117480",
     "country_code": "RO"
@@ -9724,14 +9724,14 @@
   },
   {
     "city_id": 6833,
-    "city_name": "Pauleasca",
+    "city_name": "Pauleasca (Malureni)",
     "county_code": "AG",
     "postal_code": "117447",
     "country_code": "RO"
   },
   {
     "city_id": 6849,
-    "city_name": "Pauleasca",
+    "city_name": "Pauleasca (Micesti)",
     "county_code": "AG",
     "postal_code": "117467",
     "country_code": "RO"
@@ -9759,21 +9759,21 @@
   },
   {
     "city_id": 6627,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Bradulet)",
     "county_code": "AG",
     "postal_code": "117151",
     "country_code": "RO"
   },
   {
     "city_id": 6694,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Ciofrangeni)",
     "county_code": "AG",
     "postal_code": "117253",
     "country_code": "RO"
   },
   {
     "city_id": 7009,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Stoenesti)",
     "county_code": "AG",
     "postal_code": "117679",
     "country_code": "RO"
@@ -9878,21 +9878,21 @@
   },
   {
     "city_id": 6718,
-    "city_name": "Poienari",
+    "city_name": "Poienari (Corbeni)",
     "county_code": "AG",
     "postal_code": "117281",
     "country_code": "RO"
   },
   {
     "city_id": 6928,
-    "city_name": "Poienari",
+    "city_name": "Poienari (Poienarii de Arges)",
     "county_code": "AG",
     "postal_code": "117578",
     "country_code": "RO"
   },
   {
     "city_id": 6933,
-    "city_name": "Poienari",
+    "city_name": "Poienari (Poienarii de Muscel)",
     "county_code": "AG",
     "postal_code": "117583",
     "country_code": "RO"
@@ -9927,21 +9927,21 @@
   },
   {
     "city_id": 6710,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Cocu)",
     "county_code": "AG",
     "postal_code": "117271",
     "country_code": "RO"
   },
   {
     "city_id": 6938,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Popesti)",
     "county_code": "AG",
     "postal_code": "117590",
     "country_code": "RO"
   },
   {
     "city_id": 6978,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Sapata)",
     "county_code": "AG",
     "postal_code": "117648",
     "country_code": "RO"
@@ -9997,14 +9997,14 @@
   },
   {
     "city_id": 6850,
-    "city_name": "Purcareni",
+    "city_name": "Purcareni (Micesti)",
     "county_code": "AG",
     "postal_code": "117468",
     "country_code": "RO"
   },
   {
     "city_id": 6939,
-    "city_name": "Purcareni",
+    "city_name": "Purcareni (Popesti)",
     "county_code": "AG",
     "postal_code": "117594",
     "country_code": "RO"
@@ -10095,14 +10095,14 @@
   },
   {
     "city_id": 6673,
-    "city_name": "Recea",
+    "city_name": "Recea (Cateasca)",
     "county_code": "AG",
     "postal_code": "117226",
     "country_code": "RO"
   },
   {
     "city_id": 6963,
-    "city_name": "Recea",
+    "city_name": "Recea (Recea)",
     "county_code": "AG",
     "postal_code": "117620",
     "country_code": "RO"
@@ -10165,14 +10165,14 @@
   },
   {
     "city_id": 6854,
-    "city_name": "Rudeni",
+    "city_name": "Rudeni (Mihaesti)",
     "county_code": "AG",
     "postal_code": "117473",
     "country_code": "RO"
   },
   {
     "city_id": 7022,
-    "city_name": "Rudeni",
+    "city_name": "Rudeni (Suici)",
     "county_code": "AG",
     "postal_code": "117729",
     "country_code": "RO"
@@ -10305,14 +10305,14 @@
   },
   {
     "city_id": 6935,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Poienarii de Muscel)",
     "county_code": "AG",
     "postal_code": "117584",
     "country_code": "RO"
   },
   {
     "city_id": 6967,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Rociu)",
     "county_code": "AG",
     "postal_code": "117628",
     "country_code": "RO"
@@ -10375,21 +10375,21 @@
   },
   {
     "city_id": 6940,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Popesti)",
     "county_code": "AG",
     "postal_code": "117597",
     "country_code": "RO"
   },
   {
     "city_id": 6988,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Slobozia)",
     "county_code": "AG",
     "postal_code": "117660",
     "country_code": "RO"
   },
   {
     "city_id": 7010,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Stoenesti)",
     "county_code": "AG",
     "postal_code": "117681",
     "country_code": "RO"
@@ -10452,14 +10452,14 @@
   },
   {
     "city_id": 7001,
-    "city_name": "Stefanesti",
+    "city_name": "Stefanesti (Stefanesti)",
     "county_code": "AG",
     "postal_code": "117715",
     "country_code": "RO"
   },
   {
     "city_id": 7031,
-    "city_name": "Stefanesti",
+    "city_name": "Stefanesti (Suseni)",
     "county_code": "AG",
     "postal_code": "117704",
     "country_code": "RO"
@@ -10494,14 +10494,14 @@
   },
   {
     "city_id": 6653,
-    "city_name": "Strambeni",
+    "city_name": "Strambeni (Caldararu)",
     "county_code": "AG",
     "postal_code": "117192",
     "country_code": "RO"
   },
   {
     "city_id": 7032,
-    "city_name": "Strambeni",
+    "city_name": "Strambeni (Suseni)",
     "county_code": "AG",
     "postal_code": "117703",
     "country_code": "RO"
@@ -10529,14 +10529,14 @@
   },
   {
     "city_id": 6613,
-    "city_name": "Suseni",
+    "city_name": "Suseni (Bogati)",
     "county_code": "AG",
     "postal_code": "117128",
     "country_code": "RO"
   },
   {
     "city_id": 7033,
-    "city_name": "Suseni",
+    "city_name": "Suseni (Suseni)",
     "county_code": "AG",
     "postal_code": "117695",
     "country_code": "RO"
@@ -10571,14 +10571,14 @@
   },
   {
     "city_id": 6958,
-    "city_name": "Tigveni",
+    "city_name": "Tigveni (Ratesti)",
     "county_code": "AG",
     "postal_code": "117617",
     "country_code": "RO"
   },
   {
     "city_id": 7043,
-    "city_name": "Tigveni",
+    "city_name": "Tigveni (Tigveni)",
     "county_code": "AG",
     "postal_code": "117740",
     "country_code": "RO"
@@ -10690,14 +10690,14 @@
   },
   {
     "city_id": 6630,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Bradulet)",
     "county_code": "AG",
     "postal_code": "117154",
     "country_code": "RO"
   },
   {
     "city_id": 7088,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Valea Iasului)",
     "county_code": "AG",
     "postal_code": "117803",
     "country_code": "RO"
@@ -10928,14 +10928,14 @@
   },
   {
     "city_id": 6857,
-    "city_name": "Valea Popii",
+    "city_name": "Valea Popii (Mihaesti)",
     "county_code": "AG",
     "postal_code": "117476",
     "country_code": "RO"
   },
   {
     "city_id": 6948,
-    "city_name": "Valea Popii",
+    "city_name": "Valea Popii (Priboieni)",
     "county_code": "AG",
     "postal_code": "117608",
     "country_code": "RO"
@@ -11068,14 +11068,14 @@
   },
   {
     "city_id": 7044,
-    "city_name": "Vladesti",
+    "city_name": "Vladesti (Tigveni)",
     "county_code": "AG",
     "postal_code": "117748",
     "country_code": "RO"
   },
   {
     "city_id": 7121,
-    "city_name": "Vladesti",
+    "city_name": "Vladesti (Vladesti)",
     "county_code": "AG",
     "postal_code": "117840",
     "country_code": "RO"
@@ -11138,14 +11138,14 @@
   },
   {
     "city_id": 6683,
-    "city_name": "Zamfiresti",
+    "city_name": "Zamfiresti (Cepari)",
     "county_code": "AG",
     "postal_code": "117239",
     "country_code": "RO"
   },
   {
     "city_id": 6754,
-    "city_name": "Zamfiresti",
+    "city_name": "Zamfiresti (Cotmeana)",
     "county_code": "AG",
     "postal_code": "117319",
     "country_code": "RO"
@@ -11299,14 +11299,14 @@
   },
   {
     "city_id": 2203,
-    "city_name": "Balanesti",
+    "city_name": "Balanesti (Dealu Morii)",
     "county_code": "BC",
     "postal_code": "607142",
     "country_code": "RO"
   },
   {
     "city_id": 2438,
-    "city_name": "Balanesti",
+    "city_name": "Balanesti (Podu Turcului)",
     "county_code": "BC",
     "postal_code": "607451",
     "country_code": "RO"
@@ -11558,21 +11558,21 @@
   },
   {
     "city_id": 2139,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Bogdanesti)",
     "county_code": "BC",
     "postal_code": "607070",
     "country_code": "RO"
   },
   {
     "city_id": 2507,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Scorteni)",
     "county_code": "BC",
     "postal_code": "607551",
     "country_code": "RO"
   },
   {
     "city_id": 2563,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Traian)",
     "county_code": "BC",
     "postal_code": "607636",
     "country_code": "RO"
@@ -11656,21 +11656,21 @@
   },
   {
     "city_id": 2120,
-    "city_name": "Brad",
+    "city_name": "Brad (Beresti-Bistrita)",
     "county_code": "BC",
     "postal_code": "607041",
     "country_code": "RO"
   },
   {
     "city_id": 2226,
-    "city_name": "Brad",
+    "city_name": "Brad (Filipeni)",
     "county_code": "BC",
     "postal_code": "607177",
     "country_code": "RO"
   },
   {
     "city_id": 2356,
-    "city_name": "Brad",
+    "city_name": "Brad (Negri)",
     "county_code": "BC",
     "postal_code": "607346",
     "country_code": "RO"
@@ -11726,21 +11726,21 @@
   },
   {
     "city_id": 2132,
-    "city_name": "Buda",
+    "city_name": "Buda (Berzunti)",
     "county_code": "BC",
     "postal_code": "607061",
     "country_code": "RO"
   },
   {
     "city_id": 2135,
-    "city_name": "Buda",
+    "city_name": "Buda (Blagesti)",
     "county_code": "BC",
     "postal_code": "607066",
     "country_code": "RO"
   },
   {
     "city_id": 2463,
-    "city_name": "Buda",
+    "city_name": "Buda (Rachitoasa)",
     "county_code": "BC",
     "postal_code": "607493",
     "country_code": "RO"
@@ -12174,14 +12174,14 @@
   },
   {
     "city_id": 2218,
-    "city_name": "Cucuieti",
+    "city_name": "Cucuieti (Dofteana)",
     "county_code": "BC",
     "postal_code": "607162",
     "country_code": "RO"
   },
   {
     "city_id": 2523,
-    "city_name": "Cucuieti",
+    "city_name": "Cucuieti (Solont)",
     "county_code": "BC",
     "postal_code": "607581",
     "country_code": "RO"
@@ -12279,14 +12279,14 @@
   },
   {
     "city_id": 2430,
-    "city_name": "Dorneni",
+    "city_name": "Dorneni (Plopana)",
     "county_code": "BC",
     "postal_code": "607442",
     "country_code": "RO"
   },
   {
     "city_id": 2585,
-    "city_name": "Dorneni",
+    "city_name": "Dorneni (Vultureni)",
     "county_code": "BC",
     "postal_code": "607668",
     "country_code": "RO"
@@ -12307,14 +12307,14 @@
   },
   {
     "city_id": 2195,
-    "city_name": "Dragesti",
+    "city_name": "Dragesti (Damienesti)",
     "county_code": "BC",
     "postal_code": "607137",
     "country_code": "RO"
   },
   {
     "city_id": 2558,
-    "city_name": "Dragesti",
+    "city_name": "Dragesti (Tatarasti)",
     "county_code": "BC",
     "postal_code": "607623",
     "country_code": "RO"
@@ -12342,21 +12342,21 @@
   },
   {
     "city_id": 2122,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Beresti-Bistrita)",
     "county_code": "BC",
     "postal_code": "607044",
     "country_code": "RO"
   },
   {
     "city_id": 2263,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Gura Vaii)",
     "county_code": "BC",
     "postal_code": "607222",
     "country_code": "RO"
   },
   {
     "city_id": 2466,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Rachitoasa)",
     "county_code": "BC",
     "postal_code": "607497",
     "country_code": "RO"
@@ -12398,14 +12398,14 @@
   },
   {
     "city_id": 2271,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Hemeius)",
     "county_code": "BC",
     "postal_code": "607236",
     "country_code": "RO"
   },
   {
     "city_id": 2347,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Motoseni)",
     "county_code": "BC",
     "postal_code": "607332",
     "country_code": "RO"
@@ -12447,35 +12447,35 @@
   },
   {
     "city_id": 2140,
-    "city_name": "Filipesti",
+    "city_name": "Filipesti (Bogdanesti)",
     "county_code": "BC",
     "postal_code": "607071",
     "country_code": "RO"
   },
   {
     "city_id": 2237,
-    "city_name": "Filipesti",
+    "city_name": "Filipesti (Filipesti)",
     "county_code": "BC",
     "postal_code": "607185",
     "country_code": "RO"
   },
   {
     "city_id": 2160,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Caiuti)",
     "county_code": "BC",
     "postal_code": "607098",
     "country_code": "RO"
   },
   {
     "city_id": 2283,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Huruiesti)",
     "county_code": "BC",
     "postal_code": "607252",
     "country_code": "RO"
   },
   {
     "city_id": 2508,
-    "city_name": "Floresti",
+    "city_name": "Floresti (Scorteni)",
     "county_code": "BC",
     "postal_code": "607552",
     "country_code": "RO"
@@ -12573,14 +12573,14 @@
   },
   {
     "city_id": 2238,
-    "city_name": "Galbeni",
+    "city_name": "Galbeni (Filipesti)",
     "county_code": "BC",
     "postal_code": "607191",
     "country_code": "RO"
   },
   {
     "city_id": 2363,
-    "city_name": "Galbeni",
+    "city_name": "Galbeni (Nicolae Balcescu)",
     "county_code": "BC",
     "postal_code": "607358",
     "country_code": "RO"
@@ -12755,7 +12755,7 @@
   },
   {
     "city_id": 2476,
-    "city_name": "Gura Vaii",
+    "city_name": "Gura Vaii (Racova)",
     "county_code": "BC",
     "postal_code": "607220",
     "country_code": "RO"
@@ -12769,14 +12769,14 @@
   },
   {
     "city_id": 2220,
-    "city_name": "Haghiac",
+    "city_name": "Haghiac (Dofteana)",
     "county_code": "BC",
     "postal_code": "607163",
     "country_code": "RO"
   },
   {
     "city_id": 2469,
-    "city_name": "Haghiac",
+    "city_name": "Haghiac (Rachitoasa)",
     "county_code": "BC",
     "postal_code": "607501",
     "country_code": "RO"
@@ -13112,14 +13112,14 @@
   },
   {
     "city_id": 2155,
-    "city_name": "Marginea",
+    "city_name": "Marginea (Buhusi)",
     "county_code": "BC",
     "postal_code": "605101",
     "country_code": "RO"
   },
   {
     "city_id": 2375,
-    "city_name": "Marginea",
+    "city_name": "Marginea (Oituz)",
     "county_code": "BC",
     "postal_code": "607369",
     "country_code": "RO"
@@ -13385,35 +13385,35 @@
   },
   {
     "city_id": 2123,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Beresti-Bistrita)",
     "county_code": "BC",
     "postal_code": "607048",
     "country_code": "RO"
   },
   {
     "city_id": 2196,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Damienesti)",
     "county_code": "BC",
     "postal_code": "607138",
     "country_code": "RO"
   },
   {
     "city_id": 2230,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Filipeni)",
     "county_code": "BC",
     "postal_code": "607181",
     "country_code": "RO"
   },
   {
     "city_id": 2298,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Izvoru Berheciului)",
     "county_code": "BC",
     "postal_code": "607267",
     "country_code": "RO"
   },
   {
     "city_id": 2335,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Margineni)",
     "county_code": "BC",
     "postal_code": "607318",
     "country_code": "RO"
@@ -13455,7 +13455,7 @@
   },
   {
     "city_id": 2496,
-    "city_name": "Pancesti",
+    "city_name": "Pancesti (Sascut)",
     "county_code": "BC",
     "postal_code": "607523",
     "country_code": "RO"
@@ -13532,14 +13532,14 @@
   },
   {
     "city_id": 2201,
-    "city_name": "Plopu",
+    "city_name": "Plopu (Darmanesti)",
     "county_code": "BC",
     "postal_code": "605304",
     "country_code": "RO"
   },
   {
     "city_id": 2444,
-    "city_name": "Plopu",
+    "city_name": "Plopu (Podu Turcului)",
     "county_code": "BC",
     "postal_code": "607458",
     "country_code": "RO"
@@ -13581,35 +13581,35 @@
   },
   {
     "city_id": 2173,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Colonesti)",
     "county_code": "BC",
     "postal_code": "607112",
     "country_code": "RO"
   },
   {
     "city_id": 2314,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Livezi)",
     "county_code": "BC",
     "postal_code": "607288",
     "country_code": "RO"
   },
   {
     "city_id": 2337,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Margineni)",
     "county_code": "BC",
     "postal_code": "607321",
     "country_code": "RO"
   },
   {
     "city_id": 2351,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Motoseni)",
     "county_code": "BC",
     "postal_code": "607336",
     "country_code": "RO"
   },
   {
     "city_id": 2360,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Negri)",
     "county_code": "BC",
     "postal_code": "607349",
     "country_code": "RO"
@@ -13630,21 +13630,21 @@
   },
   {
     "city_id": 2417,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Parincea)",
     "county_code": "BC",
     "postal_code": "607407",
     "country_code": "RO"
   },
   {
     "city_id": 2482,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Rosiori)",
     "county_code": "BC",
     "postal_code": "607513",
     "country_code": "RO"
   },
   {
     "city_id": 2550,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Targu Ocna)",
     "county_code": "BC",
     "postal_code": "605601",
     "country_code": "RO"
@@ -13686,14 +13686,14 @@
   },
   {
     "city_id": 2320,
-    "city_name": "Prajesti",
+    "city_name": "Prajesti (Magiresti)",
     "county_code": "BC",
     "postal_code": "607301",
     "country_code": "RO"
   },
   {
     "city_id": 2566,
-    "city_name": "Prajesti",
+    "city_name": "Prajesti (Traian)",
     "county_code": "BC",
     "postal_code": "607639",
     "country_code": "RO"
@@ -13938,14 +13938,14 @@
   },
   {
     "city_id": 2366,
-    "city_name": "Sarata",
+    "city_name": "Sarata (Nicolae Balcescu)",
     "county_code": "BC",
     "postal_code": "607361",
     "country_code": "RO"
   },
   {
     "city_id": 2524,
-    "city_name": "Sarata",
+    "city_name": "Sarata (Solont)",
     "county_code": "BC",
     "postal_code": "607582",
     "country_code": "RO"
@@ -13973,42 +13973,42 @@
   },
   {
     "city_id": 2174,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Colonesti)",
     "county_code": "BC",
     "postal_code": "607113",
     "country_code": "RO"
   },
   {
     "city_id": 2306,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Lipova)",
     "county_code": "BC",
     "postal_code": "607277",
     "country_code": "RO"
   },
   {
     "city_id": 2382,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Oncesti)",
     "county_code": "BC",
     "postal_code": "607379",
     "country_code": "RO"
   },
   {
     "city_id": 2410,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Pargaresti)",
     "county_code": "BC",
     "postal_code": "607429",
     "country_code": "RO"
   },
   {
     "city_id": 2418,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Parincea)",
     "county_code": "BC",
     "postal_code": "607408",
     "country_code": "RO"
   },
   {
     "city_id": 2578,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Urechesti)",
     "county_code": "BC",
     "postal_code": "607658",
     "country_code": "RO"
@@ -14036,14 +14036,14 @@
   },
   {
     "city_id": 2499,
-    "city_name": "Schineni",
+    "city_name": "Schineni (Sascut)",
     "county_code": "BC",
     "postal_code": "607526",
     "country_code": "RO"
   },
   {
     "city_id": 2504,
-    "city_name": "Schineni",
+    "city_name": "Schineni (Saucesti)",
     "county_code": "BC",
     "postal_code": "607543",
     "country_code": "RO"
@@ -14120,14 +14120,14 @@
   },
   {
     "city_id": 2303,
-    "city_name": "Siretu",
+    "city_name": "Siretu (Letea Veche)",
     "county_code": "BC",
     "postal_code": "607274",
     "country_code": "RO"
   },
   {
     "city_id": 2506,
-    "city_name": "Siretu",
+    "city_name": "Siretu (Saucesti)",
     "county_code": "BC",
     "postal_code": "607544",
     "country_code": "RO"
@@ -14141,28 +14141,28 @@
   },
   {
     "city_id": 2231,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Filipeni)",
     "county_code": "BC",
     "postal_code": "607182",
     "country_code": "RO"
   },
   {
     "city_id": 2387,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Onesti)",
     "county_code": "BC",
     "postal_code": "601002",
     "country_code": "RO"
   },
   {
     "city_id": 2531,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Stanisesti)",
     "county_code": "BC",
     "postal_code": "607592",
     "country_code": "RO"
   },
   {
     "city_id": 2579,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Urechesti)",
     "county_code": "BC",
     "postal_code": "607659",
     "country_code": "RO"
@@ -14491,14 +14491,14 @@
   },
   {
     "city_id": 2187,
-    "city_name": "Valcele",
+    "city_name": "Valcele (Corbasca)",
     "county_code": "BC",
     "postal_code": "607127",
     "country_code": "RO"
   },
   {
     "city_id": 2552,
-    "city_name": "Valcele",
+    "city_name": "Valcele (Targu Ocna)",
     "county_code": "BC",
     "postal_code": "605602",
     "country_code": "RO"
@@ -14561,14 +14561,14 @@
   },
   {
     "city_id": 2176,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Colonesti)",
     "county_code": "BC",
     "postal_code": "607116",
     "country_code": "RO"
   },
   {
     "city_id": 2484,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Rosiori)",
     "county_code": "BC",
     "postal_code": "607514",
     "country_code": "RO"
@@ -14589,14 +14589,14 @@
   },
   {
     "city_id": 2170,
-    "city_name": "Valea Mica",
+    "city_name": "Valea Mica (Cleja)",
     "county_code": "BC",
     "postal_code": "607107",
     "country_code": "RO"
   },
   {
     "city_id": 2485,
-    "city_name": "Valea Mica",
+    "city_name": "Valea Mica (Rosiori)",
     "county_code": "BC",
     "postal_code": "607516",
     "country_code": "RO"
@@ -14624,14 +14624,14 @@
   },
   {
     "city_id": 2367,
-    "city_name": "Valea Seaca",
+    "city_name": "Valea Seaca (Nicolae Balcescu)",
     "county_code": "BC",
     "postal_code": "607362",
     "country_code": "RO"
   },
   {
     "city_id": 2582,
-    "city_name": "Valea Seaca",
+    "city_name": "Valea Seaca (Valea Seaca)",
     "county_code": "BC",
     "postal_code": "607660",
     "country_code": "RO"
@@ -14645,21 +14645,21 @@
   },
   {
     "city_id": 2419,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Parincea)",
     "county_code": "BC",
     "postal_code": "607409",
     "country_code": "RO"
   },
   {
     "city_id": 2519,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Secuieni)",
     "county_code": "BC",
     "postal_code": "607572",
     "country_code": "RO"
   },
   {
     "city_id": 2534,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Stanisesti)",
     "county_code": "BC",
     "postal_code": "607594",
     "country_code": "RO"
@@ -14715,14 +14715,14 @@
   },
   {
     "city_id": 2177,
-    "city_name": "Zapodia",
+    "city_name": "Zapodia (Colonesti)",
     "county_code": "BC",
     "postal_code": "607117",
     "country_code": "RO"
   },
   {
     "city_id": 2568,
-    "city_name": "Zapodia",
+    "city_name": "Zapodia (Traian)",
     "county_code": "BC",
     "postal_code": "607641",
     "country_code": "RO"
@@ -14792,14 +14792,14 @@
   },
   {
     "city_id": 4636,
-    "city_name": "Almasu Mic",
+    "city_name": "Almasu Mic (Balc)",
     "county_code": "BH",
     "postal_code": "417042",
     "country_code": "RO"
   },
   {
     "city_id": 4968,
-    "city_name": "Almasu Mic",
+    "city_name": "Almasu Mic (Sarbi)",
     "county_code": "BH",
     "postal_code": "417521",
     "country_code": "RO"
@@ -14897,14 +14897,14 @@
   },
   {
     "city_id": 4637,
-    "city_name": "Balc",
+    "city_name": "Balc (Balc)",
     "county_code": "BH",
     "postal_code": "417040",
     "country_code": "RO"
   },
   {
     "city_id": 4758,
-    "city_name": "Balc",
+    "city_name": "Balc (Cristioru de Jos)",
     "county_code": "BH",
     "postal_code": "417216",
     "country_code": "RO"
@@ -15128,14 +15128,14 @@
   },
   {
     "city_id": 4669,
-    "city_name": "Brusturi",
+    "city_name": "Brusturi (Brusturi)",
     "county_code": "BH",
     "postal_code": "417090",
     "country_code": "RO"
   },
   {
     "city_id": 4799,
-    "city_name": "Brusturi",
+    "city_name": "Brusturi (Finis)",
     "county_code": "BH",
     "postal_code": "417266",
     "country_code": "RO"
@@ -16087,14 +16087,14 @@
   },
   {
     "city_id": 4700,
-    "city_name": "Gurbesti",
+    "city_name": "Gurbesti (Cabesti)",
     "county_code": "BH",
     "postal_code": "417127",
     "country_code": "RO"
   },
   {
     "city_id": 4991,
-    "city_name": "Gurbesti",
+    "city_name": "Gurbesti (Spinus)",
     "county_code": "BH",
     "postal_code": "417532",
     "country_code": "RO"
@@ -16304,14 +16304,14 @@
   },
   {
     "city_id": 4701,
-    "city_name": "Josani",
+    "city_name": "Josani (Cabesti)",
     "county_code": "BH",
     "postal_code": "417128",
     "country_code": "RO"
   },
   {
     "city_id": 4858,
-    "city_name": "Josani",
+    "city_name": "Josani (Magesti)",
     "county_code": "BH",
     "postal_code": "417341",
     "country_code": "RO"
@@ -16801,14 +16801,14 @@
   },
   {
     "city_id": 4761,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Cristioru de Jos)",
     "county_code": "BH",
     "postal_code": "417218",
     "country_code": "RO"
   },
   {
     "city_id": 5020,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Tauteu)",
     "county_code": "BH",
     "postal_code": "417584",
     "country_code": "RO"
@@ -17935,14 +17935,14 @@
   },
   {
     "city_id": 4913,
-    "city_name": "Voivozi",
+    "city_name": "Voivozi (Popesti)",
     "county_code": "BH",
     "postal_code": "417397",
     "country_code": "RO"
   },
   {
     "city_id": 4977,
-    "city_name": "Voivozi",
+    "city_name": "Voivozi (Simian)",
     "county_code": "BH",
     "postal_code": "417547",
     "country_code": "RO"
@@ -18495,14 +18495,14 @@
   },
   {
     "city_id": 5149,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Livezile)",
     "county_code": "BN",
     "postal_code": "427123",
     "country_code": "RO"
   },
   {
     "city_id": 5197,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Nuseni)",
     "county_code": "BN",
     "postal_code": "427202",
     "country_code": "RO"
@@ -19657,14 +19657,14 @@
   },
   {
     "city_id": 5231,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Sant)",
     "county_code": "BN",
     "postal_code": "427286",
     "country_code": "RO"
   },
   {
     "city_id": 5311,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Urmenis)",
     "county_code": "BN",
     "postal_code": "427381",
     "country_code": "RO"
@@ -19860,14 +19860,14 @@
   },
   {
     "city_id": 2673,
-    "city_name": "Baranca",
+    "city_name": "Baranca (Cristinesti)",
     "county_code": "BT",
     "postal_code": "717106",
     "country_code": "RO"
   },
   {
     "city_id": 2757,
-    "city_name": "Baranca",
+    "city_name": "Baranca (Hudesti)",
     "county_code": "BT",
     "postal_code": "717212",
     "country_code": "RO"
@@ -20084,14 +20084,14 @@
   },
   {
     "city_id": 2634,
-    "city_name": "Calinesti",
+    "city_name": "Calinesti (Bucecea)",
     "county_code": "BT",
     "postal_code": "717047",
     "country_code": "RO"
   },
   {
     "city_id": 2791,
-    "city_name": "Calinesti",
+    "city_name": "Calinesti (Mihaileni)",
     "county_code": "BT",
     "postal_code": "717261",
     "country_code": "RO"
@@ -20518,14 +20518,14 @@
   },
   {
     "city_id": 2675,
-    "city_name": "Dragalina",
+    "city_name": "Dragalina (Cristinesti)",
     "county_code": "BT",
     "postal_code": "717107",
     "country_code": "RO"
   },
   {
     "city_id": 2753,
-    "city_name": "Dragalina",
+    "city_name": "Dragalina (Hlipiceni)",
     "county_code": "BT",
     "postal_code": "717206",
     "country_code": "RO"
@@ -20567,14 +20567,14 @@
   },
   {
     "city_id": 2850,
-    "city_name": "Durnesti",
+    "city_name": "Durnesti (Santa Mare)",
     "county_code": "BT",
     "postal_code": "717145",
     "country_code": "RO"
   },
   {
     "city_id": 2900,
-    "city_name": "Durnesti",
+    "city_name": "Durnesti (Ungureni)",
     "county_code": "BT",
     "postal_code": "717419",
     "country_code": "RO"
@@ -20847,14 +20847,14 @@
   },
   {
     "city_id": 2893,
-    "city_name": "Ionaseni",
+    "city_name": "Ionaseni (Trusesti)",
     "county_code": "BT",
     "postal_code": "717404",
     "country_code": "RO"
   },
   {
     "city_id": 2918,
-    "city_name": "Ionaseni",
+    "city_name": "Ionaseni (Varfu Campului)",
     "county_code": "BT",
     "postal_code": "717451",
     "country_code": "RO"
@@ -20973,14 +20973,14 @@
   },
   {
     "city_id": 2769,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Lunca)",
     "county_code": "BT",
     "postal_code": "717225",
     "country_code": "RO"
   },
   {
     "city_id": 2919,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Varfu Campului)",
     "county_code": "BT",
     "postal_code": "717452",
     "country_code": "RO"
@@ -21008,14 +21008,14 @@
   },
   {
     "city_id": 2901,
-    "city_name": "Mandresti",
+    "city_name": "Mandresti (Ungureni)",
     "county_code": "BT",
     "postal_code": "717421",
     "country_code": "RO"
   },
   {
     "city_id": 2927,
-    "city_name": "Mandresti",
+    "city_name": "Mandresti (Vladeni)",
     "county_code": "BT",
     "postal_code": "717464",
     "country_code": "RO"
@@ -21197,14 +21197,14 @@
   },
   {
     "city_id": 2667,
-    "city_name": "Nicolae Balcescu",
+    "city_name": "Nicolae Balcescu (Cotusca)",
     "county_code": "BT",
     "postal_code": "717098",
     "country_code": "RO"
   },
   {
     "city_id": 2715,
-    "city_name": "Nicolae Balcescu",
+    "city_name": "Nicolae Balcescu (Flamanzi)",
     "county_code": "BT",
     "postal_code": "717157",
     "country_code": "RO"
@@ -21253,14 +21253,14 @@
   },
   {
     "city_id": 2646,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Copalau)",
     "county_code": "BT",
     "postal_code": "717066",
     "country_code": "RO"
   },
   {
     "city_id": 2862,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Sendriceni)",
     "county_code": "BT",
     "postal_code": "717382",
     "country_code": "RO"
@@ -21358,28 +21358,28 @@
   },
   {
     "city_id": 2627,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Braesti)",
     "county_code": "BT",
     "postal_code": "717036",
     "country_code": "RO"
   },
   {
     "city_id": 2677,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Cristinesti)",
     "county_code": "BT",
     "postal_code": "717109",
     "country_code": "RO"
   },
   {
     "city_id": 2716,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Flamanzi)",
     "county_code": "BT",
     "postal_code": "717158",
     "country_code": "RO"
   },
   {
     "city_id": 2937,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Vorona)",
     "county_code": "BT",
     "postal_code": "717478",
     "country_code": "RO"
@@ -21393,14 +21393,14 @@
   },
   {
     "city_id": 2628,
-    "city_name": "Popeni",
+    "city_name": "Popeni (Braesti)",
     "county_code": "BT",
     "postal_code": "717037",
     "country_code": "RO"
   },
   {
     "city_id": 2727,
-    "city_name": "Popeni",
+    "city_name": "Popeni (George Enescu)",
     "county_code": "BT",
     "postal_code": "717173",
     "country_code": "RO"
@@ -21505,14 +21505,14 @@
   },
   {
     "city_id": 2828,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Radauti-Prut)",
     "county_code": "BT",
     "postal_code": "717317",
     "country_code": "RO"
   },
   {
     "city_id": 2832,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Rauseni)",
     "county_code": "BT",
     "postal_code": "717323",
     "country_code": "RO"
@@ -21694,14 +21694,14 @@
   },
   {
     "city_id": 2631,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Broscauti)",
     "county_code": "BT",
     "postal_code": "717041",
     "country_code": "RO"
   },
   {
     "city_id": 2814,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Paltinis)",
     "county_code": "BT",
     "postal_code": "717298",
     "country_code": "RO"
@@ -21750,14 +21750,14 @@
   },
   {
     "city_id": 2728,
-    "city_name": "Stanca",
+    "city_name": "Stanca (George Enescu)",
     "county_code": "BT",
     "postal_code": "717174",
     "country_code": "RO"
   },
   {
     "city_id": 2870,
-    "city_name": "Stanca",
+    "city_name": "Stanca (Stefanesti)",
     "county_code": "BT",
     "postal_code": "717388",
     "country_code": "RO"
@@ -21904,14 +21904,14 @@
   },
   {
     "city_id": 2608,
-    "city_name": "Tudor Vladimirescu",
+    "city_name": "Tudor Vladimirescu (Albesti)",
     "county_code": "BT",
     "postal_code": "717011",
     "country_code": "RO"
   },
   {
     "city_id": 2615,
-    "city_name": "Tudor Vladimirescu",
+    "city_name": "Tudor Vladimirescu (Avrameni)",
     "county_code": "BT",
     "postal_code": "717023",
     "country_code": "RO"
@@ -21988,14 +21988,14 @@
   },
   {
     "city_id": 2755,
-    "city_name": "Victoria",
+    "city_name": "Victoria (Hlipiceni)",
     "county_code": "BT",
     "postal_code": "717207",
     "country_code": "RO"
   },
   {
     "city_id": 2867,
-    "city_name": "Victoria",
+    "city_name": "Victoria (Stauceni)",
     "county_code": "BT",
     "postal_code": "717358",
     "country_code": "RO"
@@ -22030,14 +22030,14 @@
   },
   {
     "city_id": 2652,
-    "city_name": "Vladeni",
+    "city_name": "Vladeni (Corlateni)",
     "county_code": "BT",
     "postal_code": "717082",
     "country_code": "RO"
   },
   {
     "city_id": 2928,
-    "city_name": "Vladeni",
+    "city_name": "Vladeni (Vladeni)",
     "county_code": "BT",
     "postal_code": "717460",
     "country_code": "RO"
@@ -22345,14 +22345,14 @@
   },
   {
     "city_id": 8782,
-    "city_name": "Cuza Voda",
+    "city_name": "Cuza Voda (Salcia Tudor)",
     "county_code": "BR",
     "postal_code": "817127",
     "country_code": "RO"
   },
   {
     "city_id": 8798,
-    "city_name": "Cuza Voda",
+    "city_name": "Cuza Voda (Stancuta)",
     "county_code": "BR",
     "postal_code": "817151",
     "country_code": "RO"
@@ -22625,14 +22625,14 @@
   },
   {
     "city_id": 8773,
-    "city_name": "Mihail Kogalniceanu",
+    "city_name": "Mihail Kogalniceanu (Ramnicelu)",
     "county_code": "BR",
     "postal_code": "817113",
     "country_code": "RO"
   },
   {
     "city_id": 8808,
-    "city_name": "Mihail Kogalniceanu",
+    "city_name": "Mihail Kogalniceanu (Sutesti)",
     "county_code": "BR",
     "postal_code": "817166",
     "country_code": "RO"
@@ -23402,14 +23402,14 @@
   },
   {
     "city_id": 976,
-    "city_name": "Feldioara",
+    "city_name": "Feldioara (Ucea)",
     "county_code": "BV",
     "postal_code": "507065",
     "country_code": "RO"
   },
   {
     "city_id": 13807,
-    "city_name": "Feldioara",
+    "city_name": "Feldioara (Feldioara)",
     "county_code": "BV",
     "postal_code": "507237",
     "country_code": "RO"
@@ -25096,14 +25096,14 @@
   },
   {
     "city_id": 8932,
-    "city_name": "Corbu",
+    "city_name": "Corbu (Catina)",
     "county_code": "BZ",
     "postal_code": "127146",
     "country_code": "RO"
   },
   {
     "city_id": 9017,
-    "city_name": "Corbu",
+    "city_name": "Corbu (Glodeanu-Silistea)",
     "county_code": "BZ",
     "postal_code": "127264",
     "country_code": "RO"
@@ -25278,14 +25278,14 @@
   },
   {
     "city_id": 9069,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Margaritesti)",
     "county_code": "BZ",
     "postal_code": "127332",
     "country_code": "RO"
   },
   {
     "city_id": 9092,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Naeni)",
     "county_code": "BZ",
     "postal_code": "127391",
     "country_code": "RO"
@@ -25698,28 +25698,28 @@
   },
   {
     "city_id": 8991,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Cozieni)",
     "county_code": "BZ",
     "postal_code": "127221",
     "country_code": "RO"
   },
   {
     "city_id": 9256,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Tisau)",
     "county_code": "BZ",
     "postal_code": "127616",
     "country_code": "RO"
   },
   {
     "city_id": 8854,
-    "city_name": "Izvoru Dulce",
+    "city_name": "Izvoru Dulce (Beceni)",
     "county_code": "BZ",
     "postal_code": "127032",
     "country_code": "RO"
   },
   {
     "city_id": 9075,
-    "city_name": "Izvoru Dulce",
+    "city_name": "Izvoru Dulce (Merei)",
     "county_code": "BZ",
     "postal_code": "127361",
     "country_code": "RO"
@@ -25852,28 +25852,28 @@
   },
   {
     "city_id": 8841,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Amaru)",
     "county_code": "BZ",
     "postal_code": "127009",
     "country_code": "RO"
   },
   {
     "city_id": 8918,
-    "city_name": "Lunca",
+    "city_name": "Lunca (C.A. Rosetti)",
     "county_code": "BZ",
     "postal_code": "127124",
     "country_code": "RO"
   },
   {
     "city_id": 9148,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Patarlagele)",
     "county_code": "BZ",
     "postal_code": "127436",
     "country_code": "RO"
   },
   {
     "city_id": 9179,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Puiesti)",
     "county_code": "BZ",
     "postal_code": "127497",
     "country_code": "RO"
@@ -26111,14 +26111,14 @@
   },
   {
     "city_id": 9151,
-    "city_name": "Muscel",
+    "city_name": "Muscel (Patarlagele)",
     "county_code": "BZ",
     "postal_code": "127439",
     "country_code": "RO"
   },
   {
     "city_id": 9309,
-    "city_name": "Muscel",
+    "city_name": "Muscel (Viperesti)",
     "county_code": "BZ",
     "postal_code": "127706",
     "country_code": "RO"
@@ -26468,14 +26468,14 @@
   },
   {
     "city_id": 8864,
-    "city_name": "Plesesti",
+    "city_name": "Plesesti (Berca)",
     "county_code": "BZ",
     "postal_code": "127043",
     "country_code": "RO"
   },
   {
     "city_id": 9167,
-    "city_name": "Plesesti",
+    "city_name": "Plesesti (Podgoria)",
     "county_code": "BZ",
     "postal_code": "127483",
     "country_code": "RO"
@@ -26587,14 +26587,14 @@
   },
   {
     "city_id": 8961,
-    "city_name": "Posta",
+    "city_name": "Posta (Cilibia)",
     "county_code": "BZ",
     "postal_code": "127184",
     "country_code": "RO"
   },
   {
     "city_id": 9267,
-    "city_name": "Posta",
+    "city_name": "Posta (Topliceni)",
     "county_code": "BZ",
     "postal_code": "127636",
     "country_code": "RO"
@@ -26881,14 +26881,14 @@
   },
   {
     "city_id": 9020,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Glodeanu-Silistea)",
     "county_code": "BZ",
     "postal_code": "127267",
     "country_code": "RO"
   },
   {
     "city_id": 9085,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Mihailesti)",
     "county_code": "BZ",
     "postal_code": "127379",
     "country_code": "RO"
@@ -27112,14 +27112,14 @@
   },
   {
     "city_id": 9007,
-    "city_name": "Suditi",
+    "city_name": "Suditi (Gheraseni)",
     "county_code": "BZ",
     "postal_code": "127246",
     "country_code": "RO"
   },
   {
     "city_id": 9176,
-    "city_name": "Suditi",
+    "city_name": "Suditi (Posta Calnau)",
     "county_code": "BZ",
     "postal_code": "127489",
     "country_code": "RO"
@@ -27238,14 +27238,14 @@
   },
   {
     "city_id": 8950,
-    "city_name": "Trestioara",
+    "city_name": "Trestioara (Chiliile)",
     "county_code": "BZ",
     "postal_code": "127167",
     "country_code": "RO"
   },
   {
     "city_id": 9062,
-    "city_name": "Trestioara",
+    "city_name": "Trestioara (Manzalesti)",
     "county_code": "BZ",
     "postal_code": "127347",
     "country_code": "RO"
@@ -27826,14 +27826,14 @@
   },
   {
     "city_id": 7140,
-    "city_name": "Chirnogi",
+    "city_name": "Chirnogi (Chirnogi)",
     "county_code": "CL",
     "postal_code": "917025",
     "country_code": "RO"
   },
   {
     "city_id": 7273,
-    "city_name": "Chirnogi",
+    "city_name": "Chirnogi (Ulmu)",
     "county_code": "CL",
     "postal_code": "917266",
     "country_code": "RO"
@@ -27994,14 +27994,14 @@
   },
   {
     "city_id": 7160,
-    "city_name": "Dorobantu",
+    "city_name": "Dorobantu (Dorobantu)",
     "county_code": "CL",
     "postal_code": "917065",
     "country_code": "RO"
   },
   {
     "city_id": 7243,
-    "city_name": "Dorobantu",
+    "city_name": "Dorobantu (Plataresti)",
     "county_code": "CL",
     "postal_code": "917202",
     "country_code": "RO"
@@ -28295,14 +28295,14 @@
   },
   {
     "city_id": 7127,
-    "city_name": "Nicolae Balcescu",
+    "city_name": "Nicolae Balcescu (Alexandru odobescu)",
     "county_code": "CL",
     "postal_code": "917007",
     "country_code": "RO"
   },
   {
     "city_id": 7236,
-    "city_name": "Nicolae Balcescu",
+    "city_name": "Nicolae Balcescu (Nicolae balcescu)",
     "county_code": "CL",
     "postal_code": "917190",
     "country_code": "RO"
@@ -29415,14 +29415,14 @@
   },
   {
     "city_id": 12758,
-    "city_name": "Cuptoare",
+    "city_name": "Cuptoare (Cornea)",
     "county_code": "CS",
     "postal_code": "327107",
     "country_code": "RO"
   },
   {
     "city_id": 12902,
-    "city_name": "Cuptoare",
+    "city_name": "Cuptoare (Resita)",
     "county_code": "CS",
     "postal_code": "320002",
     "country_code": "RO"
@@ -30290,14 +30290,14 @@
   },
   {
     "city_id": 12787,
-    "city_name": "Prislop",
+    "city_name": "Prislop (Cornereva)",
     "county_code": "CS",
     "postal_code": "327143",
     "country_code": "RO"
   },
   {
     "city_id": 12806,
-    "city_name": "Prislop",
+    "city_name": "Prislop (Dalboset)",
     "county_code": "CS",
     "postal_code": "327169",
     "country_code": "RO"
@@ -31193,14 +31193,14 @@
   },
   {
     "city_id": 5365,
-    "city_name": "Balcesti",
+    "city_name": "Balcesti (Belis)",
     "county_code": "CJ",
     "postal_code": "407076",
     "country_code": "RO"
   },
   {
     "city_id": 5413,
-    "city_name": "Balcesti",
+    "city_name": "Balcesti (Capusu Mare)",
     "county_code": "CJ",
     "postal_code": "407147",
     "country_code": "RO"
@@ -31809,21 +31809,21 @@
   },
   {
     "city_id": 5489,
-    "city_name": "Cornesti",
+    "city_name": "Cornesti (Cornesti)",
     "county_code": "CJ",
     "postal_code": "407250",
     "country_code": "RO"
   },
   {
     "city_id": 5529,
-    "city_name": "Cornesti",
+    "city_name": "Cornesti (Garbau)",
     "county_code": "CJ",
     "postal_code": "407296",
     "country_code": "RO"
   },
   {
     "city_id": 5610,
-    "city_name": "Cornesti",
+    "city_name": "Cornesti (Mihai Viteazu)",
     "county_code": "CJ",
     "postal_code": "407407",
     "country_code": "RO"
@@ -32320,14 +32320,14 @@
   },
   {
     "city_id": 5542,
-    "city_name": "Hasdate",
+    "city_name": "Hasdate (Gherla)",
     "county_code": "CJ",
     "postal_code": "405302",
     "country_code": "RO"
   },
   {
     "city_id": 5703,
-    "city_name": "Hasdate",
+    "city_name": "Hasdate (Savadisla)",
     "county_code": "CJ",
     "postal_code": "407507",
     "country_code": "RO"
@@ -32537,14 +32537,14 @@
   },
   {
     "city_id": 5565,
-    "city_name": "Livada",
+    "city_name": "Livada (Iclod)",
     "county_code": "CJ",
     "postal_code": "407338",
     "country_code": "RO"
   },
   {
     "city_id": 5648,
-    "city_name": "Livada",
+    "city_name": "Livada (Petrestii de Jos)",
     "county_code": "CJ",
     "postal_code": "407458",
     "country_code": "RO"
@@ -32999,28 +32999,28 @@
   },
   {
     "city_id": 5457,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Chinteni)",
     "county_code": "CJ",
     "postal_code": "407209",
     "country_code": "RO"
   },
   {
     "city_id": 5474,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Ciurila)",
     "county_code": "CJ",
     "postal_code": "407233",
     "country_code": "RO"
   },
   {
     "city_id": 5615,
-    "city_name": "Padurenii",
+    "city_name": "Padurenii (Mintiu Gherlii)",
     "county_code": "CJ",
     "postal_code": "407413",
     "country_code": "RO"
   },
   {
     "city_id": 5721,
-    "city_name": "Padurenii",
+    "city_name": "Padurenii (Tritenii de Jos)",
     "county_code": "CJ",
     "postal_code": "407553",
     "country_code": "RO"
@@ -33412,14 +33412,14 @@
   },
   {
     "city_id": 5459,
-    "city_name": "Sanmartin",
+    "city_name": "Sanmartin (Chinteni)",
     "county_code": "CJ",
     "postal_code": "407213",
     "country_code": "RO"
   },
   {
     "city_id": 5694,
-    "city_name": "Sanmartin",
+    "city_name": "Sanmartin (Sanmartin)",
     "county_code": "CJ",
     "postal_code": "407520",
     "country_code": "RO"
@@ -33615,14 +33615,14 @@
   },
   {
     "city_id": 5420,
-    "city_name": "Straja",
+    "city_name": "Straja (Capusu Mare)",
     "county_code": "CJ",
     "postal_code": "407154",
     "country_code": "RO"
   },
   {
     "city_id": 5487,
-    "city_name": "Straja",
+    "city_name": "Straja (Cojocna)",
     "county_code": "CJ",
     "postal_code": "407248",
     "country_code": "RO"
@@ -33993,14 +33993,14 @@
   },
   {
     "city_id": 5399,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Caianu)",
     "county_code": "CJ",
     "postal_code": "407126",
     "country_code": "RO"
   },
   {
     "city_id": 5407,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Calatele)",
     "county_code": "CJ",
     "postal_code": "407139",
     "country_code": "RO"
@@ -35239,14 +35239,14 @@
   },
   {
     "city_id": 9473,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Mircea Voda)",
     "county_code": "CT",
     "postal_code": "907204",
     "country_code": "RO"
   },
   {
     "city_id": 9488,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Oltina)",
     "county_code": "CT",
     "postal_code": "907217",
     "country_code": "RO"
@@ -36730,21 +36730,21 @@
   },
   {
     "city_id": 7301,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Bezdead)",
     "county_code": "DB",
     "postal_code": "137036",
     "country_code": "RO"
   },
   {
     "city_id": 7534,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Produlesti)",
     "county_code": "DB",
     "postal_code": "137376",
     "country_code": "RO"
   },
   {
     "city_id": 7647,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Visina)",
     "county_code": "DB",
     "postal_code": "137516",
     "country_code": "RO"
@@ -36814,14 +36814,14 @@
   },
   {
     "city_id": 7338,
-    "city_name": "Calugareni",
+    "city_name": "Calugareni (Cobia)",
     "county_code": "DB",
     "postal_code": "137097",
     "country_code": "RO"
   },
   {
     "city_id": 7355,
-    "city_name": "Calugareni",
+    "city_name": "Calugareni (Contesti)",
     "county_code": "DB",
     "postal_code": "137128",
     "country_code": "RO"
@@ -36884,14 +36884,14 @@
   },
   {
     "city_id": 7376,
-    "city_name": "Catunu",
+    "city_name": "Catunu (Cornesti)",
     "county_code": "DB",
     "postal_code": "137152",
     "country_code": "RO"
   },
   {
     "city_id": 7573,
-    "city_name": "Catunu",
+    "city_name": "Catunu (Salcioara)",
     "county_code": "DB",
     "postal_code": "137412",
     "country_code": "RO"
@@ -37514,14 +37514,14 @@
   },
   {
     "city_id": 7428,
-    "city_name": "Glodeni",
+    "city_name": "Glodeni (Glodeni)",
     "county_code": "DB",
     "postal_code": "137225",
     "country_code": "RO"
   },
   {
     "city_id": 7544,
-    "city_name": "Glodeni",
+    "city_name": "Glodeni (Pucioasa)",
     "county_code": "DB",
     "postal_code": "135403",
     "country_code": "RO"
@@ -37710,14 +37710,14 @@
   },
   {
     "city_id": 7622,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Valea Lunga)",
     "county_code": "DB",
     "postal_code": "137467",
     "country_code": "RO"
   },
   {
     "city_id": 7648,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Visina)",
     "county_code": "DB",
     "postal_code": "137517",
     "country_code": "RO"
@@ -37752,14 +37752,14 @@
   },
   {
     "city_id": 7431,
-    "city_name": "Livezile",
+    "city_name": "Livezile (Glodeni)",
     "county_code": "DB",
     "postal_code": "137228",
     "country_code": "RO"
   },
   {
     "city_id": 7634,
-    "city_name": "Livezile",
+    "city_name": "Livezile (Valea Mare)",
     "county_code": "DB",
     "postal_code": "137488",
     "country_code": "RO"
@@ -37787,14 +37787,14 @@
   },
   {
     "city_id": 7492,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Moroeni)",
     "county_code": "DB",
     "postal_code": "137313",
     "country_code": "RO"
   },
   {
     "city_id": 7657,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Voinesti)",
     "county_code": "DB",
     "postal_code": "137528",
     "country_code": "RO"
@@ -37808,14 +37808,14 @@
   },
   {
     "city_id": 7303,
-    "city_name": "Magura",
+    "city_name": "Magura (Bezdead)",
     "county_code": "DB",
     "postal_code": "137038",
     "country_code": "RO"
   },
   {
     "city_id": 7447,
-    "city_name": "Magura",
+    "city_name": "Magura (Hulubesti)",
     "county_code": "DB",
     "postal_code": "137253",
     "country_code": "RO"
@@ -37850,14 +37850,14 @@
   },
   {
     "city_id": 7346,
-    "city_name": "Manastirea",
+    "city_name": "Manastirea (Cobia)",
     "county_code": "DB",
     "postal_code": "137106",
     "country_code": "RO"
   },
   {
     "city_id": 110450,
-    "city_name": "Manastirea",
+    "city_name": "Manastirea (Crevedia)",
     "county_code": "DB",
     "postal_code": "137183",
     "country_code": "RO"
@@ -37934,14 +37934,14 @@
   },
   {
     "city_id": 7360,
-    "city_name": "Mereni",
+    "city_name": "Mereni (Contesti)",
     "county_code": "DB",
     "postal_code": "137133",
     "country_code": "RO"
   },
   {
     "city_id": 7598,
-    "city_name": "Mereni",
+    "city_name": "Mereni (Titu)",
     "county_code": "DB",
     "postal_code": "135503",
     "country_code": "RO"
@@ -38088,14 +38088,14 @@
   },
   {
     "city_id": 7501,
-    "city_name": "Movila",
+    "city_name": "Movila (Niculesti)",
     "county_code": "DB",
     "postal_code": "137332",
     "country_code": "RO"
   },
   {
     "city_id": 7578,
-    "city_name": "Movila",
+    "city_name": "Movila (Salcioara)",
     "county_code": "DB",
     "postal_code": "137418",
     "country_code": "RO"
@@ -38172,14 +38172,14 @@
   },
   {
     "city_id": 7458,
-    "city_name": "Olteni",
+    "city_name": "Olteni (Lucieni)",
     "county_code": "DB",
     "postal_code": "137266",
     "country_code": "RO"
   },
   {
     "city_id": 7606,
-    "city_name": "Olteni",
+    "city_name": "Olteni (Uliesti)",
     "county_code": "DB",
     "postal_code": "137451",
     "country_code": "RO"
@@ -38228,14 +38228,14 @@
   },
   {
     "city_id": 7365,
-    "city_name": "Petresti",
+    "city_name": "Petresti (Corbii Mari)",
     "county_code": "DB",
     "postal_code": "137139",
     "country_code": "RO"
   },
   {
     "city_id": 7517,
-    "city_name": "Petresti",
+    "city_name": "Petresti (Petresti)",
     "county_code": "DB",
     "postal_code": "137350",
     "country_code": "RO"
@@ -38361,14 +38361,14 @@
   },
   {
     "city_id": 7309,
-    "city_name": "Priboiu",
+    "city_name": "Priboiu (Branesti)",
     "county_code": "DB",
     "postal_code": "137056",
     "country_code": "RO"
   },
   {
     "city_id": 7594,
-    "city_name": "Priboiu",
+    "city_name": "Priboiu (Tatarani)",
     "county_code": "DB",
     "postal_code": "137443",
     "country_code": "RO"
@@ -38389,14 +38389,14 @@
   },
   {
     "city_id": 7495,
-    "city_name": "Pucheni",
+    "city_name": "Pucheni (Moroeni)",
     "county_code": "DB",
     "postal_code": "137316",
     "country_code": "RO"
   },
   {
     "city_id": 7539,
-    "city_name": "Pucheni",
+    "city_name": "Pucheni (Pucheni)",
     "county_code": "DB",
     "postal_code": "137380",
     "country_code": "RO"
@@ -38536,14 +38536,14 @@
   },
   {
     "city_id": 7482,
-    "city_name": "Salcioara",
+    "city_name": "Salcioara (Matasaru)",
     "county_code": "DB",
     "postal_code": "137301",
     "country_code": "RO"
   },
   {
     "city_id": 7580,
-    "city_name": "Salcioara",
+    "city_name": "Salcioara (Salcioara)",
     "county_code": "DB",
     "postal_code": "137410",
     "country_code": "RO"
@@ -38634,14 +38634,14 @@
   },
   {
     "city_id": 7459,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Lucieni)",
     "county_code": "DB",
     "postal_code": "137268",
     "country_code": "RO"
   },
   {
     "city_id": 7571,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Runcu)",
     "county_code": "DB",
     "postal_code": "137406",
     "country_code": "RO"
@@ -38858,28 +38858,28 @@
   },
   {
     "city_id": 7325,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Butimanu)",
     "county_code": "DB",
     "postal_code": "137078",
     "country_code": "RO"
   },
   {
     "city_id": 7368,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Corbii Mari)",
     "county_code": "DB",
     "postal_code": "137143",
     "country_code": "RO"
   },
   {
     "city_id": 7384,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Cornesti)",
     "county_code": "DB",
     "postal_code": "137161",
     "country_code": "RO"
   },
   {
     "city_id": 7418,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Dragomiresti)",
     "county_code": "DB",
     "postal_code": "137216",
     "country_code": "RO"
@@ -38984,21 +38984,21 @@
   },
   {
     "city_id": 7331,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Candesti)",
     "county_code": "DB",
     "postal_code": "137086",
     "country_code": "RO"
   },
   {
     "city_id": 7631,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Valea Lunga)",
     "county_code": "DB",
     "postal_code": "137474",
     "country_code": "RO"
   },
   {
     "city_id": 13811,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Valea Mare)",
     "county_code": "DB",
     "postal_code": "137485",
     "country_code": "RO"
@@ -39306,14 +39306,14 @@
   },
   {
     "city_id": 10242,
-    "city_name": "Bechet",
+    "city_name": "Bechet (Bechet)",
     "county_code": "DJ",
     "postal_code": "207060",
     "country_code": "RO"
   },
   {
     "city_id": 10473,
-    "city_name": "Bechet",
+    "city_name": "Bechet (Orodel)",
     "county_code": "DJ",
     "postal_code": "207436",
     "country_code": "RO"
@@ -39467,21 +39467,21 @@
   },
   {
     "city_id": 10348,
-    "city_name": "Braniste",
+    "city_name": "Braniste (Daneti)",
     "county_code": "DJ",
     "postal_code": "207217",
     "country_code": "RO"
   },
   {
     "city_id": 10379,
-    "city_name": "Braniste",
+    "city_name": "Braniste (Filiasi)",
     "county_code": "DJ",
     "postal_code": "205303",
     "country_code": "RO"
   },
   {
     "city_id": 10494,
-    "city_name": "Braniste",
+    "city_name": "Braniste (Podari)",
     "county_code": "DJ",
     "postal_code": "207467",
     "country_code": "RO"
@@ -39740,14 +39740,14 @@
   },
   {
     "city_id": 10328,
-    "city_name": "Cetatuia",
+    "city_name": "Cetatuia (Cioroiasi)",
     "county_code": "DJ",
     "postal_code": "207196",
     "country_code": "RO"
   },
   {
     "city_id": 10592,
-    "city_name": "Cetatuia",
+    "city_name": "Cetatuia (Vela)",
     "county_code": "DJ",
     "postal_code": "207627",
     "country_code": "RO"
@@ -40055,14 +40055,14 @@
   },
   {
     "city_id": 10504,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Radovan)",
     "county_code": "DJ",
     "postal_code": "207486",
     "country_code": "RO"
   },
   {
     "city_id": 10568,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Teslui)",
     "county_code": "DJ",
     "postal_code": "207582",
     "country_code": "RO"
@@ -41287,14 +41287,14 @@
   },
   {
     "city_id": 10304,
-    "city_name": "Salcuta",
+    "city_name": "Salcuta (Calopar)",
     "county_code": "DJ",
     "postal_code": "207154",
     "country_code": "RO"
   },
   {
     "city_id": 10521,
-    "city_name": "Salcuta",
+    "city_name": "Salcuta (Salcuta)",
     "county_code": "DJ",
     "postal_code": "207510",
     "country_code": "RO"
@@ -41952,14 +41952,14 @@
   },
   {
     "city_id": 9569,
-    "city_name": "Branistea",
+    "city_name": "Branistea (Branistea)",
     "county_code": "GL",
     "postal_code": "807050",
     "country_code": "RO"
   },
   {
     "city_id": 9657,
-    "city_name": "Branistea",
+    "city_name": "Branistea (Nicoresti)",
     "county_code": "GL",
     "postal_code": "807216",
     "country_code": "RO"
@@ -42449,14 +42449,14 @@
   },
   {
     "city_id": 9643,
-    "city_name": "Liesti",
+    "city_name": "Liesti (Liesti)",
     "county_code": "GL",
     "postal_code": "807180",
     "country_code": "RO"
   },
   {
     "city_id": 9677,
-    "city_name": "Liesti",
+    "city_name": "Liesti (Priponesti)",
     "county_code": "GL",
     "postal_code": "807253",
     "country_code": "RO"
@@ -42554,14 +42554,14 @@
   },
   {
     "city_id": 9647,
-    "city_name": "Movileni",
+    "city_name": "Movileni (Movileni)",
     "county_code": "GL",
     "postal_code": "807195",
     "country_code": "RO"
   },
   {
     "city_id": 9688,
-    "city_name": "Movileni",
+    "city_name": "Movileni (Sendreni)",
     "county_code": "GL",
     "postal_code": "807291",
     "country_code": "RO"
@@ -43016,14 +43016,14 @@
   },
   {
     "city_id": 9702,
-    "city_name": "Umbraresti",
+    "city_name": "Umbraresti (Targu Bujor)",
     "county_code": "GL",
     "postal_code": "805202",
     "country_code": "RO"
   },
   {
     "city_id": 9714,
-    "city_name": "Umbraresti",
+    "city_name": "Umbraresti (Umbraresti)",
     "county_code": "GL",
     "postal_code": "807310",
     "country_code": "RO"
@@ -43282,14 +43282,14 @@
   },
   {
     "city_id": 7732,
-    "city_name": "Cascioarele",
+    "city_name": "Cascioarele (Gaiseni)",
     "county_code": "GR",
     "postal_code": "087087",
     "country_code": "RO"
   },
   {
     "city_id": 7820,
-    "city_name": "Cascioarele",
+    "city_name": "Cascioarele (Ulmi)",
     "county_code": "GR",
     "postal_code": "087231",
     "country_code": "RO"
@@ -43681,28 +43681,28 @@
   },
   {
     "city_id": 7759,
-    "city_name": "Izvoarele",
+    "city_name": "Izvoarele (Hotarele)",
     "county_code": "GR",
     "postal_code": "087127",
     "country_code": "RO"
   },
   {
     "city_id": 7769,
-    "city_name": "Izvoarele",
+    "city_name": "Izvoarele (Izvoarele)",
     "county_code": "GR",
     "postal_code": "087140",
     "country_code": "RO"
   },
   {
     "city_id": 7745,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Gogosari)",
     "county_code": "GR",
     "postal_code": "087102",
     "country_code": "RO"
   },
   {
     "city_id": 7831,
-    "city_name": "Izvoru",
+    "city_name": "Izvoru (Vanatorii mici)",
     "county_code": "GR",
     "postal_code": "087253",
     "country_code": "RO"
@@ -44066,14 +44066,14 @@
   },
   {
     "city_id": 7677,
-    "city_name": "Sfantu Gheorghe",
+    "city_name": "Sfantu Gheorghe (Baneasa)",
     "county_code": "GR",
     "postal_code": "087013",
     "country_code": "RO"
   },
   {
     "city_id": 7721,
-    "city_name": "Sfantu Gheorghe",
+    "city_name": "Sfantu Gheorghe (Crevedia mare)",
     "county_code": "GR",
     "postal_code": "087066",
     "country_code": "RO"
@@ -44122,14 +44122,14 @@
   },
   {
     "city_id": 7727,
-    "city_name": "Stoenesti",
+    "city_name": "Stoenesti (Floresti-stoenesti)",
     "county_code": "GR",
     "postal_code": "087078",
     "country_code": "RO"
   },
   {
     "city_id": 7817,
-    "city_name": "Stoenesti",
+    "city_name": "Stoenesti (Stoenesti)",
     "county_code": "GR",
     "postal_code": "087220",
     "country_code": "RO"
@@ -47566,14 +47566,14 @@
   },
   {
     "city_id": 1221,
-    "city_name": "Bucin",
+    "city_name": "Bucin (Joseni)",
     "county_code": "HR",
     "postal_code": "537132",
     "country_code": "RO"
   },
   {
     "city_id": 1300,
-    "city_name": "Bucin",
+    "city_name": "Bucin (Praid)",
     "county_code": "HR",
     "postal_code": "537242",
     "country_code": "RO"
@@ -47944,14 +47944,14 @@
   },
   {
     "city_id": 1204,
-    "city_name": "Fagetel",
+    "city_name": "Fagetel (Frumoasa)",
     "county_code": "HR",
     "postal_code": "537117",
     "country_code": "RO"
   },
   {
     "city_id": 1306,
-    "city_name": "Fagetel",
+    "city_name": "Fagetel (Remetea)",
     "county_code": "HR",
     "postal_code": "537251",
     "country_code": "RO"
@@ -48434,14 +48434,14 @@
   },
   {
     "city_id": 1206,
-    "city_name": "Nicolesti",
+    "city_name": "Nicolesti (Frumoasa)",
     "county_code": "HR",
     "postal_code": "537118",
     "country_code": "RO"
   },
   {
     "city_id": 1378,
-    "city_name": "Nicolesti",
+    "city_name": "Nicolesti (Ulies)",
     "county_code": "HR",
     "postal_code": "537344",
     "country_code": "RO"
@@ -48791,14 +48791,14 @@
   },
   {
     "city_id": 1287,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Ocland)",
     "county_code": "HR",
     "postal_code": "537227",
     "country_code": "RO"
   },
   {
     "city_id": 1333,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Siculeni)",
     "county_code": "HR",
     "postal_code": "537299",
     "country_code": "RO"
@@ -49253,14 +49253,14 @@
   },
   {
     "city_id": 13057,
-    "city_name": "Alun",
+    "city_name": "Alun (Bosorod)",
     "county_code": "HD",
     "postal_code": "337096",
     "country_code": "RO"
   },
   {
     "city_id": 13115,
-    "city_name": "Alun",
+    "city_name": "Alun (Bunila)",
     "county_code": "HD",
     "postal_code": "337161",
     "country_code": "RO"
@@ -50842,14 +50842,14 @@
   },
   {
     "city_id": 13000,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Baia de Cris)",
     "county_code": "HD",
     "postal_code": "337009",
     "country_code": "RO"
   },
   {
     "city_id": 13011,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Baita)",
     "county_code": "HD",
     "postal_code": "337052",
     "country_code": "RO"
@@ -50968,14 +50968,14 @@
   },
   {
     "city_id": 13032,
-    "city_name": "Merisor",
+    "city_name": "Merisor (Banita)",
     "county_code": "HD",
     "postal_code": "337067",
     "country_code": "RO"
   },
   {
     "city_id": 13103,
-    "city_name": "Merisor",
+    "city_name": "Merisor (Bucuresci)",
     "county_code": "HD",
     "postal_code": "337147",
     "country_code": "RO"
@@ -50996,14 +50996,14 @@
   },
   {
     "city_id": 13067,
-    "city_name": "Mesteacan",
+    "city_name": "Mesteacan (Brad)",
     "county_code": "HD",
     "postal_code": "335201",
     "country_code": "RO"
   },
   {
     "city_id": 13323,
-    "city_name": "Mesteacan",
+    "city_name": "Mesteacan (Rachitova)",
     "county_code": "HD",
     "postal_code": "337376",
     "country_code": "RO"
@@ -51297,21 +51297,21 @@
   },
   {
     "city_id": 13013,
-    "city_name": "Pestera",
+    "city_name": "Pestera (Baita)",
     "county_code": "HD",
     "postal_code": "337054",
     "country_code": "RO"
   },
   {
     "city_id": 13304,
-    "city_name": "Pestera",
+    "city_name": "Pestera (Petrosani)",
     "county_code": "HD",
     "postal_code": "332003",
     "country_code": "RO"
   },
   {
     "city_id": 13358,
-    "city_name": "Pestera",
+    "city_name": "Pestera (Salasu de Sus)",
     "county_code": "HD",
     "postal_code": "337427",
     "country_code": "RO"
@@ -51430,14 +51430,14 @@
   },
   {
     "city_id": 13046,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Beriu)",
     "county_code": "HD",
     "postal_code": "337081",
     "country_code": "RO"
   },
   {
     "city_id": 13170,
-    "city_name": "Poieni",
+    "city_name": "Poieni (Densus)",
     "county_code": "HD",
     "postal_code": "337211",
     "country_code": "RO"
@@ -51507,14 +51507,14 @@
   },
   {
     "city_id": 13063,
-    "city_name": "Prihodiste",
+    "city_name": "Prihodiste (Bosorod)",
     "county_code": "HD",
     "postal_code": "337102",
     "country_code": "RO"
   },
   {
     "city_id": 13439,
-    "city_name": "Prihodiste",
+    "city_name": "Prihodiste (Vata de Jos)",
     "county_code": "HD",
     "postal_code": "337511",
     "country_code": "RO"
@@ -51689,14 +51689,14 @@
   },
   {
     "city_id": 13078,
-    "city_name": "Rovina",
+    "city_name": "Rovina (Branisca)",
     "county_code": "HD",
     "postal_code": "337112",
     "country_code": "RO"
   },
   {
     "city_id": 13104,
-    "city_name": "Rovina",
+    "city_name": "Rovina (Bucuresci)",
     "county_code": "HD",
     "postal_code": "337148",
     "country_code": "RO"
@@ -51906,14 +51906,14 @@
   },
   {
     "city_id": 13048,
-    "city_name": "Sibisel",
+    "city_name": "Sibisel (Beriu)",
     "county_code": "HD",
     "postal_code": "337083",
     "country_code": "RO"
   },
   {
     "city_id": 13338,
-    "city_name": "Sibisel",
+    "city_name": "Sibisel (Rau de Mori)",
     "county_code": "HD",
     "postal_code": "337388",
     "country_code": "RO"
@@ -52494,14 +52494,14 @@
   },
   {
     "city_id": 13004,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Baia de Cris)",
     "county_code": "HD",
     "postal_code": "337014",
     "country_code": "RO"
   },
   {
     "city_id": 13205,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Geoagiu)",
     "county_code": "HD",
     "postal_code": "335409",
     "country_code": "RO"
@@ -52515,14 +52515,14 @@
   },
   {
     "city_id": 13028,
-    "city_name": "Valisoara",
+    "city_name": "Valisoara (Balsa)",
     "county_code": "HD",
     "postal_code": "337029",
     "country_code": "RO"
   },
   {
     "city_id": 13430,
-    "city_name": "Valisoara",
+    "city_name": "Valisoara (Valisoara)",
     "county_code": "HD",
     "postal_code": "337520",
     "country_code": "RO"
@@ -53677,14 +53677,14 @@
   },
   {
     "city_id": 3034,
-    "city_name": "Baiceni",
+    "city_name": "Baiceni (Cucuteni)",
     "county_code": "IS",
     "postal_code": "707151",
     "country_code": "RO"
   },
   {
     "city_id": 3321,
-    "city_name": "Baiceni",
+    "city_name": "Baiceni (Todiresti)",
     "county_code": "IS",
     "postal_code": "707506",
     "country_code": "RO"
@@ -53880,14 +53880,14 @@
   },
   {
     "city_id": 3179,
-    "city_name": "Boureni",
+    "city_name": "Boureni (Motca)",
     "county_code": "IS",
     "postal_code": "707346",
     "country_code": "RO"
   },
   {
     "city_id": 3292,
-    "city_name": "Boureni",
+    "city_name": "Boureni (Targu Frumos)",
     "county_code": "IS",
     "postal_code": "705302",
     "country_code": "RO"
@@ -53950,14 +53950,14 @@
   },
   {
     "city_id": 2984,
-    "city_name": "Buda",
+    "city_name": "Buda (Braesti)",
     "county_code": "IS",
     "postal_code": "707062",
     "country_code": "RO"
   },
   {
     "city_id": 3132,
-    "city_name": "Buda",
+    "city_name": "Buda (Lespezi)",
     "county_code": "IS",
     "postal_code": "707271",
     "country_code": "RO"
@@ -54307,49 +54307,49 @@
   },
   {
     "city_id": 3030,
-    "city_name": "Cozmesti",
+    "city_name": "Cozmesti (Cozmesti)",
     "county_code": "IS",
     "postal_code": "707140",
     "country_code": "RO"
   },
   {
     "city_id": 3280,
-    "city_name": "Cozmesti",
+    "city_name": "Cozmesti (Stolniceni-Prajescu)",
     "county_code": "IS",
     "postal_code": "707462",
     "country_code": "RO"
   },
   {
     "city_id": 2985,
-    "city_name": "Cristesti",
+    "city_name": "Cristesti (Braesti)",
     "county_code": "IS",
     "postal_code": "707063",
     "country_code": "RO"
   },
   {
     "city_id": 3111,
-    "city_name": "Cristesti",
+    "city_name": "Cristesti (Holboca)",
     "county_code": "IS",
     "postal_code": "707251",
     "country_code": "RO"
   },
   {
     "city_id": 115952,
-    "city_name": "Cristesti",
+    "city_name": "Cristesti (Cristesti)",
     "county_code": "IS",
     "postal_code": "707145",
     "country_code": "RO"
   },
   {
     "city_id": 3283,
-    "city_name": "Crivesti",
+    "city_name": "Crivesti (Strunga)",
     "county_code": "IS",
     "postal_code": "707467",
     "country_code": "RO"
   },
   {
     "city_id": 3343,
-    "city_name": "Crivesti",
+    "city_name": "Crivesti (Vanatori)",
     "county_code": "IS",
     "postal_code": "707576",
     "country_code": "RO"
@@ -54370,14 +54370,14 @@
   },
   {
     "city_id": 3036,
-    "city_name": "Cucuteni",
+    "city_name": "Cucuteni (Cucuteni)",
     "county_code": "IS",
     "postal_code": "707150",
     "country_code": "RO"
   },
   {
     "city_id": 3140,
-    "city_name": "Cucuteni",
+    "city_name": "Cucuteni (Letcani)",
     "county_code": "IS",
     "postal_code": "707283",
     "country_code": "RO"
@@ -54398,14 +54398,14 @@
   },
   {
     "city_id": 3130,
-    "city_name": "Cuza Voda",
+    "city_name": "Cuza Voda (Ipatele)",
     "county_code": "IS",
     "postal_code": "707268",
     "country_code": "RO"
   },
   {
     "city_id": 3208,
-    "city_name": "Cuza Voda",
+    "city_name": "Cuza Voda (Popricani)",
     "county_code": "IS",
     "postal_code": "707383",
     "country_code": "RO"
@@ -54440,14 +54440,14 @@
   },
   {
     "city_id": 2996,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Ciortesti)",
     "county_code": "IS",
     "postal_code": "707077",
     "country_code": "RO"
   },
   {
     "city_id": 3047,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Deleni)",
     "county_code": "IS",
     "postal_code": "707165",
     "country_code": "RO"
@@ -54503,14 +54503,14 @@
   },
   {
     "city_id": 3001,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Ciurea)",
     "county_code": "IS",
     "postal_code": "707082",
     "country_code": "RO"
   },
   {
     "city_id": 3135,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Lespezi)",
     "county_code": "IS",
     "postal_code": "707274",
     "country_code": "RO"
@@ -54552,14 +54552,14 @@
   },
   {
     "city_id": 2948,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Andrieseni)",
     "county_code": "IS",
     "postal_code": "707013",
     "country_code": "RO"
   },
   {
     "city_id": 3069,
-    "city_name": "Fantanele",
+    "city_name": "Fantanele (Focuri)",
     "county_code": "IS",
     "postal_code": "707196",
     "country_code": "RO"
@@ -54916,14 +54916,14 @@
   },
   {
     "city_id": 3119,
-    "city_name": "Horlesti",
+    "city_name": "Horlesti (Horlesti)",
     "county_code": "IS",
     "postal_code": "707260",
     "country_code": "RO"
   },
   {
     "city_id": 3229,
-    "city_name": "Horlesti",
+    "city_name": "Horlesti (Rediu)",
     "county_code": "IS",
     "postal_code": "707407",
     "country_code": "RO"
@@ -54986,14 +54986,14 @@
   },
   {
     "city_id": 2950,
-    "city_name": "Iepureni",
+    "city_name": "Iepureni (Andrieseni)",
     "county_code": "IS",
     "postal_code": "707016",
     "country_code": "RO"
   },
   {
     "city_id": 3181,
-    "city_name": "Iepureni",
+    "city_name": "Iepureni (Movileni)",
     "county_code": "IS",
     "postal_code": "707351",
     "country_code": "RO"
@@ -55105,14 +55105,14 @@
   },
   {
     "city_id": 3087,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Grajduri)",
     "county_code": "IS",
     "postal_code": "707218",
     "country_code": "RO"
   },
   {
     "city_id": 3189,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Pascani)",
     "county_code": "IS",
     "postal_code": "705204",
     "country_code": "RO"
@@ -55140,14 +55140,14 @@
   },
   {
     "city_id": 3144,
-    "city_name": "Lungani",
+    "city_name": "Lungani (Lungani)",
     "county_code": "IS",
     "postal_code": "707285",
     "country_code": "RO"
   },
   {
     "city_id": 3361,
-    "city_name": "Lungani",
+    "city_name": "Lungani (Voinesti)",
     "county_code": "IS",
     "postal_code": "707601",
     "country_code": "RO"
@@ -55392,14 +55392,14 @@
   },
   {
     "city_id": 3011,
-    "city_name": "Osoi",
+    "city_name": "Osoi (Comarna)",
     "county_code": "IS",
     "postal_code": "707110",
     "country_code": "RO"
   },
   {
     "city_id": 3265,
-    "city_name": "Osoi",
+    "city_name": "Osoi (Sinesti)",
     "county_code": "IS",
     "postal_code": "707452",
     "country_code": "RO"
@@ -55413,14 +55413,14 @@
   },
   {
     "city_id": 3088,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Grajduri)",
     "county_code": "IS",
     "postal_code": "707219",
     "country_code": "RO"
   },
   {
     "city_id": 3203,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Popesti)",
     "county_code": "IS",
     "postal_code": "707374",
     "country_code": "RO"
@@ -55567,14 +55567,14 @@
   },
   {
     "city_id": 3051,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Deleni)",
     "county_code": "IS",
     "postal_code": "707169",
     "country_code": "RO"
   },
   {
     "city_id": 3254,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Schitu Duca)",
     "county_code": "IS",
     "postal_code": "707439",
     "country_code": "RO"
@@ -55721,28 +55721,28 @@
   },
   {
     "city_id": 2986,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Braesti)",
     "county_code": "IS",
     "postal_code": "707064",
     "country_code": "RO"
   },
   {
     "city_id": 3237,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Ruginoasa)",
     "county_code": "IS",
     "postal_code": "707422",
     "country_code": "RO"
   },
   {
     "city_id": 3244,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Scanteia)",
     "county_code": "IS",
     "postal_code": "707431",
     "country_code": "RO"
   },
   {
     "city_id": 13808,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Rediu)",
     "county_code": "IS",
     "postal_code": "707405",
     "country_code": "RO"
@@ -55847,28 +55847,28 @@
   },
   {
     "city_id": 2974,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Belcesti)",
     "county_code": "IS",
     "postal_code": "707048",
     "country_code": "RO"
   },
   {
     "city_id": 3250,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Scheia)",
     "county_code": "IS",
     "postal_code": "707482",
     "country_code": "RO"
   },
   {
     "city_id": 3256,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Schitu Duca)",
     "county_code": "IS",
     "postal_code": "707442",
     "country_code": "RO"
   },
   {
     "city_id": 3276,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Siretel)",
     "county_code": "IS",
     "postal_code": "707458",
     "country_code": "RO"
@@ -55889,14 +55889,14 @@
   },
   {
     "city_id": 2943,
-    "city_name": "Scheia",
+    "city_name": "Scheia (Alexandru Ioan Cuza)",
     "county_code": "IS",
     "postal_code": "707007",
     "country_code": "RO"
   },
   {
     "city_id": 115968,
-    "city_name": "Scheia",
+    "city_name": "Scheia (Scheia)",
     "county_code": "IS",
     "postal_code": "707475",
     "country_code": "RO"
@@ -55938,14 +55938,14 @@
   },
   {
     "city_id": 3082,
-    "city_name": "Scoposeni",
+    "city_name": "Scoposeni (Gorban)",
     "county_code": "IS",
     "postal_code": "707213",
     "country_code": "RO"
   },
   {
     "city_id": 3120,
-    "city_name": "Scoposeni",
+    "city_name": "Scoposeni (Horlesti)",
     "county_code": "IS",
     "postal_code": "707262",
     "country_code": "RO"
@@ -55994,35 +55994,35 @@
   },
   {
     "city_id": 3005,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Ciurea)",
     "county_code": "IS",
     "postal_code": "707086",
     "country_code": "RO"
   },
   {
     "city_id": 3052,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Deleni)",
     "county_code": "IS",
     "postal_code": "707171",
     "country_code": "RO"
   },
   {
     "city_id": 3258,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Schitu Duca)",
     "county_code": "IS",
     "postal_code": "707443",
     "country_code": "RO"
   },
   {
     "city_id": 3278,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Siretel)",
     "county_code": "IS",
     "postal_code": "707459",
     "country_code": "RO"
   },
   {
     "city_id": 3363,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Voinesti)",
     "county_code": "IS",
     "postal_code": "707603",
     "country_code": "RO"
@@ -56078,14 +56078,14 @@
   },
   {
     "city_id": 3012,
-    "city_name": "Stanca",
+    "city_name": "Stanca (Comarna)",
     "county_code": "IS",
     "postal_code": "707107",
     "country_code": "RO"
   },
   {
     "city_id": 3353,
-    "city_name": "Stanca",
+    "city_name": "Stanca (Victoria)",
     "county_code": "IS",
     "postal_code": "707586",
     "country_code": "RO"
@@ -56148,14 +56148,14 @@
   },
   {
     "city_id": 2975,
-    "city_name": "Tansa",
+    "city_name": "Tansa (Belcesti)",
     "county_code": "IS",
     "postal_code": "707049",
     "country_code": "RO"
   },
   {
     "city_id": 3291,
-    "city_name": "Tansa",
+    "city_name": "Tansa (Tansa)",
     "county_code": "IS",
     "postal_code": "707495",
     "country_code": "RO"
@@ -56435,14 +56435,14 @@
   },
   {
     "city_id": 3213,
-    "city_name": "Vanatori",
+    "city_name": "Vanatori (Popricani)",
     "county_code": "IS",
     "postal_code": "707388",
     "country_code": "RO"
   },
   {
     "city_id": 3346,
-    "city_name": "Vanatori",
+    "city_name": "Vanatori (Vanatori)",
     "county_code": "IS",
     "postal_code": "707575",
     "country_code": "RO"
@@ -58633,14 +58633,14 @@
   },
   {
     "city_id": 5801,
-    "city_name": "Sarbi",
+    "city_name": "Sarbi (Budesti)",
     "county_code": "MM",
     "postal_code": "437071",
     "country_code": "RO"
   },
   {
     "city_id": 5855,
-    "city_name": "Sarbi",
+    "city_name": "Sarbi (Farcasa)",
     "county_code": "MM",
     "postal_code": "437157",
     "country_code": "RO"
@@ -59186,14 +59186,14 @@
   },
   {
     "city_id": 11195,
-    "city_name": "Baltanele",
+    "city_name": "Baltanele (Greci)",
     "county_code": "MH",
     "postal_code": "227226",
     "country_code": "RO"
   },
   {
     "city_id": 11306,
-    "city_name": "Baltanele",
+    "city_name": "Baltanele (Prunisor)",
     "county_code": "MH",
     "postal_code": "227393",
     "country_code": "RO"
@@ -60089,14 +60089,14 @@
   },
   {
     "city_id": 11187,
-    "city_name": "Godeanu",
+    "city_name": "Godeanu (Godeanu)",
     "county_code": "MH",
     "postal_code": "227215",
     "country_code": "RO"
   },
   {
     "city_id": 11266,
-    "city_name": "Godeanu",
+    "city_name": "Godeanu (Obarsia-Closani)",
     "county_code": "MH",
     "postal_code": "227331",
     "country_code": "RO"
@@ -61160,14 +61160,14 @@
   },
   {
     "city_id": 11296,
-    "city_name": "Sipotu",
+    "city_name": "Sipotu (Ponoarele)",
     "county_code": "MH",
     "postal_code": "227376",
     "country_code": "RO"
   },
   {
     "city_id": 11300,
-    "city_name": "Sipotu",
+    "city_name": "Sipotu (Poroina Mare)",
     "county_code": "MH",
     "postal_code": "227383",
     "country_code": "RO"
@@ -61300,14 +61300,14 @@
   },
   {
     "city_id": 11095,
-    "city_name": "Susita",
+    "city_name": "Susita (Breznita-Ocol)",
     "county_code": "MH",
     "postal_code": "227073",
     "country_code": "RO"
   },
   {
     "city_id": 11204,
-    "city_name": "Susita",
+    "city_name": "Susita (Grozesti)",
     "county_code": "MH",
     "postal_code": "227238",
     "country_code": "RO"
@@ -61447,14 +61447,14 @@
   },
   {
     "city_id": 11297,
-    "city_name": "Valea Ursului",
+    "city_name": "Valea Ursului (Ponoarele)",
     "county_code": "MH",
     "postal_code": "227377",
     "country_code": "RO"
   },
   {
     "city_id": 11374,
-    "city_name": "Valea Ursului",
+    "city_name": "Valea Ursului (Tamna)",
     "county_code": "MH",
     "postal_code": "227482",
     "country_code": "RO"
@@ -62329,14 +62329,14 @@
   },
   {
     "city_id": 1405,
-    "city_name": "Cornesti",
+    "city_name": "Cornesti (Adamus)",
     "county_code": "MS",
     "postal_code": "547017",
     "country_code": "RO"
   },
   {
     "city_id": 1525,
-    "city_name": "Cornesti",
+    "city_name": "Cornesti (Craciunesti)",
     "county_code": "MS",
     "postal_code": "547178",
     "country_code": "RO"
@@ -62392,14 +62392,14 @@
   },
   {
     "city_id": 1406,
-    "city_name": "Craiesti",
+    "city_name": "Craiesti (Adamus)",
     "county_code": "MS",
     "postal_code": "547018",
     "country_code": "RO"
   },
   {
     "city_id": 13814,
-    "city_name": "Craiesti",
+    "city_name": "Craiesti (Craiesti)",
     "county_code": "MS",
     "postal_code": "547180",
     "country_code": "RO"
@@ -62476,14 +62476,14 @@
   },
   {
     "city_id": 1422,
-    "city_name": "Daia",
+    "city_name": "Daia (Apold)",
     "county_code": "MS",
     "postal_code": "547041",
     "country_code": "RO"
   },
   {
     "city_id": 1436,
-    "city_name": "Daia",
+    "city_name": "Daia (Bahnea)",
     "county_code": "MS",
     "postal_code": "547058",
     "country_code": "RO"
@@ -62560,14 +62560,14 @@
   },
   {
     "city_id": 1650,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Ideciu de Jos)",
     "county_code": "MS",
     "postal_code": "547361",
     "country_code": "RO"
   },
   {
     "city_id": 1738,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Pogaceaua)",
     "county_code": "MS",
     "postal_code": "547468",
     "country_code": "RO"
@@ -62658,14 +62658,14 @@
   },
   {
     "city_id": 1538,
-    "city_name": "Dupa Deal",
+    "city_name": "Dupa Deal (Cuci)",
     "county_code": "MS",
     "postal_code": "547197",
     "country_code": "RO"
   },
   {
     "city_id": 1641,
-    "city_name": "Dupa Deal",
+    "city_name": "Dupa Deal (Iclanzel)",
     "county_code": "MS",
     "postal_code": "547343",
     "country_code": "RO"
@@ -62700,28 +62700,28 @@
   },
   {
     "city_id": 1450,
-    "city_name": "Fanate",
+    "city_name": "Fanate (Band)",
     "county_code": "MS",
     "postal_code": "547067",
     "country_code": "RO"
   },
   {
     "city_id": 1566,
-    "city_name": "Fanate",
+    "city_name": "Fanate (Faragau)",
     "county_code": "MS",
     "postal_code": "547226",
     "country_code": "RO"
   },
   {
     "city_id": 1642,
-    "city_name": "Fanate",
+    "city_name": "Fanate (Iclanzel)",
     "county_code": "MS",
     "postal_code": "547344",
     "country_code": "RO"
   },
   {
     "city_id": 1855,
-    "city_name": "Fanate",
+    "city_name": "Fanate (Taureni)",
     "county_code": "MS",
     "postal_code": "547601",
     "country_code": "RO"
@@ -63281,14 +63281,14 @@
   },
   {
     "city_id": 1614,
-    "city_name": "Larga",
+    "city_name": "Larga (Gurghiu)",
     "county_code": "MS",
     "postal_code": "547302",
     "country_code": "RO"
   },
   {
     "city_id": 1806,
-    "city_name": "Larga",
+    "city_name": "Larga (Sarmasu)",
     "county_code": "MS",
     "postal_code": "547517",
     "country_code": "RO"
@@ -63876,14 +63876,14 @@
   },
   {
     "city_id": 1740,
-    "city_name": "Parau Crucii",
+    "city_name": "Parau Crucii (Pogaceaua)",
     "county_code": "MS",
     "postal_code": "547471",
     "country_code": "RO"
   },
   {
     "city_id": 1754,
-    "city_name": "Parau Crucii",
+    "city_name": "Parau Crucii (Raciu)",
     "county_code": "MS",
     "postal_code": "547496",
     "country_code": "RO"
@@ -64380,14 +64380,14 @@
   },
   {
     "city_id": 1584,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Gheorghe Doja)",
     "county_code": "MS",
     "postal_code": "547263",
     "country_code": "RO"
   },
   {
     "city_id": 1798,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Sanpetru de Campie)",
     "county_code": "MS",
     "postal_code": "547558",
     "country_code": "RO"
@@ -64429,14 +64429,14 @@
   },
   {
     "city_id": 1543,
-    "city_name": "Seleus",
+    "city_name": "Seleus (Danes)",
     "county_code": "MS",
     "postal_code": "547202",
     "country_code": "RO"
   },
   {
     "city_id": 1895,
-    "city_name": "Seleus",
+    "city_name": "Seleus (Zagar)",
     "county_code": "MS",
     "postal_code": "547656",
     "country_code": "RO"
@@ -64954,14 +64954,14 @@
   },
   {
     "city_id": 1607,
-    "city_name": "Valea Sanpetrului",
+    "city_name": "Valea Sanpetrului (Grebenisu de Campie)",
     "county_code": "MS",
     "postal_code": "547292",
     "country_code": "RO"
   },
   {
     "city_id": 1744,
-    "city_name": "Valea Sanpetrului",
+    "city_name": "Valea Sanpetrului (Pogaceaua)",
     "county_code": "MS",
     "postal_code": "547474",
     "country_code": "RO"
@@ -65283,14 +65283,14 @@
   },
   {
     "city_id": 3526,
-    "city_name": "Balusesti",
+    "city_name": "Balusesti (Girov)",
     "county_code": "NT",
     "postal_code": "617211",
     "country_code": "RO"
   },
   {
     "city_id": 3552,
-    "city_name": "Balusesti",
+    "city_name": "Balusesti (Icusesti)",
     "county_code": "NT",
     "postal_code": "617251",
     "country_code": "RO"
@@ -66340,14 +66340,14 @@
   },
   {
     "city_id": 3383,
-    "city_name": "Izvoare",
+    "city_name": "Izvoare (Bahna)",
     "county_code": "NT",
     "postal_code": "617019",
     "country_code": "RO"
   },
   {
     "city_id": 3507,
-    "city_name": "Izvoare",
+    "city_name": "Izvoare (Dumbrava Rosie)",
     "county_code": "NT",
     "postal_code": "617188",
     "country_code": "RO"
@@ -66403,21 +66403,21 @@
   },
   {
     "city_id": 3429,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Borca)",
     "county_code": "NT",
     "postal_code": "617076",
     "country_code": "RO"
   },
   {
     "city_id": 3574,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Oniceni)",
     "county_code": "NT",
     "postal_code": "617284",
     "country_code": "RO"
   },
   {
     "city_id": 3722,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Vanatori-Neamt)",
     "county_code": "NT",
     "postal_code": "617501",
     "country_code": "RO"
@@ -66480,14 +66480,14 @@
   },
   {
     "city_id": 3436,
-    "city_name": "Mastacan",
+    "city_name": "Mastacan (Borlesti)",
     "county_code": "NT",
     "postal_code": "617086",
     "country_code": "RO"
   },
   {
     "city_id": 3495,
-    "city_name": "Mastacan",
+    "city_name": "Mastacan (Dragomiresti)",
     "county_code": "NT",
     "postal_code": "617168",
     "country_code": "RO"
@@ -66571,14 +66571,14 @@
   },
   {
     "city_id": 3391,
-    "city_name": "Negresti",
+    "city_name": "Negresti (Bara)",
     "county_code": "NT",
     "postal_code": "617033",
     "country_code": "RO"
   },
   {
     "city_id": 3480,
-    "city_name": "Negresti",
+    "city_name": "Negresti (Dobreni)",
     "county_code": "NT",
     "postal_code": "617157",
     "country_code": "RO"
@@ -66816,35 +66816,35 @@
   },
   {
     "city_id": 3453,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Brusturi-Draganesti)",
     "county_code": "NT",
     "postal_code": "617111",
     "country_code": "RO"
   },
   {
     "city_id": 3481,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Dobreni)",
     "county_code": "NT",
     "postal_code": "617158",
     "country_code": "RO"
   },
   {
     "city_id": 3502,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Dulcesti)",
     "county_code": "NT",
     "postal_code": "617181",
     "country_code": "RO"
   },
   {
     "city_id": 3537,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Grinties)",
     "county_code": "NT",
     "postal_code": "617232",
     "country_code": "RO"
   },
   {
     "city_id": 3590,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Pangarati)",
     "county_code": "NT",
     "postal_code": "617308",
     "country_code": "RO"
@@ -66907,14 +66907,14 @@
   },
   {
     "city_id": 3512,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Farcasa)",
     "county_code": "NT",
     "postal_code": "617193",
     "country_code": "RO"
   },
   {
     "city_id": 3532,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Girov)",
     "county_code": "NT",
     "postal_code": "617219",
     "country_code": "RO"
@@ -67068,14 +67068,14 @@
   },
   {
     "city_id": 3438,
-    "city_name": "Ruseni",
+    "city_name": "Ruseni (Borlesti)",
     "county_code": "NT",
     "postal_code": "617088",
     "country_code": "RO"
   },
   {
     "city_id": 3626,
-    "city_name": "Ruseni",
+    "city_name": "Ruseni (Poiana Teiului)",
     "county_code": "NT",
     "postal_code": "617349",
     "country_code": "RO"
@@ -67131,14 +67131,14 @@
   },
   {
     "city_id": 3627,
-    "city_name": "Savinesti",
+    "city_name": "Savinesti (Poiana Teiului)",
     "county_code": "NT",
     "postal_code": "617351",
     "country_code": "RO"
   },
   {
     "city_id": 3659,
-    "city_name": "Savinesti",
+    "city_name": "Savinesti (Savinesti)",
     "county_code": "NT",
     "postal_code": "617410",
     "country_code": "RO"
@@ -67194,14 +67194,14 @@
   },
   {
     "city_id": 3393,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Bara)",
     "county_code": "NT",
     "postal_code": "617037",
     "country_code": "RO"
   },
   {
     "city_id": 3650,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Roznov)",
     "county_code": "NT",
     "postal_code": "617392",
     "country_code": "RO"
@@ -67215,14 +67215,14 @@
   },
   {
     "city_id": 3434,
-    "city_name": "Soci",
+    "city_name": "Soci (Borca)",
     "county_code": "NT",
     "postal_code": "617082",
     "country_code": "RO"
   },
   {
     "city_id": 3681,
-    "city_name": "Soci",
+    "city_name": "Soci (Stefan cel Mare)",
     "county_code": "NT",
     "postal_code": "617442",
     "country_code": "RO"
@@ -67285,21 +67285,21 @@
   },
   {
     "city_id": 3513,
-    "city_name": "Stejaru",
+    "city_name": "Stejaru (Farcasa)",
     "county_code": "NT",
     "postal_code": "617194",
     "country_code": "RO"
   },
   {
     "city_id": 3564,
-    "city_name": "Stejaru",
+    "city_name": "Stejaru (Ion Creanga)",
     "county_code": "NT",
     "postal_code": "617266",
     "country_code": "RO"
   },
   {
     "city_id": 3592,
-    "city_name": "Stejaru",
+    "city_name": "Stejaru (Pangarati)",
     "county_code": "NT",
     "postal_code": "617311",
     "country_code": "RO"
@@ -67474,14 +67474,14 @@
   },
   {
     "city_id": 3654,
-    "city_name": "Traian",
+    "city_name": "Traian (Sabaoani)",
     "county_code": "NT",
     "postal_code": "617398",
     "country_code": "RO"
   },
   {
     "city_id": 3726,
-    "city_name": "Traian",
+    "city_name": "Traian (Zanesti)",
     "county_code": "NT",
     "postal_code": "617516",
     "country_code": "RO"
@@ -67565,14 +67565,14 @@
   },
   {
     "city_id": 3376,
-    "city_name": "Vadurele",
+    "city_name": "Vadurele (Alexandru cel Bun)",
     "county_code": "NT",
     "postal_code": "617512",
     "country_code": "RO"
   },
   {
     "city_id": 3459,
-    "city_name": "Vadurele",
+    "city_name": "Vadurele (Candesti)",
     "county_code": "NT",
     "postal_code": "617121",
     "country_code": "RO"
@@ -67628,14 +67628,14 @@
   },
   {
     "city_id": 3443,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Botesti)",
     "county_code": "NT",
     "postal_code": "617097",
     "country_code": "RO"
   },
   {
     "city_id": 3604,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Piatra Neamt)",
     "county_code": "NT",
     "postal_code": "610003",
     "country_code": "RO"
@@ -67824,21 +67824,21 @@
   },
   {
     "city_id": 11407,
-    "city_name": "Barasti",
+    "city_name": "Barasti (Barasti)",
     "county_code": "OT",
     "postal_code": "237020",
     "country_code": "RO"
   },
   {
     "city_id": 11447,
-    "city_name": "Barasti",
+    "city_name": "Barasti (Colonesti)",
     "county_code": "OT",
     "postal_code": "237081",
     "country_code": "RO"
   },
   {
     "city_id": 11577,
-    "city_name": "Barasti",
+    "city_name": "Barasti (Morunglav)",
     "county_code": "OT",
     "postal_code": "237271",
     "country_code": "RO"
@@ -68377,14 +68377,14 @@
   },
   {
     "city_id": 11462,
-    "city_name": "Corbu",
+    "city_name": "Corbu (Corbu)",
     "county_code": "OT",
     "postal_code": "237090",
     "country_code": "RO"
   },
   {
     "city_id": 11720,
-    "city_name": "Corbu",
+    "city_name": "Corbu (Teslui)",
     "county_code": "OT",
     "postal_code": "237474",
     "country_code": "RO"
@@ -68482,14 +68482,14 @@
   },
   {
     "city_id": 11474,
-    "city_name": "Curtisoara",
+    "city_name": "Curtisoara (Curtisoara)",
     "county_code": "OT",
     "postal_code": "237115",
     "country_code": "RO"
   },
   {
     "city_id": 11487,
-    "city_name": "Curtisoara",
+    "city_name": "Curtisoara (Dobretu)",
     "county_code": "OT",
     "postal_code": "237136",
     "country_code": "RO"
@@ -68797,14 +68797,14 @@
   },
   {
     "city_id": 11602,
-    "city_name": "Greci",
+    "city_name": "Greci (Osica de Sus)",
     "county_code": "OT",
     "postal_code": "237311",
     "country_code": "RO"
   },
   {
     "city_id": 11663,
-    "city_name": "Greci",
+    "city_name": "Greci (Schitu)",
     "county_code": "OT",
     "postal_code": "237402",
     "country_code": "RO"
@@ -69042,14 +69042,14 @@
   },
   {
     "city_id": 11611,
-    "city_name": "Magura",
+    "city_name": "Magura (Perieti)",
     "county_code": "OT",
     "postal_code": "237332",
     "country_code": "RO"
   },
   {
     "city_id": 11713,
-    "city_name": "Magura",
+    "city_name": "Magura (Tatulesti)",
     "county_code": "OT",
     "postal_code": "237463",
     "country_code": "RO"
@@ -69112,14 +69112,14 @@
   },
   {
     "city_id": 11453,
-    "city_name": "Maruntei",
+    "city_name": "Maruntei (Colonesti)",
     "county_code": "OT",
     "postal_code": "237087",
     "country_code": "RO"
   },
   {
     "city_id": 11569,
-    "city_name": "Maruntei",
+    "city_name": "Maruntei (Maruntei)",
     "county_code": "OT",
     "postal_code": "237250",
     "country_code": "RO"
@@ -69539,14 +69539,14 @@
   },
   {
     "city_id": 11415,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Barasti)",
     "county_code": "OT",
     "postal_code": "237029",
     "country_code": "RO"
   },
   {
     "city_id": 11749,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Valeni)",
     "county_code": "OT",
     "postal_code": "237522",
     "country_code": "RO"
@@ -69770,14 +69770,14 @@
   },
   {
     "city_id": 11541,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Gradinari)",
     "county_code": "OT",
     "postal_code": "237208",
     "country_code": "RO"
   },
   {
     "city_id": 11599,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Orlea)",
     "county_code": "OT",
     "postal_code": "237308",
     "country_code": "RO"
@@ -69833,14 +69833,14 @@
   },
   {
     "city_id": 11631,
-    "city_name": "Seaca",
+    "city_name": "Seaca (Poboru)",
     "county_code": "OT",
     "postal_code": "237349",
     "country_code": "RO"
   },
   {
     "city_id": 11681,
-    "city_name": "Seaca",
+    "city_name": "Seaca (Seaca)",
     "county_code": "OT",
     "postal_code": "237405",
     "country_code": "RO"
@@ -69924,14 +69924,14 @@
   },
   {
     "city_id": 11656,
-    "city_name": "Stanuleasa",
+    "city_name": "Stanuleasa (Samburesti)",
     "county_code": "OT",
     "postal_code": "237391",
     "country_code": "RO"
   },
   {
     "city_id": 11764,
-    "city_name": "Stanuleasa",
+    "city_name": "Stanuleasa (Vitomiresti)",
     "county_code": "OT",
     "postal_code": "237549",
     "country_code": "RO"
@@ -70106,14 +70106,14 @@
   },
   {
     "city_id": 11564,
-    "city_name": "Tonesti",
+    "city_name": "Tonesti (Leleasca)",
     "county_code": "OT",
     "postal_code": "237244",
     "country_code": "RO"
   },
   {
     "city_id": 11657,
-    "city_name": "Tonesti",
+    "city_name": "Tonesti (Samburesti)",
     "county_code": "OT",
     "postal_code": "237392",
     "country_code": "RO"
@@ -70302,14 +70302,14 @@
   },
   {
     "city_id": 11428,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Brancoveni)",
     "county_code": "OT",
     "postal_code": "237520",
     "country_code": "RO"
   },
   {
     "city_id": 11751,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Valeni)",
     "county_code": "OT",
     "postal_code": "237053",
     "country_code": "RO"
@@ -70841,14 +70841,14 @@
   },
   {
     "city_id": 7994,
-    "city_name": "Buda",
+    "city_name": "Buda (Aricestii Rahtivani)",
     "county_code": "PH",
     "postal_code": "107026",
     "country_code": "RO"
   },
   {
     "city_id": 8328,
-    "city_name": "Buda",
+    "city_name": "Buda (Rafov)",
     "county_code": "PH",
     "postal_code": "107498",
     "country_code": "RO"
@@ -70960,14 +70960,14 @@
   },
   {
     "city_id": 8030,
-    "city_name": "Catunu",
+    "city_name": "Catunu (Berceni)",
     "county_code": "PH",
     "postal_code": "107062",
     "country_code": "RO"
   },
   {
     "city_id": 8133,
-    "city_name": "Catunu",
+    "city_name": "Catunu (Drajna)",
     "county_code": "PH",
     "postal_code": "107191",
     "country_code": "RO"
@@ -71212,28 +71212,28 @@
   },
   {
     "city_id": 8118,
-    "city_name": "Cornu de Jos",
+    "city_name": "Cornu de Jos (Cornu)",
     "county_code": "PH",
     "postal_code": "107180",
     "country_code": "RO"
   },
   {
     "city_id": 8128,
-    "city_name": "Cornu de Jos",
+    "city_name": "Cornu de Jos (Draganesti)",
     "county_code": "PH",
     "postal_code": "107213",
     "country_code": "RO"
   },
   {
     "city_id": 8119,
-    "city_name": "Cornu de Sus",
+    "city_name": "Cornu de Sus (Cornu)",
     "county_code": "PH",
     "postal_code": "107176",
     "country_code": "RO"
   },
   {
     "city_id": 8146,
-    "city_name": "Cornu de Sus",
+    "city_name": "Cornu de Sus (Dumbrava)",
     "county_code": "PH",
     "postal_code": "107222",
     "country_code": "RO"
@@ -71443,14 +71443,14 @@
   },
   {
     "city_id": 8177,
-    "city_name": "Fanari",
+    "city_name": "Fanari (Gherghita)",
     "county_code": "PH",
     "postal_code": "107266",
     "country_code": "RO"
   },
   {
     "city_id": 8183,
-    "city_name": "Fanari",
+    "city_name": "Fanari (Gorgota)",
     "county_code": "PH",
     "postal_code": "107277",
     "country_code": "RO"
@@ -72150,14 +72150,14 @@
   },
   {
     "city_id": 8092,
-    "city_name": "Nucet",
+    "city_name": "Nucet (Chiojdeanca)",
     "county_code": "PH",
     "postal_code": "107151",
     "country_code": "RO"
   },
   {
     "city_id": 8190,
-    "city_name": "Nucet",
+    "city_name": "Nucet (Gornet)",
     "county_code": "PH",
     "postal_code": "107288",
     "country_code": "RO"
@@ -72304,35 +72304,35 @@
   },
   {
     "city_id": 8102,
-    "city_name": "Persunari",
+    "city_name": "Persunari (Cocorastii Colt)",
     "county_code": "PH",
     "postal_code": "107386",
     "country_code": "RO"
   },
   {
     "city_id": 8198,
-    "city_name": "Persunari",
+    "city_name": "Persunari (Gura Vadului)",
     "county_code": "PH",
     "postal_code": "107301",
     "country_code": "RO"
   },
   {
     "city_id": 8103,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Cocorastii Colt)",
     "county_code": "PH",
     "postal_code": "107387",
     "country_code": "RO"
   },
   {
     "city_id": 8140,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Drajna)",
     "county_code": "PH",
     "postal_code": "107198",
     "country_code": "RO"
   },
   {
     "city_id": 8313,
-    "city_name": "Piatra",
+    "city_name": "Piatra (Provita de Jos)",
     "county_code": "PH",
     "postal_code": "107477",
     "country_code": "RO"
@@ -72409,14 +72409,14 @@
   },
   {
     "city_id": 8316,
-    "city_name": "Plaiu",
+    "city_name": "Plaiu (Provita de Sus)",
     "county_code": "PH",
     "postal_code": "107482",
     "country_code": "RO"
   },
   {
     "city_id": 8379,
-    "city_name": "Plaiu",
+    "city_name": "Plaiu (Talea)",
     "county_code": "PH",
     "postal_code": "107581",
     "country_code": "RO"
@@ -72465,14 +72465,14 @@
   },
   {
     "city_id": 8155,
-    "city_name": "Plopeni",
+    "city_name": "Plopeni (Dumbravesti)",
     "county_code": "PH",
     "postal_code": "107234",
     "country_code": "RO"
   },
   {
     "city_id": 8264,
-    "city_name": "Plopeni",
+    "city_name": "Plopeni (Plopeni)",
     "county_code": "PH",
     "postal_code": "105900",
     "country_code": "RO"
@@ -72654,14 +72654,14 @@
   },
   {
     "city_id": 8049,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Brazi)",
     "county_code": "PH",
     "postal_code": "107087",
     "country_code": "RO"
   },
   {
     "city_id": 8274,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Podenii Noi)",
     "county_code": "PH",
     "postal_code": "107416",
     "country_code": "RO"
@@ -72892,14 +72892,14 @@
   },
   {
     "city_id": 8005,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Baba Ana)",
     "county_code": "PH",
     "postal_code": "107039",
     "country_code": "RO"
   },
   {
     "city_id": 8226,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Lipanesti)",
     "county_code": "PH",
     "postal_code": "107341",
     "country_code": "RO"
@@ -72920,14 +72920,14 @@
   },
   {
     "city_id": 8413,
-    "city_name": "Schiau",
+    "city_name": "Schiau (Urlati)",
     "county_code": "PH",
     "postal_code": "106308",
     "country_code": "RO"
   },
   {
     "city_id": 8434,
-    "city_name": "Schiau",
+    "city_name": "Schiau (Valea Calugareasca)",
     "county_code": "PH",
     "postal_code": "107628",
     "country_code": "RO"
@@ -73368,21 +73368,21 @@
   },
   {
     "city_id": 8159,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Fantanele)",
     "county_code": "PH",
     "postal_code": "107243",
     "country_code": "RO"
   },
   {
     "city_id": 8168,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Filipestii de targ)",
     "county_code": "PH",
     "postal_code": "107254",
     "country_code": "RO"
   },
   {
     "city_id": 8181,
-    "city_name": "Ungureni",
+    "city_name": "Ungureni (Gherghita)",
     "county_code": "PH",
     "postal_code": "107272",
     "country_code": "RO"
@@ -75461,14 +75461,14 @@
   },
   {
     "city_id": 6010,
-    "city_name": "Stana",
+    "city_name": "Stana (Almasu)",
     "county_code": "SJ",
     "postal_code": "457018",
     "country_code": "RO"
   },
   {
     "city_id": 6277,
-    "city_name": "Stana",
+    "city_name": "Stana (Zalau)",
     "county_code": "SJ",
     "postal_code": "450002",
     "country_code": "RO"
@@ -78737,14 +78737,14 @@
   },
   {
     "city_id": 1962,
-    "city_name": "Veseud",
+    "city_name": "Veseud (Chirpar)",
     "county_code": "SB",
     "postal_code": "557083",
     "country_code": "RO"
   },
   {
     "city_id": 2077,
-    "city_name": "Veseud",
+    "city_name": "Veseud (Slimnic)",
     "county_code": "SB",
     "postal_code": "557244",
     "country_code": "RO"
@@ -79087,14 +79087,14 @@
   },
   {
     "city_id": 3755,
-    "city_name": "Brodina",
+    "city_name": "Brodina (Brodina)",
     "county_code": "SV",
     "postal_code": "727060",
     "country_code": "RO"
   },
   {
     "city_id": 3941,
-    "city_name": "Brodina",
+    "city_name": "Brodina (Izvoarele Sucevei)",
     "county_code": "SV",
     "postal_code": "727332",
     "country_code": "RO"
@@ -79108,14 +79108,14 @@
   },
   {
     "city_id": 3858,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Draguseni)",
     "county_code": "SV",
     "postal_code": "727075",
     "country_code": "RO"
   },
   {
     "city_id": 13804,
-    "city_name": "Brosteni",
+    "city_name": "Brosteni (Brosteni)",
     "county_code": "SV",
     "postal_code": "727221",
     "country_code": "RO"
@@ -79129,14 +79129,14 @@
   },
   {
     "city_id": 4018,
-    "city_name": "Buda",
+    "city_name": "Buda (Rasca)",
     "county_code": "SV",
     "postal_code": "727466",
     "country_code": "RO"
   },
   {
     "city_id": 4133,
-    "city_name": "Buda",
+    "city_name": "Buda (Zvoristea)",
     "county_code": "SV",
     "postal_code": "727641",
     "country_code": "RO"
@@ -79199,14 +79199,14 @@
   },
   {
     "city_id": 3789,
-    "city_name": "Calinesti",
+    "city_name": "Calinesti (Calafindesti)",
     "county_code": "SV",
     "postal_code": "727107",
     "country_code": "RO"
   },
   {
     "city_id": 3824,
-    "city_name": "Calinesti",
+    "city_name": "Calinesti (Darmanesti)",
     "county_code": "SV",
     "postal_code": "727156",
     "country_code": "RO"
@@ -79675,28 +79675,28 @@
   },
   {
     "city_id": 3811,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Cornu Luncii)",
     "county_code": "SV",
     "postal_code": "727143",
     "country_code": "RO"
   },
   {
     "city_id": 3912,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Granicesti)",
     "county_code": "SV",
     "postal_code": "727291",
     "country_code": "RO"
   },
   {
     "city_id": 3861,
-    "city_name": "Dumbraveni",
+    "city_name": "Dumbraveni (Dumbraveni)",
     "county_code": "SV",
     "postal_code": "727225",
     "country_code": "RO"
   },
   {
     "city_id": 4019,
-    "city_name": "Dumbraveni",
+    "city_name": "Dumbraveni (Rasca)",
     "county_code": "SV",
     "postal_code": "727467",
     "country_code": "RO"
@@ -79766,14 +79766,14 @@
   },
   {
     "city_id": 3767,
-    "city_name": "Frasin",
+    "city_name": "Frasin (Brosteni)",
     "county_code": "SV",
     "postal_code": "727078",
     "country_code": "RO"
   },
   {
     "city_id": 3886,
-    "city_name": "Frasin",
+    "city_name": "Frasin (Frasin)",
     "county_code": "SV",
     "postal_code": "727245",
     "country_code": "RO"
@@ -80165,14 +80165,14 @@
   },
   {
     "city_id": 3963,
-    "city_name": "Liteni",
+    "city_name": "Liteni (Moara)",
     "county_code": "SV",
     "postal_code": "727334",
     "country_code": "RO"
   },
   {
     "city_id": 13803,
-    "city_name": "Liteni",
+    "city_name": "Liteni (Liteni)",
     "county_code": "SV",
     "postal_code": "727335",
     "country_code": "RO"
@@ -80186,14 +80186,14 @@
   },
   {
     "city_id": 3954,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Milisauti)",
     "county_code": "SV",
     "postal_code": "727363",
     "country_code": "RO"
   },
   {
     "city_id": 4128,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Zamostea)",
     "county_code": "SV",
     "postal_code": "727636",
     "country_code": "RO"
@@ -80242,14 +80242,14 @@
   },
   {
     "city_id": 4046,
-    "city_name": "Manastioara",
+    "city_name": "Manastioara (Siret)",
     "county_code": "SV",
     "postal_code": "725501",
     "country_code": "RO"
   },
   {
     "city_id": 4072,
-    "city_name": "Manastioara",
+    "city_name": "Manastioara (Udesti)",
     "county_code": "SV",
     "postal_code": "727538",
     "country_code": "RO"
@@ -80711,14 +80711,14 @@
   },
   {
     "city_id": 3833,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Dolhasca)",
     "county_code": "SV",
     "postal_code": "727173",
     "country_code": "RO"
   },
   {
     "city_id": 4135,
-    "city_name": "Poiana",
+    "city_name": "Poiana (Zvoristea)",
     "county_code": "SV",
     "postal_code": "727643",
     "country_code": "RO"
@@ -80851,14 +80851,14 @@
   },
   {
     "city_id": 3974,
-    "city_name": "Rasca",
+    "city_name": "Rasca (Moldovita)",
     "county_code": "SV",
     "postal_code": "727388",
     "country_code": "RO"
   },
   {
     "city_id": 4021,
-    "city_name": "Rasca",
+    "city_name": "Rasca (Rasca)",
     "county_code": "SV",
     "postal_code": "727465",
     "country_code": "RO"
@@ -80879,14 +80879,14 @@
   },
   {
     "city_id": 3845,
-    "city_name": "Romanesti",
+    "city_name": "Romanesti (Dorna Candrenilor)",
     "county_code": "SV",
     "postal_code": "727196",
     "country_code": "RO"
   },
   {
     "city_id": 3916,
-    "city_name": "Romanesti",
+    "city_name": "Romanesti (Granicesti)",
     "county_code": "SV",
     "postal_code": "727294",
     "country_code": "RO"
@@ -81054,14 +81054,14 @@
   },
   {
     "city_id": 3823,
-    "city_name": "Satu Mare",
+    "city_name": "Satu Mare (Crucea)",
     "county_code": "SV",
     "postal_code": "727153",
     "country_code": "RO"
   },
   {
     "city_id": 4036,
-    "city_name": "Satu Mare",
+    "city_name": "Satu Mare (Satu Mare)",
     "county_code": "SV",
     "postal_code": "727480",
     "country_code": "RO"
@@ -81159,28 +81159,28 @@
   },
   {
     "city_id": 4022,
-    "city_name": "Slatioara",
+    "city_name": "Slatioara (Rasca)",
     "county_code": "SV",
     "postal_code": "727469",
     "country_code": "RO"
   },
   {
     "city_id": 4059,
-    "city_name": "Slatioara",
+    "city_name": "Slatioara (Stulpicani)",
     "county_code": "SV",
     "postal_code": "727508",
     "country_code": "RO"
   },
   {
     "city_id": 3873,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Fantanele)",
     "county_code": "SV",
     "postal_code": "727233",
     "country_code": "RO"
   },
   {
     "city_id": 4137,
-    "city_name": "Slobozia",
+    "city_name": "Slobozia (Zvoristea)",
     "county_code": "SV",
     "postal_code": "727644",
     "country_code": "RO"
@@ -81341,14 +81341,14 @@
   },
   {
     "city_id": 3846,
-    "city_name": "Tesna",
+    "city_name": "Tesna (Dorna Candrenilor)",
     "county_code": "SV",
     "postal_code": "727197",
     "country_code": "RO"
   },
   {
     "city_id": 4002,
-    "city_name": "Tesna",
+    "city_name": "Tesna (Poiana Stampei)",
     "county_code": "SV",
     "postal_code": "727437",
     "country_code": "RO"
@@ -81894,14 +81894,14 @@
   },
   {
     "city_id": 8480,
-    "city_name": "Bujoru",
+    "city_name": "Bujoru (Bujoru)",
     "county_code": "TR",
     "postal_code": "147045",
     "country_code": "RO"
   },
   {
     "city_id": 8487,
-    "city_name": "Bujoru",
+    "city_name": "Bujoru (Calmatuiu)",
     "county_code": "TR",
     "postal_code": "147061",
     "country_code": "RO"
@@ -82034,14 +82034,14 @@
   },
   {
     "city_id": 8499,
-    "city_name": "Ciuperceni",
+    "city_name": "Ciuperceni (Ciuperceni)",
     "county_code": "TR",
     "postal_code": "147080",
     "country_code": "RO"
   },
   {
     "city_id": 8502,
-    "city_name": "Ciuperceni",
+    "city_name": "Ciuperceni (Cosmesti)",
     "county_code": "TR",
     "postal_code": "147091",
     "country_code": "RO"
@@ -82489,14 +82489,14 @@
   },
   {
     "city_id": 8454,
-    "city_name": "Merisani",
+    "city_name": "Merisani (Babaita)",
     "county_code": "TR",
     "postal_code": "147013",
     "country_code": "RO"
   },
   {
     "city_id": 8516,
-    "city_name": "Merisani",
+    "city_name": "Merisani (Dobrotesti)",
     "county_code": "TR",
     "postal_code": "147116",
     "country_code": "RO"
@@ -82510,14 +82510,14 @@
   },
   {
     "city_id": 8536,
-    "city_name": "Mosteni",
+    "city_name": "Mosteni (Furculesti)",
     "county_code": "TR",
     "postal_code": "147146",
     "country_code": "RO"
   },
   {
     "city_id": 8565,
-    "city_name": "Mosteni",
+    "city_name": "Mosteni (Mosteni)",
     "county_code": "TR",
     "postal_code": "147210",
     "country_code": "RO"
@@ -82755,14 +82755,14 @@
   },
   {
     "city_id": 8635,
-    "city_name": "Purani",
+    "city_name": "Purani (Silistea)",
     "county_code": "TR",
     "postal_code": "147347",
     "country_code": "RO"
   },
   {
     "city_id": 8688,
-    "city_name": "Purani",
+    "city_name": "Purani (Vitanesti)",
     "county_code": "TR",
     "postal_code": "147441",
     "country_code": "RO"
@@ -82951,14 +82951,14 @@
   },
   {
     "city_id": 8636,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Silistea)",
     "county_code": "TR",
     "postal_code": "147345",
     "country_code": "RO"
   },
   {
     "city_id": 8690,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Vitanesti)",
     "county_code": "TR",
     "postal_code": "147443",
     "country_code": "RO"
@@ -83035,14 +83035,14 @@
   },
   {
     "city_id": 8507,
-    "city_name": "Stejaru",
+    "city_name": "Stejaru (Crangeni)",
     "county_code": "TR",
     "postal_code": "147098",
     "country_code": "RO"
   },
   {
     "city_id": 8645,
-    "city_name": "Stejaru",
+    "city_name": "Stejaru (Stejaru)",
     "county_code": "TR",
     "postal_code": "147365",
     "country_code": "RO"
@@ -83644,14 +83644,14 @@
   },
   {
     "city_id": 13577,
-    "city_name": "Bucovat",
+    "city_name": "Bucovat (Dumbrava)",
     "county_code": "TM",
     "postal_code": "307156",
     "country_code": "RO"
   },
   {
     "city_id": 13722,
-    "city_name": "Bucovat",
+    "city_name": "Bucovat (Remetea Mare)",
     "county_code": "TM",
     "postal_code": "307352",
     "country_code": "RO"
@@ -84414,14 +84414,14 @@
   },
   {
     "city_id": 13528,
-    "city_name": "Hodos",
+    "city_name": "Hodos (Brestovat)",
     "county_code": "TM",
     "postal_code": "307087",
     "country_code": "RO"
   },
   {
     "city_id": 13565,
-    "city_name": "Hodos",
+    "city_name": "Hodos (Darova)",
     "county_code": "TM",
     "postal_code": "307141",
     "country_code": "RO"
@@ -84876,14 +84876,14 @@
   },
   {
     "city_id": 13640,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Jebel)",
     "county_code": "TM",
     "postal_code": "307236",
     "country_code": "RO"
   },
   {
     "city_id": 13795,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Victor Vlad Delamarina)",
     "county_code": "TM",
     "postal_code": "307463",
     "country_code": "RO"
@@ -86696,14 +86696,14 @@
   },
   {
     "city_id": 11860,
-    "city_name": "Barsesti",
+    "city_name": "Barsesti (Budesti)",
     "county_code": "VL",
     "postal_code": "247057",
     "country_code": "RO"
   },
   {
     "city_id": 12108,
-    "city_name": "Barsesti",
+    "city_name": "Barsesti (Mihaesti)",
     "county_code": "VL",
     "postal_code": "247377",
     "country_code": "RO"
@@ -86752,14 +86752,14 @@
   },
   {
     "city_id": 11835,
-    "city_name": "Berbesti",
+    "city_name": "Berbesti (Berbesti)",
     "county_code": "VL",
     "postal_code": "247030",
     "country_code": "RO"
   },
   {
     "city_id": 12055,
-    "city_name": "Berbesti",
+    "city_name": "Berbesti (Lalosu)",
     "county_code": "VL",
     "postal_code": "247281",
     "country_code": "RO"
@@ -86822,35 +86822,35 @@
   },
   {
     "city_id": 11790,
-    "city_name": "Bodesti",
+    "city_name": "Bodesti (Alunu)",
     "county_code": "VL",
     "postal_code": "247006",
     "country_code": "RO"
   },
   {
     "city_id": 11833,
-    "city_name": "Bodesti",
+    "city_name": "Bodesti (Barbatesti)",
     "county_code": "VL",
     "postal_code": "247027",
     "country_code": "RO"
   },
   {
     "city_id": 11867,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Bujoreni)",
     "county_code": "VL",
     "postal_code": "247066",
     "country_code": "RO"
   },
   {
     "city_id": 12176,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Otesani)",
     "county_code": "VL",
     "postal_code": "247456",
     "country_code": "RO"
   },
   {
     "city_id": 12354,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Tomsani)",
     "county_code": "VL",
     "postal_code": "247707",
     "country_code": "RO"
@@ -86969,21 +86969,21 @@
   },
   {
     "city_id": 11933,
-    "city_name": "Budesti",
+    "city_name": "Budesti (Diculesti)",
     "county_code": "VL",
     "postal_code": "247157",
     "country_code": "RO"
   },
   {
     "city_id": 11963,
-    "city_name": "Budesti",
+    "city_name": "Budesti (Fauresti)",
     "county_code": "VL",
     "postal_code": "247157",
     "country_code": "RO"
   },
   {
     "city_id": 13810,
-    "city_name": "Budesti",
+    "city_name": "Budesti (Budesti)",
     "county_code": "VL",
     "postal_code": "247055",
     "country_code": "RO"
@@ -87158,21 +87158,21 @@
   },
   {
     "city_id": 11987,
-    "city_name": "Cazanesti",
+    "city_name": "Cazanesti (Ghioroiu)",
     "county_code": "VL",
     "postal_code": "247216",
     "country_code": "RO"
   },
   {
     "city_id": 12120,
-    "city_name": "Cazanesti",
+    "city_name": "Cazanesti (Milcoiu)",
     "county_code": "VL",
     "postal_code": "247396",
     "country_code": "RO"
   },
   {
     "city_id": 12230,
-    "city_name": "Cazanesti",
+    "city_name": "Cazanesti (Ramnicu Valcea)",
     "county_code": "VL",
     "postal_code": "240002",
     "country_code": "RO"
@@ -87186,14 +87186,14 @@
   },
   {
     "city_id": 12045,
-    "city_name": "Cermegesti",
+    "city_name": "Cermegesti (Ladesti)",
     "county_code": "VL",
     "postal_code": "247291",
     "country_code": "RO"
   },
   {
     "city_id": 12203,
-    "city_name": "Cermegesti",
+    "city_name": "Cermegesti (Pesceana)",
     "county_code": "VL",
     "postal_code": "247501",
     "country_code": "RO"
@@ -87347,14 +87347,14 @@
   },
   {
     "city_id": 12000,
-    "city_name": "Coasta",
+    "city_name": "Coasta (Golesti)",
     "county_code": "VL",
     "postal_code": "247233",
     "country_code": "RO"
   },
   {
     "city_id": 12189,
-    "city_name": "Coasta",
+    "city_name": "Coasta (Pausesti-Maglasi)",
     "county_code": "VL",
     "postal_code": "247471",
     "country_code": "RO"
@@ -87424,14 +87424,14 @@
   },
   {
     "city_id": 11902,
-    "city_name": "Copaceni",
+    "city_name": "Copaceni (Copaceni)",
     "county_code": "VL",
     "postal_code": "247105",
     "country_code": "RO"
   },
   {
     "city_id": 12225,
-    "city_name": "Copaceni",
+    "city_name": "Copaceni (Racovita)",
     "county_code": "VL",
     "postal_code": "247534",
     "country_code": "RO"
@@ -87550,14 +87550,14 @@
   },
   {
     "city_id": 11915,
-    "city_name": "Daesti",
+    "city_name": "Daesti (Daesti)",
     "county_code": "VL",
     "postal_code": "247125",
     "country_code": "RO"
   },
   {
     "city_id": 12212,
-    "city_name": "Daesti",
+    "city_name": "Daesti (Popesti)",
     "county_code": "VL",
     "postal_code": "247517",
     "country_code": "RO"
@@ -87634,21 +87634,21 @@
   },
   {
     "city_id": 11982,
-    "city_name": "Dealu Mare",
+    "city_name": "Dealu Mare (Galicea)",
     "county_code": "VL",
     "postal_code": "247211",
     "country_code": "RO"
   },
   {
     "city_id": 12020,
-    "city_name": "Dealu Mare",
+    "city_name": "Dealu Mare (Gusoeni)",
     "county_code": "VL",
     "postal_code": "247262",
     "country_code": "RO"
   },
   {
     "city_id": 12033,
-    "city_name": "Dealu Mare",
+    "city_name": "Dealu Mare (Ionesti)",
     "county_code": "VL",
     "postal_code": "247272",
     "country_code": "RO"
@@ -87683,21 +87683,21 @@
   },
   {
     "city_id": 12034,
-    "city_name": "Delureni",
+    "city_name": "Delureni (Ionesti)",
     "county_code": "VL",
     "postal_code": "247273",
     "country_code": "RO"
   },
   {
     "city_id": 12317,
-    "city_name": "Delureni",
+    "city_name": "Delureni (Stoilesti)",
     "county_code": "VL",
     "postal_code": "247649",
     "country_code": "RO"
   },
   {
     "city_id": 12367,
-    "city_name": "Delureni",
+    "city_name": "Delureni (Valea Mare)",
     "county_code": "VL",
     "postal_code": "247732",
     "country_code": "RO"
@@ -87781,14 +87781,14 @@
   },
   {
     "city_id": 11854,
-    "city_name": "Draganesti",
+    "city_name": "Draganesti (Brezoi)",
     "county_code": "VL",
     "postal_code": "245503",
     "country_code": "RO"
   },
   {
     "city_id": 12001,
-    "city_name": "Draganesti",
+    "city_name": "Draganesti (Golesti)",
     "county_code": "VL",
     "postal_code": "247234",
     "country_code": "RO"
@@ -87858,14 +87858,14 @@
   },
   {
     "city_id": 11965,
-    "city_name": "Fauresti",
+    "city_name": "Fauresti (Fauresti)",
     "county_code": "VL",
     "postal_code": "247155",
     "country_code": "RO"
   },
   {
     "city_id": 12388,
-    "city_name": "Fauresti",
+    "city_name": "Fauresti (Zatreni)",
     "county_code": "VL",
     "postal_code": "247762",
     "country_code": "RO"
@@ -88033,14 +88033,14 @@
   },
   {
     "city_id": 11942,
-    "city_name": "Geamana",
+    "city_name": "Geamana (Dragoesti)",
     "county_code": "VL",
     "postal_code": "247152",
     "country_code": "RO"
   },
   {
     "city_id": 12318,
-    "city_name": "Geamana",
+    "city_name": "Geamana (Stoilesti)",
     "county_code": "VL",
     "postal_code": "247651",
     "country_code": "RO"
@@ -88145,14 +88145,14 @@
   },
   {
     "city_id": 11826,
-    "city_name": "Gorunesti",
+    "city_name": "Gorunesti (Balcesti)",
     "county_code": "VL",
     "postal_code": "245404",
     "country_code": "RO"
   },
   {
     "city_id": 12285,
-    "city_name": "Gorunesti",
+    "city_name": "Gorunesti (Slatioara)",
     "county_code": "VL",
     "postal_code": "247607",
     "country_code": "RO"
@@ -88376,14 +88376,14 @@
   },
   {
     "city_id": 12321,
-    "city_name": "Izvoru Rece",
+    "city_name": "Izvoru Rece (Stoilesti)",
     "county_code": "VL",
     "postal_code": "247654",
     "country_code": "RO"
   },
   {
     "city_id": 12363,
-    "city_name": "Izvoru Rece",
+    "city_name": "Izvoru Rece (Vaideeni)",
     "county_code": "VL",
     "postal_code": "247728",
     "country_code": "RO"
@@ -88460,14 +88460,14 @@
   },
   {
     "city_id": 11863,
-    "city_name": "Linia",
+    "city_name": "Linia (Budesti)",
     "county_code": "VL",
     "postal_code": "247059",
     "country_code": "RO"
   },
   {
     "city_id": 12013,
-    "city_name": "Linia",
+    "city_name": "Linia (Gradistea)",
     "county_code": "VL",
     "postal_code": "247253",
     "country_code": "RO"
@@ -88509,14 +88509,14 @@
   },
   {
     "city_id": 11870,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Bujoreni)",
     "county_code": "VL",
     "postal_code": "247068",
     "country_code": "RO"
   },
   {
     "city_id": 12160,
-    "city_name": "Lunca",
+    "city_name": "Lunca (Ocnele Mari)",
     "county_code": "VL",
     "postal_code": "245905",
     "country_code": "RO"
@@ -88558,14 +88558,14 @@
   },
   {
     "city_id": 11896,
-    "city_name": "Madulari",
+    "city_name": "Madulari (Cernisoara)",
     "county_code": "VL",
     "postal_code": "247098",
     "country_code": "RO"
   },
   {
     "city_id": 12096,
-    "city_name": "Madulari",
+    "city_name": "Madulari (Madulari)",
     "county_code": "VL",
     "postal_code": "247360",
     "country_code": "RO"
@@ -88593,14 +88593,14 @@
   },
   {
     "city_id": 12051,
-    "city_name": "Maldaresti",
+    "city_name": "Maldaresti (Ladesti)",
     "county_code": "VL",
     "postal_code": "247297",
     "country_code": "RO"
   },
   {
     "city_id": 12087,
-    "city_name": "Maldaresti",
+    "city_name": "Maldaresti (Maciuca)",
     "county_code": "VL",
     "postal_code": "247351",
     "country_code": "RO"
@@ -89020,14 +89020,14 @@
   },
   {
     "city_id": 11996,
-    "city_name": "Olteanca",
+    "city_name": "Olteanca (Glavile)",
     "county_code": "VL",
     "postal_code": "247228",
     "country_code": "RO"
   },
   {
     "city_id": 12052,
-    "city_name": "Olteanca",
+    "city_name": "Olteanca (Ladesti)",
     "county_code": "VL",
     "postal_code": "247298",
     "country_code": "RO"
@@ -89223,14 +89223,14 @@
   },
   {
     "city_id": 12191,
-    "city_name": "Pietrari",
+    "city_name": "Pietrari (Pausesti-Maglasi)",
     "county_code": "VL",
     "postal_code": "247472",
     "country_code": "RO"
   },
   {
     "city_id": 12209,
-    "city_name": "Pietrari",
+    "city_name": "Pietrari (Pietrari)",
     "county_code": "VL",
     "postal_code": "247510",
     "country_code": "RO"
@@ -89300,14 +89300,14 @@
   },
   {
     "city_id": 12074,
-    "city_name": "Plesoiu",
+    "city_name": "Plesoiu (Livezi)",
     "county_code": "VL",
     "postal_code": "247321",
     "country_code": "RO"
   },
   {
     "city_id": 12147,
-    "city_name": "Plesoiu",
+    "city_name": "Plesoiu (Nicolae Balcescu)",
     "county_code": "VL",
     "postal_code": "247426",
     "country_code": "RO"
@@ -89356,63 +89356,63 @@
   },
   {
     "city_id": 11956,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Fartatesti)",
     "county_code": "VL",
     "postal_code": "247181",
     "country_code": "RO"
   },
   {
     "city_id": 12007,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Golesti)",
     "county_code": "VL",
     "postal_code": "247241",
     "country_code": "RO"
   },
   {
     "city_id": 12054,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Ladesti)",
     "county_code": "VL",
     "postal_code": "247301",
     "country_code": "RO"
   },
   {
     "city_id": 12089,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Maciuca)",
     "county_code": "VL",
     "postal_code": "247353",
     "country_code": "RO"
   },
   {
     "city_id": 12148,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Nicolae Balcescu)",
     "county_code": "VL",
     "postal_code": "247427",
     "country_code": "RO"
   },
   {
     "city_id": 12215,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Popesti)",
     "county_code": "VL",
     "postal_code": "247515",
     "country_code": "RO"
   },
   {
     "city_id": 12276,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Sinesti)",
     "county_code": "VL",
     "postal_code": "247599",
     "country_code": "RO"
   },
   {
     "city_id": 12311,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Stoenesti)",
     "county_code": "VL",
     "postal_code": "247637",
     "country_code": "RO"
   },
   {
     "city_id": 12347,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Tetoiu)",
     "county_code": "VL",
     "postal_code": "247701",
     "country_code": "RO"
@@ -89510,14 +89510,14 @@
   },
   {
     "city_id": 11865,
-    "city_name": "Racovita",
+    "city_name": "Racovita (Budesti)",
     "county_code": "VL",
     "postal_code": "247062",
     "country_code": "RO"
   },
   {
     "city_id": 12227,
-    "city_name": "Racovita",
+    "city_name": "Racovita (Racovita)",
     "county_code": "VL",
     "postal_code": "247530",
     "country_code": "RO"
@@ -89538,14 +89538,14 @@
   },
   {
     "city_id": 12027,
-    "city_name": "Ramesti",
+    "city_name": "Ramesti (Horezu)",
     "county_code": "VL",
     "postal_code": "245802",
     "country_code": "RO"
   },
   {
     "city_id": 12334,
-    "city_name": "Ramesti",
+    "city_name": "Ramesti (Susani)",
     "county_code": "VL",
     "postal_code": "247691",
     "country_code": "RO"
@@ -89685,14 +89685,14 @@
   },
   {
     "city_id": 12116,
-    "city_name": "Rugetu",
+    "city_name": "Rugetu (Mihaesti)",
     "county_code": "VL",
     "postal_code": "247386",
     "country_code": "RO"
   },
   {
     "city_id": 12288,
-    "city_name": "Rugetu",
+    "city_name": "Rugetu (Slatioara)",
     "county_code": "VL",
     "postal_code": "247611",
     "country_code": "RO"
@@ -89818,14 +89818,14 @@
   },
   {
     "city_id": 11892,
-    "city_name": "Seaca",
+    "city_name": "Seaca (Calimanesti)",
     "county_code": "VL",
     "postal_code": "245605",
     "country_code": "RO"
   },
   {
     "city_id": 12267,
-    "city_name": "Seaca",
+    "city_name": "Seaca (Salatrucel)",
     "county_code": "VL",
     "postal_code": "247587",
     "country_code": "RO"
@@ -89846,28 +89846,28 @@
   },
   {
     "city_id": 12067,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Lapusata)",
     "county_code": "VL",
     "postal_code": "247312",
     "country_code": "RO"
   },
   {
     "city_id": 12186,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Pausesti)",
     "county_code": "VL",
     "postal_code": "247466",
     "country_code": "RO"
   },
   {
     "city_id": 12268,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Salatrucel)",
     "county_code": "VL",
     "postal_code": "247588",
     "country_code": "RO"
   },
   {
     "city_id": 12301,
-    "city_name": "Serbanesti",
+    "city_name": "Serbanesti (Stefanesti)",
     "county_code": "VL",
     "postal_code": "247688",
     "country_code": "RO"
@@ -89958,14 +89958,14 @@
   },
   {
     "city_id": 12295,
-    "city_name": "Stanesti",
+    "city_name": "Stanesti (Stanesti)",
     "county_code": "VL",
     "postal_code": "247615",
     "country_code": "RO"
   },
   {
     "city_id": 12325,
-    "city_name": "Stanesti",
+    "city_name": "Stanesti (Stoilesti)",
     "county_code": "VL",
     "postal_code": "247659",
     "country_code": "RO"
@@ -89986,14 +89986,14 @@
   },
   {
     "city_id": 12090,
-    "city_name": "Stefanesti",
+    "city_name": "Stefanesti (Maciuca)",
     "county_code": "VL",
     "postal_code": "247354",
     "country_code": "RO"
   },
   {
     "city_id": 115974,
-    "city_name": "Stefanesti",
+    "city_name": "Stefanesti (Stefanesti)",
     "county_code": "VL",
     "postal_code": "247685",
     "country_code": "RO"
@@ -90350,14 +90350,14 @@
   },
   {
     "city_id": 12216,
-    "city_name": "Ursi",
+    "city_name": "Ursi (Popesti)",
     "county_code": "VL",
     "postal_code": "247521",
     "country_code": "RO"
   },
   {
     "city_id": 12327,
-    "city_name": "Ursi",
+    "city_name": "Ursi (Stoilesti)",
     "county_code": "VL",
     "postal_code": "247661",
     "country_code": "RO"
@@ -90413,14 +90413,14 @@
   },
   {
     "city_id": 11937,
-    "city_name": "Valea Caselor",
+    "city_name": "Valea Caselor (Dragasani)",
     "county_code": "VL",
     "postal_code": "245701",
     "country_code": "RO"
   },
   {
     "city_id": 12217,
-    "city_name": "Valea Caselor",
+    "city_name": "Valea Caselor (Popesti)",
     "county_code": "VL",
     "postal_code": "247522",
     "country_code": "RO"
@@ -90462,21 +90462,21 @@
   },
   {
     "city_id": 11808,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Babeni)",
     "county_code": "VL",
     "postal_code": "245106",
     "country_code": "RO"
   },
   {
     "city_id": 11840,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Berbesti)",
     "county_code": "VL",
     "postal_code": "247036",
     "country_code": "RO"
   },
   {
     "city_id": 12371,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Valea Mare)",
     "county_code": "VL",
     "postal_code": "247730",
     "country_code": "RO"
@@ -90518,14 +90518,14 @@
   },
   {
     "city_id": 12188,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Pausesti)",
     "county_code": "VL",
     "postal_code": "247468",
     "country_code": "RO"
   },
   {
     "city_id": 12395,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Zatreni)",
     "county_code": "VL",
     "postal_code": "247776",
     "country_code": "RO"
@@ -90721,14 +90721,14 @@
   },
   {
     "city_id": 4141,
-    "city_name": "Albesti",
+    "city_name": "Albesti (Albesti)",
     "county_code": "VS",
     "postal_code": "737005",
     "country_code": "RO"
   },
   {
     "city_id": 4263,
-    "city_name": "Albesti",
+    "city_name": "Albesti (Delesti)",
     "county_code": "VS",
     "postal_code": "737176",
     "country_code": "RO"
@@ -90756,14 +90756,14 @@
   },
   {
     "city_id": 4158,
-    "city_name": "Armaseni",
+    "city_name": "Armaseni (Bacesti)",
     "county_code": "VS",
     "postal_code": "737051",
     "country_code": "RO"
   },
   {
     "city_id": 4216,
-    "city_name": "Armaseni",
+    "city_name": "Armaseni (Bunesti-Averesti)",
     "county_code": "VS",
     "postal_code": "737111",
     "country_code": "RO"
@@ -91029,14 +91029,14 @@
   },
   {
     "city_id": 4307,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Falciu)",
     "county_code": "VS",
     "postal_code": "737246",
     "country_code": "RO"
   },
   {
     "city_id": 13818,
-    "city_name": "Bogdanesti",
+    "city_name": "Bogdanesti (Bogdanesti)",
     "county_code": "VS",
     "postal_code": "737085",
     "country_code": "RO"
@@ -91141,21 +91141,21 @@
   },
   {
     "city_id": 4146,
-    "city_name": "Buda",
+    "city_name": "Buda (Alexandru Vlahuta)",
     "county_code": "VS",
     "postal_code": "737011",
     "country_code": "RO"
   },
   {
     "city_id": 4197,
-    "city_name": "Buda",
+    "city_name": "Buda (Bogdanesti)",
     "county_code": "VS",
     "postal_code": "737086",
     "country_code": "RO"
   },
   {
     "city_id": 4420,
-    "city_name": "Buda",
+    "city_name": "Buda (Osesti)",
     "county_code": "VS",
     "postal_code": "737391",
     "country_code": "RO"
@@ -91449,14 +91449,14 @@
   },
   {
     "city_id": 4208,
-    "city_name": "Coroiesti",
+    "city_name": "Coroiesti (Bogdanita)",
     "county_code": "VS",
     "postal_code": "737098",
     "country_code": "RO"
   },
   {
     "city_id": 4233,
-    "city_name": "Coroiesti",
+    "city_name": "Coroiesti (Coroiesti)",
     "county_code": "VS",
     "postal_code": "737135",
     "country_code": "RO"
@@ -91638,14 +91638,14 @@
   },
   {
     "city_id": 4260,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Deleni)",
     "county_code": "VS",
     "postal_code": "737170",
     "country_code": "RO"
   },
   {
     "city_id": 4340,
-    "city_name": "Deleni",
+    "city_name": "Deleni (Hoceni)",
     "county_code": "VS",
     "postal_code": "737287",
     "country_code": "RO"
@@ -91736,14 +91736,14 @@
   },
   {
     "city_id": 4330,
-    "city_name": "Draxeni",
+    "city_name": "Draxeni (Gherghesti)",
     "county_code": "VS",
     "postal_code": "737274",
     "country_code": "RO"
   },
   {
     "city_id": 4479,
-    "city_name": "Draxeni",
+    "city_name": "Draxeni (Rebricea)",
     "county_code": "VS",
     "postal_code": "737458",
     "country_code": "RO"
@@ -91806,14 +91806,14 @@
   },
   {
     "city_id": 4298,
-    "city_name": "Epureni",
+    "city_name": "Epureni (Duda-Epureni)",
     "county_code": "VS",
     "postal_code": "737233",
     "country_code": "RO"
   },
   {
     "city_id": 13819,
-    "city_name": "Epureni",
+    "city_name": "Epureni (Epureni)",
     "county_code": "VS",
     "postal_code": "737240",
     "country_code": "RO"
@@ -91911,14 +91911,14 @@
   },
   {
     "city_id": 4150,
-    "city_name": "Fundatura",
+    "city_name": "Fundatura (Arsura)",
     "county_code": "VS",
     "postal_code": "737021",
     "country_code": "RO"
   },
   {
     "city_id": 4265,
-    "city_name": "Fundatura",
+    "city_name": "Fundatura (Delesti)",
     "county_code": "VS",
     "postal_code": "737181",
     "country_code": "RO"
@@ -91939,14 +91939,14 @@
   },
   {
     "city_id": 4377,
-    "city_name": "Fundu Vaii",
+    "city_name": "Fundu Vaii (Lipovat)",
     "county_code": "VS",
     "postal_code": "737339",
     "country_code": "RO"
   },
   {
     "city_id": 4446,
-    "city_name": "Fundu Vaii",
+    "city_name": "Fundu Vaii (Poienesti)",
     "county_code": "VS",
     "postal_code": "737419",
     "country_code": "RO"
@@ -92037,14 +92037,14 @@
   },
   {
     "city_id": 4170,
-    "city_name": "Ghermanesti",
+    "city_name": "Ghermanesti (Banca)",
     "county_code": "VS",
     "postal_code": "737028",
     "country_code": "RO"
   },
   {
     "city_id": 4292,
-    "city_name": "Ghermanesti",
+    "city_name": "Ghermanesti (Dranceni)",
     "county_code": "VS",
     "postal_code": "737223",
     "country_code": "RO"
@@ -92289,14 +92289,14 @@
   },
   {
     "city_id": 4365,
-    "city_name": "Ivanesti",
+    "city_name": "Ivanesti (Ivanesti)",
     "county_code": "VS",
     "postal_code": "737300",
     "country_code": "RO"
   },
   {
     "city_id": 4426,
-    "city_name": "Ivanesti",
+    "city_name": "Ivanesti (Padureni)",
     "county_code": "VS",
     "postal_code": "737398",
     "country_code": "RO"
@@ -92352,14 +92352,14 @@
   },
   {
     "city_id": 4427,
-    "city_name": "Leosti",
+    "city_name": "Leosti (Padureni)",
     "county_code": "VS",
     "postal_code": "737399",
     "country_code": "RO"
   },
   {
     "city_id": 4531,
-    "city_name": "Leosti",
+    "city_name": "Leosti (Tatarani)",
     "county_code": "VS",
     "postal_code": "737529",
     "country_code": "RO"
@@ -92401,14 +92401,14 @@
   },
   {
     "city_id": 4480,
-    "city_name": "Macresti",
+    "city_name": "Macresti (Rebricea)",
     "county_code": "VS",
     "postal_code": "737459",
     "country_code": "RO"
   },
   {
     "city_id": 4595,
-    "city_name": "Macresti",
+    "city_name": "Macresti (Zapodeni)",
     "county_code": "VS",
     "postal_code": "737631",
     "country_code": "RO"
@@ -92429,14 +92429,14 @@
   },
   {
     "city_id": 4267,
-    "city_name": "Manastirea",
+    "city_name": "Manastirea (Delesti)",
     "county_code": "VS",
     "postal_code": "737184",
     "country_code": "RO"
   },
   {
     "city_id": 4389,
-    "city_name": "Manastirea",
+    "city_name": "Manastirea (Malusteni)",
     "county_code": "VS",
     "postal_code": "737353",
     "country_code": "RO"
@@ -92492,14 +92492,14 @@
   },
   {
     "city_id": 4171,
-    "city_name": "Miclesti",
+    "city_name": "Miclesti (Banca)",
     "county_code": "VS",
     "postal_code": "737029",
     "country_code": "RO"
   },
   {
     "city_id": 4393,
-    "city_name": "Miclesti",
+    "city_name": "Miclesti (Miclesti)",
     "county_code": "VS",
     "postal_code": "737360",
     "country_code": "RO"
@@ -92611,14 +92611,14 @@
   },
   {
     "city_id": 4570,
-    "city_name": "Obarseni",
+    "city_name": "Obarseni (Vinderei)",
     "county_code": "VS",
     "postal_code": "737592",
     "country_code": "RO"
   },
   {
     "city_id": 4578,
-    "city_name": "Obarseni",
+    "city_name": "Obarseni (Voinesti)",
     "county_code": "VS",
     "postal_code": "737602",
     "country_code": "RO"
@@ -92695,14 +92695,14 @@
   },
   {
     "city_id": 4422,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Osesti)",
     "county_code": "VS",
     "postal_code": "737392",
     "country_code": "RO"
   },
   {
     "city_id": 13813,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Padureni)",
     "county_code": "VS",
     "postal_code": "737395",
     "country_code": "RO"
@@ -92877,28 +92877,28 @@
   },
   {
     "city_id": 4319,
-    "city_name": "Popeni",
+    "city_name": "Popeni (Gagesti)",
     "county_code": "VS",
     "postal_code": "737258",
     "country_code": "RO"
   },
   {
     "city_id": 4601,
-    "city_name": "Popeni",
+    "city_name": "Popeni (Zorleni)",
     "county_code": "VS",
     "postal_code": "737637",
     "country_code": "RO"
   },
   {
     "city_id": 4284,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Dragomiresti)",
     "county_code": "VS",
     "postal_code": "737208",
     "country_code": "RO"
   },
   {
     "city_id": 4394,
-    "city_name": "Popesti",
+    "city_name": "Popesti (Miclesti)",
     "county_code": "VS",
     "postal_code": "737362",
     "country_code": "RO"
@@ -93052,14 +93052,14 @@
   },
   {
     "city_id": 4257,
-    "city_name": "Rascani",
+    "city_name": "Rascani (Danesti)",
     "county_code": "VS",
     "postal_code": "737164",
     "country_code": "RO"
   },
   {
     "city_id": 4516,
-    "city_name": "Rascani",
+    "city_name": "Rascani (Suletea)",
     "county_code": "VS",
     "postal_code": "737508",
     "country_code": "RO"
@@ -93101,21 +93101,21 @@
   },
   {
     "city_id": 4343,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Hoceni)",
     "county_code": "VS",
     "postal_code": "737289",
     "country_code": "RO"
   },
   {
     "city_id": 4490,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Rosiesti)",
     "county_code": "VS",
     "postal_code": "737471",
     "country_code": "RO"
   },
   {
     "city_id": 4557,
-    "city_name": "Rediu",
+    "city_name": "Rediu (Vaslui)",
     "county_code": "VS",
     "postal_code": "730004",
     "country_code": "RO"
@@ -93213,42 +93213,42 @@
   },
   {
     "city_id": 4175,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Banca)",
     "county_code": "VS",
     "postal_code": "737032",
     "country_code": "RO"
   },
   {
     "city_id": 4183,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Berezeni)",
     "county_code": "VS",
     "postal_code": "737068",
     "country_code": "RO"
   },
   {
     "city_id": 4252,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Cretesti)",
     "county_code": "VS",
     "postal_code": "737158",
     "country_code": "RO"
   },
   {
     "city_id": 4495,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Solesti)",
     "county_code": "VS",
     "postal_code": "737478",
     "country_code": "RO"
   },
   {
     "city_id": 4523,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Muntenii de Sus)",
     "county_code": "VS",
     "postal_code": "737513",
     "country_code": "RO"
   },
   {
     "city_id": 4550,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Pochidia)",
     "county_code": "VS",
     "postal_code": "737558",
     "country_code": "RO"
@@ -93304,21 +93304,21 @@
   },
   {
     "city_id": 4350,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Iana)",
     "county_code": "VS",
     "postal_code": "737298",
     "country_code": "RO"
   },
   {
     "city_id": 4469,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Pungesti)",
     "county_code": "VS",
     "postal_code": "737452",
     "country_code": "RO"
   },
   {
     "city_id": 4541,
-    "city_name": "Silistea",
+    "city_name": "Silistea (Todiresti)",
     "county_code": "VS",
     "postal_code": "737542",
     "country_code": "RO"
@@ -93514,14 +93514,14 @@
   },
   {
     "city_id": 4258,
-    "city_name": "Tatarani",
+    "city_name": "Tatarani (Danesti)",
     "county_code": "VS",
     "postal_code": "737166",
     "country_code": "RO"
   },
   {
     "city_id": 4534,
-    "city_name": "Tatarani",
+    "city_name": "Tatarani (Tatarani)",
     "county_code": "VS",
     "postal_code": "737525",
     "country_code": "RO"
@@ -93752,21 +93752,21 @@
   },
   {
     "city_id": 4303,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Dumesti)",
     "county_code": "VS",
     "postal_code": "737238",
     "country_code": "RO"
   },
   {
     "city_id": 4367,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Ivanesti)",
     "county_code": "VS",
     "postal_code": "737314",
     "country_code": "RO"
   },
   {
     "city_id": 4413,
-    "city_name": "Valea Mare",
+    "city_name": "Valea Mare (Negresti)",
     "county_code": "VS",
     "postal_code": "735206",
     "country_code": "RO"
@@ -93808,21 +93808,21 @@
   },
   {
     "city_id": 4430,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Padureni)",
     "county_code": "VS",
     "postal_code": "737403",
     "country_code": "RO"
   },
   {
     "city_id": 4563,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Viisoara)",
     "county_code": "VS",
     "postal_code": "737579",
     "country_code": "RO"
   },
   {
     "city_id": 13809,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Valeni)",
     "county_code": "VS",
     "postal_code": "737565",
     "country_code": "RO"
@@ -93850,21 +93850,21 @@
   },
   {
     "city_id": 2540,
-    "city_name": "Viisoara",
+    "city_name": "Viisoara (Stefan cel Mare)",
     "county_code": "VS",
     "postal_code": "737575",
     "country_code": "RO"
   },
   {
     "city_id": 4545,
-    "city_name": "Viisoara",
+    "city_name": "Viisoara (Todiresti)",
     "county_code": "VS",
     "postal_code": "737546",
     "country_code": "RO"
   },
   {
     "city_id": 4559,
-    "city_name": "Viisoara",
+    "city_name": "Viisoara (Viisoara)",
     "county_code": "VS",
     "postal_code": "730005",
     "country_code": "RO"
@@ -93920,14 +93920,14 @@
   },
   {
     "city_id": 4583,
-    "city_name": "Voinesti",
+    "city_name": "Voinesti (Voinesti)",
     "county_code": "VS",
     "postal_code": "737595",
     "country_code": "RO"
   },
   {
     "city_id": 4586,
-    "city_name": "Voinesti",
+    "city_name": "Voinesti (Vulturesti)",
     "county_code": "VS",
     "postal_code": "737618",
     "country_code": "RO"
@@ -94158,14 +94158,14 @@
   },
   {
     "city_id": 9909,
-    "city_name": "Blidari",
+    "city_name": "Blidari (Carligele)",
     "county_code": "VN",
     "postal_code": "627066",
     "country_code": "RO"
   },
   {
     "city_id": 9947,
-    "city_name": "Blidari",
+    "city_name": "Blidari (Dumitresti)",
     "county_code": "VN",
     "postal_code": "627113",
     "country_code": "RO"
@@ -94494,14 +94494,14 @@
   },
   {
     "city_id": 9992,
-    "city_name": "Costisa",
+    "city_name": "Costisa (Homocea)",
     "county_code": "VN",
     "postal_code": "627177",
     "country_code": "RO"
   },
   {
     "city_id": 10137,
-    "city_name": "Costisa",
+    "city_name": "Costisa (Tanasoaia)",
     "county_code": "VN",
     "postal_code": "627337",
     "country_code": "RO"
@@ -94606,28 +94606,28 @@
   },
   {
     "city_id": 9943,
-    "city_name": "Dragosloveni",
+    "city_name": "Dragosloveni (Dumbraveni)",
     "county_code": "VN",
     "postal_code": "627108",
     "country_code": "RO"
   },
   {
     "city_id": 10116,
-    "city_name": "Dragosloveni",
+    "city_name": "Dragosloveni (Soveja)",
     "county_code": "VN",
     "postal_code": "627321",
     "country_code": "RO"
   },
   {
     "city_id": 10062,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Panciu)",
     "county_code": "VN",
     "postal_code": "625403",
     "country_code": "RO"
   },
   {
     "city_id": 10073,
-    "city_name": "Dumbrava",
+    "city_name": "Dumbrava (Poiana Cristei)",
     "county_code": "VN",
     "postal_code": "627267",
     "country_code": "RO"
@@ -95222,14 +95222,14 @@
   },
   {
     "city_id": 10032,
-    "city_name": "Nanesti",
+    "city_name": "Nanesti (Nanesti)",
     "county_code": "VN",
     "postal_code": "627215",
     "country_code": "RO"
   },
   {
     "city_id": 10142,
-    "city_name": "Nanesti",
+    "city_name": "Nanesti (Tanasoaia)",
     "county_code": "VN",
     "postal_code": "627343",
     "country_code": "RO"
@@ -95341,21 +95341,21 @@
   },
   {
     "city_id": 9996,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Jaristea)",
     "county_code": "VN",
     "postal_code": "627181",
     "country_code": "RO"
   },
   {
     "city_id": 10014,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Marasesti)",
     "county_code": "VN",
     "postal_code": "625204",
     "country_code": "RO"
   },
   {
     "city_id": 10131,
-    "city_name": "Padureni",
+    "city_name": "Padureni (Tamboesti)",
     "county_code": "VN",
     "postal_code": "627357",
     "country_code": "RO"
@@ -95418,28 +95418,28 @@
   },
   {
     "city_id": 9893,
-    "city_name": "Pietroasa",
+    "city_name": "Pietroasa (Bolotesti)",
     "county_code": "VN",
     "postal_code": "627038",
     "country_code": "RO"
   },
   {
     "city_id": 9902,
-    "city_name": "Pietroasa",
+    "city_name": "Pietroasa (Campineanca)",
     "county_code": "VN",
     "postal_code": "627056",
     "country_code": "RO"
   },
   {
     "city_id": 10132,
-    "city_name": "Pietroasa",
+    "city_name": "Pietroasa (Tamboesti)",
     "county_code": "VN",
     "postal_code": "627358",
     "country_code": "RO"
   },
   {
     "city_id": 10179,
-    "city_name": "Pietroasa",
+    "city_name": "Pietroasa (Vartescoiu)",
     "county_code": "VN",
     "postal_code": "627409",
     "country_code": "RO"
@@ -95803,14 +95803,14 @@
   },
   {
     "city_id": 9926,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Ciorasti)",
     "county_code": "VN",
     "postal_code": "627086",
     "country_code": "RO"
   },
   {
     "city_id": 10065,
-    "city_name": "Satu Nou",
+    "city_name": "Satu Nou (Panciu)",
     "county_code": "VN",
     "postal_code": "625405",
     "country_code": "RO"
@@ -96251,21 +96251,21 @@
   },
   {
     "city_id": 10029,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Movilita)",
     "county_code": "VN",
     "postal_code": "627214",
     "country_code": "RO"
   },
   {
     "city_id": 10102,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Ruginesti)",
     "county_code": "VN",
     "postal_code": "627298",
     "country_code": "RO"
   },
   {
     "city_id": 10129,
-    "city_name": "Valeni",
+    "city_name": "Valeni (Straoane)",
     "county_code": "VN",
     "postal_code": "627328",
     "country_code": "RO"
@@ -96321,14 +96321,14 @@
   },
   {
     "city_id": 10069,
-    "city_name": "Viisoara",
+    "city_name": "Viisoara (Paunesti)",
     "county_code": "VN",
     "postal_code": "627261",
     "country_code": "RO"
   },
   {
     "city_id": 10189,
-    "city_name": "Viisoara",
+    "city_name": "Viisoara (Vidra)",
     "county_code": "VN",
     "postal_code": "627423",
     "country_code": "RO"

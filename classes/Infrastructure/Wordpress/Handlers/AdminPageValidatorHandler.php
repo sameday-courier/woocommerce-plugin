@@ -17,18 +17,12 @@ final class AdminPageValidatorHandler
     /**
      * @return bool
      */
-    /**
-     * @return bool
-     */
     public static function isPluginAdminPage(): bool
     {
         return isset($_GET['page'])
             && in_array($_GET['page'], self::PLUGIN_ADMIN_PAGES, true);
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */
@@ -43,9 +37,6 @@ final class AdminPageValidatorHandler
     /**
      * @return bool
      */
-    /**
-     * @return bool
-     */
     public static function isOrderAdminPage(): bool
     {
         global $pagenow;
@@ -53,9 +44,6 @@ final class AdminPageValidatorHandler
         return 'post.php' === $pagenow || 'admin.php' === $pagenow;
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */
@@ -82,9 +70,6 @@ final class AdminPageValidatorHandler
     /**
      * @return bool
      */
-    /**
-     * @return bool
-     */
     public static function isOrdersListPage(): bool
     {
         if (!is_admin()) {
@@ -107,9 +92,6 @@ final class AdminPageValidatorHandler
     /**
      * @return bool
      */
-    /**
-     * @return bool
-     */
     public static function isAdminCommonPage(): bool
     {
         return self::isPluginAdminPage()
@@ -117,9 +99,6 @@ final class AdminPageValidatorHandler
             || self::isOrderAdminPage();
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */
@@ -134,9 +113,6 @@ final class AdminPageValidatorHandler
         return self::isOrderAdminPage();
     }
 
-    /**
-     * @return bool
-     */
     /**
      * @return bool
      */
