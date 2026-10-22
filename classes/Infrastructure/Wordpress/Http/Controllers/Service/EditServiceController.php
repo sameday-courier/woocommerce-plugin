@@ -13,6 +13,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\EditServiceF
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Mappers\EditServiceMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\ResponseNoticeType\ResponseNoticeType;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\ServiceCatalogStoreServiceProvider;
 
 final class EditServiceController extends AbstractController
 {
@@ -38,9 +39,7 @@ final class EditServiceController extends AbstractController
     {
         $serviceName = $inputParams[EditServiceMapper::NAME_KEY] ?? null;
         if (null === $serviceName) {
-            $carrierSettingsProvider = new CarrierSettingsServiceProvider();
-            $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
-            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
+            $serviceName = $this->lockedServiceName($inputParams);
         }
 
         $inputParams[EditServiceMapper::NAME_KEY] = $serviceName;
@@ -82,5 +81,27 @@ final class EditServiceController extends AbstractController
                 'page' => 'sameday_services'
             ]
         );
+    }
+
+    /**
+     *
+     * @param array $inputParams
+     *
+     * @return string
+     */
+    private function lockedServiceName(array $inputParams): string
+    {
+        $hostCountry = (new CarrierSettingsServiceProvider())->get()->getHostCountry();
+        $serviceId = (int) ($inputParams[EditServiceMapper::ID_KEY] ?? 0);
+        $service = (new ServiceCatalogStoreServiceProvider())->getById($serviceId);
+
+        if (
+            null !== $service
+            && $service->getSamedayCode() === CarrierConstants::LOCKER_CROSSBORDER_CODE
+        ) {
+            return CarrierConstants::CROSSBORDER_OOH_SERVICES_LABELS[$hostCountry];
+        }
+
+        return CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
     }
 }
