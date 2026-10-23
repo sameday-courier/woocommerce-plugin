@@ -45,9 +45,14 @@ final class WooSamedayShippingHdAddressParser implements CarrierShippingHdAddres
             return null;
         }
 
+        if (!is_array($postMeta)) {
+            return null;
+        }
+
         $fieldsMapping = [
             'first_name',
             'last_name',
+            'company',
             'city',
             'state',
             'country',

@@ -83,7 +83,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      */
     public function activateOutOfHome(int $orderId): void
     {
-        $this->wooOrderShippingAddressArchive->ensureHomeDeliverySnapshot($orderId);
+        $this->wooOrderShippingAddressArchive->refreshHomeDeliverySnapshot($orderId);
 
         $lockerFields = $this->resolveLockerFields($orderId);
         if (null === $lockerFields) {
@@ -110,6 +110,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
             [
                 'first_name' => $fields['first_name'] ?? '',
                 'last_name' => $fields['last_name'] ?? '',
+                'company' => $fields['company'] ?? '',
                 'address_1' => $fields['address_1'] ?? '',
                 'address_2' => $fields['address_2'] ?? '',
                 'city' => $fields['city'] ?? '',

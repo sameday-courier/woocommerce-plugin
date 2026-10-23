@@ -88,6 +88,14 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
                 $this->orderShippingAddressUpdater->activateHomeDelivery($orderId);
             }
         } catch (Throwable $exception) {
+            wc_get_logger()->error(
+                'Unable to apply the order shipping address change.',
+                [
+                    'source' => 'samedaycourier-shipping',
+                    'order_id' => $orderId,
+                    'exception' => $exception->getMessage(),
+                ]
+            );
         }
 
         if (null !== $shippingLine) {

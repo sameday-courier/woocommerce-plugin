@@ -12,45 +12,89 @@ use WC_Order;
 
 final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiveInterface
 {
+    private const SNAPSHOT_FIELDS = [
+        '_shipping_first_name',
+        '_shipping_last_name',
+        '_shipping_company',
+        '_shipping_address_1',
+        '_shipping_address_2',
+        '_shipping_city',
+        '_shipping_state',
+        '_shipping_postcode',
+        '_shipping_country',
+        '_shipping_phone',
+        '_billing_first_name',
+        '_billing_last_name',
+        '_billing_company',
+        '_billing_address_1',
+        '_billing_address_2',
+        '_billing_city',
+        '_billing_state',
+        '_billing_postcode',
+        '_billing_country',
+        '_billing_phone',
+        '_billing_email',
+    ];
+
     /**
      * @param int $orderId
      *
      * @return void
      * @throws JsonException
      */
-    public function ensureHomeDeliverySnapshot(int $orderId): void
+    public function refreshHomeDeliverySnapshot(int $orderId): void
     {
         $order = wc_get_order($orderId);
         if (!$order instanceof WC_Order) {
             return;
         }
 
-        if ('' !== PostOrderMetaHandler::get(
-                $order,
-                CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-                true
-            )
-        ) {
-            return;
-        }
+        $snapshot = PostOrderMetaHandler::get(
+            $order,
+            CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
+            true
+        );
 
-        $this->updateHomeDeliverySnapshot($orderId);
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     * @throws JsonException
-     */
-    public function updateHomeDeliverySnapshot(int $orderId): void
-    {
-        $order = wc_get_order($orderId);
-        if (!$order instanceof WC_Order) {
+        if ($this->isValidSnapshot($snapshot)) {
             return;
         }
 
         $this->updateHomeDeliverySnapshotFromOrder($order);
+    }
+
+    /**
+     * @param mixed $snapshot
+     *
+     * @return bool
+     */
+    private function isValidSnapshot($snapshot): bool
+    {
+        if (!is_string($snapshot) || '' === $snapshot) {
+            return false;
+        }
+
+        try {
+            $decodedSnapshot = json_decode(
+                $snapshot,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (JsonException $exception) {
+            return false;
+        }
+
+        if (!is_array($decodedSnapshot)) {
+            return false;
+        }
+
+        foreach (self::SNAPSHOT_FIELDS as $field) {
+            if (!array_key_exists($field, $decodedSnapshot) || !is_string($decodedSnapshot[$field])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

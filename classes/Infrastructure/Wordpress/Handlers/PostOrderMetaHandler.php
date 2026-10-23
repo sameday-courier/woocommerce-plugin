@@ -13,7 +13,7 @@ final class PostOrderMetaHandler
      * @param string $key
      * @param bool $single
      *
-     * @return array|mixed|string
+     * @return mixed
      */
     public static function get(WC_Order $order, string $key, bool $single = true)
     {
@@ -23,7 +23,7 @@ final class PostOrderMetaHandler
     /**
      * @param WC_Order $order
      * @param string $key
-     * @param $value
+     * @param mixed $value
      *
      * @return void
      */

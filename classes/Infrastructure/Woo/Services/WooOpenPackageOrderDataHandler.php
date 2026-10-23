@@ -63,10 +63,9 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
             return false;
         }
 
-        return '' !== PostOrderMetaHandler::get(
+        return true === (bool) PostOrderMetaHandler::get(
             $order,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
-            true
         );
     }
 }
