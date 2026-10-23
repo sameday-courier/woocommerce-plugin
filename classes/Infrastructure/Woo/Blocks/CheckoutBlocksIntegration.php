@@ -15,21 +15,12 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\LockerChoicesProvider;
 
-/**
- * WooCommerce Checkout Blocks integration for EasyBox / locker selection.
- *
- * Classic checkout uses ShowLockerFieldAction + lockers_sync.js.
- * Blocks checkout has no PHP shipping template hooks, so the UI is injected via JS.
- */
 final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
 {
     public const NAME = 'sameday-checkout-blocks';
 
     private const SCRIPT_HANDLE = 'sameday-blocks-checkout-locker';
 
-    /**
-     * Shared with JsScriptsHandler so the locker SDK is never loaded twice.
-     */
     private const LOCKER_SDK_HANDLE = 'sameday-lockerpluginsdk';
 
     private const LOCKER_SCRIPT = 'assets/js/blocks-checkout-locker.js';

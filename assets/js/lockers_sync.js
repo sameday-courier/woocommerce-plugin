@@ -1,12 +1,8 @@
-/**
- * Component: Sync and select lockers in Checkout Form
- */
 (function (window, jQuery) {
     'use strict';
 
     var SamedayCourier = window.SamedayCourier || {};
 
-    // Guards a single sync per page load once the server-side TTL has lapsed.
     var lockerSyncDone = false;
 
     function initLockerDropdown(dropdown) {

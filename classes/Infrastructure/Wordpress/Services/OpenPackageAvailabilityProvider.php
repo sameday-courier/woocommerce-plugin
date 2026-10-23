@@ -11,12 +11,8 @@ use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Infrastructure\Services\Mappers\SamedayOptionalTaxMapper;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\SerializedPayloadReader;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 
-/**
- * Resolves whether the open package option applies, shared by classic checkout and Checkout Blocks.
- */
 final class OpenPackageAvailabilityProvider
 {
     /**
@@ -74,9 +70,6 @@ final class OpenPackageAvailabilityProvider
     }
 
     /**
-     * Sameday service codes offering the open package tax, so the checkout can react
-     * to shipping method changes without another round trip.
-     *
      * @return string[]
      */
     public function supportedServiceCodes(): array

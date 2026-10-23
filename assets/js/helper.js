@@ -86,9 +86,6 @@
         });
     };
 
-    // Only the shipping rates control — broader radio-control selectors also match payment
-    // methods, and querySelector would return those whenever shipping radios are briefly
-    // unchecked during a Blocks re-render / place-order.
     var BLOCKS_SELECTED_RATE_SELECTOR =
         '.wc-block-components-shipping-rates-control input[type="radio"]:checked';
 
@@ -128,11 +125,6 @@
         return rateId.indexOf(pluginName || 'samedaycourier') !== -1;
     };
 
-    /**
-     * Ordered from the option wrapper to the least specific fallback: the radio label must stay the
-     * last resort, because anything appended inside it becomes a label descendant and lets clicks
-     * reach the radio it controls.
-     */
     var BLOCKS_OPTION_SELECTORS = [
         '.wc-block-components-radio-control-accordion-option',
         '.wc-block-components-radio-control-option',
@@ -142,8 +134,6 @@
     ];
 
     /**
-     * Container of the shipping rate radio, used to anchor injected checkout UI.
-     *
      * @param {string} rateId
      * @returns {HTMLElement|null}
      */
@@ -188,8 +178,6 @@
     SamedayCourier.LOCKER_PLUGIN_CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
 
     /**
-     * Prefer shipping, then billing, then common checkout field id patterns.
-     *
      * @param {string} fieldName
      * @returns {HTMLElement|undefined|null}
      */
@@ -242,8 +230,6 @@
     };
 
     /**
-     * Open the Sameday LockerPlugin map and invoke onSelect when a locker is chosen.
-     *
      * @param {Object} options
      * @param {string} options.apiUsername
      * @param {string} [options.clientId]
@@ -290,10 +276,8 @@
     };
 
     /**
-     * Client-side TTL gate mirroring the server check, so an unnecessary sync request is skipped.
-     *
-     * @param {number|string} ts Last sync UNIX timestamp (seconds).
-     * @param {number|string} ttl TTL in seconds.
+     * @param {number|string} ts
+     * @param {number|string} ttl
      * @returns {boolean}
      */
     SamedayCourier.isLockerSyncExpired = function (ts, ttl) {
@@ -375,9 +359,6 @@
     };
 
     /**
-     * Ask the server to refresh the locker nomenclator and return the grouped choices. The server
-     * re-checks mode and TTL, so this is safe to call optimistically.
-     *
      * @param {Object} opts
      * @param {string} opts.ajaxUrl
      * @param {string} opts.action
@@ -431,9 +412,6 @@
     };
 
     /**
-     * Rebuild a locker <select> from grouped choices, preserving the current selection. Markup
-     * mirrors classes/files/templates/locker-dropdown-field.php.
-     *
      * @param {HTMLSelectElement} dropdown
      * @param {Object} lockersByCity
      * @param {string} [placeholderText]

@@ -7,24 +7,12 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Blocks;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\AssetPathHandler;
 
-/**
- * Shared plumbing for Sameday Checkout Blocks integrations.
- *
- * `initialize()` runs on every request (WooCommerce registers block types on `init`), so
- * implementations must only register handles there and resolve data in `get_script_data()`,
- * which WooCommerce calls lazily when the block is rendered.
- */
 abstract class AbstractBlocksIntegration implements IntegrationInterface
 {
-    /**
-     * Shared with JsScriptsHandler so helper.js is never loaded twice.
-     */
     protected const HELPER_HANDLE = 'sameday-helper';
     protected const HELPER_SCRIPT = 'assets/js/helper.js';
 
     /**
-     * Sameday blocks are rendered by plain JS, so there is nothing to load in the editor.
-     *
      * @return string[]
      */
     public function get_editor_script_handles(): array

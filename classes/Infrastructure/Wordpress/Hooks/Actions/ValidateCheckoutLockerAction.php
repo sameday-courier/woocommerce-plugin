@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooSessionHandler;
 use SamedayCourier\Shipping\Infrastructure\Woo\Services\WooShippingMethodProvider;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 
 final class ValidateCheckoutLockerAction extends AbstractAction
 {
@@ -38,11 +39,20 @@ final class ValidateCheckoutLockerAction extends AbstractAction
 
         $carrierServiceRules = new CarrierServiceRules(new SamedayServiceRepository());
         $isOohDelivery = $carrierServiceRules->isOohDeliveryOptionByCode($serviceCode);
-        $sessionHandler = new WooSessionHandler();
-        $isOohButUserNotSelectLocker = $isOohDelivery
-            && (null === $sessionHandler->get(CarrierSessionKeys::LOCKER));
+        if (!$isOohDelivery) {
+            return;
+        }
 
-        if ($isOohButUserNotSelectLocker) {
+        $sessionHandler = new WooSessionHandler();
+        $locker = $sessionHandler->get(CarrierSessionKeys::LOCKER);
+        $lockerDto = LockerDtoFactoryFactory::create();
+        $isMalformedLocker = null !== $locker && '' !== $locker
+            && null === $lockerDto->fromInput($locker);
+        if ($isMalformedLocker) {
+            $sessionHandler->set(CarrierSessionKeys::LOCKER, '');
+        }
+
+        if (null === $locker || '' === $locker || $isMalformedLocker) {
             wc_add_notice(TranslatorHandler::translate('Please choose your EasyBox Locker !'), 'error');
         }
     }

@@ -11,12 +11,5 @@ interface OrderShippingAddressArchiveInterface
      *
      * @return void
      */
-    public function ensureHomeDeliverySnapshot(int $orderId): void;
-
-    /**
-     * @param int $orderId
-     *
-     * @return void
-     */
-    public function updateHomeDeliverySnapshot(int $orderId): void;
+    public function refreshHomeDeliverySnapshot(int $orderId): void;
 }

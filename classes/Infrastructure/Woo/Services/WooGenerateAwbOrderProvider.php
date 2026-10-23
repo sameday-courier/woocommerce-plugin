@@ -7,13 +7,24 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use WC_Order;
-use WC_Order_Item_Shipping;
 use WC_Payment_Gateway;
 
 final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInterface
 {
+    private CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver;
+
+    /**
+     * @param ?CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver
+     */
+    public function __construct(
+        ?CarrierServiceFromShippingLineResolver $carrierServiceFromShippingLineResolver = null
+    ) {
+        $this->carrierServiceFromShippingLineResolver = $carrierServiceFromShippingLineResolver
+            ?? new CarrierServiceFromShippingLineResolver();
+    }
+
     /**
      * @param int $orderId
      *
@@ -28,6 +39,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
 
         $shippingLines = $order->get_items('shipping');
         $paymentGateway = wc_get_payment_gateway_by_order($order);
+        $service = $this->carrierServiceFromShippingLineResolver->resolve($shippingLines);
 
         return new GenerateAwbOrderSnapshotDto(
             $orderId,
@@ -37,36 +49,11 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
             $order->get_address('shipping'),
             $order->get_address(),
             $shippingLines,
-            $this->resolveSamedayServiceCode($shippingLines),
-            PostMetaHandler::get(
-                $orderId,
+            null !== $service ? $service->getSamedayCode() : null,
+            PostOrderMetaHandler::get(
+                $order,
                 CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
             ),
         );
-    }
-
-    /**
-     * @param array $shippingLines
-     *
-     * @return ?string
-     */
-    private function resolveSamedayServiceCode(array $shippingLines): ?string
-    {
-        foreach ($shippingLines as $shippingLine) {
-            if (!$shippingLine instanceof WC_Order_Item_Shipping) {
-                continue;
-            }
-
-            if ($shippingLine->get_method_id() !== CarrierConstants::PLUGIN_NAME) {
-                continue;
-            }
-
-            $metaServiceCode = $shippingLine->get_meta('service_code');
-            if (null !== $metaServiceCode && '' !== $metaServiceCode) {
-                return (string) $metaServiceCode;
-            }
-        }
-
-        return null;
     }
 }

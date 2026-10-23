@@ -15,7 +15,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Order;
 
@@ -83,7 +83,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      */
     public function activateOutOfHome(int $orderId): void
     {
-        $this->wooOrderShippingAddressArchive->ensureHomeDeliverySnapshot($orderId);
+        $this->wooOrderShippingAddressArchive->refreshHomeDeliverySnapshot($orderId);
 
         $lockerFields = $this->resolveLockerFields($orderId);
         if (null === $lockerFields) {
@@ -110,6 +110,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
             [
                 'first_name' => $fields['first_name'] ?? '',
                 'last_name' => $fields['last_name'] ?? '',
+                'company' => $fields['company'] ?? '',
                 'address_1' => $fields['address_1'] ?? '',
                 'address_2' => $fields['address_2'] ?? '',
                 'city' => $fields['city'] ?? '',
@@ -128,10 +129,15 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      */
     private function resolveLockerFields(int $orderId): ?array
     {
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return null;
+        }
+
         $postMetaLocker = JsonStringHandler::fixJson(
             InputSanitizer::sanitizeInput(
-                (string) PostMetaHandler::get(
-                    $orderId,
+                (string) PostOrderMetaHandler::get(
+                    $order,
                     CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
                     true
                 )

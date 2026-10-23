@@ -20,6 +20,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\DbHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayLockerRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Woo\WooOrderAddressRepository;
+use WC_Order_Item_Shipping;
 use Throwable;
 
 final class OrderShippingChangesServiceProvider implements OrderShippingChangesServiceProviderInterface
@@ -64,8 +65,21 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
         $orderId = $request->getOrderId();
         $service = $request->getService();
         $shippingLines = $request->getShippingLines();
-        $samedayOrderItemId = array_key_first($shippingLines);
-        $shippingLine = null !== $samedayOrderItemId ? $shippingLines[$samedayOrderItemId] : null;
+        $samedayOrderItemId = null;
+        $shippingLine = null;
+        foreach ($shippingLines as $orderItemId => $candidateShippingLine) {
+            if (
+                $candidateShippingLine instanceof WC_Order_Item_Shipping
+                && CarrierConstants::PLUGIN_NAME === $candidateShippingLine->get_method_id()
+                && $service->getSamedayCode() === $candidateShippingLine->get_meta(
+                    CarrierConstants::META_SERVICE_CODE
+                )
+            ) {
+                $samedayOrderItemId = $orderItemId;
+                $shippingLine = $candidateShippingLine;
+                break;
+            }
+        }
 
         try {
             if ($this->carrierServiceRules->isOohDeliveryOption($service)) {
@@ -74,12 +88,26 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
                 $this->orderShippingAddressUpdater->activateHomeDelivery($orderId);
             }
         } catch (Throwable $exception) {
+            wc_get_logger()->error(
+                'Unable to apply the order shipping address change.',
+                [
+                    'source' => 'samedaycourier-shipping',
+                    'order_id' => $orderId,
+                    'exception' => $exception->getMessage(),
+                ]
+            );
         }
 
         if (null !== $shippingLine) {
             try {
-                $shippingLine->update_meta_data('service_id', $service->getSamedayId());
-                $shippingLine->update_meta_data('service_code', $service->getSamedayCode());
+                $shippingLine->update_meta_data(
+                    CarrierConstants::META_SERVICE_ID,
+                    (string) $service->getSamedayId()
+                );
+                $shippingLine->update_meta_data(
+                    CarrierConstants::META_SERVICE_CODE,
+                    $service->getSamedayCode()
+                );
                 $shippingLine->save_meta_data();
 
                 $shippingLine->set_method_id(CarrierConstants::PLUGIN_NAME);

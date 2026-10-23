@@ -7,6 +7,8 @@ namespace SamedayCourier\Shipping\Domain;
 final class CarrierConstants
 {
     public const PLUGIN_NAME = 'samedaycourier';
+    public const META_SERVICE_ID = "service_id";
+    public const META_SERVICE_CODE = "service_code";
     public const LOCKER_PLUGIN_SDK_URL = 'https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js';
     public const LOCKER_PLUGIN_CLIENT_ID = 'b8cb2ee3-41b9-4c3d-aafe-1527b453d65e';
     public const TRANSIENT_CACHE_KEY_FOR_CITIES = 'sameday_cities';

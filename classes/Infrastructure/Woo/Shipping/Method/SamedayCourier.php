@@ -216,7 +216,6 @@ final class SamedayCourier extends WC_Shipping_Method
                         }
                         $price = $estimatedPrice;
 
-                        // Business logic for Bulgaria Currency Rules
                         $storeCurrency = get_woocommerce_currency();
                         if (
                             ($storeCurrency !== $estimatedCurrency)
@@ -248,8 +247,8 @@ final class SamedayCourier extends WC_Shipping_Method
                 'label' => $service->getName() ?? '',
                 'cost' => $price,
                 'meta_data' => array(
-                    'service_id' => $service->getSamedayId(),
-                    'service_code' => $service->getSamedayCode()
+                    CarrierConstants::META_SERVICE_ID => $service->getSamedayId(),
+                    CarrierConstants::META_SERVICE_CODE => $service->getSamedayCode()
                 )
             );
 
@@ -294,7 +293,6 @@ final class SamedayCourier extends WC_Shipping_Method
             }
         }
 
-        // Check if the client has to pay anything as repayment value
         $repaymentAmount = $this->wooCommerceHandler->getWC()->cart->subtotal;
         $paymentMethod = $this->chosenPaymentMethodReader->getChosenPaymentMethod();
         if (null !== $paymentMethod && CarrierConstants::CASH_ON_DELIVERY !== $paymentMethod) {
@@ -539,7 +537,6 @@ final class SamedayCourier extends WC_Shipping_Method
             ),
         );
 
-        // Show on checkout:
         $settings = $this->carrierSettingsProvider->get();
         $this->enabled = $settings->isEnabled() ? 'yes' : 'no';
         $this->title = $settings->getTitle();
@@ -584,7 +581,6 @@ final class SamedayCourier extends WC_Shipping_Method
                     $post_data['woocommerce_samedaycourier_host_country'] = $hostCountry;
                     $isLogged = true;
 
-                    // If already exist a token from previews auth, cancel it
                     OptionsHandler::setOption(
                         'woocommerce_samedaycourier_settings_' . SamedayClient::KEY_TOKEN,
                         [SamedayClient::KEY_TOKEN => null]

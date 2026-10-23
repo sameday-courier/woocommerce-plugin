@@ -63,7 +63,14 @@ final class AdminOrderAddressUpdateAction extends AbstractAction
 
             $wpShippingAddressArchive->updateHomeDeliverySnapshotFromOrder($order);
         } catch (JsonException $exception) {
-            // Nothing has changed.
+            wc_get_logger()->error(
+                'Unable to archive the home-delivery address after an admin order address update.',
+                [
+                    'source' => 'samedaycourier-shipping',
+                    'order_id' => $order->get_id(),
+                    'exception' => $exception->getMessage(),
+                ]
+            );
         }
     }
 

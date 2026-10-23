@@ -1,9 +1,3 @@
-/**
- * WooCommerce Checkout Blocks — EasyBox / locker selection UI.
- *
- * Classic checkout uses ShowLockerFieldAction + lockers_sync.js.
- * Blocks has no PHP shipping template hooks; this script injects the UI and opens LockerPlugin.
- */
 (function (window, document, jQuery) {
     'use strict';
 
@@ -15,7 +9,6 @@
     var observer = null;
     var boundPlaceOrder = false;
     var selectedLocker = null;
-    // Guards a single sync per page load once the server-side TTL has lapsed.
     var blocksSyncDone = false;
 
     var readConfig = function () {
@@ -164,8 +157,6 @@
     };
 
     var bindUiEvents = function (root) {
-        // The UI lives inside a rate option rendered by React, whose listeners sit on the checkout
-        // root. Keeping the events local prevents Blocks from reading them as a rate change.
         var mapButton = root.querySelector('#select_locker');
         if (mapButton) {
             mapButton.addEventListener('click', function (event) {
@@ -200,8 +191,6 @@
         var existing = document.getElementById(UI_ROOT_ID);
         var rateId = SamedayCourier.getSelectedShippingRateId();
 
-        // Blocks re-renders the rate list in several passes, during which no radio is checked.
-        // Tearing the UI down on that transient state makes it flicker.
         if (!rateId) {
             return;
         }
@@ -213,8 +202,6 @@
             return;
         }
 
-        // Blocks keeps previously rendered rate options mounted, so the UI has to be moved
-        // whenever the selection changes instead of lingering under the old rate.
         if (existing && existing.getAttribute(RATE_ATTRIBUTE) !== rateId) {
             existing.remove();
             existing = null;

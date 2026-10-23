@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.2.6
+Stable tag: 2.3.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -30,6 +30,7 @@ For further information, contact us at software[at]sameday.ro !
 *   Show AWB as PDF format
 *   Add new parcel in AWB
 *   Show AWB status and summary
+*   Support WooCommerce High-Performance Order Storage (HPOS)
 
 == Installation ==
 
@@ -37,7 +38,7 @@ For further information, contact us at software[at]sameday.ro !
 
 * WordPress v6.6 or later
 * WooCommerce v6.1 or later
-* PHP at least 7.4.*
+* PHP 7.4 or later
 
 = Plugin installation procedure =
 
@@ -58,6 +59,19 @@ If every thing works, activate plugin and now the new feature are ready to use.
 After you have followed all the steps described above, now in the checkout page of your store, your clients are able to see and choose one of the Sameday service.
 
 In the Order page will be displayed a button "Generate awb". After awb is generated you can show it as PDF format. Also, you can show the history of the awb, add a new parcel or simply remove the awb.
+
+= WooCommerce High-Performance Order Storage (HPOS) =
+
+The plugin supports WooCommerce High-Performance Order Storage (HPOS) as well as the legacy WordPress posts-based order storage.
+
+When HPOS is enabled, Sameday features remain available in the WooCommerce order administration:
+
+* AWB actions are available in the HPOS orders list.
+* AWB actions and order details are available on the HPOS order edit screen.
+* Sameday order data continues to be loaded and saved through WooCommerce order APIs.
+* Administrative scripts and styles are loaded on both HPOS and legacy order screens.
+
+Existing stores can enable HPOS without losing Sameday order or AWB management functionality.
 
 == Frequently Asked Questions ==
 
@@ -178,6 +192,13 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.3.0 =
+
+* Added support for WooCommerce High-Performance Order Storage (HPOS).
+* Added Sameday AWB actions to the HPOS orders list and order edit screen.
+* Updated administrative page detection so Sameday assets load on both HPOS and legacy WooCommerce order screens.
+* Updated order handling to use WooCommerce order APIs for compatibility with both order storage modes.
 
 = 2.2.6 =
 

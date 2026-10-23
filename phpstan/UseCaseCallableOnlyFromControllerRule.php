@@ -51,9 +51,7 @@ final class UseCaseCallableOnlyFromControllerRule implements Rule
     private $controllerNamespaces;
 
     /**
-     * @param list<string> $controllerNamespaces Fully-qualified namespace prefixes whose classes are
-     *                                            also treated as controllers, in addition to any class
-     *                                            implementing $controllerInterface.
+     * @param list<string> $controllerNamespaces
      */
     public function __construct(
         string $useCaseInterface,
@@ -80,7 +78,6 @@ final class UseCaseCallableOnlyFromControllerRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         if (!$node->name instanceof Identifier) {
-            // Dynamic method name (`$useCase->$method()`); cannot reason statically.
             return [];
         }
 
