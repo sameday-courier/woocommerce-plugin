@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use SamedayCourier\Shipping\Domain\DTOs\GenerateAwbOrderSnapshotDto;
 use SamedayCourier\Shipping\Domain\Ports\GenerateAwbOrderProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use WC_Order;
 use WC_Payment_Gateway;
 
@@ -50,7 +50,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
             $order->get_address(),
             $shippingLines,
             null !== $service ? $service->getSamedayCode() : null,
-            PostMetaHandler::get(
+            PostOrderMetaHandler::get(
                 $orderId,
                 CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
             ),

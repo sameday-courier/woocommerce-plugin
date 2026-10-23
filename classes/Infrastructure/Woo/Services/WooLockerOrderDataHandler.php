@@ -9,7 +9,7 @@ use SamedayCourier\Shipping\Application\Common\Factories\LockerDtoFactory;
 use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 
 final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
 {
@@ -42,7 +42,7 @@ final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
             return;
         }
 
-        PostMetaHandler::update(
+        PostOrderMetaHandler::update(
             $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
             $locker

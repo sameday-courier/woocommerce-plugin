@@ -8,7 +8,7 @@ use SamedayCourier\Shipping\Domain\Ports\OpenPackageOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\Ports\SessionHandlerInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Domain\CarrierSessionKeys;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 
 final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandlerInterface
 {
@@ -36,7 +36,7 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
             return;
         }
 
-        PostMetaHandler::update(
+        PostOrderMetaHandler::update(
             $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
             1,
@@ -53,7 +53,7 @@ final class WooOpenPackageOrderDataHandler implements OpenPackageOrderDataHandle
      */
     public function isEnabled(int $orderId): bool
     {
-        return '' !== PostMetaHandler::get(
+        return '' !== PostOrderMetaHandler::get(
             $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_OPEN_PACKAGE_OPTION,
             true

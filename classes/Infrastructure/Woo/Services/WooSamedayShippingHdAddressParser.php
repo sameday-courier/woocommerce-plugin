@@ -7,7 +7,7 @@ namespace SamedayCourier\Shipping\Infrastructure\Woo\Services;
 use JsonException;
 use SamedayCourier\Shipping\Domain\Ports\CarrierShippingHdAddressParserInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 
 final class WooSamedayShippingHdAddressParser implements CarrierShippingHdAddressParserInterface
 {
@@ -18,7 +18,7 @@ final class WooSamedayShippingHdAddressParser implements CarrierShippingHdAddres
      */
     public function parse(int $orderId): ?array
     {
-        $postMeta = PostMetaHandler::get(
+        $postMeta = PostOrderMetaHandler::get(
             $orderId,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
             true

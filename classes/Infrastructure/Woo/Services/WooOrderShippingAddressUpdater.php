@@ -15,7 +15,7 @@ use SamedayCourier\Shipping\Domain\Ports\CarrierSettingsProviderInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\JsonStringHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\InputSanitizer;
-use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostMetaHandler;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\CarrierSettingsServiceProvider;
 use WC_Order;
 
@@ -130,7 +130,7 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
     {
         $postMetaLocker = JsonStringHandler::fixJson(
             InputSanitizer::sanitizeInput(
-                (string) PostMetaHandler::get(
+                (string) PostOrderMetaHandler::get(
                     $orderId,
                     CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
                     true
