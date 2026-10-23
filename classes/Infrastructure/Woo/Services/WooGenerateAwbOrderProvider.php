@@ -51,7 +51,7 @@ final class WooGenerateAwbOrderProvider implements GenerateAwbOrderProviderInter
             $shippingLines,
             null !== $service ? $service->getSamedayCode() : null,
             PostOrderMetaHandler::get(
-                $orderId,
+                $order,
                 CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER
             ),
         );

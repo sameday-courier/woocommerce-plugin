@@ -128,10 +128,15 @@ final class WooOrderShippingAddressUpdater implements OrderShippingAddressUpdate
      */
     private function resolveLockerFields(int $orderId): ?array
     {
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return null;
+        }
+
         $postMetaLocker = JsonStringHandler::fixJson(
             InputSanitizer::sanitizeInput(
                 (string) PostOrderMetaHandler::get(
-                    $orderId,
+                    $order,
                     CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
                     true
                 )

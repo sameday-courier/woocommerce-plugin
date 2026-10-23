@@ -10,6 +10,7 @@ use SamedayCourier\Shipping\Domain\Ports\LockerOrderDataHandlerInterface;
 use SamedayCourier\Shipping\Domain\CarrierConstants;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Http\Factories\LockerDtoFactoryFactory;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PostOrderMetaHandler;
+use WC_Order;
 
 final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
 {
@@ -42,8 +43,13 @@ final class WooLockerOrderDataHandler implements LockerOrderDataHandlerInterface
             return;
         }
 
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return;
+        }
+
         PostOrderMetaHandler::update(
-            $orderId,
+            $order,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
             $locker
         );

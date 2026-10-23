@@ -164,7 +164,7 @@ class AwbForm
     private function resolveServiceCode(WC_Order $order): ?string
     {
         $postMetaLocker = PostOrderMetaHandler::get(
-            $order->get_id(),
+            $order,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
         $lockerDto = (new LockerDtoFactory(
@@ -226,7 +226,7 @@ class AwbForm
     private function resolveLockerData(WC_Order $order): array
     {
         $postMetaLocker = PostOrderMetaHandler::get(
-            $order->get_id(),
+            $order,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_LOCKER,
         );
         $lockerDto = (new LockerDtoFactory(

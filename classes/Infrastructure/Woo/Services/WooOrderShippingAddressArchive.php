@@ -20,8 +20,13 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
      */
     public function ensureHomeDeliverySnapshot(int $orderId): void
     {
+        $order = wc_get_order($orderId);
+        if (!$order instanceof WC_Order) {
+            return;
+        }
+
         if ('' !== PostOrderMetaHandler::get(
-                $orderId,
+                $order,
                 CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
                 true
             )
@@ -57,10 +62,9 @@ final class WooOrderShippingAddressArchive implements OrderShippingAddressArchiv
     public function updateHomeDeliverySnapshotFromOrder(WC_Order $order): void
     {
         PostOrderMetaHandler::update(
-            $order->get_id(),
+            $order,
             CarrierConstants::POST_META_SAMEDAY_SHIPPING_HD_ADDRESS,
-            json_encode($this->buildSnapshotFromOrder($order), JSON_THROW_ON_ERROR),
-            false
+            json_encode($this->buildSnapshotFromOrder($order), JSON_THROW_ON_ERROR)
         );
     }
 
