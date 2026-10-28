@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -192,6 +192,10 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.3.1 =
+
+* Bug fix. Service import now keeps optional taxes. The personal delivery at locker option on the AWB form can display again after the services are imported.
 
 = 2.3.0 =
 
