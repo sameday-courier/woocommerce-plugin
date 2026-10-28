@@ -12,7 +12,9 @@ final class DbHandler implements DbHandlerInterface
      * @var \wpdb $db
      */
     private $db;
+
     /**
+     * DbHandler constructor.
      */
     public function __construct()
     {
@@ -178,20 +180,42 @@ final class DbHandler implements DbHandlerInterface
      */
     private function buildFormat(array $params): array
     {
+        $params = $this->normalizeBooleansValues($params);
+
         $format = [];
         foreach ($params as $value) {
             switch (gettype($value)) {
-                case 'string':
-                case 'NULL':
-                    $format[] = '%s';
-                    break;
                 case 'integer':
                     $format[] = '%d';
+                    break;
+                case 'double':
+                    $format[] = '%f';
+                    break;
+                case 'string':
+                case 'NULL':
+                default:
+                    $format[] = '%s';
                     break;
             }
         }
 
         return $format;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    private function normalizeBooleansValues(array $params): array
+    {
+        foreach ($params as $key => $value) {
+            if (is_bool($value)) {
+                $params[$key] = (int) $value;
+            }
+        }
+
+        return $params;
     }
 
     /**
