@@ -15,7 +15,7 @@
 .sameday-generate-awb-modal .sameday-bulk-awb-modal__body th {
     text-align: left;
     padding: 6px 12px 6px 0;
-    vertical-align: middle;
+    vertical-align: top;
     white-space: nowrap;
     font-size: 13px;
     font-weight: 600;
@@ -125,10 +125,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-}
-
-.sameday-generate-awb-modal tr[id^=LockerFirstMile-] th{
-    vertical-align: top;
 }
 
 .sameday-generate-awb-modal .sameday-locker-first-mile-field__control {
