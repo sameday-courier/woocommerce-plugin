@@ -12,7 +12,9 @@ final class DbHandler implements DbHandlerInterface
      * @var \wpdb $db
      */
     private $db;
+
     /**
+     * DbHandler constructor.
      */
     public function __construct()
     {
@@ -79,8 +81,6 @@ final class DbHandler implements DbHandlerInterface
      */
     public function insertRow(string $tableName, array $params): bool
     {
-        $params = $this->normalizeInsertValues($params);
-
         return false !== $this->db->insert($tableName, $params, $this->buildFormat($params));
     }
 
@@ -178,33 +178,10 @@ final class DbHandler implements DbHandlerInterface
      *
      * @return array
      */
-    /**
-     * Booleans are stored as 0 or 1. Leaving them as booleans makes the
-     * placeholder list shorter than the column list, and WordPress then
-     * writes a later string column with %d.
-     *
-     * @param array $params
-     *
-     * @return array
-     */
-    private function normalizeInsertValues(array $params): array
-    {
-        foreach ($params as $key => $value) {
-            if (is_bool($value)) {
-                $params[$key] = (int) $value;
-            }
-        }
-
-        return $params;
-    }
-
-    /**
-     * @param array $params
-     *
-     * @return array
-     */
     private function buildFormat(array $params): array
     {
+        $params = $this->normalizeBooleansValues($params);
+
         $format = [];
         foreach ($params as $value) {
             switch (gettype($value)) {
@@ -223,6 +200,22 @@ final class DbHandler implements DbHandlerInterface
         }
 
         return $format;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    private function normalizeBooleansValues(array $params): array
+    {
+        foreach ($params as $key => $value) {
+            if (is_bool($value)) {
+                $params[$key] = (int) $value;
+            }
+        }
+
+        return $params;
     }
 
     /**
