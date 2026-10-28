@@ -121,10 +121,14 @@
 }
 
 .sameday-generate-awb-modal .sameday-locker-first-mile-field {
-    display: flex;
+    display: table-cell;
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
+}
+
+.sameday-generate-awb-modal tr[id^=LockerFirstMile-] th{
+    vertical-align: top;
 }
 
 .sameday-generate-awb-modal .sameday-locker-first-mile-field__control {
