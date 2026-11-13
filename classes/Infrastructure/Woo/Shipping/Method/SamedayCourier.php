@@ -128,13 +128,13 @@ final class SamedayCourier extends WC_Shipping_Method
 
         $this->carrierSettingsProvider = new CarrierSettingsServiceProvider();
         $samedayServiceRepository = new SamedayServiceRepository();
+        $this->carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
         $this->carrierServiceSelector = new CarrierServiceSelector(
             $samedayServiceRepository,
             $this->carrierSettingsProvider
         );
         $this->samedayPickupPointRepository = new SamedayPickupPointRepository();
         $this->samedayServiceRepository = new SamedayServiceRepository();
-        $this->carrierServiceRules = new CarrierServiceRules($samedayServiceRepository);
         $this->wooCommerceHandler = new WooHandler();
         $sessionHandler = new WooSessionHandler($this->wooCommerceHandler);
         $this->sessionHandler = $sessionHandler;

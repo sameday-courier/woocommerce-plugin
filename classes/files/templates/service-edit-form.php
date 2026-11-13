@@ -13,7 +13,7 @@ $t = static function (string $text): string {
  * @var int|string $serviceId
  * @var string $nonce
  * @var string $serviceName
- * @var bool $nameDisabled
+ * @var bool $nameReadonly
  * @var float|int|string $price
  * @var float|int|string $priceFree
  * @var array<int, array{value: int, text: string, selected: bool}> $statuses
@@ -40,7 +40,7 @@ $t = static function (string $text): string {
                     <input type="text"
                            name="samedaycourier-service-name"
                            style="width: 297px; height: 36px;"
-                           <?php echo $nameDisabled ? 'disabled' : ''; ?>
+                           <?php echo $nameReadonly ? 'readonly' : ''; ?>
                            id="samedaycourier-service-name"
                            value="<?php echo esc_attr($serviceName); ?>">
                 </td>

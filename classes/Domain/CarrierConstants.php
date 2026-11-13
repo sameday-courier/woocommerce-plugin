@@ -20,9 +20,9 @@ final class CarrierConstants
     public const SAMEDAY_6H_CODE = "6H";
     public const STANDARD_24H_CODE = "24";
     public const STANDARD_CROSSBORDER_CODE = "XB";
-    public const LOCKER_CROSSBORDER_CODE = "XL";
+    public const LOCKER_CROSSBORDER_NEXT_DAY_CODE = "XL";
     public const PUDO_CODE = "PP";
-    public const CROSSBORDER_PUDO = "PP";
+    public const PUDO_CROSSBORDER_CODE = "XP";
     public const OOH_TYPES = [
         0 => self::LOCKER_NEXT_DAY_CODE,
         1 => self::PUDO_CODE,
@@ -30,31 +30,37 @@ final class CarrierConstants
 
     public const EASYBOX_TYPE_SERVICE = [
         0 => self::LOCKER_NEXT_DAY_CODE,
-        1 => self::LOCKER_CROSSBORDER_CODE,
+        1 => self::LOCKER_CROSSBORDER_NEXT_DAY_CODE,
     ];
 
     public const PUDO_TYPE_SERVICE = [
         0 => self::PUDO_CODE,
-        1 => self::CROSSBORDER_PUDO,
+        1 => self::PUDO_CROSSBORDER_CODE,
     ];
 
-    public const OOH_SERVICES = [
+    public const IS_OOH_SERVICES = [
         self::LOCKER_NEXT_DAY_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_NEXT_DAY_CODE,
         self::PUDO_CODE,
+        self::PUDO_CROSSBORDER_CODE,
     ];
     public const IN_USE_SERVICES = [
         self::SAMEDAY_6H_CODE,
         self::STANDARD_24H_CODE,
         self::LOCKER_NEXT_DAY_CODE,
         self::STANDARD_CROSSBORDER_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_NEXT_DAY_CODE,
     ];
     public const SAMEDAY_OOH_LABEL = 'Out of home delivery';
     public const OOH_SERVICES_LABELS = [
         self::API_HOST_LOCALE_RO => 'Ridicare Sameday Point/Easybox',
         self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox',
         self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox',
+    ];
+    public const OOH_CROSSBORDER_SERVICES_LABELS = [
+        self::API_HOST_LOCALE_RO => 'Ridicare Sameday Point/Easybox Crossborder',
+        self::API_HOST_LOCALE_BG => 'вземете от Sameday Point/Easybox трансграничен',
+        self::API_HOST_LOCALE_HU => 'felvenni től Sameday Point/Easybox Crossborder',
     ];
     public const ELIGIBLE_SERVICES = [
         self::SAMEDAY_6H_CODE,
@@ -63,7 +69,12 @@ final class CarrierConstants
     ];
     public const CROSSBORDER_ELIGIBLE_SERVICES = [
         self::STANDARD_CROSSBORDER_CODE,
-        self::LOCKER_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_NEXT_DAY_CODE,
+    ];
+    public const CROSSBORDER_SERVICES = [
+        self::STANDARD_CROSSBORDER_CODE,
+        self::LOCKER_CROSSBORDER_NEXT_DAY_CODE,
+        self::PUDO_CROSSBORDER_CODE,
     ];
     public const ELIGIBLE_TO_6H_SERVICE = [
         'Bucuresti'
