@@ -78,11 +78,6 @@ final class RefreshPickupPoint extends AbstractUseCase
         } while ($page <= $pickUpPoints->getPages());
 
         $localPickupPoints = array_map(
-            /**
-             * @param CarrierPickupPoint $pickupPoint
-             *
-             * @return array
-             */
             static function (CarrierPickupPoint $pickupPoint): array {
                 return [
                     'id' => $pickupPoint->getId(),
