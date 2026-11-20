@@ -12,11 +12,6 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsCol
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
-/**
- * Renders the "Awb actions" column cell on the HPOS (wc-orders) orders list.
- *
- * @see ShowAwbActionsColumnInLegacyOrderGridAction for the posts-based shop_order list.
- */
 class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';
@@ -56,26 +51,20 @@ class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
     }
 
     /**
-     * Shared cell rendering for both the HPOS and the legacy orders list.
-     *
      * @param string $column
-     * @param mixed $order WC_Order instance (HPOS passes it directly; the legacy list resolves it from the post ID)
+     * @param WC_Order $order
      *
      * @return void
      */
-    protected function renderColumn(string $column, $order): void
+    protected function renderColumn(string $column, WC_Order $order): void
     {
         if (AwbActionsColumnInWcOrderGrid::COLUMN_KEY !== $column) {
             return;
         }
 
-        if (!$order instanceof WC_Order) {
-            return;
-        }
-
         echo $this->buildCurrencyWarningMarker($order);
 
-        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId((int) $order->get_id());
+        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId($order->get_id());
 
         if (null === $awb) {
             echo $this->buildAddAwbContent($order);
@@ -93,12 +82,10 @@ class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
      */
     private function buildAddAwbContent(WC_Order $order): string
     {
-        return GenerateAwbButton::render((int) $order->get_id());
+        return GenerateAwbButton::render($order->get_id());
     }
 
     /**
-     * The bulk AWB modal builds its order list from the checked rows, so the warning has to travel with the row.
-     *
      * @param WC_Order $order
      *
      * @return string
