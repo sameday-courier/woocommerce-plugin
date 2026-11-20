@@ -4,7 +4,7 @@ Donate link: https://www.sameday.ro/contact
 Tags: shipping
 Requires at least: 6.6.0
 Tested up to: 7.1.0
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://sameday.ro
@@ -15,9 +15,11 @@ Sameday Courier shipping method plugin
 
 = Overview =
 
-This plug-in is intended to implement a new shipping method using the Sameday Courier service. As a store owner, after installing the plugin, you are able to import the list of Sameday Courier
-service and delivery points assigned to your account. If your customer chooses the order to be delivered with Sameday Courier, you will be able to see this in the list of commands in your store's
-administration panel. You will also be able to create an AWB. You can then add a new parcel in the created AWB and show the AWB as a PDF format. If you want, you can show the AWB history or delete the AWB.
+This plug-in implements a shipping method using the Sameday Courier service. After installing the plugin, store owners can import the Sameday Courier services, pickup-points and lockers assigned to their account and make the enabled services available at checkout.
+
+When a customer chooses Sameday Courier delivery, the order can be managed from the WooCommerce administration panel. Store owners can generate AWBs individually or in bulk, add parcels, display AWB labels as PDF files, view AWB history, remove AWBs and optionally update the order status after AWB generation.
+
+The plugin supports both WooCommerce High-Performance Order Storage (HPOS) and the legacy WordPress posts-based order storage. It also warns administrators when the repayment currency does not match the destination country's expected currency before an AWB is generated.
 
 For further information, contact us at software[at]sameday.ro !
 
@@ -30,6 +32,11 @@ For further information, contact us at software[at]sameday.ro !
 *   Show AWB as PDF format
 *   Add new parcel in AWB
 *   Show AWB status and summary
+*   Generate AWBs individually or in bulk from the WooCommerce orders list
+*   View, download and remove AWBs from the order list and order edit screen
+*   Configure an order status transition after AWB generation and restore the previous status when an AWB is removed
+*   Warn about repayment and destination-currency mismatches
+*   Offer PUDO-based shipping rates for supported cross-border destinations
 *   Support WooCommerce High-Performance Order Storage (HPOS)
 
 == Installation ==
@@ -72,6 +79,26 @@ When HPOS is enabled, Sameday features remain available in the WooCommerce order
 * Administrative scripts and styles are loaded on both HPOS and legacy order screens.
 
 Existing stores can enable HPOS without losing Sameday order or AWB management functionality.
+
+The plugin also supports the legacy `shop_order` list. The order-list AWB actions use a `WC_Order` object for HPOS and resolve the legacy post ID through WooCommerce before rendering the same AWB controls.
+
+= AWB management in the order list =
+
+The WooCommerce orders list provides an AWB actions column. Depending on the order state, administrators can generate an AWB or access the available actions for an existing AWB. The same functionality is available on both HPOS and legacy order lists.
+
+Selected orders can be processed through the bulk AWB workflow. Before processing begins, the modal displays the selected orders, asks for confirmation and reports progress and individual results. Bulk AWB removal is also available from the orders list.
+
+= Currency validation =
+
+For cash-on-delivery orders, the plugin compares the order repayment currency with the currency expected for the shipping destination. When a mismatch is detected, a warning is displayed in the AWB form and is carried with the order row into the bulk AWB workflow.
+
+The administrator must acknowledge the currency warning before continuing with bulk generation for affected orders. This helps prevent sending an incorrect repayment amount to the courier.
+
+= Cross-border PUDO shipping =
+
+For supported cross-border destinations, the plugin can offer a PUDO-based Sameday shipping rate in addition to the applicable cross-border services. The rate is calculated using the configured fixed or estimated shipping cost, according to the `Use estimated cost` setting.
+
+To make a cross-border PUDO rate available, refresh the service list, ensure the cross-border PUDO service is provided by Sameday for the configured account, and enable the service in the Services section. The option is shown only when the destination country and service are eligible.
 
 == Frequently Asked Questions ==
 
@@ -192,6 +219,14 @@ Any AWB can have one or more parcels (default one).
 After generating the AWB, the admin can add one or more parcels to the same AWB (please refer to screenshot 7).
 
 == Changelog ==
+
+= 2.3.2 =
+
+* Improved AWB actions in the WooCommerce orders list for both HPOS and legacy order storage.
+* Added currency-mismatch warnings to the AWB form and bulk AWB generation workflow.
+* Added order-row warning markers so currency warnings remain associated with selected orders during bulk processing.
+* Improved bulk AWB generation feedback with order selection review, progress reporting and per-order results.
+* Added support for PUDO-based shipping rates for eligible cross-border shipments.
 
 = 2.3.1 =
 
