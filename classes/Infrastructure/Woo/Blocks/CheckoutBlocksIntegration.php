@@ -121,7 +121,7 @@ final class CheckoutBlocksIntegration extends AbstractBlocksIntegration
             'username' => $settings->getUser() ?? '',
             'country' => $settings->getHostCountry(),
             'clientId' => CarrierConstants::LOCKER_PLUGIN_CLIENT_ID,
-            'oohServiceCodes' => CarrierConstants::OOH_SERVICES,
+            'oohServiceCodes' => CarrierConstants::IS_OOH_SERVICES,
             'useLockerMap' => $useLockerMap,
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'syncAction' => 'refresh_lockers_checkout',

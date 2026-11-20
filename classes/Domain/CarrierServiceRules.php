@@ -73,13 +73,23 @@ final class CarrierServiceRules
     }
 
     /**
+     * @param CarrierService $carrierService
+     *
+     * @return bool
+     */
+    public function isCrossborderService(CarrierService $carrierService): bool
+    {
+        return in_array($carrierService->getSamedayCode(), CarrierConstants::CROSSBORDER_SERVICES, true);
+    }
+
+    /**
      * @param string $samedayServiceCode
      *
      * @return bool
      */
     public function isOohDeliveryOptionByCode(string $samedayServiceCode): bool
     {
-        return in_array($samedayServiceCode, CarrierConstants::OOH_SERVICES, true);
+        return in_array($samedayServiceCode, CarrierConstants::IS_OOH_SERVICES, true);
     }
 
     /**

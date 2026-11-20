@@ -25,8 +25,6 @@ use Throwable;
 
 final class OrderShippingChangesServiceProvider implements OrderShippingChangesServiceProviderInterface
 {
-    private DbHandler $dbHandler;
-
     private OrderShippingAddressUpdaterInterface $orderShippingAddressUpdater;
 
     private CarrierServiceRules $carrierServiceRules;
@@ -42,7 +40,6 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
         ?CarrierServiceRules $carrierServiceRules = null
     ) {
         $resolvedDbHandler = $dbHandler ?? new DbHandler();
-        $this->dbHandler = $resolvedDbHandler;
         $this->orderShippingAddressUpdater = $orderShippingAddressUpdater ?? new WooOrderShippingAddressUpdater(
             new WooOrderAddressRepository($resolvedDbHandler),
             new WooOrderShippingAddressArchive(),
@@ -65,9 +62,8 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
         $orderId = $request->getOrderId();
         $service = $request->getService();
         $shippingLines = $request->getShippingLines();
-        $samedayOrderItemId = null;
         $shippingLine = null;
-        foreach ($shippingLines as $orderItemId => $candidateShippingLine) {
+        foreach ($shippingLines as $candidateShippingLine) {
             if (
                 $candidateShippingLine instanceof WC_Order_Item_Shipping
                 && CarrierConstants::PLUGIN_NAME === $candidateShippingLine->get_method_id()
@@ -75,7 +71,6 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
                     CarrierConstants::META_SERVICE_CODE
                 )
             ) {
-                $samedayOrderItemId = $orderItemId;
                 $shippingLine = $candidateShippingLine;
                 break;
             }
@@ -100,6 +95,7 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
 
         if (null !== $shippingLine) {
             try {
+                $shippingLine->set_name($service->getName() ?? $service->getSamedayName() ?? '');
                 $shippingLine->update_meta_data(
                     CarrierConstants::META_SERVICE_ID,
                     (string) $service->getSamedayId()
@@ -112,17 +108,6 @@ final class OrderShippingChangesServiceProvider implements OrderShippingChangesS
 
                 $shippingLine->set_method_id(CarrierConstants::PLUGIN_NAME);
                 $shippingLine->save();
-            } catch (Throwable $exception) {
-            }
-        }
-
-        if (null !== $samedayOrderItemId) {
-            try {
-                $this->dbHandler->updateRow(
-                    $this->dbHandler->buildTableName('woocommerce_order_items'),
-                    ['order_item_name' => $service->getName() ?? $service->getSamedayName() ?? ''],
-                    ['order_item_id' => $samedayOrderItemId]
-                );
             } catch (Throwable $exception) {
             }
         }

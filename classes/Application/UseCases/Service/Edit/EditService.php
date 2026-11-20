@@ -92,20 +92,33 @@ final class EditService extends AbstractUseCase
             );
         }
 
-        if ($currentService->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-            $pudoService = $this->serviceCatalogStore->getByCode(CarrierConstants::PUDO_CODE);
+        $outOfHomeServicesToSync = [
+            CarrierConstants::LOCKER_NEXT_DAY_CODE => [
+                'code' => CarrierConstants::PUDO_CODE,
+                'message' => 'Service updated, but unable to sync PUDO status',
+            ],
+            CarrierConstants::LOCKER_CROSSBORDER_NEXT_DAY_CODE => [
+                'code' => CarrierConstants::PUDO_CROSSBORDER_CODE,
+                'message' => 'Service updated, but unable to sync with CROSSBORDER PUDO status',
+            ],
+        ];
+
+        $currentServiceCode = $currentService->getSamedayCode();
+        if (isset($outOfHomeServicesToSync[$currentServiceCode])) {
+            $sync = $outOfHomeServicesToSync[$currentServiceCode];
+            $relatedService = $this->serviceCatalogStore->getByCode($sync['code']);
 
             if (
-                null !== $pudoService
+                null !== $relatedService
                 && !$this->serviceCatalogStore->updateFields(
-                    $pudoService->getId(),
+                    $relatedService->getId(),
                     [
                         'status' => $status,
                     ]
                 )
             ) {
                 return new EditServiceResponse(
-                    'Service updated, but unable to sync PUDO status',
+                    $sync['message'],
                     true,
                     $serviceId
                 );

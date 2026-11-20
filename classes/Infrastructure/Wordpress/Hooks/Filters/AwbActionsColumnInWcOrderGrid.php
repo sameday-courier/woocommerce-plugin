@@ -6,7 +6,12 @@ namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\TranslatorHandler;
 
-final class AwbActionsColumnInWcOrderGrid extends AbstractFilter
+/**
+ * Adds the "Awb actions" column to the HPOS (wc-orders) orders list.
+ *
+ * @see AwbActionsColumnInLegacyOrderGrid for the posts-based shop_order list.
+ */
+class AwbActionsColumnInWcOrderGrid extends AbstractFilter
 {
     private const FILTER = 'manage_woocommerce_page_wc-orders_columns';
     public const COLUMN_KEY = 'sameday_awb_actions';

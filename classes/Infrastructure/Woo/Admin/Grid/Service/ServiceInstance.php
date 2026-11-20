@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Woo\Admin\Grid\Service;
 
 use SamedayCourier\Shipping\Domain\CarrierConstants;
+use SamedayCourier\Shipping\Domain\CarrierServiceRules;
+use SamedayCourier\Shipping\Domain\Models\CarrierService;
 use SamedayCourier\Shipping\Infrastructure\Common\Services\HtmlHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\Repository\Sameday\SamedayServiceRepository;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Security\RequestSanitizer;
@@ -25,6 +27,11 @@ class ServiceInstance
     private SamedayServiceRepository $samedayServiceRepository;
 
     /**
+     * @var CarrierServiceRules $carrierServiceRules
+     */
+    private CarrierServiceRules $carrierServiceRules;
+
+    /**
      */
     public function __construct()
     {
@@ -32,6 +39,7 @@ class ServiceInstance
         add_action('admin_menu', [$this, 'plugin_menu']);
 
         $this->samedayServiceRepository = new SamedayServiceRepository();
+        $this->carrierServiceRules = new CarrierServiceRules($this->samedayServiceRepository);
     }
 
     /**
@@ -150,13 +158,11 @@ class ServiceInstance
             exit;
         }
 
-        $nameDisabled = false;
+        $nameReadonly = false;
         $serviceName = $service->getSamedayName() ?? '';
-        if ($service->getSamedayCode() === CarrierConstants::LOCKER_NEXT_DAY_CODE) {
-            $nameDisabled = true;
-            $carrierSettingsProvider = new CarrierSettingsServiceProvider();
-            $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
-            $serviceName = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
+        if ($this->carrierServiceRules->isOohDeliveryOption($service)) {
+            $nameReadonly = true;
+            $serviceName = $this->buildServiceNameForOoH($service);
         }
 
         $currentStatus = (int) $service->getStatus();
@@ -169,16 +175,40 @@ class ServiceInstance
             ];
         }
 
+        if (null === $price = $service->getPrice()) {
+            $price = '';
+        }
+
+        if (null === $priceFree = $service->getPriceFree()) {
+            $priceFree = '';
+        }
+
         return HtmlHandler::buildHtml('service-edit-form', [
             'actionUrl' => admin_url('admin-post.php'),
             'serviceId' => $id,
             'nonce' => wp_create_nonce('edit-service'),
             'serviceName' => $serviceName,
-            'nameDisabled' => $nameDisabled,
-            'price' => $service->getPrice() ?? '',
-            'priceFree' => $service->getPriceFree() ?? '',
+            'nameReadonly' => $nameReadonly,
+            'price' => $price,
+            'priceFree' => $priceFree,
             'statuses' => $statuses,
         ]);
+    }
+
+    /**
+     * @param CarrierService $service
+     * @return string
+     */
+    private function buildServiceNameForOoh(CarrierService $service): string
+    {
+        $carrierSettingsProvider = new CarrierSettingsServiceProvider();
+        $hostCountry = $carrierSettingsProvider->get()->getHostCountry();
+
+        $crossborderOohLabel = CarrierConstants::OOH_CROSSBORDER_SERVICES_LABELS[$hostCountry];
+        $oohLabel = CarrierConstants::OOH_SERVICES_LABELS[$hostCountry];
+        $isCrossborderService = $this->carrierServiceRules->isCrossborderService($service);
+
+        return $isCrossborderService ? $crossborderOohLabel : $oohLabel;
     }
 
     /**

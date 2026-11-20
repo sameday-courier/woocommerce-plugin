@@ -40,19 +40,14 @@ final class CarrierServiceSelector
     public function getEligibleServices(string $destinationCountry): array
     {
         $hostCountry = $this->carrierSettingsProvider->get()->getHostCountry();
+        $isCrossborder = $destinationCountry !== $hostCountry;
         $eligibleShippingServices = CarrierConstants::ELIGIBLE_SERVICES;
-        if ($destinationCountry !== $hostCountry) {
+        if ($isCrossborder) {
             $eligibleShippingServices = CarrierConstants::CROSSBORDER_ELIGIBLE_SERVICES;
         }
 
         return array_filter(
             $this->carrierServiceProvider->getAvailableServices(),
-            /**
-             * @param CarrierService $service
-             * @param mixed $eligibleShippingServices
-             *
-             * @return mixed
-             */
             static function (CarrierService $service) use ($eligibleShippingServices) {
                 return in_array(
                     $service->getSamedayCode(),

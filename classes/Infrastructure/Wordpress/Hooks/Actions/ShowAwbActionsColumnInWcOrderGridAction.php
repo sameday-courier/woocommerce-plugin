@@ -12,7 +12,7 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsCol
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
-final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
+class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';
 
@@ -47,20 +47,24 @@ final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        $column = $args[0] ?? null;
-        $order = $args[1] ?? null;
+        $this->renderColumn((string) ($args[0] ?? ''), $args[1] ?? null);
+    }
 
+    /**
+     * @param string $column
+     * @param WC_Order $order
+     *
+     * @return void
+     */
+    protected function renderColumn(string $column, WC_Order $order): void
+    {
         if (AwbActionsColumnInWcOrderGrid::COLUMN_KEY !== $column) {
-            return;
-        }
-
-        if (!$order instanceof WC_Order) {
             return;
         }
 
         echo $this->buildCurrencyWarningMarker($order);
 
-        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId((int) $order->get_id());
+        $awb = (new OrderAwbStoreServiceProvider())->getByOrderId($order->get_id());
 
         if (null === $awb) {
             echo $this->buildAddAwbContent($order);
@@ -78,12 +82,10 @@ final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
      */
     private function buildAddAwbContent(WC_Order $order): string
     {
-        return GenerateAwbButton::render((int) $order->get_id());
+        return GenerateAwbButton::render($order->get_id());
     }
 
     /**
-     * The bulk AWB modal builds its order list from the checked rows, so the warning has to travel with the row.
-     *
      * @param WC_Order $order
      *
      * @return string

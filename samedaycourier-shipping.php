@@ -10,7 +10,7 @@ if (!defined( 'ABSPATH')) {
  * Plugin Name: SamedayCourier Shipping
  * Plugin URI: https://github.com/sameday-courier/woocommerce-plugin
  * Description: SamedayCourier Shipping Method for WooCommerce
- * Version: 2.3.1
+ * Version: 2.3.2
  * Author: SamedayCourier
  * Author URI: https://www.sameday.ro/contact
  * License: GPL-3.0+
@@ -19,6 +19,7 @@ if (!defined( 'ABSPATH')) {
  * Text Domain: sameday
  */
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\PluginPathHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Handlers\RegistryHandler;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Sql\PluginHandler;
@@ -30,6 +31,15 @@ if (!in_array( 'woocommerce/woocommerce.php',
     apply_filters( 'active_plugins', get_option( 'active_plugins' )), true)) {
     exit;
 }
+
+add_action('before_woocommerce_init', static function (): void {
+    if (class_exists(FeaturesUtil::class)) {
+        FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+        );
+    }
+});
 
 if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
     add_action('admin_notices', static function () {
