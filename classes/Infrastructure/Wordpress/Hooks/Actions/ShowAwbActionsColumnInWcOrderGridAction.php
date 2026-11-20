@@ -12,7 +12,12 @@ use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsCol
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Services\OrderAwbStoreServiceProvider;
 use WC_Order;
 
-final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
+/**
+ * Renders the "Awb actions" column cell on the HPOS (wc-orders) orders list.
+ *
+ * @see ShowAwbActionsColumnInLegacyOrderGridAction for the posts-based shop_order list.
+ */
+class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
 {
     private const ACTION = 'manage_woocommerce_page_wc-orders_custom_column';
 
@@ -47,9 +52,19 @@ final class ShowAwbActionsColumnInWcOrderGridAction extends AbstractAction
      */
     public function handle(...$args): void
     {
-        $column = $args[0] ?? null;
-        $order = $args[1] ?? null;
+        $this->renderColumn((string) ($args[0] ?? ''), $args[1] ?? null);
+    }
 
+    /**
+     * Shared cell rendering for both the HPOS and the legacy orders list.
+     *
+     * @param string $column
+     * @param mixed $order WC_Order instance (HPOS passes it directly; the legacy list resolves it from the post ID)
+     *
+     * @return void
+     */
+    protected function renderColumn(string $column, $order): void
+    {
         if (AwbActionsColumnInWcOrderGrid::COLUMN_KEY !== $column) {
             return;
         }

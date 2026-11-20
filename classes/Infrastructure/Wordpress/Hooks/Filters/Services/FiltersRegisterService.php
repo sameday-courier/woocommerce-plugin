@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\Services;
 
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AddPluginRowMetaFilter;
+use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsColumnInLegacyOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\AwbActionsColumnInWcOrderGrid;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\RegisterShippingMethodFilter;
 use SamedayCourier\Shipping\Infrastructure\Wordpress\Hooks\Filters\ShippingMethodFullLabelFilter;
@@ -14,6 +15,7 @@ class FiltersRegisterService implements RegistryHandlerInterface
 {
     private const FILTERS = [
         AddPluginRowMetaFilter::class,
+        AwbActionsColumnInLegacyOrderGrid::class,
         AwbActionsColumnInWcOrderGrid::class,
         RegisterShippingMethodFilter::class,
         ShippingMethodFullLabelFilter::class,

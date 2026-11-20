@@ -36,9 +36,9 @@ final class JsScriptsHandler implements RegistryHandlerInterface
     private const WP_CONTEXT = [
         'admin_common' => 'admin_common',
         // Sameday admin pages (sameday_services, sameday_lockers, sameday_pickup_points),
-        // Sameday WC settings section, or order admin (post.php / admin.php).
+        // Sameday WC settings section, or WooCommerce order screens (edit/list, HPOS or legacy).
         'admin_full' => 'admin_full',
-        // Sameday settings section (section=samedaycourier) or order admin pages (post.php / admin.php).
+        // Sameday settings section (section=samedaycourier) or WooCommerce order screens (edit/list, HPOS or legacy).
         'pickup_points' => 'pickup_points',
         // Pickup points admin page only (page=sameday_pickup_points).
         'checkout' => 'checkout',

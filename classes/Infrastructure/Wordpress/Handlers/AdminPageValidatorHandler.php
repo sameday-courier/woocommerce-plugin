@@ -35,13 +35,14 @@ final class AdminPageValidatorHandler
     }
 
     /**
+     * True only on WooCommerce order screens (edit or list), for both the HPOS
+     * (admin.php?page=wc-orders) and the legacy (post.php / edit.php?post_type=shop_order) storage.
+     *
      * @return bool
      */
     public static function isOrderAdminPage(): bool
     {
-        global $pagenow;
-
-        return 'post.php' === $pagenow || 'admin.php' === $pagenow;
+        return self::isOrderEditPage() || self::isOrdersListPage();
     }
 
     /**
